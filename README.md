@@ -58,24 +58,21 @@ Download this repos in the `CMSSW_13_3_1/src` directory.
  git clone -b master https://github.com/ku-cms/SUSYCascades.git SUSYCascades
 ```
 
-### FNAL LPC
-If running on lxplus then the tar ball to copy is
+### FNAL CMS LPC
+If running on FNAL cmslpc, then the command to copy the tar ball is:
 ```
-
 cp /uscms/home/z374f439/nobackup/RestFrames_vNewest.tar ./
 ```
 
 ### CMS Connect
-If running on CMS connect then the tar ball to copy is
+If running on CMS connect, then the command to copy the tar ball is:
 ```
-
 cp /ospool/cms-user/zflowers/public/RestFrames_vNewest.tar ./
 ```
 
-### LXPlus
-If running on lxplus then the tar ball to copy is
+### LXPLUS
+If running on lxplus, then the command to copy the tar ball is:
 ```
-
 cp /afs/cern.ch/user/z/zflowers/storage/public/RestFrames_vNewest.tar ./
 ```
 
