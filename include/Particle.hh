@@ -70,6 +70,9 @@ public:
   LepID LepQual() const;
   void SetLepQual(LepID qual);
 
+  bool IsLowPt() const;
+  void SetIsLowPt(bool is_low_pt);
+
   Particle Merge(const Particle&) const;
   
   operator ParticleList() const;
@@ -88,6 +91,7 @@ private:
 
   // lepton stuff
   LepID m_LepQual;
+  bool m_IsLowPt;
   
   double m_RelIso;
   double m_MiniIso;
