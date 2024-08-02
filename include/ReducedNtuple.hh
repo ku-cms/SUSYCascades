@@ -148,6 +148,7 @@ private:
   vector<int>    m_ID_lep;
   vector<int>    m_SourceID_lep;
   vector<int>    m_LepQual_lep;
+  vector<int>    m_IsLowPt_lep;
   vector<int>    m_Index_lep;
 
   int m_Njet;
