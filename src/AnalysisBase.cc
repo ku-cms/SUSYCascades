@@ -2137,6 +2137,7 @@ ParticleList AnalysisBase<NANORun3>::GetElectrons(){
     lep.SetDzErr(Electron_dzErr[i]);
     lep.SetIP3D(Electron_ip3d[i]);
     lep.SetSIP3D(Electron_sip3d[i]);
+    lep.SetIsLowPt(false);
 
     lep.SetRelIso(Electron_pfRelIso03_all[i]);
     lep.SetMiniIso(Electron_miniPFRelIso_all[i]);
@@ -2539,20 +2540,27 @@ ParticleList AnalysisBase<NANORun3>::GetElectrons(){
       continue;
     if(LowPtElectron_ID[i] < 1.4) // need to tune after feedback from Brady
       continue;
+    
     //if(LowPtElectron_dxyErr[i] < 1.e-8 || LowPtElectron_dzErr[i] < 1.e-8)
-    //continue;
-    float dxy = LowPtElectron_dxy[i];
-    float dz = LowPtElectron_dz[i];
-    float dxy_err = LowPtElectron_dxyErr[i];
-    float dz_err = LowPtElectron_dzErr[i];
-    float IP_3D = sqrt(dxy*dxy + dz*dz);
-    float SIP_3D = IP_3D*IP_3D / sqrt((dxy*dxy)*(dxy_err*dxy_err) + (dz*dz)*(dz_err*dz_err));
+    //  continue;
+    
+    // Calculate IP_3D and SIP_3D = IP_3D / IP_3D_err for the LowPtElectron collection.
+    // - IP_3D:     3D impact parameter wrt first PV, in cm
+    // - SIP_3D:    3D impact parameter significance wrt first PV, in cm
+    float dxy       = LowPtElectron_dxy[i];
+    float dz        = LowPtElectron_dz[i];
+    float dxy_err   = LowPtElectron_dxyErr[i];
+    float dz_err    = LowPtElectron_dzErr[i];
+    float IP_3D     = sqrt(dxy*dxy + dz*dz);
+    float SIP_3D    = IP_3D*IP_3D / sqrt((dxy*dxy)*(dxy_err*dxy_err) + (dz*dz)*(dz_err*dz_err));
 
-    //if (IP_3D_sig >= 8)
-    //continue;
+    // TODO: Review and tune SIP_3D cut.
+    //if (SIP_3D >= 8)
+    //  continue;
 
-      //if(Electron_pfRelIso03_all[i]*Electron_pt[i] >= 20. + 300./Electron_pt[i])
-      //continue;
+    // FIXME: fix PFIso requirement for the LowPtElectron collection.
+    //if(Electron_pfRelIso03_all[i]*Electron_pt[i] >= 20. + 300./Electron_pt[i])
+    //  continue;
 
     Particle lep;
     lep.SetPtEtaPhiM(LowPtElectron_pt[i], LowPtElectron_eta[i],
@@ -2566,10 +2574,12 @@ ParticleList AnalysisBase<NANORun3>::GetElectrons(){
     lep.SetDzErr(LowPtElectron_dzErr[i]);
     lep.SetIP3D(IP_3D);
     lep.SetSIP3D(SIP_3D);
+    lep.SetIsLowPt(true);
 
     lep.SetRelIso(LowPtElectron_miniPFRelIso_all[i]);
     lep.SetMiniIso(LowPtElectron_miniPFRelIso_all[i]);
     lep.SetParticleID(kMedium);
+    
     //if (LowPtElectron_pt[i] < 3.0 || (LowPtElectron_pt[i] >= 3.0 && LowPtElectron_embeddedID[i] >=6))
     //  lep.SetParticleID(kTight);
     if (LowPtElectron_pt[i] < 3.0 || (LowPtElectron_pt[i] >= 3.0 && LowPtElectron_ID[i] >=1.4)) // need to tune after feedback from Brady
@@ -2615,6 +2625,7 @@ ParticleList AnalysisBase<NANORun3>::GetMuons(){
     lep.SetDzErr(Muon_dzErr[i]);
     lep.SetIP3D(Muon_ip3d[i]);
     lep.SetSIP3D(Muon_sip3d[i]);
+    lep.SetIsLowPt(false);
 
     lep.SetRelIso(Muon_pfRelIso03_all[i]);
     lep.SetMiniIso(Muon_miniPFRelIso_all[i]);

@@ -24,6 +24,7 @@ Particle::Particle() : TLorentzVector() {
   m_Btag = 0.;
   m_BtagID = kNothing;
   m_LepQual = kGold;
+  m_IsLowPt = false;
 }
     
 Particle::~Particle() {}
@@ -82,6 +83,14 @@ LepID Particle::LepQual() const {
 
 void Particle::SetLepQual(LepID qual){
   m_LepQual = qual;
+}
+
+bool Particle::IsLowPt() const {
+  return m_IsLowPt;
+}
+
+void Particle::SetIsLowPt(bool is_low_pt) {
+  m_IsLowPt = is_low_pt;
 }
 
 double Particle::RelIso() const {
