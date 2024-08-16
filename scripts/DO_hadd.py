@@ -143,10 +143,12 @@ def main():
 
     # total time in seconds
     total_time_seconds = end_time - start_time
+    # total time in minutes
+    total_time_minutes = total_time_seconds / 60
     # total time in hours
-    total_time_hours = total_time_seconds / 3600
+    total_time_hours = total_time_minutes / 60
     
-    print("Total time: {0:.2f} seconds = {1:.2f} hours".format(total_time_seconds, total_time_hours))
+    print("Total time: {0:.2f} seconds = {1:.2f} minutes = {2:.2f} hours".format(total_time_seconds, total_time_minutes, total_time_hours))
 
 
 if __name__ == "__main__":
