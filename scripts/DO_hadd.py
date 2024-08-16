@@ -85,7 +85,7 @@ def main():
             os.system("mkdir -p "+IN_DIR+"/"+target+"/"+target+"_"+str(i))
             for f in glob(os.path.join(IN_DIR+"/"+target+"/"+target+"_*"+str(i)+".root")):
                 os.system("mv "+f+" "+IN_DIR+"/"+target+"/"+target+"_"+str(i)+"/") 
-            hadd_sml_processes.append(pop("hadd -f "+IN_DIR+"/"+target+"/"+target+"_"+str(i)+".root "+IN_DIR+"/"+target+"/"+target+"_"+str(i)+"/*.root",stdout=subprocess.PIPE,stderr=subprocess.PIPE,shell=True))
+            hadd_sml_processes.append(pop("hadd -f -k "+IN_DIR+"/"+target+"/"+target+"_"+str(i)+".root "+IN_DIR+"/"+target+"/"+target+"_"+str(i)+"/*.root",stdout=subprocess.PIPE,stderr=subprocess.PIPE,shell=True))
 
         for hadd_sml in hadd_sml_processes:
             if hadd_sml.poll() is True:
