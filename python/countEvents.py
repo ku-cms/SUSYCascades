@@ -160,7 +160,8 @@ class EventCount:
         n_events_map = {}
         sum_total_events = 0
         sum_saved_events = 0
-        sum_das_events = 0
+        sum_das_events   = 0
+        das_events       = 0
         
         # get ROOT files
         # - if pattern is set, then require file name to contain pattern
