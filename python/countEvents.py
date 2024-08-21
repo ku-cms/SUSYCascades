@@ -13,20 +13,19 @@ import tools
 # Print the results and save results to a csv file.
 #
 # Example syntax:
+#
 # python python/countEvents.py --directory <path_to_directory> --csv <path_to_csv>
-# For DAS check on connect
+#
+# python python/countEvents.py --directory <path_to_directory> --csv <path_to_csv> --year <year> --sms --verbose
+#
+# For DAS check on connect:
+#
 # python3 python/countEvents.py -d ../../../NTUPLES/Processing/Summer23_130X/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8_Summer23_130X/ -y 2023 -w
 #
-
-# TODO
+# Check event count file:
 #
-# DONE
-# - Update get_eos_file_list() to use a pattern
-# - Sort sample names alphabetically for printing and csv
-# - Make event count class
-# - Add "--sms" option; for signal, count events for a specific mass point
-# - Instead of passing an analysis tree for an SMS mass point as an option,
-#   we need to store these for each sample in a json file, as the mass points are different for every signal sample.
+# python3 python/countEvents.py --eventCount --filetag Summer23_130X
+#
 
 # Make sure ROOT.TFile.Open(fileURL) does not seg fault when $ is in sys.argv (e.g. $ passed in as argument)
 ROOT.PyConfig.IgnoreCommandLineOptions = True
@@ -160,7 +159,8 @@ class EventCount:
         n_events_map = {}
         sum_total_events = 0
         sum_saved_events = 0
-        sum_das_events = 0
+        sum_das_events   = 0
+        das_events       = 0
         
         # get ROOT files
         # - if pattern is set, then require file name to contain pattern
@@ -275,7 +275,7 @@ def run():
     parser.add_argument("--verbose",    "-v", default = False,  action = "store_true",  help="verbose flag to print more things")
     parser.add_argument("--das",        "-w", default = False,  action = "store_true",  help="get DAS count")
     parser.add_argument("--eventCount", "-t", default = False,  action = "store_true",  help="check event count file")
-    parser.add_argument("--filetag",    "-f", default = "",                             help="filetag for event count checking")
+    parser.add_argument("--filetag",    "-f", default = "",                             help="filetag for event count checking (required for --eventCount)")
 
     options     = parser.parse_args()
     directory   = options.directory
@@ -293,8 +293,11 @@ def run():
     valid_years = ["2016", "2017", "2018", "2022", "2023"]
 
     if eventCount:
-        if filetag == "":
-            print("asked to check event count but need to provide a filetag like: Summer23_130X")
+        # Check that the filetag is set.
+        if not filetag:
+            print("You asked to check event count (--eventCount) but did not provide the required filetag (--filetag FILETAG).")
+            print("Please provide a filetag, for example: --filetag Summer23_130X")
+            return
         else:
             event_count = EventCount()
             event_count.checkEventCountFile(filetag)
@@ -328,3 +331,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
