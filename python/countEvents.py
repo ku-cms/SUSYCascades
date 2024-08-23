@@ -223,17 +223,19 @@ class EventCount:
             if verbose:
                 print(" - {0}".format(base_name))
 
+        # Get DAS Count
         if(das):
             das_events = self.GetDASCount(root_files[0])
             if(das_events == 0):
                 das_events = self.GetDASCount(root_files[1])
             if(das_events == 0):
                 print("Couldn't get DAS events from file: ",root_files[0])
+        
         # print results
         if sms:
-            print("Sample: total events, analysis tree: saved events")
+            print("Sample: total events, DAS: events from DAS, Analysis tree: saved events")
         else:
-            print("Sample: total events, saved events")
+            print("Sample: total events, DAS: events from DAS, Saved: saved events")
         for base_name in base_file_names:
             analysis_tree   = ""
             n_total_events = n_events_map[base_name]["n_total_events"]
@@ -244,7 +246,7 @@ class EventCount:
                 if sms:
                     print("{0}: {1}, DAS: {2}, {3}: {4}".format(base_name, n_total_events, das_events, analysis_tree, n_saved_events))
                 else:
-                    print("{0}: {1}, DAS: {2}, {2}".format(base_name, n_total_events, das_events, n_saved_events))
+                    print("{0}: {1}, DAS: {2}, Saved: {3}".format(base_name, n_total_events, das_events, n_saved_events))
         if(das):
             base_name = base_file_names[0]
             das_percent = 100.*sum_total_events/das_events

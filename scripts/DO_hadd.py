@@ -17,8 +17,9 @@ def main():
     argv_pos = 1
 
     OUT_DIR = "dum"
-    IN_DIR = "dum"
-    redo = False
+    IN_DIR  = "dum"
+    redo    = False
+    SKIP_BAD_FILES = False
     
     if '-odir' in sys.argv:
         p = sys.argv.index('-odir')
@@ -31,13 +32,22 @@ def main():
     if '--redo' in sys.argv:
         redo = True
         argv_pos += 1
+    if '--skip-bad-files' in sys.argv:
+        SKIP_BAD_FILES = True
+        argv_pos += 1
 
     if not len(sys.argv) > 1 or '-h' in sys.argv or '--help' in sys.argv or OUT_DIR == "dum" or IN_DIR == "dum":
-        print(f"Usage: {sys.argv[0]} [-idir /path/input_dir] [-odir /path/output_dir]")
+        print(f"Usage: {sys.argv[0]} [-idir /path/input_dir] [-odir /path/output_dir] --redo --skip-bad-files")
         sys.exit(1)
 
     print(f"Input Directory: {IN_DIR}")
     print(f"Output Directory: {OUT_DIR}")
+    print(f"Redo: {redo}")
+    print(f"Skip bad files: {SKIP_BAD_FILES}")
+
+    # WARNING
+    if SKIP_BAD_FILES:
+        print("WARNING: For --skip-bad-files, hadd will be run using -k to skip bad files (corrupt or non-existent files)... make sure that is what you want!")
         
     # create and organize output folders
     os.system("mkdir -p "+OUT_DIR)
@@ -70,7 +80,7 @@ def main():
         if redo and target not in os.listdir(IN_DIR):
             continue
 
-        print(target)
+        print(f"Target: {target}")
         #haddcmd = "hadd -f "+OUT_DIR+"/"+target+".root "
         #for i in range(0,10):
             #os.system("mkdir -p "+IN_DIR+"/"+target+"/"+target+"_"+str(i))
@@ -85,7 +95,12 @@ def main():
             os.system("mkdir -p "+IN_DIR+"/"+target+"/"+target+"_"+str(i))
             for f in glob(os.path.join(IN_DIR+"/"+target+"/"+target+"_*"+str(i)+".root")):
                 os.system("mv "+f+" "+IN_DIR+"/"+target+"/"+target+"_"+str(i)+"/") 
-            hadd_sml_processes.append(pop("hadd -f "+IN_DIR+"/"+target+"/"+target+"_"+str(i)+".root "+IN_DIR+"/"+target+"/"+target+"_"+str(i)+"/*.root",stdout=subprocess.PIPE,stderr=subprocess.PIPE,shell=True))
+            if SKIP_BAD_FILES:
+                # Use "hadd -f -k ":
+                hadd_sml_processes.append(pop("hadd -f -k "+IN_DIR+"/"+target+"/"+target+"_"+str(i)+".root "+IN_DIR+"/"+target+"/"+target+"_"+str(i)+"/*.root",stdout=subprocess.PIPE,stderr=subprocess.PIPE,shell=True))
+            else:
+                # Use "hadd -f ":
+                hadd_sml_processes.append(pop("hadd -f "+IN_DIR+"/"+target+"/"+target+"_"+str(i)+".root "+IN_DIR+"/"+target+"/"+target+"_"+str(i)+"/*.root",stdout=subprocess.PIPE,stderr=subprocess.PIPE,shell=True))
 
         for hadd_sml in hadd_sml_processes:
             if hadd_sml.poll() is True:
