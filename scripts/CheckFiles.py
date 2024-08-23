@@ -66,6 +66,7 @@ def checkJobs(workingDir,outputDir,skipMissing,skipSmall,skipErr,skipOut,resubmi
             resubmitFiles = getMissingFiles(outputDir,nSplit,numList)
             print(f"Got {len(resubmitFiles)} missing files for dataset {DataSetName}")
         if(not skipSmall):
+            # define size cutoff using -size: find will get all files below the cutoff
             #bash = "find "+outputDir+DataSetName+" -type f -size -10k"
             bash = "find "+outputDir+" -type f -size -15k"
             smallFiles = subprocess.check_output(['bash','-c', bash]).decode()
@@ -79,7 +80,7 @@ def checkJobs(workingDir,outputDir,skipMissing,skipSmall,skipErr,skipOut,resubmi
                 num_small = num_small+1
             print(f"Got {num_small} small files for dataset {DataSetName}")
         if(not skipErr):
-            bash = "grep -v "+grep_ignore+ workingDir +"/err/"+DataSetName+"/*.err"
+            bash = "grep -r -v "+grep_ignore+workingDir+"/err/"+DataSetName+"/"
             # "errorFiles" is actually all lines with errors that we don't ignore
             # thus, the number of "errorFiles" is often much greater than number of files with an error
             errorFiles = subprocess.check_output(['bash','-c',bash]).decode()
@@ -96,7 +97,7 @@ def checkJobs(workingDir,outputDir,skipMissing,skipSmall,skipErr,skipOut,resubmi
                     resubmitFiles.append(Tuple)
             print(f"Got {num_error} error files for dataset",DataSetName)
         if(not skipOut):
-            bash = "grep \"Ntree 0\" "+ workingDir +"/out/"+DataSetName+"/*.out"
+            bash = "grep -r \"Ntree 0\" "+ workingDir +"/out/"+DataSetName+"/"
             outFiles = subprocess.check_output(['bash','-c',bash]).decode()
             outFiles = outFiles.split("\n")
             outFiles.remove('')
@@ -108,35 +109,38 @@ def checkJobs(workingDir,outputDir,skipMissing,skipSmall,skipErr,skipOut,resubmi
                 if Tuple not in resubmitFiles:
                     resubmitFiles.append(Tuple)
             print(f"Got {num_out} out files for dataset",DataSetName)
-        if len(resubmitFiles) >= maxResub:
-            print(f"You are about to make {len(resubmitFiles)} and resubmit {len(resubmitFiles)} jobs for dataset: {DataSetName}!")
-            print(f"You should double check there are no issues with your condor submissions")
-            print(f"If you are confident you want to resubmit, then you should rerun this script with -l {len(resubmitFiles)}")
-        makeSubmitScript(resubmitFiles,workingDir+"/src/"+DataSetName,resubmit,skipClean)
+        if resubmit:
+            # Check number of resubmitFiles
+            if len(resubmitFiles) > maxResub:
+                print(f"You are about to make {len(resubmitFiles)} and resubmit {len(resubmitFiles)} jobs for dataset: {DataSetName}!")
+                print(f"You should double check there are no issues with your condor submissions.")
+                print(f"If you are confident you want to resubmit, then you should rerun this script with '-l {len(resubmitFiles)}'.")
+            else:
+                makeSubmitScript(resubmitFiles,workingDir+"/src/"+DataSetName,resubmit,skipClean)
 
 def main():
     # options
     parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    parser.add_argument("--directory", "-d", default="Summer22_130X/", help="working directory for condor submission")
-    parser.add_argument("--output", "-o", default="/ospool/cms-user/"+USER+"/NTUPLES/Processing/Summer22_130X/", help="output area for root files")
-    parser.add_argument("--skipResubmit", "-r", action='store_false', help="do not resubmit files")
-    parser.add_argument("--skipMissing", "-m", action='store_true', help="skip checking missing files")
-    parser.add_argument("--skipSmall", "-s", action='store_true', help="skip checking small files")
-    parser.add_argument("--skipErr", "-e", action='store_true', help="skip checking err files")
-    parser.add_argument("--skipOut", "-u", action='store_true', help="skip checking out files")
-    parser.add_argument("--skipClean", "-c", action='store_true', help="skip cleaning up new submission files")
-    parser.add_argument("--maxResub", "-l", default=100, help="max number of jobs to resubmit")
+    parser.add_argument("--directory",      "-d", default="Summer22_130X/", help="working directory for condor submission")
+    parser.add_argument("--output",         "-o", default="/ospool/cms-user/"+USER+"/NTUPLES/Processing/Summer22_130X/", help="output area for root files")
+    parser.add_argument("--skipResubmit",   "-r", action='store_false', help="do not resubmit files")
+    parser.add_argument("--skipMissing",    "-m", action='store_true', help="skip checking missing files")
+    parser.add_argument("--skipSmall",      "-s", action='store_true', help="skip checking small files")
+    parser.add_argument("--skipErr",        "-e", action='store_true', help="skip checking err files")
+    parser.add_argument("--skipOut",        "-u", action='store_true', help="skip checking out files")
+    parser.add_argument("--skipClean",      "-c", action='store_true', help="skip cleaning up new submission files")
+    parser.add_argument("--maxResub",       "-l", default=100, help="max number of jobs to resubmit")
 
-    options = parser.parse_args()
-    directory = options.directory	
-    output = options.output
-    resubmit = options.skipResubmit
+    options     = parser.parse_args()
+    directory   = options.directory	
+    output      = options.output
+    resubmit    = options.skipResubmit
     skipMissing = options.skipMissing
-    skipSmall = options.skipSmall
-    skipErr = options.skipErr
-    skipOut = options.skipOut
-    skipClean = options.skipClean
-    maxResub = options.maxResub
+    skipSmall   = options.skipSmall
+    skipErr     = options.skipErr
+    skipOut     = options.skipOut
+    skipClean   = options.skipClean
+    maxResub    = int(options.maxResub)
 
     checkJobs(directory,output,skipMissing,skipSmall,skipErr,skipOut,resubmit,skipClean,maxResub)
 
