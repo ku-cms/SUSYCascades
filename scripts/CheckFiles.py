@@ -9,6 +9,7 @@ USER = os.environ['USER']
 def getMissingFiles(outputDir,nSplit,nList):
     baseTupleList = list(itertools.product(range(nList), range(nSplit)))
     for filename in os.listdir(outputDir):
+        if not filename.endswith('root'): continue;
         filename_str = filename.split(".")[0]
         Tuple = (int(filename_str.split("_")[-2]),int(filename_str.split("_")[-1]))
         if Tuple in baseTupleList:
@@ -59,12 +60,14 @@ def checkJobs(workingDir,outputDir,skipMissing,skipSmall,skipErr,skipOut,resubmi
             numList = len([listFile for listFile in listFiles if os.path.isfile(os.path.join(listDir,listFile))])
             numList = numList - 1 # remove master list file
             nJobsSubmit = numList*nSplit
-            bash = "ls "+outputDir+DataSetName+" | wc -l"
-            nJobsOutput = int(subprocess.check_output(['bash','-c', bash]).decode())
-            resubmitFiles = getMissingFiles(outputDir+DataSetName,nSplit,numList)
+            #bash = "ls "+outputDir+DataSetName+" | wc -l"
+            #nJobsOutput = int(subprocess.check_output(['bash','-c', bash]).decode())
+            #resubmitFiles = getMissingFiles(outputDir+DataSetName,nSplit,numList)
+            resubmitFiles = getMissingFiles(outputDir,nSplit,numList)
             print(f"Got {len(resubmitFiles)} missing files for dataset {DataSetName}")
         if(not skipSmall):
-            bash = "find "+outputDir+DataSetName+" -type f -size -10k"
+            #bash = "find "+outputDir+DataSetName+" -type f -size -10k"
+            bash = "find "+outputDir+" -type f -size -15k"
             smallFiles = subprocess.check_output(['bash','-c', bash]).decode()
             smallFiles = smallFiles.split("\n")
             smallFiles.remove('')
@@ -77,26 +80,34 @@ def checkJobs(workingDir,outputDir,skipMissing,skipSmall,skipErr,skipOut,resubmi
             print(f"Got {num_small} small files for dataset {DataSetName}")
         if(not skipErr):
             bash = "grep -v "+grep_ignore+ workingDir +"/err/"+DataSetName+"/*.err"
+            # "errorFiles" is actually all lines with errors that we don't ignore
+            # thus, the number of "errorFiles" is often much greater than number of files with an error
             errorFiles = subprocess.check_output(['bash','-c',bash]).decode()
             errorFiles = errorFiles.split("\n")
             errorFiles.remove('')
+            num_error = 0
+            # loop over all lines with errors
             for errorFile in errorFiles:
                 errorFile = errorFile.split(".err")[0]
                 Tuple = (int(errorFile.split("_")[-2]),int(errorFile.split("_")[-1]))
                 if Tuple not in resubmitFiles:
+                    # count number of files with an error
+                    num_error = num_error+1
                     resubmitFiles.append(Tuple)
-            print("Got error files for dataset",DataSetName)
+            print(f"Got {num_error} error files for dataset",DataSetName)
         if(not skipOut):
             bash = "grep \"Ntree 0\" "+ workingDir +"/out/"+DataSetName+"/*.out"
             outFiles = subprocess.check_output(['bash','-c',bash]).decode()
             outFiles = outFiles.split("\n")
             outFiles.remove('')
+            num_out = 0
             for outFile in outFiles:
+                num_out = num_out+1
                 outFile = outFile.split(".out")[0]
                 Tuple = (int(outFile.split("_")[-2]),int(outFile.split("_")[-1]))
                 if Tuple not in resubmitFiles:
                     resubmitFiles.append(Tuple)
-            print("Got out files for dataset",DataSetName)
+            print(f"Got {num_out} out files for dataset",DataSetName)
         if len(resubmitFiles) >= maxResub:
             print(f"You are about to make {len(resubmitFiles)} and resubmit {len(resubmitFiles)} jobs for dataset: {DataSetName}!")
             print(f"You should double check there are no issues with your condor submissions")
