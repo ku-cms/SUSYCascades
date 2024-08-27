@@ -101,12 +101,13 @@ def checkJobs(workingDir,outputDir,skipMissing,skipSmall,skipErr,skipOut,resubmi
             bash = "grep -r \"Ntree 0\" "+ workingDir +"/out/"+DataSetName+"/"
             # need try / except to catch subprocess.CalledProcessError for grep returning exit code 1 (no matches)
             try:
-                print("Try: subprocess.check_output().decode() to grep...")
+                # print for debugging
+                #print("Try: subprocess.check_output().decode() to grep...")
                 outFiles = subprocess.check_output(['bash','-c',bash]).decode()
                 outFiles = outFiles.split("\n")
                 outFiles.remove('')
             except subprocess.CalledProcessError as e:
-                print("Except: Caught subprocess.CalledProcessError, due to grep returning exit code 1 (no matches)!")
+                print("Except: Caught subprocess.CalledProcessError; likely due to grep returning exit code 1 (no matches)!")
             num_out = 0
             for outFile in outFiles:
                 num_out = num_out+1
