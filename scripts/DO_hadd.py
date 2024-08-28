@@ -96,11 +96,11 @@ def main():
             for f in glob(os.path.join(IN_DIR+"/"+target+"/"+target+"_*"+str(i)+".root")):
                 os.system("mv "+f+" "+IN_DIR+"/"+target+"/"+target+"_"+str(i)+"/") 
             if SKIP_BAD_FILES:
-                # Use "hadd -f -k ":
-                hadd_sml_processes.append(pop("hadd -f -k "+IN_DIR+"/"+target+"/"+target+"_"+str(i)+".root "+IN_DIR+"/"+target+"/"+target+"_"+str(i)+"/*.root",stdout=subprocess.PIPE,stderr=subprocess.PIPE,shell=True))
+                # Use "hadd -j 8 -f -k ":
+                hadd_sml_processes.append(pop("hadd -j 8 -f -k "+IN_DIR+"/"+target+"/"+target+"_"+str(i)+".root "+IN_DIR+"/"+target+"/"+target+"_"+str(i)+"/*.root",stdout=subprocess.PIPE,stderr=subprocess.PIPE,shell=True))
             else:
-                # Use "hadd -f ":
-                hadd_sml_processes.append(pop("hadd -f "+IN_DIR+"/"+target+"/"+target+"_"+str(i)+".root "+IN_DIR+"/"+target+"/"+target+"_"+str(i)+"/*.root",stdout=subprocess.PIPE,stderr=subprocess.PIPE,shell=True))
+                # Use "hadd -j 8 -f ":
+                hadd_sml_processes.append(pop("hadd -j 8 -f "+IN_DIR+"/"+target+"/"+target+"_"+str(i)+".root "+IN_DIR+"/"+target+"/"+target+"_"+str(i)+"/*.root",stdout=subprocess.PIPE,stderr=subprocess.PIPE,shell=True))
 
         for hadd_sml in hadd_sml_processes:
             if hadd_sml.poll() is True:
