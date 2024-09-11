@@ -45,6 +45,8 @@ class EventCount:
 
     def LoadEventCountMap(self, root_file):
         try:
+            # Can ignore any message like: ReadStreamerInfo, class:string, illegal uid=-2
+            # https://root-forum.cern.ch/t/readstreamerinfo-illegal-uid-with-newer-root-versions/41073
             root_file_test = ROOT.TFile.Open(root_file);
             if root_file_test.IsOpen():
                 root_file_test.Close()
@@ -117,7 +119,6 @@ class EventCount:
 
     def checkEventCountFile(self, filetag):
         root_file = f"root/EventCount/EventCount_NANO_{filetag}.root"
-        print(root_file)
         if not os.path.isfile(root_file):
             print(f"file: {root_file} does not exist!")
             return
@@ -235,9 +236,6 @@ class EventCount:
                 base_events = self.base_analysis_tree_map[key]
                 ntuple_saved_events = ntuple_analysis_tree_map[key]
                 row.append(round(ntuple_saved_events/base_events,4))
-                if "976_916" in key:
-                    perc = round(ntuple_saved_events/base_events,4)
-                    print(f"ntuple: {ntuple_saved_events}, base: {base_events}, percent: {perc}")
                 if base_events != ntuple_saved_events and verbose:
                     print(f"{key} missing {ntuple_saved_events/base_events} events")
                 output_data.append(row)
