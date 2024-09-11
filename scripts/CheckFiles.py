@@ -3,7 +3,7 @@
 # Example call of script from SUSYCascades:
 #    python3 scripts/CheckFiles.py -d Summer23_130X/ -o ../../../NTUPLES/Processing/Summer23_130X/ -e -r
 # ------------------------------------------------------------------------------------------------
-import os, argparse, subprocess, itertools
+import os, argparse, subprocess, itertools, ROOT
 USER = os.environ['USER']
 
 def getMissingFiles(outputDir,nSplit,nList):
@@ -16,10 +16,12 @@ def getMissingFiles(outputDir,nSplit,nList):
             baseTupleList.remove(Tuple)
     return baseTupleList
 
-def makeSubmitScript(tuple_pairs,submitName,resubmit,skipClean):
+def makeSubmitScript(tuple_pairs,submitName,resubmit,maxResub,DataSetName):
     tuple_filelist = f"{submitName}_tuple.txt"
+    resubmitFiles = 0
     with open(tuple_filelist,'w') as tuple_file:
         for tuple_pair in tuple_pairs:
+            resubmitFiles = resubmitFiles+1
             tuple_file.write(f"{tuple_pair[0]},{tuple_pair[1]}\n")
     newFileName = f"{submitName}_tuple.submit"
     os.system(f"cp {submitName}_single.submit {newFileName}")
@@ -31,13 +33,33 @@ def makeSubmitScript(tuple_pairs,submitName,resubmit,skipClean):
     file_content = file_content.replace("queue",f"queue list,split from {tuple_filelist}")
     with open(newFileName, 'w') as file:
         file.write(file_content)
+    # Check number of resubmitFiles
     if resubmit:
-        os.system(f"condor_submit {newFileName}")
-    if skipClean:
-        os.system(f"rm {newFileName}")
+        if resubmitFiles > maxResub:
+            print(f"You are about to make {resubmitFiles} and resubmit {resubmitFiles} jobs for dataset: {DataSetName}!")
+            print(f"You should double check there are no issues with your condor submissions.")
+            print(f"If you are confident you want to resubmit, then you should rerun this script with '-l {resubmitFiles}'.")
+        else:
+            os.system(f"condor_submit {newFileName}")
+
+def testRootFile(root_file):
+    status = True
+    try:
+        # Can ignore any message like: ReadStreamerInfo, class:string, illegal uid=-2
+        # https://root-forum.cern.ch/t/readstreamerinfo-illegal-uid-with-newer-root-versions/41073
+        ROOT.gErrorIgnoreLevel = ROOT.kFatal+1
+        root_file_test = ROOT.TFile.Open(root_file);
+        if not root_file_test or root_file_test.IsZombie():
+            status = False
+        if root_file_test.IsOpen():
+            root_file_test.Close()
+    except:
+        status = False
+    return status
+
 
 # Check condor jobs
-def checkJobs(workingDir,outputDir,skipMissing,skipSmall,skipErr,skipOut,resubmit,skipClean,maxResub):
+def checkJobs(workingDir,outputDir,skipMissing,skipSmall,skipErr,skipOut,skipZombie,resubmit,maxResub):
     grep_ignore = "-e \"Warning\" -e \"WARNING\" -e \"TTree::SetBranchStatus\" -e \"libXrdSecztn.so\" -e \"Phi_mpi_pi\" -e \"tar: stdout: write error\" -e \"INFO\" "
     print("Running over the directory '{0}'.".format(workingDir))
     print("------------------------------------------------------------")
@@ -67,7 +89,6 @@ def checkJobs(workingDir,outputDir,skipMissing,skipSmall,skipErr,skipOut,resubmi
             print(f"Got {len(resubmitFiles)} missing files for dataset {DataSetName}")
         if(not skipSmall):
             # define size cutoff using -size: find will get all files below the cutoff
-            #bash = "find "+outputDir+DataSetName+" -type f -size -10k"
             bash = "find "+outputDir+" -type f -size -15k"
             smallFiles = subprocess.check_output(['bash','-c', bash]).decode()
             smallFiles = smallFiles.split("\n")
@@ -101,13 +122,11 @@ def checkJobs(workingDir,outputDir,skipMissing,skipSmall,skipErr,skipOut,resubmi
             bash = "grep -r \"Ntree 0\" "+ workingDir +"/out/"+DataSetName+"/"
             # need try / except to catch subprocess.CalledProcessError for grep returning exit code 1 (no matches)
             try:
-                # print for debugging
-                #print("Try: subprocess.check_output().decode() to grep...")
                 outFiles = subprocess.check_output(['bash','-c',bash]).decode()
                 outFiles = outFiles.split("\n")
                 outFiles.remove('')
             except subprocess.CalledProcessError as e:
-                print("Except: Caught subprocess.CalledProcessError; likely due to grep returning exit code 1 (no matches)!")
+                print("Except: Caught subprocess.CalledProcessError, due to grep returning exit code 1 (no matches)!")
             num_out = 0
             for outFile in outFiles:
                 num_out = num_out+1
@@ -116,14 +135,21 @@ def checkJobs(workingDir,outputDir,skipMissing,skipSmall,skipErr,skipOut,resubmi
                 if Tuple not in resubmitFiles:
                     resubmitFiles.append(Tuple)
             print(f"Got {num_out} out files for dataset",DataSetName)
-        if resubmit:
-            # Check number of resubmitFiles
-            if len(resubmitFiles) > maxResub:
-                print(f"You are about to make {len(resubmitFiles)} and resubmit {len(resubmitFiles)} jobs for dataset: {DataSetName}!")
-                print(f"You should double check there are no issues with your condor submissions.")
-                print(f"If you are confident you want to resubmit, then you should rerun this script with '-l {len(resubmitFiles)}'.")
-            else:
-                makeSubmitScript(resubmitFiles,workingDir+"/src/"+DataSetName,resubmit,skipClean)
+        if(not skipZombie):
+            num_zomb = 0
+            bash = "find "+outputDir+" -type f"
+            zombFiles = subprocess.check_output(['bash','-c', bash]).decode()
+            zombFiles = zombFiles.split("\n")
+            zombFiles.remove('')
+            for zombFile in zombFiles:
+                if testRootFile(zombFile) is True:
+                    continue
+                zombFile = zombFile.split(".root")[0]
+                Tuple = (int(zombFile.split("_")[-2]),int(zombFile.split("_")[-1]))
+                resubmitFiles.append(Tuple)
+                num_zomb = num_zomb+1
+            print(f"Got {num_zomb} zombie root files for dataset",DataSetName)
+        makeSubmitScript(resubmitFiles,workingDir+"/src/"+DataSetName,resubmit,maxResub,DataSetName)
 
 def main():
     # options
@@ -135,7 +161,7 @@ def main():
     parser.add_argument("--skipSmall",      "-s", action='store_true', help="skip checking small files")
     parser.add_argument("--skipErr",        "-e", action='store_true', help="skip checking err files")
     parser.add_argument("--skipOut",        "-u", action='store_true', help="skip checking out files")
-    parser.add_argument("--skipClean",      "-c", action='store_true', help="skip cleaning up new submission files")
+    parser.add_argument("--skipZombie",     "-z", action='store_true', help="skip checking zombie root files")
     parser.add_argument("--maxResub",       "-l", default=100, help="max number of jobs to resubmit")
 
     options     = parser.parse_args()
@@ -146,10 +172,10 @@ def main():
     skipSmall   = options.skipSmall
     skipErr     = options.skipErr
     skipOut     = options.skipOut
-    skipClean   = options.skipClean
+    skipZombie  = options.skipZombie
     maxResub    = int(options.maxResub)
 
-    checkJobs(directory,output,skipMissing,skipSmall,skipErr,skipOut,resubmit,skipClean,maxResub)
+    checkJobs(directory,output,skipMissing,skipSmall,skipErr,skipOut,skipZombie,resubmit,maxResub)
 
 if __name__ == "__main__":
     main()
