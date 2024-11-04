@@ -7,7 +7,11 @@
 # voms-proxy-init --valid 192:00 -voms cms
 # voms-proxy-info
 
-# To run:
+# To run interactively:
+# ./copy_file_list.sh file_list.txt output_dir
+
+# To run using nohup (useful when it takes a long time):
+# nohup ./copy_file_list.sh file_list.txt output_dir > copy_list_001.log 2>&1 & 
 
 # User inputs:
 # - file list
