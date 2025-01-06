@@ -3067,9 +3067,31 @@ int main(int argc, char* argv[]) {
     hist_RISR_MVisSb_S_ISR_Sparticle2->Fill(RISR, MVisSb_S, hweight);
     hist_MVisSa_S_MVisSb_S_ISR_Sparticle2->Fill(MVisSa_S, MVisSb_S, hweight);
 
+
+    TVector3 daBoost = vP_S_CM.Vect().Unit();
+    TVector3 vP_Ja_S0;
+    TVector3 vP_La_S0;
+    TVector3 vP_Lb_S0;
+    TVector3 vP_Ia_S0;
+    TVector3 vP_Ib_S0;
+    vP_Ja_S0.SetPtEtaPhi(vP_Ja_S.Pt(),vP_Ja_S.Eta(),vP_Ja_S.Phi());
+    vP_La_S0.SetPtEtaPhi(vP_La_S.Pt(),vP_La_S.Eta(),vP_La_S.Phi());
+    vP_Lb_S0.SetPtEtaPhi(vP_Lb_S.Pt(),vP_Lb_S.Eta(),vP_Lb_S.Phi());
+    vP_Ia_S0.SetPtEtaPhi(vP_Ia_S.Pt(),vP_Ia_S.Eta(),vP_Ia_S.Phi());
+    vP_Ib_S0.SetPtEtaPhi(vP_Ib_S.Pt(),vP_Ib_S.Eta(),vP_Ib_S.Phi());
+
+    vP_Ja_S0 = vP_Ja_S0 - vP_Ja_S0.Dot(daBoost)*vP_S_CM.Vect();
+    vP_La_S0 = vP_La_S0 - vP_La_S0.Dot(daBoost)*vP_S_CM.Vect();
+    vP_Lb_S0 = vP_Lb_S0 - vP_Lb_S0.Dot(daBoost)*vP_S_CM.Vect();
+    vP_Ia_S0 = vP_Ia_S0 - vP_Ia_S0.Dot(daBoost)*vP_S_CM.Vect();
+    vP_Ib_S0 = vP_Ib_S0 - vP_Ib_S0.Dot(daBoost)*vP_S_CM.Vect();
+
+    double MSperp = (vP_Ja_S0 + vP_La_S0 + vP_Lb_S0 + vP_Ia_S0 + vP_Ib_S0).Mag();
+    hist_MSperp_RISR_ISR_Sparticle2->Fill(MSperp, RISR, hweight);
+
+
     TVector3 boostVis = (vP_Ja_S+vP_La_S+vP_Lb_S).BoostVector();
     TVector3 boostInv = (vP_Ia_S+vP_Ib_S).BoostVector();
-    TVector3 daBoost = vP_S_CM.Vect().Unit();
     boostVis = (boostVis.Dot(daBoost))*daBoost;
     boostInv = (boostInv.Dot(daBoost))*daBoost;
     if((!std::isnan(boostVis.Mag())) &&
@@ -3099,25 +3121,6 @@ int main(int argc, char* argv[]) {
     hist_Mperp_RISR_ISR_Sparticle2->Fill(Mperp, RISR, hweight);
     hist_gammaPerp_RISR_ISR_Sparticle2->Fill(gammaPerp, RISR, hweight);
 
-    TVector3 vP_Ja_S0;
-    TVector3 vP_La_S0;
-    TVector3 vP_Lb_S0;
-    TVector3 vP_Ia_S0;
-    TVector3 vP_Ib_S0;
-    vP_Ja_S0.SetPtEtaPhi(vP_Ja_S0.Pt(),vP_Ja_S0.Eta(),vP_Ja_S0.Phi());
-    vP_La_S0.SetPtEtaPhi(vP_La_S0.Pt(),vP_La_S0.Eta(),vP_La_S0.Phi());
-    vP_Lb_S0.SetPtEtaPhi(vP_Lb_S0.Pt(),vP_Lb_S0.Eta(),vP_Lb_S0.Phi());
-    vP_Ia_S0.SetPtEtaPhi(vP_Ia_S0.Pt(),vP_Ia_S0.Eta(),vP_Ia_S0.Phi());
-    vP_Ib_S0.SetPtEtaPhi(vP_Ib_S0.Pt(),vP_Ib_S0.Eta(),vP_Ib_S0.Phi());
-
-    vP_Ja_S0 = vP_Ja_S0 - vP_Ja_S0.Dot(vP_S_CM.Vect())*daBoost;
-    vP_La_S0 = vP_La_S0 - vP_La_S0.Dot(vP_S_CM.Vect())*daBoost;
-    vP_Lb_S0 = vP_Lb_S0 - vP_Lb_S0.Dot(vP_S_CM.Vect())*daBoost;
-    vP_Ia_S0 = vP_Ia_S0 - vP_Ia_S0.Dot(vP_S_CM.Vect())*daBoost;
-    vP_Ib_S0 = vP_Ib_S0 - vP_Ib_S0.Dot(vP_S_CM.Vect())*daBoost;
-
-    double MSperp = (vP_Ja_S0 + vP_La_S0 + vP_Lb_S0 + vP_Ia_S0 + vP_Ib_S0).Mag();
-    hist_MSperp_RISR_ISR_Sparticle2->Fill(MSperp, RISR, hweight);
 
     // fill original RJR Tree but use candidates and other jets as separate inputs
     // BDT_ISR approach
