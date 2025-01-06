@@ -749,7 +749,7 @@ void ReducedNtuple<Base>::FillOutputTree(TTree* tree, const Systematic& sys, boo
   m_PrefireWeight_up = AnalysisBase<Base>::GetPrefireWeight(1);
   m_PrefireWeight_down = AnalysisBase<Base>::GetPrefireWeight(-1);
   
-  if(std::isnan(ETMiss.Mag())) std::cout << ETMiss.Mag() << std::endl;
+  if(std::isnan(ETMiss.Mag())) return;
   if(ETMiss.Mag() < 10.)
     return;
   

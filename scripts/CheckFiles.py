@@ -4,6 +4,7 @@
 #    python3 scripts/CheckFiles.py -d Summer23_130X/ -o ../../../NTUPLES/Processing/Summer23_130X/ -e -r
 # ------------------------------------------------------------------------------------------------
 import os, argparse, subprocess, itertools, ROOT
+import time
 USER = os.environ['USER']
 
 def getMissingFiles(outputDir,nSplit,nList):
@@ -34,6 +35,7 @@ def makeSubmitScript(tuple_pairs,submitName,resubmit,maxResub,DataSetName):
     with open(newFileName, 'w') as file:
         file.write(file_content)
     # Check number of resubmitFiles
+    print('total resubmit:',resubmitFiles)
     if resubmit:
         if resubmitFiles > maxResub:
             print(f"You are about to make {resubmitFiles} and resubmit {resubmitFiles} jobs for dataset: {DataSetName}!")
@@ -84,12 +86,12 @@ def checkJobs(workingDir,outputDir,skipMissing,skipSmall,skipErr,skipOut,skipZom
             nJobsSubmit = numList*nSplit
             #bash = "ls "+outputDir+DataSetName+" | wc -l"
             #nJobsOutput = int(subprocess.check_output(['bash','-c', bash]).decode())
-            #resubmitFiles = getMissingFiles(outputDir+DataSetName,nSplit,numList)
-            resubmitFiles = getMissingFiles(outputDir,nSplit,numList)
+            resubmitFiles = getMissingFiles(outputDir+'/'+DataSetName,nSplit,numList)
+            #resubmitFiles = getMissingFiles(outputDir,nSplit,numList)
             print(f"Got {len(resubmitFiles)} missing files for dataset {DataSetName}")
         if(not skipSmall):
             # define size cutoff using -size: find will get all files below the cutoff
-            bash = "find "+outputDir+" -type f -size -15k"
+            bash = "find "+outputDir+'/'+DataSetName+" -type f -size -15k"
             smallFiles = subprocess.check_output(['bash','-c', bash]).decode()
             smallFiles = smallFiles.split("\n")
             smallFiles.remove('')
@@ -137,7 +139,7 @@ def checkJobs(workingDir,outputDir,skipMissing,skipSmall,skipErr,skipOut,skipZom
             print(f"Got {num_out} out files for dataset",DataSetName)
         if(not skipZombie):
             num_zomb = 0
-            bash = "find "+outputDir+" -type f"
+            bash = "find "+outputDir+'/'+DataSetName+" -type f"
             zombFiles = subprocess.check_output(['bash','-c', bash]).decode()
             zombFiles = zombFiles.split("\n")
             zombFiles.remove('')
@@ -176,6 +178,8 @@ def main():
     maxResub    = int(options.maxResub)
 
     checkJobs(directory,output,skipMissing,skipSmall,skipErr,skipOut,skipZombie,resubmit,maxResub)
+    time.sleep(5)
+    os.system("condor_qedit $USER RequestCpus=4 && condor_qedit $USER RequestDisk=2000000 && condor_qedit $USER RequestMemory=4000")
 
 if __name__ == "__main__":
     main()

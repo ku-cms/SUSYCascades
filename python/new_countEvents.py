@@ -39,9 +39,10 @@ class EventCount:
         self.analysis_tree      = analysis_tree
 
         self.base_event_count   = base_event_count
-        root_file = "root/EventCount/EventCount_NANO_"+self.base_event_count
-        root_file += ".root"
-        self.base_analysis_tree_map = self.LoadEventCountMap(root_file)
+        if base_event_count != "":
+            root_file = "root/EventCount/EventCount_NANO_"+self.base_event_count
+            root_file += ".root"
+            self.base_analysis_tree_map = self.LoadEventCountMap(root_file)
 
     def LoadEventCountMap(self, root_file):
         try:
@@ -193,6 +194,7 @@ class EventCount:
 
         # count events
         ntuple_analysis_tree_map = {}
+        first_rt_file = root_files[0]
         for root_file in root_files:
             file_analysis_tree_map = self.LoadEventCountMap(root_file)
             if file_analysis_tree_map is None:
@@ -231,6 +233,28 @@ class EventCount:
                 print(" - {0}".format(base_name))
 
         for key in ntuple_analysis_tree_map:
+            if self.base_event_count == "":
+                root_file = first_rt_file
+                try:
+                    # Can ignore any message like: ReadStreamerInfo, class:string, illegal uid=-2
+                    # https://root-forum.cern.ch/t/readstreamerinfo-illegal-uid-with-newer-root-versions/41073
+                    root_file_test = ROOT.TFile.Open(root_file);
+                    if root_file_test.IsOpen():
+                        root_file_test.Close()
+                    if not root_file_test or root_file_test.IsZombie():
+                        print("can't open first root_file {root_file} to get filetag!")
+                except:
+                    print("can't open first root_file {root_file} to get filetag!")
+                tree = "EventCount"
+                chain = ROOT.TChain(tree)
+                chain.Add(root_file)
+                chain.GetEntry(0)
+                self.base_event_count = str(chain.filetag)
+                ec_root_file = "root/EventCount/EventCount_NANO_"+self.base_event_count
+                if sms:
+                    ec_root_file += "_SMS"
+                ec_root_file += ".root"
+                self.base_analysis_tree_map = self.LoadEventCountMap(ec_root_file)
             if key in self.base_analysis_tree_map:
                 row = [self.base_event_count,key]
                 base_events = self.base_analysis_tree_map[key]

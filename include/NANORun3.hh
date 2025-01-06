@@ -205,14 +205,14 @@ public :
    Float_t         GenJet_phi[19];   //[nGenJet]
    Float_t         GenJet_pt[19];   //[nGenJet]
    Int_t           nGenPart;
-   Short_t         GenPart_genPartIdxMother[104];   //[nGenPart]
-   UShort_t        GenPart_statusFlags[104];   //[nGenPart]
-   Int_t           GenPart_pdgId[104];   //[nGenPart]
-   Int_t           GenPart_status[104];   //[nGenPart]
-   Float_t         GenPart_eta[104];   //[nGenPart]
-   Float_t         GenPart_mass[104];   //[nGenPart]
-   Float_t         GenPart_phi[104];   //[nGenPart]
-   Float_t         GenPart_pt[104];   //[nGenPart]
+   Short_t         GenPart_genPartIdxMother[204];   //[nGenPart]
+   UShort_t        GenPart_statusFlags[204];   //[nGenPart]
+   Int_t           GenPart_pdgId[204];   //[nGenPart]
+   Int_t           GenPart_status[204];   //[nGenPart]
+   Float_t         GenPart_eta[204];   //[nGenPart]
+   Float_t         GenPart_mass[204];   //[nGenPart]
+   Float_t         GenPart_phi[204];   //[nGenPart]
+   Float_t         GenPart_pt[204];   //[nGenPart]
    Int_t           nGenProton;
    Bool_t          GenProton_isPU[10];   //[nGenProton]
    Float_t         GenProton_px[10];   //[nGenProton]
@@ -3692,7 +3692,7 @@ inline void NANORun3::Init(TTree *tree)
    /*if (fChain->GetBranch("GenJet_phi")) */ fChain->SetBranchAddress("GenJet_phi", &GenJet_phi, &b_GenJet_phi);
    /*if (fChain->GetBranch("GenJet_pt")) */ fChain->SetBranchAddress("GenJet_pt", &GenJet_pt, &b_GenJet_pt);
    /*if (fChain->GetBranch("nGenPart")) */ fChain->SetBranchAddress("nGenPart", &nGenPart, &b_nGenPart);
-   /*if (fChain->GetBranch("GenPart_genPartIdxMother")) */ fChain->SetBranchAddress("GenPart_genPartIdxMother", &GenPart_genPartIdxMother, &b_GenPart_genPartIdxMother);
+   fChain->SetBranchAddress("GenPart_genPartIdxMother", &GenPart_genPartIdxMother, &b_GenPart_genPartIdxMother);
    /*if (fChain->GetBranch("GenPart_statusFlags")) */ fChain->SetBranchAddress("GenPart_statusFlags", &GenPart_statusFlags, &b_GenPart_statusFlags);
    /*if (fChain->GetBranch("GenPart_pdgId")) */ fChain->SetBranchAddress("GenPart_pdgId", &GenPart_pdgId, &b_GenPart_pdgId);
    /*if (fChain->GetBranch("GenPart_status")) */ fChain->SetBranchAddress("GenPart_status", &GenPart_status, &b_GenPart_status);

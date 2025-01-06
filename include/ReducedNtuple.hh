@@ -16,7 +16,7 @@ public:
   virtual ~ReducedNtuple();
 
 private:
-  const static int m_aTrees=4; // Number of RJR analysis trees
+  const static int m_aTrees=1; // Number of RJR analysis trees
   vector<bool> m_treeSkipped;
   bool m_library_generated;
   TTree* InitOutputTree(const string& sample, bool do_slim = false);

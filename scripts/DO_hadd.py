@@ -55,6 +55,7 @@ def main():
 
     skip_list = [
         #"SMS-T2tt_mStop-400to1200_TuneCP2_13TeV-madgraphMLM-pythia8",
+        #"SMS-T2bW_X05_dM-10to80_genHT-160_genMET-80_mWMin-0p1_TuneCP2_13TeV-madgraphMLM-pythia8",
     ]
     redo_list = [
         #"TTZToLLNuNu_M-10_TuneCP5_13TeV-amcatnlo-pythia8_Fall17_102X",
@@ -62,10 +63,10 @@ def main():
         #"TTTT_TuneCP5_PSweights_13TeV-amcatnlo-pythia8_Fall17_102X",
     ]
 
-    #if os.path.exists("scripts/startup_C.so") is False:
-    #    os.system("cd scripts && root.exe -b -l -q startup.C+ && cd ..")
+    if os.path.exists("scripts/startup_C.so") is False:
+        os.system("cd scripts && root.exe -b -l -q startup.C+ && cd ..")
 
-    #os.environ["LD_PRELOAD"] = os.environ["PWD"]+"/scripts/startup_C.so"
+    os.environ["LD_PRELOAD"] = os.environ["PWD"]+"/scripts/startup_C.so"
     hadd_big_processes = {}
     for target in os.listdir(IN_DIR):
         skip = False
@@ -81,26 +82,22 @@ def main():
             continue
 
         print(f"Target: {target}")
-        #haddcmd = "hadd -f "+OUT_DIR+"/"+target+".root "
-        #for i in range(0,10):
-            #os.system("mkdir -p "+IN_DIR+"/"+target+"/"+target+"_"+str(i))
-            #os.system("mv "+IN_DIR+"/"+target+"/"+target+"_*"+str(i)+".root "+IN_DIR+"/"+target+"/"+target+"_"+str(i))
-            #os.system("LD_PRELOAD=scripts/startup_C.so hadd -f -j 4 "+IN_DIR+"/"+target+"/"+target+"_"+str(i)+".root "+IN_DIR+"/"+target+"/"+target+"_"+str(i)+"/*.root")
-
         hadd_sml_processes = []
         if os.path.exists("HADD_logs/"+target) is True:
             os.system("rm -r HADD_logs/"+target)
         os.system("mkdir -p HADD_logs/"+target)
+        os.system(f"mkdir -p {OUT_DIR}/{target}")
         for i in range(0,10):
-            os.system("mkdir -p "+IN_DIR+"/"+target+"/"+target+"_"+str(i))
+            os.system("mkdir -p "+OUT_DIR+"/"+target+"/"+target+"_"+str(i))
             for f in glob(os.path.join(IN_DIR+"/"+target+"/"+target+"_*"+str(i)+".root")):
-                os.system("mv "+f+" "+IN_DIR+"/"+target+"/"+target+"_"+str(i)+"/") 
+                #os.system("mv "+f+" "+OUT_DIR+"/"+target+"/"+target+"_"+str(i)+"/") 
+                os.system("cp "+f+" "+OUT_DIR+"/"+target+"/"+target+"_"+str(i)+"/") 
             if SKIP_BAD_FILES:
-                # Use "hadd -j 8 -f -k ":
-                hadd_sml_processes.append(pop("hadd -j 8 -f -k "+IN_DIR+"/"+target+"/"+target+"_"+str(i)+".root "+IN_DIR+"/"+target+"/"+target+"_"+str(i)+"/*.root",stdout=subprocess.PIPE,stderr=subprocess.PIPE,shell=True))
+                # Use "hadd -f -k ":
+                hadd_sml_processes.append(pop("hadd -f -k -j 8 "+OUT_DIR+"/"+target+"/"+target+"_"+str(i)+".root "+OUT_DIR+"/"+target+"/"+target+"_"+str(i)+"/*.root",stdout=subprocess.PIPE,stderr=subprocess.PIPE,shell=True))
             else:
-                # Use "hadd -j 8 -f ":
-                hadd_sml_processes.append(pop("hadd -j 8 -f "+IN_DIR+"/"+target+"/"+target+"_"+str(i)+".root "+IN_DIR+"/"+target+"/"+target+"_"+str(i)+"/*.root",stdout=subprocess.PIPE,stderr=subprocess.PIPE,shell=True))
+                # Use "hadd -f ":
+                hadd_sml_processes.append(pop("hadd -f "+OUT_DIR+"/"+target+"/"+target+"_"+str(i)+".root "+OUT_DIR+"/"+target+"/"+target+"_"+str(i)+"/*.root",stdout=subprocess.PIPE,stderr=subprocess.PIPE,shell=True))
 
         for hadd_sml in hadd_sml_processes:
             if hadd_sml.poll() is True:
@@ -110,46 +107,44 @@ def main():
                 err_log = open("HADD_logs/"+"/"+target+"/"+target+"_"+str(i)+".err","a")
                 err_log.write(str(err))
                 err_log.close()
-        os.system(f"mkdir -p {OUT_DIR}/{target}")
-        os.system(f"mv {IN_DIR}/{target}/{target}_*.root {OUT_DIR}/{target}/")
 
-    #    if len(hadd_big_processes) >= 10:
-    #        for target, hadd_big in hadd_big_processes.items():
-    #            if hadd_big.poll() is not None:
-    #                hadd_big.wait()
-    #                out,err = hadd_big.communicate()
-    #                if err != "":
-    #                    print("Outputting error to: HADD_logs/"+"/"+target+".err")
-    #                    err_log = open("HADD_logs/"+"/"+target+".err","a")
-    #                    err_log.write(err)
-    #                    err_log.close()
-    #                del hadd_big_processes[target]
-    #            elif len(hadd_big_processes) < 10:
-    #                tmp_pop = pop("hadd -f "+OUT_DIR+"/"+target+".root "+IN_DIR+"/"+target+"/*.root",stdout=subprocess.PIPE,stderr=subprocess.PIPE,shell=True)
-    #                hadd_big_processes[str(target)] = tmp_pop
-    #        
-    #    else:
-    #        tmp_pop = pop("hadd -f "+OUT_DIR+"/"+target+".root "+IN_DIR+"/"+target+"/*.root",stdout=subprocess.PIPE,stderr=subprocess.PIPE,shell=True)
-    #        hadd_big_processes[str(target)] = tmp_pop
+        if len(hadd_big_processes) >= 10:
+            for target, hadd_big in hadd_big_processes.items():
+                if hadd_big.poll() is not None:
+                    hadd_big.wait()
+                    out,err = hadd_big.communicate()
+                    if err != "":
+                        print("Outputting error to: HADD_logs/"+"/"+target+".err")
+                        err_log = open("HADD_logs/"+"/"+target+".err","a")
+                        err_log.write(err)
+                        err_log.close()
+                    del hadd_big_processes[target]
+                elif len(hadd_big_processes) < 10:
+                    tmp_pop = pop("hadd -f "+OUT_DIR+"/"+target+".root "+OUT_DIR+"/"+target+"/*.root",stdout=subprocess.PIPE,stderr=subprocess.PIPE,shell=True)
+                    hadd_big_processes[str(target)] = tmp_pop
+            
+        else:
+            tmp_pop = pop("hadd -f "+OUT_DIR+"/"+target+".root "+OUT_DIR+"/"+target+"/*.root",stdout=subprocess.PIPE,stderr=subprocess.PIPE,shell=True)
+            hadd_big_processes[str(target)] = tmp_pop
         
 
-    #for target, hadd_big in hadd_big_processes.items():
-    #    if hadd_big.poll() is not None:
-    #        print("Waiting on big hadd job")
-    #        hadd_big.wait()
-    #        out,err = hadd_big.communicate()
-    #        if err != "":
-    #            print("Outputting error to: HADD_logs/"+"/"+target+".err")
-    #            err_log = open("HADD_logs/"+"/"+target+".err","a")
-    #            err_log.write(err)
-    #            err_log.close()
-    #        if hadd_big.poll() is None:
-    #            #hadd_big_processes.pop(target,None)
-    #            del hadd_big_processes[target]
-    #if len(hadd_big_processes) == 0:
-    #    print("Finished Merging Files")
-    #else:
-    #    print("Note: "+str(len(hadd_big_processes))+" hadd jobs may still be running!")
+    for target, hadd_big in hadd_big_processes.items():
+        if hadd_big.poll() is not None:
+            print("Waiting on big hadd job")
+            hadd_big.wait()
+            out,err = hadd_big.communicate()
+            if err != "":
+                print("Outputting error to: HADD_logs/"+"/"+target+".err")
+                err_log = open("HADD_logs/"+"/"+target+".err","a")
+                err_log.write(err)
+                err_log.close()
+            if hadd_big.poll() is None:
+                #hadd_big_processes.pop(target,None)
+                del hadd_big_processes[target]
+    if len(hadd_big_processes) == 0:
+        print("Finished Merging Files")
+    else:
+        print("Note: "+str(len(hadd_big_processes))+" hadd jobs may still be running!")
     
     print("------------------------------")
     # end time

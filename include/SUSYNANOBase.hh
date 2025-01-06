@@ -18,7 +18,7 @@ class SUSYNANOBase {
 public :
   TTree          *fChain;   //!pointer to the analyzed TTree or TChain
   Int_t           fCurrent; //!current Tree number in a TChain
-
+  bool            m_Run3;
   // Fixed size dimensions of array or collections stored in the TTree if any.
 
   // Declaration of leaf types
@@ -114,6 +114,7 @@ public :
   Bool_t          Electron_mvaSpring16GP_WP80[25];   //[nElectron]
   Bool_t          Electron_mvaSpring16GP_WP90[25];   //[nElectron]
   Bool_t          Electron_mvaSpring16HZZ_WPL[25];   //[nElectron]
+  Bool_t          Electron_mvaNoIso_WP80[25];   //[nElectron]
   UInt_t          nFatJet;
   Float_t         FatJet_area[20];   //[nFatJet]
   Float_t         FatJet_btagCMVA[20];   //[nFatJet]
@@ -164,6 +165,7 @@ public :
   Float_t         GenPart_phi[400];   //[nGenPart]
   Float_t         GenPart_pt[400];   //[nGenPart]
   Int_t           GenPart_genPartIdxMother[400];   //[nGenPart]
+  Short_t         Run3GenPart_genPartIdxMother[400];   //[nGenPart]
   Int_t           GenPart_pdgId[400];   //[nGenPart]
   Int_t           GenPart_status[400];   //[nGenPart]
   Int_t           GenPart_statusFlags[400];   //[nGenPart]
@@ -259,6 +261,7 @@ public :
   Int_t           Jet_electronIdx1[80];   //[nJet]
   Int_t           Jet_electronIdx2[80];   //[nJet]
   Int_t           Jet_jetId[80];   //[nJet]
+  UChar_t         Run3Jet_jetId[80];   //[nJet]
   Int_t           Jet_muonIdx1[80];   //[nJet]
   Int_t           Jet_muonIdx2[80];   //[nJet]
   Int_t           Jet_nConstituents[80];   //[nJet]
@@ -508,6 +511,7 @@ public :
   Int_t           Jet_genJetIdx[80];   //[nJet]
   Int_t           Jet_hadronFlavour[80];   //[nJet]
   Int_t           Jet_partonFlavour[80];   //[nJet]
+  Short_t         Run3Jet_partonFlavour[80];   //[nJet]
   Int_t           Muon_genPartIdx[20];   //[nMuon]
   UChar_t         Muon_genPartFlav[20];   //[nMuon]
   Int_t           Photon_genPartIdx[40];   //[nPhoton]
@@ -1284,6 +1288,7 @@ public :
   TBranch        *b_Electron_mvaSpring16GP_WP80;   //!
   TBranch        *b_Electron_mvaSpring16GP_WP90;   //!
   TBranch        *b_Electron_mvaSpring16HZZ_WPL;   //!
+  TBranch        *b_Electron_mvaNoIso_WP80;   //!
   TBranch        *b_nFatJet;   //!
   TBranch        *b_FatJet_area;   //!
   TBranch        *b_FatJet_btagCMVA;   //!
@@ -2354,7 +2359,7 @@ public :
   TBranch        *b_HLT_PFMETNoMu130_PFMHTNoMu130_IDTight;   //!
   TBranch        *b_HLT_PFMETNoMu140_PFMHTNoMu140_IDTight;   //!
 
-  SUSYNANOBase(TTree *tree=0);
+  SUSYNANOBase(TTree *tree=0, bool Run3 = false);
   virtual ~SUSYNANOBase();
   virtual Int_t    Cut(Long64_t entry);
   virtual Int_t    GetEntry(Long64_t entry);
@@ -2367,7 +2372,7 @@ public :
 
 #endif
 
-inline SUSYNANOBase::SUSYNANOBase(TTree *tree) : fChain(0) 
+inline SUSYNANOBase::SUSYNANOBase(TTree *tree, bool Run3) : fChain(0) 
 {
   // if parameter tree is not specified (or zero), connect the file
   // used to generate this class and read the Tree.
@@ -2379,6 +2384,7 @@ inline SUSYNANOBase::SUSYNANOBase(TTree *tree) : fChain(0)
     f->GetObject("Events",tree);
 
   }
+  m_Run3 = Run3;
   Init(tree);
 }
 
@@ -2515,6 +2521,7 @@ inline void SUSYNANOBase::Init(TTree *tree)
   fChain->SetBranchAddress("Electron_mvaSpring16GP_WP80", Electron_mvaSpring16GP_WP80, &b_Electron_mvaSpring16GP_WP80);
   fChain->SetBranchAddress("Electron_mvaSpring16GP_WP90", Electron_mvaSpring16GP_WP90, &b_Electron_mvaSpring16GP_WP90);
   fChain->SetBranchAddress("Electron_mvaSpring16HZZ_WPL", Electron_mvaSpring16HZZ_WPL, &b_Electron_mvaSpring16HZZ_WPL);
+  fChain->SetBranchAddress("Electron_mvaNoIso_WP80", Electron_mvaNoIso_WP80, &b_Electron_mvaNoIso_WP80);
   fChain->SetBranchAddress("nFatJet", &nFatJet, &b_nFatJet);
   fChain->SetBranchAddress("FatJet_area", FatJet_area, &b_FatJet_area);
   fChain->SetBranchAddress("FatJet_btagCMVA", FatJet_btagCMVA, &b_FatJet_btagCMVA);
@@ -2564,7 +2571,8 @@ inline void SUSYNANOBase::Init(TTree *tree)
   fChain->SetBranchAddress("GenPart_mass", GenPart_mass, &b_GenPart_mass);
   fChain->SetBranchAddress("GenPart_phi", GenPart_phi, &b_GenPart_phi);
   fChain->SetBranchAddress("GenPart_pt", GenPart_pt, &b_GenPart_pt);
-  fChain->SetBranchAddress("GenPart_genPartIdxMother", GenPart_genPartIdxMother, &b_GenPart_genPartIdxMother);
+  if(m_Run3) fChain->SetBranchAddress("GenPart_genPartIdxMother", Run3GenPart_genPartIdxMother, &b_GenPart_genPartIdxMother);
+  else fChain->SetBranchAddress("GenPart_genPartIdxMother", GenPart_genPartIdxMother, &b_GenPart_genPartIdxMother);
   fChain->SetBranchAddress("GenPart_pdgId", GenPart_pdgId, &b_GenPart_pdgId);
   fChain->SetBranchAddress("GenPart_status", GenPart_status, &b_GenPart_status);
   fChain->SetBranchAddress("GenPart_statusFlags", GenPart_statusFlags, &b_GenPart_statusFlags);
@@ -2659,7 +2667,8 @@ inline void SUSYNANOBase::Init(TTree *tree)
   fChain->SetBranchAddress("Jet_bRegRes", Jet_bRegRes, &b_Jet_bRegRes);
   fChain->SetBranchAddress("Jet_electronIdx1", Jet_electronIdx1, &b_Jet_electronIdx1);
   fChain->SetBranchAddress("Jet_electronIdx2", Jet_electronIdx2, &b_Jet_electronIdx2);
-  fChain->SetBranchAddress("Jet_jetId", Jet_jetId, &b_Jet_jetId);
+  if(m_Run3) fChain->SetBranchAddress("Jet_jetId", Run3Jet_jetId, &b_Jet_jetId);
+  else fChain->SetBranchAddress("Jet_jetId", Jet_jetId, &b_Jet_jetId);
   fChain->SetBranchAddress("Jet_muonIdx1", Jet_muonIdx1, &b_Jet_muonIdx1);
   fChain->SetBranchAddress("Jet_muonIdx2", Jet_muonIdx2, &b_Jet_muonIdx2);
   fChain->SetBranchAddress("Jet_nConstituents", Jet_nConstituents, &b_Jet_nConstituents);
@@ -2906,7 +2915,8 @@ inline void SUSYNANOBase::Init(TTree *tree)
   fChain->SetBranchAddress("GenJet_hadronFlavour", GenJet_hadronFlavour, &b_GenJet_hadronFlavour);
   fChain->SetBranchAddress("Jet_genJetIdx", Jet_genJetIdx, &b_Jet_genJetIdx);
   fChain->SetBranchAddress("Jet_hadronFlavour", Jet_hadronFlavour, &b_Jet_hadronFlavour);
-  fChain->SetBranchAddress("Jet_partonFlavour", Jet_partonFlavour, &b_Jet_partonFlavour);
+  if(m_Run3) fChain->SetBranchAddress("Jet_partonFlavour", Jet_partonFlavour, &b_Jet_partonFlavour);
+  else fChain->SetBranchAddress("Jet_partonFlavour", Jet_partonFlavour, &b_Jet_partonFlavour);
   fChain->SetBranchAddress("Muon_genPartIdx", Muon_genPartIdx, &b_Muon_genPartIdx);
   fChain->SetBranchAddress("Muon_genPartFlav", Muon_genPartFlav, &b_Muon_genPartFlav);
   fChain->SetBranchAddress("Photon_genPartIdx", Photon_genPartIdx, &b_Photon_genPartIdx);
