@@ -59,7 +59,8 @@ void Plot_Eff(TEfficiency* e);
 
 void PlotCondor_Cands_Plot_1D_NANO(){
   cout << "RUNNING PLOTTER..." << endl;
-  bool condor = true;
+  bool condor = false;
+  bool hadd = false;
   if(condor){
     cout << "Attempting to hold any running jobs to help prevent file corruption" << endl;
     gSystem->Exec("condor_hold $USER");
@@ -79,7 +80,8 @@ void PlotCondor_Cands_Plot_1D_NANO(){
   string base_output = "output_Plot_1D_NANO";
 
   vector<string> extra_tags = {
-    "_Sparticle2_genlep_recolep2_MET100_PTISR200_RISR0p5",
+    "_Sparticle2_genlep_minRecoLep2_MET100_PTISR200_RISR0p5",
+    "_Sparticle2_genlep_minRecoLep2_minSjet2_MET100_PTISR200_RISR0p5",
   };
 
   std::map<string,double> ttbar_procs_2017 = {
@@ -180,10 +182,12 @@ void PlotCondor_Cands_Plot_1D_NANO(){
     {"Summer23BPix_130X",bkg_datasets_2023_BPix},
   };
 
+
   for(int tag_i = 0; tag_i < int(extra_tags.size()); tag_i++){
     string extra_tag = extra_tags[tag_i];
     string path_to_inputfiles = "/home/zflowers/CMSSW_13_3_1/src/SUSYCascades/SubmitCondor_Plot_1D_NANO"+extra_tag+"/";
     output_root_file = base_output+extra_tag+".root";
+    TH2D* hist_EventCount = new TH2D("EventCount", "EventCount;Category;Process", 12, 0., 12., 12, 0., 12.);
     for(std::map<string,vector<std::map<string,std::map<string,double>>>>::iterator iter0 = filetags.begin(); iter0 != filetags.end(); ++iter0){
       string filetag = iter0->first;
       vector<std::map<string,std::map<string,double>>> datasets = iter0->second;
@@ -196,7 +200,7 @@ void PlotCondor_Cands_Plot_1D_NANO(){
             string proc = iter3->first;
             double SF = iter3->second;
             string hadd_cmd = "hadd -k -f -v 0 "+path_to_inputfiles+base_output+"_"+filetag+"_"+dataset_name+"_"+proc+".root "+path_to_inputfiles+"root/"+base_output+"_"+filetag+"_"+dataset_name+"_"+proc+"_*.root";
-            gSystem->Exec(hadd_cmd.c_str());
+            if(hadd) gSystem->Exec(hadd_cmd.c_str());
             string inputRootFileName = path_to_inputfiles+base_output+"_"+filetag+"_"+dataset_name+"_"+proc+".root";
             vector<string> dirs = get_dirs(inputRootFileName.c_str());
             for(int d = 0; d < int(dirs.size()); d++){
@@ -217,6 +221,7 @@ void PlotCondor_Cands_Plot_1D_NANO(){
               string num_info_filename = plot_folder+"/num_info";
               for(int hist1 = 0; hist1 < int(hists1.size()); hist1++){
                 string h_name = hists1[hist1]->GetName();
+                if(h_name.find("EventCount") != std::string::npos) {hist_EventCount->Add(hists1[hist1]); continue;}
                 if(h_name.find("_Count") != std::string::npos)
                   hCount_to_text(proc, hists1[hist1], num_info_filename);
                 else
@@ -231,6 +236,31 @@ void PlotCondor_Cands_Plot_1D_NANO(){
         } // for(vector<std::map<string,std::map<string,std::map<string,double>>>>::iterator iter2 = datasets[iter1].begin(); iter2 != datasets[iter1].end(); ++iter2){
       } // for(int iter1 = 0; iter1 < int(datasets.size()); iter1++){
     } //for(std::map<string,vector<std::map<string,std::map<string,std::map<string,double>>>>>::iterator iter0 = filetags.begin(); iter0 != filetags.end(); ++iter0){
+
+    int min_Nleps = 2;
+    int max_Nleps = 4; // >=
+    int min_Njets_S = 0;
+    int max_Njets_S = 2; // >=
+    int bin = 1;
+    for(int l = min_Nleps; l <= max_Nleps; l++){
+      for(int j = min_Njets_S; j <= max_Njets_S; j++){
+        hist_EventCount->GetXaxis()->SetBinLabel(bin, (std::to_string(l)+"L "+std::to_string(j)+"J").c_str());
+        bin++;
+      }
+    }
+    hist_EventCount->GetYaxis()->SetBinLabel(1, "ttbar");
+    hist_EventCount->GetYaxis()->SetBinLabel(2, "DB");
+    int DM = 5;
+    int lastbkg = 2;
+    for(int i = 0; i < 3; i++){
+      hist_EventCount->GetYaxis()->SetBinLabel(lastbkg+1, ("Cascades #tilde{#nu} #tilde{#nu} "+std::to_string(DM)).c_str());
+      hist_EventCount->GetYaxis()->SetBinLabel(lastbkg+2, ("Cascades #tilde{#it{l}} #tilde{#nu} "+std::to_string(DM)).c_str());
+      hist_EventCount->GetYaxis()->SetBinLabel(lastbkg+3, ("Cascades #tilde{#it{l}} #tilde{#it{l}} "+std::to_string(DM)).c_str());
+      DM *= 2;
+      lastbkg += 3;
+    }
+    
+    Plot_Hist(hist_EventCount, false, 1.);
   } // for(int tag_i = 0; tag_i < int(extra_tags.size()); tag_i++)
   if(condor){
     cout << "Releasing previously held jobs" << endl;
@@ -409,7 +439,8 @@ void Plot_Hist(TH1* h, bool Scale, double Scale_Val){
   can->SetGridy();
   can->Draw();
   can->cd();
-  h->Draw("HIST");
+  if(title.find("EventCount") != std::string::npos) h->Draw("TEXT");
+  else h->Draw("HIST");
   h->GetXaxis()->CenterTitle();
   h->GetXaxis()->SetTitleFont(42);
   h->GetXaxis()->SetTitleSize(0.06);

@@ -51,7 +51,8 @@ int main(int argc, char* argv[]) {
       otag = "_"+string(argv[i]);
     }
     if(strncmp(argv[i],"--split",7) == 0){
-      sscanf(argv[i],"--split=%d", &split);
+      i++;
+      sscanf(argv[i],"%d", &split);
     }
     if(strncmp(argv[i],"--dry-run",9) == 0){
       dryrun = true;
@@ -131,15 +132,15 @@ int main(int argc, char* argv[]) {
 
   std::map<string,std::map<string,long double>> datasets_2017 = {
     {"ttbar",TTJets_dataset_list_2017},
-    {"TTZToQQ",TTZToQQ_dataset_list_2017},
+    //{"TTZToQQ",TTZToQQ_dataset_list_2017},
     {"DB_WZ",WZ_dataset_list_2017},
-    {"TB_WWZ",WWZ_dataset_list_2017},
+    //{"TB_WWZ",WWZ_dataset_list_2017},
   };
 
   std::map<string,std::map<string,long double>> datasets_2017_SMS = {
     {"TChiWZ_20",TChiWZ_3_50_dataset_list_2017},
     {"TChiWZ_50",TChiWZ_3_50_dataset_list_2017},
-    {"TChiWZ_90",TChiWZ_60_90_dataset_list_2017},
+    //{"TChiWZ_90",TChiWZ_60_90_dataset_list_2017},
   };
   std::map<string,std::map<string,long double>> datasets_2023_BPix_SMS = {
     {"Cascades_20",Cascades_20_dataset_list_2023BPix},

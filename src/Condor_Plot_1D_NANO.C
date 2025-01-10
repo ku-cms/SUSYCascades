@@ -61,7 +61,8 @@ int main(int argc, char* argv[]) {
   bool use_gen_jets = false;
   bool boson_acceptance_cut = false;
   bool gen_lepton_cut = false;
-  int reco_lep_cut = 0;
+  int min_lep_cut = -1;
+  int max_lep_cut = -1;
   int min_Sjet = -1;
   int max_Sjet = -1;
   int min_La = -1;
@@ -209,10 +210,15 @@ int main(int argc, char* argv[]) {
       HEM = true;
       if(debug) cout << "Forcing hemisphere split in S system" << endl;
     }
-    if(strncmp(argv[i],"--reco_lep_cut", 14) == 0){
+    if(strncmp(argv[i],"--min_lep_cut", 13) == 0){
       i++;
-      sscanf(argv[i],"%d,%d", &reco_lep_cut);
-      if(debug) cout << "Requiring " << reco_lep_cut << " reco leps" << endl;
+      sscanf(argv[i],"%d,%d", &min_lep_cut);
+      if(debug) cout << "Requiring min " << min_lep_cut << " reco leps" << endl;
+    }
+    if(strncmp(argv[i],"--max_lep_cut", 13) == 0){
+      i++;
+      sscanf(argv[i],"%d,%d", &max_lep_cut);
+      if(debug) cout << "Requiring max " << max_lep_cut << " reco leps" << endl;
     }
     if(strncmp(argv[i],"--min_Sjet", 10) == 0){
       i++;
@@ -655,22 +661,20 @@ int main(int argc, char* argv[]) {
 
   CombinatoricGroup COMB_J_ISR_Sparticle2("COMB_J_ISR_Sparticle2", "Combinatoric System of Jets");
   MinMassesSqCombJigsaw CombSplitSq_J_ISR_Sparticle2_Transverse("CombSplitSq_ISR", "Minimize M_{T}_{ISR}^{2} + M_{T}_{S}^{2}",2,2);
-  MinMassesSqCombJigsaw CombSplitSq_JS_ISR_Sparticle2_Transverse("CombSplitSq_S", "Minimize M_{T}_{Va}^{2} + M_{T}_{Vb}^{2}",2,2);
   
   CombinatoricGroup COMB_L_ISR_Sparticle2("COMB_L_ISR_Sparticle2", "Combinatoric System of Leps");
-  MinMassesSqCombJigsaw CombSplitSq_L_ISR_Sparticle2_Transverse("CombSplitSq_L_ISR_Sparticle2", "Minimize M_{T}_{Va}^{2} + M_{T}_{Vb}^{2}",2,2);
+  MinMassesSqCombJigsaw CombSplitSq_L_ISR_Sparticle2("CombSplitSq_L_ISR_Sparticle2", "Minimize M_{Va}^{2} + M_{Vb}^{2}",2,2);
 
   COMB_L_ISR_Sparticle2.AddFrame(L_X2a_ISR_Sparticle2);
   COMB_L_ISR_Sparticle2.SetNElementsForFrame(L_X2a_ISR_Sparticle2, 0);
   COMB_L_ISR_Sparticle2.AddFrame(L_X2b_ISR_Sparticle2);
   COMB_L_ISR_Sparticle2.SetNElementsForFrame(L_X2b_ISR_Sparticle2, 0);
           
-  COMB_L_ISR_Sparticle2.AddJigsaw(CombSplitSq_L_ISR_Sparticle2_Transverse);
-  CombSplitSq_L_ISR_Sparticle2_Transverse.SetTransverse();
-  CombSplitSq_L_ISR_Sparticle2_Transverse.AddCombFrame(L_X2a_ISR_Sparticle2, 0);
-  CombSplitSq_L_ISR_Sparticle2_Transverse.AddCombFrame(L_X2b_ISR_Sparticle2, 1);
-  CombSplitSq_L_ISR_Sparticle2_Transverse.AddObjectFrame(X2a_ISR_Sparticle2, 0);
-  CombSplitSq_L_ISR_Sparticle2_Transverse.AddObjectFrame(X2b_ISR_Sparticle2, 1);
+  COMB_L_ISR_Sparticle2.AddJigsaw(CombSplitSq_L_ISR_Sparticle2);
+  CombSplitSq_L_ISR_Sparticle2.AddCombFrame(L_X2a_ISR_Sparticle2, 0);
+  CombSplitSq_L_ISR_Sparticle2.AddCombFrame(L_X2b_ISR_Sparticle2, 1);
+  CombSplitSq_L_ISR_Sparticle2.AddObjectFrames(X2a_ISR_Sparticle2.GetListVisibleFrames(), 0);
+  CombSplitSq_L_ISR_Sparticle2.AddObjectFrames(X2b_ISR_Sparticle2.GetListVisibleFrames(), 1);
         
   COMB_J_ISR_Sparticle2.AddFrame(ISR_ISR_Sparticle2);
   COMB_J_ISR_Sparticle2.SetNElementsForFrame(ISR_ISR_Sparticle2, 1);
@@ -1464,57 +1468,86 @@ int main(int argc, char* argv[]) {
 
   // Sparticle2 KIN Plots
   TH2D* hist_RISR_PTISR_ISR_Sparticle2 = new TH2D((title+"_RISR_PTISR_ISR_Sparticle2").c_str(), (title+"_RISR_PTISR_ISR_Sparticle2;RISR;PTISR").c_str(), g_NX/2., 0., 1., g_NX/2., 0., 800.);
-  if(Sparticle2) hists2.push_back(hist_RISR_PTISR_ISR_Sparticle2);
+  //if(Sparticle2) hists2.push_back(hist_RISR_PTISR_ISR_Sparticle2);
   TH2D* hist_dphiCMI_PTCM_ISR_Sparticle2 = new TH2D((title+"_dphiCMI_PTCM_ISR_Sparticle2").c_str(), (title+"_dphiCMI_PTCM_ISR_Sparticle2;dphiCMI;PTCM").c_str(), g_NX/2., 0., 3.15, g_NX/2., 0., 500.);
-  if(Sparticle2) hists2.push_back(hist_dphiCMI_PTCM_ISR_Sparticle2);
+  //if(Sparticle2) hists2.push_back(hist_dphiCMI_PTCM_ISR_Sparticle2);
   TH2D* hist_dphiMETV_PTISR_ISR_Sparticle2 = new TH2D((title+"_dphiMETV_PTISR_ISR_Sparticle2").c_str(), (title+"_dphiMETV_PTISR_ISR_Sparticle2;dphiMETV;PTISR").c_str(), g_NX/2., 0., 3.15, g_NX/2., 200., 800.);
-  if(Sparticle2) hists2.push_back(hist_dphiMETV_PTISR_ISR_Sparticle2);
+  //if(Sparticle2) hists2.push_back(hist_dphiMETV_PTISR_ISR_Sparticle2);
   TH2D* hist_gammaPerp_RISR_ISR_Sparticle2 = new TH2D((title+"_gammaPerp_RISR_ISR_Sparticle2").c_str(), (title+"_gammaPerp_RISR_ISR_Sparticle2;#gamma_{#perp};RISR").c_str(), g_NX/2., 0., 1., g_NX/2., 0.5, 1.);
-  if(Sparticle2) hists2.push_back(hist_gammaPerp_RISR_ISR_Sparticle2);
+  //if(Sparticle2) hists2.push_back(hist_gammaPerp_RISR_ISR_Sparticle2);
   TH2D* hist_Mperp_RISR_ISR_Sparticle2 = new TH2D((title+"_Mperp_RISR_ISR_Sparticle2").c_str(), (title+"_Mperp_RISR_ISR_Sparticle2;M_{#perp};RISR").c_str(), g_NX/2., 0., 100., g_NX/2., 0.5, 1.);
-  if(Sparticle2) hists2.push_back(hist_Mperp_RISR_ISR_Sparticle2);
+  //if(Sparticle2) hists2.push_back(hist_Mperp_RISR_ISR_Sparticle2);
   TH2D* hist_RISR_mll_ISR_Sparticle2 = new TH2D((title+"_RISR_mll_ISR_Sparticle2").c_str(), (title+"_RISR_mll_ISR_Sparticle2;RISR;m_{ll}").c_str(), g_NX/2., 0.5, 1., g_NX/2., 0., 150.);
-  if(Sparticle2) hists2.push_back(hist_RISR_mll_ISR_Sparticle2);
+  //if(Sparticle2) hists2.push_back(hist_RISR_mll_ISR_Sparticle2);
   TH2D* hist_RISR_mllHEM_ISR_Sparticle2 = new TH2D((title+"_RISR_mllHEM_ISR_Sparticle2").c_str(), (title+"_RISR_mllHEM_ISR_Sparticle2;RISR;m_{ll}HEM").c_str(), g_NX/2., 0.5, 1., g_NX/2., 0., 150.); // invariant mass of leps in same hemisphere
-  if(Sparticle2) hists2.push_back(hist_RISR_mllHEM_ISR_Sparticle2);
+  //if(Sparticle2) hists2.push_back(hist_RISR_mllHEM_ISR_Sparticle2);
   TH2D* hist_RISR_mSJ_ISR_Sparticle2 = new TH2D((title+"_RISR_mSJ_ISR_Sparticle2").c_str(), (title+"_RISR_mSJ_ISR_Sparticle2;RISR;m_{SJ}").c_str(), g_NX/2., 0.5, 1., g_NX/2., 0., 150.);
-  if(Sparticle2) hists2.push_back(hist_RISR_mSJ_ISR_Sparticle2);
+  //if(Sparticle2) hists2.push_back(hist_RISR_mSJ_ISR_Sparticle2);
   TH2D* hist_CosThetaCM_mSJ_ISR_Sparticle2 = new TH2D((title+"_CosThetaCM_mSJ_ISR_Sparticle2").c_str(), (title+"_CosThetaCM_mSJ_ISR_Sparticle2;Cos{#theta}_{CM};m_{SJ}").c_str(), g_NX/2., -1., 1., g_NX/2., 0., 150.);
-  if(Sparticle2) hists2.push_back(hist_CosThetaCM_mSJ_ISR_Sparticle2);
+  //if(Sparticle2) hists2.push_back(hist_CosThetaCM_mSJ_ISR_Sparticle2);
   TH2D* hist_RISR_mllLEAD_ISR_Sparticle2 = new TH2D((title+"_RISR_mllLEAD_ISR_Sparticle2").c_str(), (title+"_RISR_mllLEAD_ISR_Sparticle2;RISR;m_{ll}LEAD").c_str(), g_NX/2., 0.5, 1., g_NX/2., 0., 150.);
-  if(Sparticle2) hists2.push_back(hist_RISR_mllLEAD_ISR_Sparticle2);
+  //if(Sparticle2) hists2.push_back(hist_RISR_mllLEAD_ISR_Sparticle2);
   TH2D* hist_RISR_mL_ISR_Sparticle2 = new TH2D((title+"_RISR_mL_ISR_Sparticle2").c_str(), (title+"_RISR_mL_ISR_Sparticle2;RISR;mL").c_str(), g_NX/2., 0.5, 1., g_NX/2., 0., 150.); // mass of leptonic system
-  if(Sparticle2) hists2.push_back(hist_RISR_mL_ISR_Sparticle2);
+  //if(Sparticle2) hists2.push_back(hist_RISR_mL_ISR_Sparticle2);
   TH2D* hist_Ma_Mb_ISR_Sparticle2 = new TH2D((title+"_Ma_Mb_ISR_Sparticle2").c_str(), (title+"_Ma_Mb_ISR_Sparticle2;Ma;Mb").c_str(), g_NX/2., 0., 300., g_NX/2., 0., 350.);
-  if(Sparticle2) hists2.push_back(hist_Ma_Mb_ISR_Sparticle2);
+  //if(Sparticle2) hists2.push_back(hist_Ma_Mb_ISR_Sparticle2);
   TH2D* hist_MLa_MLb_ISR_Sparticle2 = new TH2D((title+"_MLa_MLb_ISR_Sparticle2").c_str(), (title+"_MLa_MLb_ISR_Sparticle2;MLa;MLb").c_str(), g_NX/2., 0., 200., g_NX/2., 0., 200.);
-  if(Sparticle2) hists2.push_back(hist_MLa_MLb_ISR_Sparticle2);
+  //if(Sparticle2) hists2.push_back(hist_MLa_MLb_ISR_Sparticle2);
   TH2D* hist_RISR_DiffML_ISR_Sparticle2 = new TH2D((title+"_RISR_DiffML_ISR_Sparticle2").c_str(), (title+"_RISR_DiffML_ISR_Sparticle2;RISR;MLa-MLb").c_str(), g_NX/2., 0.5, 1., g_NX/2., 0., 150.);
-  if(Sparticle2) hists2.push_back(hist_RISR_DiffML_ISR_Sparticle2);
+  //if(Sparticle2) hists2.push_back(hist_RISR_DiffML_ISR_Sparticle2);
   TH2D* hist_RISR_MVis_ISR_Sparticle2 = new TH2D((title+"_RISR_MVis_ISR_Sparticle2").c_str(), (title+"_RISR_MVis_ISR_Sparticle2;RISR;MVis").c_str(), g_NX/2., 0.5, 1., g_NX/2., 0., 400.);
-  if(Sparticle2) hists2.push_back(hist_RISR_MVis_ISR_Sparticle2);
+  //if(Sparticle2) hists2.push_back(hist_RISR_MVis_ISR_Sparticle2);
   TH2D* hist_RISR_MS_S_ISR_Sparticle2 = new TH2D((title+"_RISR_MS_S_ISR_Sparticle2").c_str(), (title+"_RISR_MS_S_ISR_Sparticle2;RISR;MS^{S}").c_str(), g_NX/2., 0.5, 1.,g_NX/2., 0., 500.); // Mass of S system using four vectors evaluated in S frame
-  if(Sparticle2) hists2.push_back(hist_RISR_MS_S_ISR_Sparticle2);
+  //if(Sparticle2) hists2.push_back(hist_RISR_MS_S_ISR_Sparticle2);
   TH2D* hist_RISR_MSa_S_ISR_Sparticle2 = new TH2D((title+"_RISR_MSa_S_ISR_Sparticle2").c_str(), (title+"_RISR_MSa_S_ISR_Sparticle2;RISR;MSa^{S}").c_str(), g_NX/2., 0.5, 1.,g_NX/2., 0., 500.); // Mass of Sa system using four vectors evaluated in S frame
-  if(Sparticle2) hists2.push_back(hist_RISR_MSa_S_ISR_Sparticle2);
+  //if(Sparticle2) hists2.push_back(hist_RISR_MSa_S_ISR_Sparticle2);
   TH2D* hist_RISR_MSb_S_ISR_Sparticle2 = new TH2D((title+"_RISR_MSb_S_ISR_Sparticle2").c_str(), (title+"_RISR_MSb_S_ISR_Sparticle2;RISR;MSb^{S}").c_str(), g_NX/2., 0.5, 1.,g_NX/2., 0., 250.); // Mass of Sb system using four vectors evaluated in S frame
-  if(Sparticle2) hists2.push_back(hist_RISR_MSb_S_ISR_Sparticle2);
+  //if(Sparticle2) hists2.push_back(hist_RISR_MSb_S_ISR_Sparticle2);
   TH2D* hist_MSa_S_MSb_S_ISR_Sparticle2 = new TH2D((title+"_MSa_S_MSb_S_ISR_Sparticle2").c_str(), (title+"_MSa_S_MSb_S_ISR_Sparticle2;MSa^{S};MSb^{S}").c_str(), g_NX/2., 0., 500., g_NX/2., 0., 250.); // Mass of Sb system using four vectors evaluated in S frame
-  if(Sparticle2) hists2.push_back(hist_MSa_S_MSb_S_ISR_Sparticle2);
+  //if(Sparticle2) hists2.push_back(hist_MSa_S_MSb_S_ISR_Sparticle2);
   TH2D* hist_RISR_MVisS_S_ISR_Sparticle2 = new TH2D((title+"_RISR_MVisS_S_ISR_Sparticle2").c_str(), (title+"_RISR_MVisS_S_ISR_Sparticle2;RISR;MVisS^{S}").c_str(), g_NX/2., 0.5, 1., g_NX/2., 0., 500.); // Mass of visible part of S system using four vectors evaluated in S frame ("subtracting out invisible part")
-  if(Sparticle2) hists2.push_back(hist_RISR_MVisS_S_ISR_Sparticle2);
+  //if(Sparticle2) hists2.push_back(hist_RISR_MVisS_S_ISR_Sparticle2);
   TH2D* hist_RISR_MVisSa_S_ISR_Sparticle2 = new TH2D((title+"_RISR_MVisSa_S_ISR_Sparticle2").c_str(), (title+"_RISR_MVisSa_S_ISR_Sparticle2;RISR;MVisSa^{S}").c_str(), g_NX/2., 0.5, 1., g_NX/2., 0., 500.); // Mass of visible part of Sa system using four vectors evaluated in S frame ("subtracting out invisible part")
-  if(Sparticle2) hists2.push_back(hist_RISR_MVisSa_S_ISR_Sparticle2);
+  //if(Sparticle2) hists2.push_back(hist_RISR_MVisSa_S_ISR_Sparticle2);
   TH2D* hist_RISR_MVisSb_S_ISR_Sparticle2 = new TH2D((title+"_RISR_MVisSb_S_ISR_Sparticle2").c_str(), (title+"_RISR_MVisSb_S_ISR_Sparticle2;RISR;MVisSb^{S}").c_str(), g_NX/2., 0.5, 1., g_NX/2., 0., 250.); // Mass of visible part of Sb system using four vectors evaluated in S frame ("subtracting out invisible part")
-  if(Sparticle2) hists2.push_back(hist_RISR_MVisSb_S_ISR_Sparticle2);
+  //if(Sparticle2) hists2.push_back(hist_RISR_MVisSb_S_ISR_Sparticle2);
   TH2D* hist_MVisSa_S_MVisSb_S_ISR_Sparticle2 = new TH2D((title+"_MVisSa_S_MVisSb_S_ISR_Sparticle2").c_str(), (title+"_MVisSa_S_MVisSb_S_ISR_Sparticle2;MVisSa^{S};MVisSb^{S}").c_str(), g_NX/2., 0., 500., g_NX/2., 0., 250.); // Mass of visible part of Sb system using four vectors evaluated in S frame ("subtracting out invisible part")
-  if(Sparticle2) hists2.push_back(hist_MVisSa_S_MVisSb_S_ISR_Sparticle2);
-  TH2D* hist_MSperp_RISR_ISR_Sparticle2 = new TH2D((title+"_MSperp_RISR_Sparticle2").c_str(), (title+"_MSperp_RISR_ISR_Sparticle2;MSperp;RISR").c_str(), g_NX/2., 0., 200., g_NX/2., 0., 1.);
-  if(Sparticle2) hists2.push_back(hist_MSperp_RISR_ISR_Sparticle2);
+  //if(Sparticle2) hists2.push_back(hist_MVisSa_S_MVisSb_S_ISR_Sparticle2);
 
-  
-  
+  TH2D* hist_MSperp0_RISR_ISR_Sparticle2 = new TH2D((title+"_MSperp0_RISR_ISR_Sparticle2").c_str(), (title+"_MSperp0_RISR_ISR_Sparticle2;MS_{#perp 0};RISR").c_str(), g_NX/2., 0., 500., g_NX/2., 0.5, 1.);
+  if(Sparticle2) hists2.push_back(hist_MSperp0_RISR_ISR_Sparticle2);
+  TH2D* hist_Mperp0_RISR_ISR_Sparticle2 = new TH2D((title+"_Mperp0_RISR_ISR_Sparticle2").c_str(), (title+"_Mperp0_RISR_ISR_Sparticle2;M_{#perp 0};RISR").c_str(), g_NX/2., 0., 300., g_NX/2., 0.5, 1.); // quad sum of Ma and Mb / sqrt(2)
+  if(Sparticle2) hists2.push_back(hist_Mperp0_RISR_ISR_Sparticle2);
+  TH2D* hist_gammaPerp0_RISR_ISR_Sparticle2 = new TH2D((title+"_gammaPerp0_RISR_ISR_Sparticle2").c_str(), (title+"_gammaPerp0_RISR_ISR_Sparticle2;#gamma_{#perp 0};RISR").c_str(), g_NX/2., 0., 1., g_NX/2., 0.5, 1.);
+  if(Sparticle2) hists2.push_back(hist_gammaPerp0_RISR_ISR_Sparticle2);
+  TH2D* hist_MVisAperp_MVisBperp_ISR_Sparticle2 = new TH2D((title+"_MVisAperp_MVisBperp_ISR_Sparticle2").c_str(), (title+"_MVisAperp_MVisBperp_ISR_Sparticle2;M^{VisA}_{#perp};M^{VisB}_{#perp}").c_str(), g_NX/2., 0., 300., g_NX/2., 0., 300.);
+  if(Sparticle2) hists2.push_back(hist_MVisAperp_MVisBperp_ISR_Sparticle2);
+  TH2D* hist_MDiffPerp0_RISR_ISR_Sparticle2 = new TH2D((title+"_MDiffPerp0_RISR_ISR_Sparticle2").c_str(), (title+"_MDiffPerp0_RISR_ISR_Sparticle2;MDiff_{#perp 0};RISR").c_str(), g_NX/2., -1., 1., g_NX/2., 0.5, 1.);
+  if(Sparticle2) hists2.push_back(hist_MDiffPerp0_RISR_ISR_Sparticle2);
 
+  TH2D* hist_MSperp0_gammaPerp0_ISR_Sparticle2 = new TH2D((title+"_MSperp0_gammaPerp0_ISR_Sparticle2").c_str(), (title+"_MSperp0_gammaPerp0_ISR_Sparticle2;MS_{#perp 0};#gamma_{#perp 0}").c_str(), g_NX/2., 0., 500., g_NX/2., 0., 1.);
+  if(Sparticle2) hists2.push_back(hist_MSperp0_gammaPerp0_ISR_Sparticle2);
+  TH2D* hist_MSperp0_Mperp0_ISR_Sparticle2 = new TH2D((title+"_MSperp0_Mperp0_ISR_Sparticle2").c_str(), (title+"_MSperp0_Mperp0_ISR_Sparticle2;MS_{#perp 0};M_{#perp 0}").c_str(), g_NX/2., 0., 500., g_NX/2., 0., 300.);
+  if(Sparticle2) hists2.push_back(hist_MSperp0_Mperp0_ISR_Sparticle2);
+  TH2D* hist_gammaPerp0_Mperp0_ISR_Sparticle2 = new TH2D((title+"_gammaPerp0_Mperp0_ISR_Sparticle2").c_str(), (title+"_gammaPerp0_Mperp0_ISR_Sparticle2;#gamma_{#perp 0};M_{#perp 0}").c_str(), g_NX/2., 0., 1., g_NX/2., 0., 300.);
+  if(Sparticle2) hists2.push_back(hist_gammaPerp0_Mperp0_ISR_Sparticle2);
+  
+  TH2D* hist_MDiffPerp0_Mperp0_ISR_Sparticle2 = new TH2D((title+"_MDiffPerp0_Mperp0_ISR_Sparticle2").c_str(), (title+"_MDiffPerp0_Mperp0_ISR_Sparticle2;MDiff_{#perp 0};M_{#perp 0}").c_str(), g_NX/2., -1., 1., g_NX/2., 0., 300.);
+  if(Sparticle2) hists2.push_back(hist_MDiffPerp0_Mperp0_ISR_Sparticle2);
+  TH2D* hist_Mperp0_MVisAperp_ISR_Sparticle2 = new TH2D((title+"_Mperp0_MVisAperp_ISR_Sparticle2").c_str(), (title+"_Mperp0_MVisAperp_ISR_Sparticle2;M_{#perp 0};M^{VisA}_{#perp}").c_str(), g_NX/2., 0., 300., g_NX/2., 0., 300.);
+  if(Sparticle2) hists2.push_back(hist_Mperp0_MVisAperp_ISR_Sparticle2);
+  TH2D* hist_Mperp0_MVisBperp_ISR_Sparticle2 = new TH2D((title+"_Mperp0_MVisBperp_ISR_Sparticle2").c_str(), (title+"_Mperp0_MVisBperp_ISR_Sparticle2;M_{#perp};M^{VisB}_{#perp}").c_str(), g_NX/2., 0., 300., g_NX/2., 0., 300.);
+  if(Sparticle2) hists2.push_back(hist_Mperp0_MVisBperp_ISR_Sparticle2);
+
+  TH2D* hist_MLbPerp_MJPerp_ISR_Sparticle2 = new TH2D((title+"_MLbPerp_MJPerp_ISR_Sparticle2").c_str(), (title+"_MLbPerp_MJPerp_ISR_Sparticle2;MLb_{#perp};MJ_{#perp}").c_str(), g_NX/2., 0., 300., g_NX/2., 0., 300.);
+  if(Sparticle2) hists2.push_back(hist_MLbPerp_MJPerp_ISR_Sparticle2);
+  TH2D* hist_MLaPerp_MJPerp_ISR_Sparticle2 = new TH2D((title+"_MLaPerp_MJPerp_ISR_Sparticle2").c_str(), (title+"_MLaPerp_MJPerp_ISR_Sparticle2;MLa_{#perp};MJ_{#perp}").c_str(), g_NX/2., 0., 300., g_NX/2., 0., 300.);
+  if(Sparticle2) hists2.push_back(hist_MLaPerp_MJPerp_ISR_Sparticle2);
+  TH2D* hist_MLaPerp_MLbPerp_ISR_Sparticle2 = new TH2D((title+"_MLaPerp_MLbPerp_ISR_Sparticle2").c_str(), (title+"_MLaPerp_MLbPerp_ISR_Sparticle2;MLa_{#perp};MLb_{#perp}").c_str(), g_NX/2., 0., 300., g_NX/2., 0., 300.);
+  if(Sparticle2) hists2.push_back(hist_MLaPerp_MLbPerp_ISR_Sparticle2);
+
+  TH2D* hist_EventCount_ISR_Sparticle2 = new TH2D("EventCount", "EventCount", 12, 0., 12., 12, 0., 12.);
+   
   if(debug) cout << "Loading TChains" << endl;
   TChain* chain = new TChain("Events");
   chain->Add(ifile.c_str());
@@ -1565,7 +1598,7 @@ int main(int argc, char* argv[]) {
     int PDGID;
     int MP = 0;
     int MC = 0;
-    if(proc.find("TChi") != std::string::npos){
+    if(proc.find("TChi") != std::string::npos || proc.find("Cascade") != std::string::npos){
       for(int i = 0; i < N; i++){
         PDGID = abs(base->GenPart_pdgId[i]);
         if(PDGID > 1000000 && PDGID < 3000000){
@@ -1578,9 +1611,24 @@ int main(int argc, char* argv[]) {
         }
       }
     }
+    int e_DM = MP - MC;
 
     if(DM > 0.)
-      if(MP != 0 && MC != 0 && ((MP - MC) > (DM + 1.) || (MP - MC) < (DM - 1.))) continue;
+      if(MP != 0 && MC != 0 && (e_DM > (DM + 1.) || e_DM < (DM - 1.))) continue;
+
+    int slep = 0;
+    int snu = 0;
+    if(proc.find("Cascade") != std::string::npos){
+      for(int i = 0; i < N; i++){
+        PDGID = abs(base->GenPart_pdgId[i]);
+        int status = base->GenPart_status[i];
+        if(status == 22 && (PDGID == 1000011 || PDGID == 1000013))
+          slep++;
+        if(status == 22 && (PDGID == 1000012 || PDGID == 1000014))
+          snu++;
+      }
+    }
+    if(slep > 2 || snu > 2) cout << "Cascade count algo failed!" << endl;
 
     int year = 2017;
     // loop over jets 
@@ -1974,7 +2022,8 @@ int main(int argc, char* argv[]) {
     int Nleps = int(leptons.size());
     int Nobjs = Njets + Nleps;
     if(Nobjs < 2 || Njets < 1) continue;
-    if(Nleps < reco_lep_cut) continue;
+    if(min_lep_cut > -1 && Nleps < min_lep_cut) continue;
+    if(max_lep_cut > -1 && Nleps > max_lep_cut) continue;
     int Ngen_jets = int(gen_jets.size());
     int Ngen_leps = int(gen_leptons.size());
 
@@ -2993,6 +3042,13 @@ int main(int argc, char* argv[]) {
       else
         Nleps_B++;
     }
+    if(min_Sjet >= 0 && Njets_S < min_Sjet) continue;
+    if(max_Sjet >= 0 && Njets_S > max_Sjet) continue;
+    if(min_La >= 0 && Nleps_A < min_La) continue;
+    if(max_La >= 0 && Nleps_A > max_La) continue;
+    if(min_Lb >= 0 && Nleps_B < min_Lb) continue;
+    if(max_Lb >= 0 && Nleps_B > max_Lb) continue;
+
     hist_matched_Njets_S_unmatched_Njets_S_ISR_Sparticle2->Fill(Njets_S_matched, Njets_S_unmatched, hweight);
     hist_matched_Njets_ISR_unmatched_Njets_ISR_ISR_Sparticle2->Fill(Njets_ISR_matched, Njets_ISR_unmatched, hweight);
     hist_matched_Njets_Sa_matched_Njets_Sb_ISR_Sparticle2->Fill(Njets_Sa_matched, Njets_Sb_matched, hweight);
@@ -3045,11 +3101,11 @@ int main(int argc, char* argv[]) {
     hist_RISR_MVis_ISR_Sparticle2->Fill(RISR, MVis, hweight);
 
     TLorentzVector vP_S_CM = S_ISR_Sparticle2.GetFourVector(CM_ISR_Sparticle2);
-    TLorentzVector vP_Ja_S = J_X2a_ISR_Sparticle2.GetFourVector(S_ISR_Sparticle2);
-    TLorentzVector vP_La_S = L_X2a_ISR_Sparticle2.GetFourVector(S_ISR_Sparticle2);
-    TLorentzVector vP_Lb_S = L_X2b_ISR_Sparticle2.GetFourVector(S_ISR_Sparticle2);
-    TLorentzVector vP_Ia_S = Ia_ISR_Sparticle2.GetFourVector(S_ISR_Sparticle2);
-    TLorentzVector vP_Ib_S = Ib_ISR_Sparticle2.GetFourVector(S_ISR_Sparticle2);
+    TLorentzVector vP_Ja_S = J_X2a_ISR_Sparticle2.GetFourVector(CM_ISR_Sparticle2);
+    TLorentzVector vP_La_S = L_X2a_ISR_Sparticle2.GetFourVector(CM_ISR_Sparticle2);
+    TLorentzVector vP_Lb_S = L_X2b_ISR_Sparticle2.GetFourVector(CM_ISR_Sparticle2);
+    TLorentzVector vP_Ia_S = Ia_ISR_Sparticle2.GetFourVector(CM_ISR_Sparticle2);
+    TLorentzVector vP_Ib_S = Ib_ISR_Sparticle2.GetFourVector(CM_ISR_Sparticle2);
 
     double MS_S = (vP_Ja_S+vP_La_S+vP_Lb_S+vP_Ia_S+vP_Ib_S).M();
     hist_RISR_MS_S_ISR_Sparticle2->Fill(RISR, MS_S, hweight);
@@ -3067,28 +3123,71 @@ int main(int argc, char* argv[]) {
     hist_RISR_MVisSb_S_ISR_Sparticle2->Fill(RISR, MVisSb_S, hweight);
     hist_MVisSa_S_MVisSb_S_ISR_Sparticle2->Fill(MVisSa_S, MVisSb_S, hweight);
 
-
     TVector3 daBoost = vP_S_CM.Vect().Unit();
-    TVector3 vP_Ja_S0;
-    TVector3 vP_La_S0;
-    TVector3 vP_Lb_S0;
-    TVector3 vP_Ia_S0;
-    TVector3 vP_Ib_S0;
-    vP_Ja_S0.SetPtEtaPhi(vP_Ja_S.Pt(),vP_Ja_S.Eta(),vP_Ja_S.Phi());
-    vP_La_S0.SetPtEtaPhi(vP_La_S.Pt(),vP_La_S.Eta(),vP_La_S.Phi());
-    vP_Lb_S0.SetPtEtaPhi(vP_Lb_S.Pt(),vP_Lb_S.Eta(),vP_Lb_S.Phi());
-    vP_Ia_S0.SetPtEtaPhi(vP_Ia_S.Pt(),vP_Ia_S.Eta(),vP_Ia_S.Phi());
-    vP_Ib_S0.SetPtEtaPhi(vP_Ib_S.Pt(),vP_Ib_S.Eta(),vP_Ib_S.Phi());
+    TVector3 vP_Ja_S_Perp = vP_Ja_S.Vect();
+    TVector3 vP_La_S_Perp = vP_La_S.Vect();
+    TVector3 vP_Lb_S_Perp = vP_Lb_S.Vect();
+    TVector3 vP_Ia_S_Perp = vP_Ia_S.Vect();
+    TVector3 vP_Ib_S_Perp = vP_Ib_S.Vect();
 
-    vP_Ja_S0 = vP_Ja_S0 - vP_Ja_S0.Dot(daBoost)*vP_S_CM.Vect();
-    vP_La_S0 = vP_La_S0 - vP_La_S0.Dot(daBoost)*vP_S_CM.Vect();
-    vP_Lb_S0 = vP_Lb_S0 - vP_Lb_S0.Dot(daBoost)*vP_S_CM.Vect();
-    vP_Ia_S0 = vP_Ia_S0 - vP_Ia_S0.Dot(daBoost)*vP_S_CM.Vect();
-    vP_Ib_S0 = vP_Ib_S0 - vP_Ib_S0.Dot(daBoost)*vP_S_CM.Vect();
+    vP_Ja_S_Perp = vP_Ja_S_Perp - vP_Ja_S_Perp.Dot(daBoost)*daBoost;
+    vP_La_S_Perp = vP_La_S_Perp - vP_La_S_Perp.Dot(daBoost)*daBoost;
+    vP_Lb_S_Perp = vP_Lb_S_Perp - vP_Lb_S_Perp.Dot(daBoost)*daBoost;
+    vP_Ia_S_Perp = vP_Ia_S_Perp - vP_Ia_S_Perp.Dot(daBoost)*daBoost;
+    vP_Ib_S_Perp = vP_Ib_S_Perp - vP_Ib_S_Perp.Dot(daBoost)*daBoost;
 
-    double MSperp = (vP_Ja_S0 + vP_La_S0 + vP_Lb_S0 + vP_Ia_S0 + vP_Ib_S0).Mag();
-    hist_MSperp_RISR_ISR_Sparticle2->Fill(MSperp, RISR, hweight);
+    TLorentzVector vP_Ja_S_PerpM0_TLV;
+    TLorentzVector vP_La_S_PerpM0_TLV;
+    TLorentzVector vP_Lb_S_PerpM0_TLV;
+    TLorentzVector vP_Ia_S_PerpM0_TLV;
+    TLorentzVector vP_Ib_S_PerpM0_TLV;
+    vP_Ja_S_PerpM0_TLV.SetPtEtaPhiM(vP_Ja_S_Perp.Pt(),vP_Ja_S_Perp.Eta(),vP_Ja_S_Perp.Phi(),0.);
+    vP_La_S_PerpM0_TLV.SetPtEtaPhiM(vP_La_S_Perp.Pt(),vP_La_S_Perp.Eta(),vP_La_S_Perp.Phi(),0.);
+    vP_Lb_S_PerpM0_TLV.SetPtEtaPhiM(vP_Lb_S_Perp.Pt(),vP_Lb_S_Perp.Eta(),vP_Lb_S_Perp.Phi(),0.);
+    vP_Ia_S_PerpM0_TLV.SetPtEtaPhiM(vP_Ia_S_Perp.Pt(),vP_Ia_S_Perp.Eta(),vP_Ia_S_Perp.Phi(),0.);
+    vP_Ib_S_PerpM0_TLV.SetPtEtaPhiM(vP_Ib_S_Perp.Pt(),vP_Ib_S_Perp.Eta(),vP_Ib_S_Perp.Phi(),0.);
 
+    TLorentzVector vP_Ja_S_Perp_TLV;
+    TLorentzVector vP_La_S_Perp_TLV;
+    TLorentzVector vP_Lb_S_Perp_TLV;
+    TLorentzVector vP_Ia_S_Perp_TLV;
+    TLorentzVector vP_Ib_S_Perp_TLV;
+    vP_Ja_S_Perp_TLV.SetPtEtaPhiM(vP_Ja_S_Perp.Pt(),vP_Ja_S_Perp.Eta(),vP_Ja_S_Perp.Phi(),vP_Ja_S.M());
+    vP_La_S_Perp_TLV.SetPtEtaPhiM(vP_La_S_Perp.Pt(),vP_La_S_Perp.Eta(),vP_La_S_Perp.Phi(),vP_La_S.M());
+    vP_Lb_S_Perp_TLV.SetPtEtaPhiM(vP_Lb_S_Perp.Pt(),vP_Lb_S_Perp.Eta(),vP_Lb_S_Perp.Phi(),vP_Lb_S.M());
+    vP_Ia_S_Perp_TLV.SetPtEtaPhiM(vP_Ia_S_Perp.Pt(),vP_Ia_S_Perp.Eta(),vP_Ia_S_Perp.Phi(),vP_Ia_S.M());
+    vP_Ib_S_Perp_TLV.SetPtEtaPhiM(vP_Ib_S_Perp.Pt(),vP_Ib_S_Perp.Eta(),vP_Ib_S_Perp.Phi(),vP_Ib_S.M());
+
+    double MSperp0 = (vP_Ja_S_PerpM0_TLV + vP_La_S_PerpM0_TLV + vP_Lb_S_PerpM0_TLV + vP_Ia_S_PerpM0_TLV + vP_Ib_S_PerpM0_TLV).Mag();
+    double MaPerp0 = (vP_Ja_S_PerpM0_TLV + vP_La_S_PerpM0_TLV + vP_Ia_S_PerpM0_TLV).Mag();
+    double MbPerp0 = (vP_Lb_S_PerpM0_TLV + vP_Ib_S_PerpM0_TLV).Mag();
+    double Mperp0 = sqrt((MaPerp0*MaPerp0 + MbPerp0*MbPerp0)/2.); 
+    double gammaPerp0 = 2*Mperp0/MSperp0;
+    double MDiffPerp0 = (MaPerp0 - MbPerp0) / (MaPerp0 + MbPerp0);
+    double MVisAperp = (vP_Ja_S_Perp_TLV + vP_La_S_Perp_TLV).Mag();
+    double MVisBperp = (vP_Lb_S_Perp_TLV).Mag();
+    double MLaPerp = vP_La_S_Perp_TLV.Mag();
+    double MLbPerp = vP_Lb_S_Perp_TLV.Mag();
+    double MJPerp = vP_Ja_S_Perp_TLV.Mag();
+
+    if(debug && MSperp0 < 1.e-3) cout << "MSperp0: " << MSperp0 << " MDiffPerp0: " << MDiffPerp0 << " MaPerp0: " << MaPerp0 << " MbPerp0: " << MbPerp0 << " MVisAperp: " << MVisAperp << " MVisBperp: " << MVisBperp << endl;
+    if(debug && MSperp0 < 1.e-3) cout << "Nleps_A: " << Nleps_A << " Nleps_B: " << Nleps_B << " Njets_S: " << Njets_S << endl;
+
+    hist_MSperp0_RISR_ISR_Sparticle2->Fill(MSperp0, RISR, hweight);
+    hist_Mperp0_RISR_ISR_Sparticle2->Fill(Mperp0, RISR, hweight);
+    hist_gammaPerp0_RISR_ISR_Sparticle2->Fill(gammaPerp0, RISR, hweight);
+    hist_MVisAperp_MVisBperp_ISR_Sparticle2->Fill(MVisAperp, MVisBperp, hweight);
+    hist_MDiffPerp0_RISR_ISR_Sparticle2->Fill(MDiffPerp0, RISR, hweight);
+
+    hist_MSperp0_gammaPerp0_ISR_Sparticle2->Fill(MSperp0, gammaPerp0, hweight);
+    hist_MSperp0_Mperp0_ISR_Sparticle2->Fill(MSperp0, Mperp0, hweight);
+    hist_gammaPerp0_Mperp0_ISR_Sparticle2->Fill(gammaPerp0, Mperp0, hweight);
+    hist_MDiffPerp0_Mperp0_ISR_Sparticle2->Fill(MDiffPerp0, Mperp0, hweight);
+    hist_Mperp0_MVisAperp_ISR_Sparticle2->Fill(Mperp0, MVisAperp, hweight);
+    hist_Mperp0_MVisBperp_ISR_Sparticle2->Fill(Mperp0, MVisBperp, hweight);
+    hist_MLbPerp_MJPerp_ISR_Sparticle2->Fill(MLbPerp, MJPerp, hweight);
+    hist_MLaPerp_MJPerp_ISR_Sparticle2->Fill(MLaPerp, MJPerp, hweight);
+    hist_MLaPerp_MLbPerp_ISR_Sparticle2->Fill(MLaPerp, MLbPerp, hweight);
 
     TVector3 boostVis = (vP_Ja_S+vP_La_S+vP_Lb_S).BoostVector();
     TVector3 boostInv = (vP_Ia_S+vP_Ib_S).BoostVector();
@@ -3120,6 +3219,25 @@ int main(int argc, char* argv[]) {
 		                sqrt(MX3b_BoostT*MX3b_BoostT+PX3_BoostT*PX3_BoostT));
     hist_Mperp_RISR_ISR_Sparticle2->Fill(Mperp, RISR, hweight);
     hist_gammaPerp_RISR_ISR_Sparticle2->Fill(gammaPerp, RISR, hweight);
+
+    int EC_X = 0; // root hists have underflow in bin 0
+    int cat_Nleps = Nleps;
+    int cat_Njets_S = Njets_S;
+    if(cat_Nleps > 4) cat_Nleps = 4; // ge4L is upper limit
+    if(cat_Njets_S > 2) cat_Njets_S = 2; // ge2J is upper limit
+    EC_X += 3*cat_Nleps-5;
+    EC_X += cat_Njets_S;
+    int EC_Y = 0; // root hists have underflow in bin 0
+    if(proc.find("ttbar") != std::string::npos) EC_Y = 1;
+    if(proc.find("DB") != std::string::npos) EC_Y = 2;
+    if(proc.find("Cascades") != std::string::npos){
+        EC_Y = 3 + slep;
+      if(proc.find("_10") != std::string::npos)
+        EC_Y += 3;
+      if(proc.find("_5") != std::string::npos)
+        EC_Y += 6;
+    }
+    hist_EventCount_ISR_Sparticle2->SetBinContent(EC_X,EC_Y,hist_EventCount_ISR_Sparticle2->GetBinContent(EC_X,EC_Y)+1);
 
 
     // fill original RJR Tree but use candidates and other jets as separate inputs
@@ -3806,6 +3924,7 @@ int main(int argc, char* argv[]) {
   if(Cand) hist_CandCount_BDT_ISR_lep->Write();
   if(Cand) hist_Count_BDT_ISR_singlet->Write();
   if(Cand) hist_CandCount_BDT_ISR_singlet->Write();
+  if(Sparticle2) hist_EventCount_ISR_Sparticle2->Write();
   output_file->Close(); 
   delete base;
   delete chain;
