@@ -2,6 +2,8 @@
 #include "ParticleList.hh"
 #include "TInterpreter.h"
 
+#include "SUSYNANOBase.hh"
+#include "NANOULBase.hh"
 #include "NANORun3.hh"
 #include "Leptonic.hh"
 
@@ -738,6 +740,7 @@ void ReducedNtuple<Base>::FillOutputTree(TTree* tree, const Systematic& sys, boo
   if(!good_PV)
     return;
 
+
   TVector3 ETMiss;
   ParticleList Jets_noID = AnalysisBase<Base>::GetJetsMET(ETMiss);
   ParticleList Jets      = AnalysisBase<Base>::GetJetsMET(ETMiss, 3); // jet ID 3
@@ -893,8 +896,6 @@ void ReducedNtuple<Base>::FillOutputTree(TTree* tree, const Systematic& sys, boo
       m_HEM_Veto = true;
 
   TVector3 altETMiss = AnalysisBase<Base>::GetAltMET();
-  if(std::isnan(altETMiss.Pt())) std::cout << altETMiss.Pt() << std::endl;
-  if(std::isnan(altETMiss.Phi())) std::cout << altETMiss.Phi() << std::endl;
   m_altMET     = altETMiss.Pt();
   m_altMET_phi = altETMiss.Phi();
   
@@ -1137,8 +1138,7 @@ void ReducedNtuple<Base>::FillOutputTree(TTree* tree, const Systematic& sys, boo
         m_RISRT  = fabs(vPTINV.Dot(vPTISR.Unit())) / vPTISR.Mag();
         
         if((std::isnan(m_RISR) || std::isnan(m_Mperp))){
-          cout << "VAR NAN " << vPTISR.Mag() << " " << vPTINV.Mag() << " NjetS=" << m_Njet_S << " Njeta=" << m_Njet_a << " Njetb=" << m_Njet_b << " Nlep=" << m_Nlep << " Nlepa=" << m_Nlep_a << " Nlepb=" << m_Nlep_b << " " << m_Mperp << endl;
-          cout << m_RISR << endl;
+          cout << "VAR NAN " << vPTISR.Mag() << " " << vPTINV.Mag() << " NjetS=" << m_Njet_S << " Njeta=" << m_Njet_a << " Njetb=" << m_Njet_b << " Nlep=" << m_Nlep << " Nlepa=" << m_Nlep_a << " Nlepb=" << m_Nlep_b << " Mperp=" << m_Mperp << " RISR=" << m_RISR << endl;
         }
 
         m_PISR = vPISR.Mag();
@@ -1162,145 +1162,6 @@ void ReducedNtuple<Base>::FillOutputTree(TTree* tree, const Systematic& sys, boo
         }
       }
     }
-    // Cascade variables
-    if(t>0){
-      if(m_Nlep < 1){
-        m_treeSkipped[t] = true;
-        continue;
-      }
-      TLorentzVector nullTLV(0.,0.,0.,0.);
-      std::vector<RFKey> jetID;
-      if(t==1){ // all jets in S
-        ISR[t]->SetLabFrameFourVector(nullTLV);
-        for(int i = 0; i < m_Njet; i++){
-            m_c_Njet_ISR[t-1]++;
-            if(Jets[i].BtagID() >= kMedium)
-              m_c_Nbjet_ISR[t-1]++;
-            m_c_index_jet_ISR[t-1].push_back(i);
-          jetID.push_back(COMB_J[t]->AddLabFrameFourVector(Jets[i]));
-        }
-      }
-      else if(t==2){ // all jets in ISR
-        Particle Jet_ISR = Jets[0];
-        for(int i = 1; i < m_Njet; i++)
-          Jet_ISR.Merge(Jets[i]);
-        ISR[t]->SetLabFrameFourVector(Jet_ISR);
-      }
-      else if(t==3){ // jets that form boson candidate go in S
-        TLorentzVector TLV_ISR = nullTLV;
-        for(int j = 0; j < m_Njet; j++){
-          bool match_found = false;
-          for(int k = 0; k < m_Njet; k++){
-            if(j==k) continue;
-            if((Jets[j].Merge(Jets[k])).Mag() < 80.){
-              match_found = true;
-              jetID.push_back(COMB_J[t]->AddLabFrameFourVector(Jets[j]));
-              break;
-            }
-          }
-          if(!match_found){
-            m_c_Njet_ISR[t-1]++;
-            if(Jets[j].BtagID() >= kMedium)
-              m_c_Nbjet_ISR[t-1]++;
-            m_c_index_jet_ISR[t-1].push_back(j);
-            TLV_ISR += Jets[j];
-          }
-        }
-        ISR[t]->SetLabFrameFourVector(TLV_ISR);
-      }
-
-      if(m_Nlep > 0) // cascades puts leading lepton in L2a spot
-        L2a[t]->SetLabFrameFourVector(Leptons[0]);
-      std::vector<RFKey> lepID;
-      for(int i = 1; i < m_Nlep; i++) // for cascades, do not add first lepton into the combs
-        lepID.push_back(COMB_L[t]->AddLabFrameFourVector(Leptons[i]));
-      if(!LAB[t]->AnalyzeEvent())
-        cout << "Something went wrong with tree event analysis" << endl;
-
-      // jet counting for cascades
-      for(int i = 0; i < int(jetID.size()); i++){
-        //if(COMB_J[t]->GetFrame(jetID[i]) == *ISR[t]){
-        //  m_c_Njet_ISR[t-1]++;
-        //  if(Jets[i].BtagID() >= kMedium)
-        //    m_c_Nbjet_ISR[t-1]++;
-        //  m_c_index_jet_ISR[t-1].push_back(i);
-        //}
-        if(COMB_J[t]->GetFrame(jetID[i]) == *Ja[t]){
-          m_c_Njet_a[t-1]++;
-          if(Jets[i].BtagID() >= kMedium){
-            m_c_Nbjet_a[t-1]++;
-          }
-          m_c_index_jet_a[t-1].push_back(i);
-        }
-        if(COMB_J[t]->GetFrame(jetID[i]) == *Jb[t]){
-          m_c_Njet_b[t-1]++;
-          if(Jets[i].BtagID() >= kMedium){
-            m_c_Nbjet_b[t-1]++;
-          }
-          m_c_index_jet_b[t-1].push_back(i);
-        }
-      }
-          
-      // lepton counting for cascades
-      for(int i = 0; i < int(lepID.size()); i++){
-        if(COMB_L[t]->GetFrame(lepID[i]) == *La[t]){
-          m_c_Nlep_1a[t-1]++;
-          m_c_index_lep_1a[t-1].push_back(i);
-        }
-        if(COMB_L[t]->GetFrame(lepID[i]) == *Lb[t]){
-          m_c_Nlep_1b[t-1]++;
-          m_c_index_lep_1b[t-1].push_back(i);
-        }
-        if(COMB_L[t]->GetFrame(lepID[i]) == *L2b[t]){
-          m_c_Nlep_2b[t-1]++;
-          m_c_index_lep_2b[t-1].push_back(i);
-        }
-      }
-      if(m_Nlep + m_c_Njet_a[t-1] + m_c_Njet_b[t-1] < 2){
-        m_treeSkipped[t] = true;
-        continue;
-      }
-
-
-      // Cascade kin
-      TLorentzVector vP_L2a_S = L2a[t]->GetFourVector(*S[t]);
-      TLorentzVector vP_L1a_S = saLa[t]->GetFourVector(*S[t]);
-      TLorentzVector vP_L2b_S = saL2b[t]->GetFourVector(*S[t]);
-      TLorentzVector vP_L1b_S = saLb[t]->GetFourVector(*S[t]);
-      TLorentzVector vP_J1a_S = saJa[t]->GetFourVector(*S[t]);
-      TLorentzVector vP_J1b_S = saJb[t]->GetFourVector(*S[t]);
-      TLorentzVector vP_I1a_S = X1a[t]->GetFourVector(*S[t]);
-      TLorentzVector vP_I1b_S = X1b[t]->GetFourVector(*S[t]);
-
-      TLorentzVector vP_VisA_S = (vP_L2a_S + vP_L1a_S + vP_J1a_S);
-      vP_VisA_S.SetPtEtaPhiM(vP_VisA_S.Pt(),vP_VisA_S.Eta(),vP_VisA_S.Phi(),0.);
-      TLorentzVector vP_VisB_S = (vP_L2b_S + vP_L1b_S + vP_J1b_S);
-      vP_VisB_S.SetPtEtaPhiM(vP_VisB_S.Pt(),vP_VisB_S.Eta(),vP_VisB_S.Phi(),0.);
-      vP_I1a_S.SetPtEtaPhiM(vP_I1a_S.Pt(),vP_I1a_S.Eta(),vP_I1a_S.Phi(),0.);
-      vP_I1b_S.SetPtEtaPhiM(vP_I1b_S.Pt(),vP_I1b_S.Eta(),vP_I1b_S.Phi(),0.);
-
-      TLorentzVector vP_VisA_S2 = (vP_L1a_S + vP_J1a_S);
-      vP_VisA_S2.SetPtEtaPhiM(vP_VisA_S2.Pt(),vP_VisA_S2.Eta(),vP_VisA_S2.Phi(),0.);
-      TLorentzVector vP_VisB_S2 = (vP_L1b_S + vP_J1b_S);
-      vP_VisB_S2.SetPtEtaPhiM(vP_VisB_S2.Pt(),vP_VisB_S2.Eta(),vP_VisB_S2.Phi(),0.);
-
-
-      m_c_MX3a_S[t-1] = (vP_VisA_S+vP_I1a_S).M();
-      m_c_MX3b_S[t-1] = (vP_VisB_S+vP_I1b_S).M();
-
-      m_c_MX3a_Vis[t-1] = X3a[t]->GetListVisibleFrames().GetMass();
-      m_c_MX3b_Vis[t-1] = X3b[t]->GetListVisibleFrames().GetMass();
-
-      m_c_MX2a_S[t-1] = (vP_VisA_S2+vP_I1a_S).M();
-      m_c_MX2b_S[t-1] = (vP_VisB_S2+vP_I1b_S).M();
-
-      m_c_MX2a_Vis[t-1] = X2a[t]->GetListVisibleFrames().GetMass();
-      m_c_MX2b_Vis[t-1] = X2b[t]->GetListVisibleFrames().GetMass();
-
-//
-      
-    }
-
   } // End of RJR trees analysis
 
   if(!AnalysisBase<Base>::IsData()){
@@ -1385,29 +1246,29 @@ void ReducedNtuple<Base>::FillOutputTree(TTree* tree, const Systematic& sys, boo
     m_BtagLFSFweight_up = 1;
     m_BtagLFSFweight_down = 1;
     m_elIDSFweight = 1;
-  m_elIDSFweight_up = 1;
-  m_elIDSFweight_down = 1;
-  m_elISOSFweight = 1;
-  m_elISOSFweight_up = 1;
-  m_elISOSFweight_down = 1;
-  m_elSIPSFweight = 1;
-  m_elSIPSFweight_up = 1;
-  m_elSIPSFweight_down = 1;
-  m_elVLSFweight = 1;
-  m_elVLSFweight_up = 1;
-  m_elVLSFweight_down = 1;
-  m_muIDSFweight = 1;
-  m_muIDSFweight_up = 1;
-  m_muIDSFweight_down = 1;
-  m_muISOSFweight = 1;
-  m_muISOSFweight_up = 1;
-  m_muISOSFweight_down = 1;
-  m_muSIPSFweight = 1;
-  m_muSIPSFweight_up = 1;
-  m_muSIPSFweight_down = 1;
-  m_muVLSFweight = 1;
-  m_muVLSFweight_up = 1;
-  m_muVLSFweight_down = 1;
+    m_elIDSFweight_up = 1;
+    m_elIDSFweight_down = 1;
+    m_elISOSFweight = 1;
+    m_elISOSFweight_up = 1;
+    m_elISOSFweight_down = 1;
+    m_elSIPSFweight = 1;
+    m_elSIPSFweight_up = 1;
+    m_elSIPSFweight_down = 1;
+    m_elVLSFweight = 1;
+    m_elVLSFweight_up = 1;
+    m_elVLSFweight_down = 1;
+    m_muIDSFweight = 1;
+    m_muIDSFweight_up = 1;
+    m_muIDSFweight_down = 1;
+    m_muISOSFweight = 1;
+    m_muISOSFweight_up = 1;
+    m_muISOSFweight_down = 1;
+    m_muSIPSFweight = 1;
+    m_muSIPSFweight_up = 1;
+    m_muSIPSFweight_down = 1;
+    m_muVLSFweight = 1;
+    m_muVLSFweight_up = 1;
+    m_muVLSFweight_down = 1;
     m_MetTrigSFweight = 1.;
     m_MetTrigSFweight_up = 1.;
     m_MetTrigSFweight_down = 1.;
@@ -1470,11 +1331,11 @@ void ReducedNtuple<Base>::FillOutputTree(TTree* tree, const Systematic& sys, boo
       m_M_Genjet.push_back(GenJets[i].M());
       int index = -1;
       double minDR = 0.1;
-      for(int g = 0; g < m_NGenjet; g++)
-	if(Jets[i].DeltaR(GenJets[g]) < minDR){
-	  minDR = Jets[i].DeltaR(GenJets[g]);
-	  index = g;
-	  genmatch_jet[g] = i;
+      for(int g = 0; g < m_Njet; g++)
+	if(Jets[g].DeltaR(GenJets[i]) < minDR){
+	  minDR = Jets[g].DeltaR(GenJets[i]);
+	  index = i;
+	  genmatch_jet[i] = g;
 	}
       m_Index_jet.push_back(index);
     }
@@ -1621,4 +1482,6 @@ void ReducedNtuple<Base>::FillOutputTree(TTree* tree, const Systematic& sys, boo
     tree->Fill();
 }
 
+template class ReducedNtuple<SUSYNANOBase>;
+template class ReducedNtuple<NANOULBase>;
 template class ReducedNtuple<NANORun3>;

@@ -77,19 +77,10 @@ int main(int argc, char* argv[]) {
     return 0;
   }
 
-  
-  //string plot_folder = "";
-  //string output_root_file = "output.root";
   RestFrames::SetStyle();
 
-   //std::map<string,long double> dataset_list_2016 = {
-   // {"/WJetsToLNu_HT-600To800_TuneCUETP8M1_13TeV-madgraphMLM-pythia8.txt", (1.0/getTot("WJetsToLNu_HT-600To800_TuneCUETP8M1_13TeV-madgraphMLM-pythia8","Summer16_102X","root/EventCount/EventCount_NANO_Summer16_102X.root")) * 12.07 * 1.21},
-   //};
    //std::map<string,long double> dataset_list_2017 = {
    // {"/WJetsToLNu_HT-600To800_TuneCP5_13TeV-madgraphMLM-pythia8.txt", (1.0/getTot("WJetsToLNu_HT-600To800_TuneCP5_13TeV-madgraphMLM-pythia8","Fall17_102X","root/EventCount/EventCount_NANO_Fall17_102X.root")) * 12.87 * 1.21},
-   //};
-   //std::map<string,long double> dataset_list_2018 = {
-   // {"/WJetsToLNu_HT-600To800_TuneCP5_13TeV-madgraphMLM-pythia8.txt", (1.0/getTot("WJetsToLNu_HT-600To800_TuneCP5_13TeV-madgraphMLM-pythia8","Autumn18_102X","root/EventCount/EventCount_NANO_Autumn18_102X.root")) * 12.87 * 1.21},
    //};
 
    std::map<string,long double> WZ_dataset_list_2023BPix = {
@@ -99,6 +90,12 @@ int main(int argc, char* argv[]) {
     {"/TTtoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8.txt",1.},
     {"/TTto4Q_TuneCP5_13p6TeV_powheg-pythia8.txt",1.},
    };
+   std::map<string,long double> WJets_dataset_list_2017 = {
+    {"/WJetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8.txt",1.},
+   };
+   std::map<string,long double> ZDY_dataset_list_2017 = {
+    {"/DYJetsToLL_M-5to50_TuneCP5_13TeV-madgraphMLM-pythia8.txt",1.},
+   };
    std::map<string,long double> TTJets_dataset_list_2017 = {
     {"/TTJets_TuneCP5_13TeV-madgraphMLM-pythia8.txt",1.},
    };
@@ -107,6 +104,10 @@ int main(int argc, char* argv[]) {
    };
    std::map<string,long double> WZ_dataset_list_2017 = {
     {"/WZ_TuneCP5_13TeV-pythia8.txt",1.},
+   };
+   std::map<string,long double> WW_dataset_list_2017 = {
+    {"/WWTo2L2Nu_NNPDF31_TuneCP5_13TeV-powheg-pythia8.txt",1.},
+    //{"/WWToLNuQQ_NNPDF31_TuneCP5_13TeV-powheg-pythia8.txt",1.},
    };
    std::map<string,long double> WWZ_dataset_list_2017 = {
     {"/WWZ_4F_TuneCP5_13TeV-amcatnlo-pythia8.txt",1.},
@@ -133,13 +134,16 @@ int main(int argc, char* argv[]) {
   std::map<string,std::map<string,long double>> datasets_2017 = {
     {"ttbar",TTJets_dataset_list_2017},
     //{"TTZToQQ",TTZToQQ_dataset_list_2017},
-    {"DB_WZ",WZ_dataset_list_2017},
+    //{"DB_WZ",WZ_dataset_list_2017},
+    {"DB_WW",WW_dataset_list_2017},
+    {"ZDY",ZDY_dataset_list_2017},
+    {"WJets",WJets_dataset_list_2017},
     //{"TB_WWZ",WWZ_dataset_list_2017},
   };
 
   std::map<string,std::map<string,long double>> datasets_2017_SMS = {
-    {"TChiWZ_20",TChiWZ_3_50_dataset_list_2017},
-    {"TChiWZ_50",TChiWZ_3_50_dataset_list_2017},
+    //{"TChiWZ_20",TChiWZ_3_50_dataset_list_2017},
+    //{"TChiWZ_50",TChiWZ_3_50_dataset_list_2017},
     //{"TChiWZ_90",TChiWZ_60_90_dataset_list_2017},
   };
   std::map<string,std::map<string,long double>> datasets_2023_BPix_SMS = {
@@ -150,14 +154,14 @@ int main(int argc, char* argv[]) {
   };
   std::map<string,std::map<string,long double>> datasets_2023_BPix = {
     {"ttbar",TTJets_dataset_list_2023BPix},
-    {"DB_WZ",WZ_dataset_list_2023BPix},
+    //{"DB_WZ",WZ_dataset_list_2023BPix},
   };
 
   vector<std::map<string,std::map<string,long double>>> datasets = {
     datasets_2017,
     datasets_2017_SMS,
     datasets_2023_BPix_SMS,
-    datasets_2023_BPix,
+    //datasets_2023_BPix,
   };
 
   gSystem->Exec("make cmssw -j4");

@@ -122,6 +122,7 @@ public:
   
   string GetDataSet(){ return m_DataSet; }
   string GetFileTag(){ return m_FileTag; }
+  int    GetYear(){ return m_year; }
   
 protected:
   bool m_DoSMS;
@@ -153,6 +154,7 @@ protected:
 
   string m_DataSet;
   string m_FileTag;
+  int m_year;
 
   Systematics m_Systematics;
   

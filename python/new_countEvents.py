@@ -317,7 +317,7 @@ def run():
     parser.add_argument("--verbose",    "-v", default = False,  action = "store_true",  help="verbose flag to print more things")
     parser.add_argument("--das",        "-w", default = False,  action = "store_true",  help="get DAS count")
     parser.add_argument("--eventCount", "-t", default = False,  action = "store_true",  help="check event count file")
-    parser.add_argument("--filetag",    "-f", default = "",                             help="filetag for event count checking (required for --eventCountCheck)")
+    parser.add_argument("--filetag",    "-f", default = "",                             help="filetag for event count checking (required for --eventCount check)")
 
     options     = parser.parse_args()
     directory   = options.directory

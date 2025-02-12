@@ -60,7 +60,7 @@ void Plot_Eff(TEfficiency* e);
 void PlotCondor_Cands_Plot_1D_NANO(){
   cout << "RUNNING PLOTTER..." << endl;
   bool condor = false;
-  bool hadd = false;
+  bool hadd = true;
   if(condor){
     cout << "Attempting to hold any running jobs to help prevent file corruption" << endl;
     gSystem->Exec("condor_hold $USER");
@@ -80,8 +80,8 @@ void PlotCondor_Cands_Plot_1D_NANO(){
   string base_output = "output_Plot_1D_NANO";
 
   vector<string> extra_tags = {
-    "_Sparticle2_genlep_minRecoLep2_MET100_PTISR200_RISR0p5",
-    "_Sparticle2_genlep_minRecoLep2_minSjet2_MET100_PTISR200_RISR0p5",
+    "_Sparticle2_RecoLep2_ge1JS_MET100_PTISR200_RISR0p5_SplitSJet",
+    "_Sparticle2_RecoLep2_0JS_MET100_PTISR200_RISR0p5_SplitSJet",
   };
 
   std::map<string,double> ttbar_procs_2017 = {
@@ -92,6 +92,15 @@ void PlotCondor_Cands_Plot_1D_NANO(){
   };
   std::map<string,double> DB_WZ_procs_2017 = {
     {"DB_WZ",1.},
+  };
+  std::map<string,double> DB_WW_procs_2017 = {
+   {"DB_WW",1.},
+  };
+  std::map<string,double> ZDY_procs_2017 = {
+   {"ZDY",1.},
+  };
+  std::map<string,double> WJets_procs_2017 = {
+   {"WJets",1.},
   };
   std::map<string,double> TB_WWZ_procs_2017 = {
     {"TB_WWZ",1.},
@@ -132,6 +141,15 @@ void PlotCondor_Cands_Plot_1D_NANO(){
   std::map<string,std::map<string,double>> DB_WZ_dataset_2017 = {
     {"WZ_TuneCP5_13TeV-pythia8",DB_WZ_procs_2017},
   };
+  std::map<string,std::map<string,double>> DB_WW_dataset_2017 = {
+    {"WWTo2L2Nu_NNPDF31_TuneCP5_13TeV-powheg-pythia8",DB_WW_procs_2017},
+  };
+  std::map<string,std::map<string,double>> ZDY_dataset_2017 = {
+    {"DYJetsToLL_M-5to50_TuneCP5_13TeV-madgraphMLM-pythia8",ZDY_procs_2017},
+  };
+  std::map<string,std::map<string,double>> WJets_dataset_2017 = {
+    {"WJetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8",WJets_procs_2017},
+  };
   std::map<string,std::map<string,double>> TB_WWZ_dataset_2017 = {
     {"WWZ_4F_TuneCP5_13TeV-amcatnlo-pythia8",TB_WWZ_procs_2017},
   };
@@ -157,11 +175,14 @@ void PlotCondor_Cands_Plot_1D_NANO(){
   vector<std::map<string,std::map<string,double>>> bkg_datasets_2017 = {
     ttbar_dataset_2017,
     //TTZToQQ_dataset_2017,
-    DB_WZ_dataset_2017,
+    //DB_WZ_dataset_2017,
+    DB_WW_dataset_2017,
+    WJets_dataset_2017,
+    //ZDY_dataset_2017,
     //TB_WWZ_dataset_2017,
   };
   vector<std::map<string,std::map<string,double>>> sms_datasets_2017 = {
-    TChiWZ_lowDM_dataset_2017,
+    //TChiWZ_lowDM_dataset_2017,
     //TChiWZ_medDM_dataset_2017,
   };
   vector<std::map<string,std::map<string,double>>> sms_datasets_2023_BPix = {
@@ -176,25 +197,25 @@ void PlotCondor_Cands_Plot_1D_NANO(){
   };
 
   std::map<string,vector<std::map<string,std::map<string,double>>>> filetags = {
-    {"Fall17_102X_SMS",sms_datasets_2017},
+    //{"Fall17_102X_SMS",sms_datasets_2017},
     {"Fall17_102X",bkg_datasets_2017},
     {"Summer23BPix_130X_SMS",sms_datasets_2023_BPix},
-    {"Summer23BPix_130X",bkg_datasets_2023_BPix},
+    //{"Summer23BPix_130X",bkg_datasets_2023_BPix},
   };
-
 
   for(int tag_i = 0; tag_i < int(extra_tags.size()); tag_i++){
     string extra_tag = extra_tags[tag_i];
+    cout << "Processing: " << extra_tag << endl;
     string path_to_inputfiles = "/home/zflowers/CMSSW_13_3_1/src/SUSYCascades/SubmitCondor_Plot_1D_NANO"+extra_tag+"/";
     output_root_file = base_output+extra_tag+".root";
-    TH2D* hist_EventCount = new TH2D("EventCount", "EventCount;Category;Process", 12, 0., 12., 12, 0., 12.);
+    TH2D* hist_EventCount = new TH2D("EventCount", "EventCount;", 12, 0., 12., 20, 0., 20.);
     for(std::map<string,vector<std::map<string,std::map<string,double>>>>::iterator iter0 = filetags.begin(); iter0 != filetags.end(); ++iter0){
       string filetag = iter0->first;
       vector<std::map<string,std::map<string,double>>> datasets = iter0->second;
       for(int iter1 = 0; iter1 < int(datasets.size()); iter1++){
         for(std::map<string,std::map<string,double>>::iterator iter2 = datasets[iter1].begin(); iter2 != datasets[iter1].end(); ++iter2){
           string dataset_name = iter2->first;
-          cout << "Running on " << dataset_name << endl;
+          cout << "  Running on " << dataset_name << endl;
           std::map<string,double> procs = iter2->second;
           for(std::map<string,double>::iterator iter3 = procs.begin(); iter3 != procs.end(); ++ iter3){
             string proc = iter3->first;
@@ -249,18 +270,24 @@ void PlotCondor_Cands_Plot_1D_NANO(){
       }
     }
     hist_EventCount->GetYaxis()->SetBinLabel(1, "ttbar");
-    hist_EventCount->GetYaxis()->SetBinLabel(2, "DB");
-    int DM = 5;
-    int lastbkg = 2;
+    hist_EventCount->GetYaxis()->SetBinLabel(2, "WW");
+    hist_EventCount->GetYaxis()->SetBinLabel(3, "WJets");
+    hist_EventCount->GetYaxis()->SetBinLabel(4, ""); // DY
+    int DM = 20;
+    int lastbkg = 4;
     for(int i = 0; i < 3; i++){
       hist_EventCount->GetYaxis()->SetBinLabel(lastbkg+1, ("Cascades #tilde{#nu} #tilde{#nu} "+std::to_string(DM)).c_str());
       hist_EventCount->GetYaxis()->SetBinLabel(lastbkg+2, ("Cascades #tilde{#it{l}} #tilde{#nu} "+std::to_string(DM)).c_str());
       hist_EventCount->GetYaxis()->SetBinLabel(lastbkg+3, ("Cascades #tilde{#it{l}} #tilde{#it{l}} "+std::to_string(DM)).c_str());
-      DM *= 2;
+      DM /= 2;
       lastbkg += 3;
     }
-    
+    for(int i = 1; i < hist_EventCount->GetNbinsX(); i++)
+      for(int j = 1; j < hist_EventCount->GetNbinsY(); j++)
+        if(hist_EventCount->GetBinContent(i,j) > 0)
+          hist_EventCount->SetBinContent(i,j, hist_EventCount->GetBinContent(i,j)/hist_EventCount->GetBinContent(0,j));
     Plot_Hist(hist_EventCount, false, 1.);
+
   } // for(int tag_i = 0; tag_i < int(extra_tags.size()); tag_i++)
   if(condor){
     cout << "Releasing previously held jobs" << endl;
@@ -416,7 +443,7 @@ void Plot_Eff(TEfficiency* e){
   can->SaveAs((plot_folder+pdf_title+".pdf").c_str());
   gErrorIgnoreLevel = 0;
   TFile* file = new TFile(output_root_file.c_str(),"UPDATE");
-  can->Write();
+  can->Write(0,TObject::kWriteDelete);
   file->Close();
   delete e;
   delete can;
@@ -477,7 +504,7 @@ void Plot_Hist(TH1* h, bool Scale, double Scale_Val){
   can->SaveAs((plot_folder+pdf_title+".pdf").c_str());
   gErrorIgnoreLevel = 0;
   TFile* file = new TFile(output_root_file.c_str(),"UPDATE");
-  can->Write();
+  can->Write(0,TObject::kWriteDelete);
   file->Close();
   delete h;
   delete can;
@@ -541,7 +568,7 @@ void Plot_Hist(TH2* h, bool Scale, double Scale_Val){
   can->SaveAs((plot_folder+pdf_title+".pdf").c_str());
   gErrorIgnoreLevel = 0;
   TFile* file = new TFile(output_root_file.c_str(),"UPDATE");
-  can->Write();
+  can->Write(0,TObject::kWriteDelete);
   file->Close();
   delete h;
   delete can;

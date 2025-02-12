@@ -200,16 +200,15 @@ double NeventTool::GetNweight_BKG(const std::string& dataset, const std::string&
   if(!m_Tree)
     return 0.;
 
-  std::cout << "found the tree" << std::endl;
-
   std::pair<std::string,std::string> label(dataset,filetag);
   
   if(m_Label2Nweight_BKG.count(label) == 0)
     Initialize_BKG(dataset, filetag);
 
-  std::cout << "Nweight is " << m_Label2Nweight_BKG[label] << std::endl;
+  int Nweight = m_Label2Nweight_BKG[label];
+  std::cout << "Nweight is " << Nweight << std::endl;
 
-  return m_Label2Nweight_BKG[label];
+  return Nweight;
 }
 
 double NeventTool::GetFilterEff(const std::string& dataset, const std::string& filetag, int lumiblock) const {
@@ -296,6 +295,8 @@ int NeventTool::EventsInDAS(const std::string& u_dataset, const std::string& u_f
  filetag.erase(filetag.length()-5);
  double Events = 0.;
  gSystem->Exec(("dasgoclient -query=\"dataset=/"+dataset+"/*"+filetag+"NanoAODv12*"+"/NANO*\" >> datasets_"+filetag+"_"+dataset+".txt").c_str());
+ if(!check_dataset_file("datasets_"+filetag+"_"+dataset+".txt"))
+   gSystem->Exec(("dasgoclient -query=\"dataset=/"+dataset+"/*"+filetag+"NanoAODv9*"+"/NANO*\" >> datasets_"+filetag+"_"+dataset+".txt").c_str());
  if(!check_dataset_file("datasets_"+filetag+"_"+dataset+".txt"))
    gSystem->Exec(("dasgoclient -query=\"dataset=/"+dataset+"/*"+filetag+"NanoAODv7*"+"/NANO*\" >> datasets_"+filetag+"_"+dataset+".txt").c_str());
  if(!check_dataset_file("datasets_"+filetag+"_"+dataset+".txt"))

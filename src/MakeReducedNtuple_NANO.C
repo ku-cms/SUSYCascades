@@ -7,6 +7,8 @@
 #include <stdio.h>
 #include <dirent.h>
 #include <vector>
+#include <variant>
+#include <memory>
 
 // ROOT includes
 #include <TROOT.h>
@@ -18,6 +20,8 @@
 #include <TLorentzVector.h>
 
 #include "ReducedNtuple.hh"
+#include "SUSYNANOBase.hh"
+#include "NANOULBase.hh"
 #include "NANORun3.hh"
 
 using namespace std;
@@ -181,51 +185,54 @@ int main(int argc, char* argv[]) {
     cout << "   Adding file " << filenames[i] << endl;
   }
 
-  ReducedNtuple<NANORun3>* ntuple = new ReducedNtuple<NANORun3>(chain);
+  using NtupleVariant = std::variant<std::unique_ptr<ReducedNtuple<SUSYNANOBase>>, std::unique_ptr<ReducedNtuple<NANOULBase>>, std::unique_ptr<ReducedNtuple<NANORun3>>>;
+  NtupleVariant ntuple;
+  if(string(FileTag).find("130X") != std::string::npos){ cout << "Using Run3 base" << endl; ntuple = std::make_unique<ReducedNtuple<NANORun3>>(chain); }
+  else if(string(FileTag).find("UL") != std::string::npos){ cout << "Using UL base" << endl; ntuple = std::make_unique<ReducedNtuple<NANOULBase>>(chain); }
+  else ntuple = std::make_unique<ReducedNtuple<SUSYNANOBase>>(chain);
 
-  ntuple->AddLabels(string(DataSet),string(FileTag));
-  ntuple->AddEventCountFile(string(EventCount));
-  ntuple->AddFilterEffFile(string(FilterEff));
-  ntuple->AddPUFolder(string(PUFOLD));
-  ntuple->AddBtagFolder(string(BTAGFOLD));
-  ntuple->AddLepFolder(string(LEPFOLD));
-  ntuple->AddJMEFolder(string(JMEFOLD));
-  ntuple->AddMETTriggerFile(string(METTRIGFILE));
-  ntuple->AddPrefireFile(string(PREFIREFILE));
+  std::visit([&](auto& nt) { nt->AddLabels(string(DataSet),string(FileTag)); }, ntuple);
+  std::visit([&](auto& nt) { nt->AddEventCountFile(string(EventCount)); }, ntuple);
+  std::visit([&](auto& nt) { nt->AddFilterEffFile(string(FilterEff)); }, ntuple);
+  std::visit([&](auto& nt) { nt->AddPUFolder(string(PUFOLD)); }, ntuple);
+  std::visit([&](auto& nt) { nt->AddBtagFolder(string(BTAGFOLD)); }, ntuple);
+  std::visit([&](auto& nt) { nt->AddLepFolder(string(LEPFOLD)); }, ntuple);
+  std::visit([&](auto& nt) { nt->AddJMEFolder(string(JMEFOLD)); }, ntuple);
+  std::visit([&](auto& nt) { nt->AddMETTriggerFile(string(METTRIGFILE)); }, ntuple);
+  std::visit([&](auto& nt) { nt->AddPrefireFile(string(PREFIREFILE)); }, ntuple);
   #ifdef _CMSSW_
   if(!DO_SMS && !IS_DATA)
-    ntuple->AddLHAPDF();
+    //ntuple->AddLHAPDF();
+    std::visit([](auto& nt) { nt->AddLHAPDF(); }, ntuple);
   #endif
 
   if(DO_SYS)
-    ntuple->AddSystematics();
+    std::visit([](auto& nt) { nt->AddSystematics(); }, ntuple);
   if(DO_SYS_JES)
-    ntuple->AddJESSystematics();
+    std::visit([](auto& nt) { nt->AddJESSystematics(); }, ntuple);
   if(DO_SYS_JER)
-    ntuple->AddJERSystematics();
+    std::visit([](auto& nt) { nt->AddJERSystematics(); }, ntuple);
   if(DO_SYS_MET)
-    ntuple->AddMETSystematics();
+    std::visit([](auto& nt) { nt->AddMETSystematics(); }, ntuple);
   if(DO_SYS_EES)
-    ntuple->AddEESSystematics();
+    std::visit([](auto& nt) { nt->AddEESSystematics(); }, ntuple);
   if(DO_SYS_MMS)
-    ntuple->AddMMSSystematics();
+    std::visit([](auto& nt) { nt->AddMMSSystematics(); }, ntuple);
   
   if(DO_JSON)
-    ntuple->AddJSONFile(string(JSONFile));
+    std::visit([&](auto& nt) { nt->AddJSONFile(string(JSONFile)); }, ntuple);
 
   if(DO_SMS)
-    ntuple->DoSMS();
+    std::visit([](auto& nt) { nt->DoSMS(); }, ntuple);
 
   if(IS_DATA)
-    ntuple->DoData();
+    std::visit([](auto& nt) { nt->DoData(); }, ntuple);
 
   if(IS_FASTSIM)
-    ntuple->DoFastSim();
+    std::visit([](auto& nt) { nt->DoFastSim(); }, ntuple);
 
   cout << "writing output with ichunk=" << ICHUNK << " nchunk=" << NCHUNK << endl;
-  ntuple->WriteNtuple(string(outputFileName), ICHUNK, NCHUNK, DO_slim);
-
-  delete ntuple;
+  std::visit([&](auto& nt) { nt->WriteNtuple(string(outputFileName), ICHUNK, NCHUNK, DO_slim); }, ntuple);
  
   return 0;
 

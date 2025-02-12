@@ -1,7 +1,6 @@
 #! /usr/bin/env python
 import os, sys, time
 
-
 # ----------------------------------------------------------- #
 # Parameters
 # ----------------------------------------------------------- #
@@ -17,7 +16,7 @@ CMSSW_SETUP = './scripts/cmssw_setup_connect_el9.sh'
 TREE        = "Events"
 USER        = os.environ['USER']
 #OUT         = "/uscms/home/"+USER+"/nobackup/EventCount/root/"
-OUT    = "/ospool/cms-user/"+USER+"/NTUPLES/Processing"
+OUT         = "/ospool/cms-user/"+USER+"/NTUPLES/Processing"
 LIST        = "default.list"
 QUEUE       = ""
 MAXN        = 1
@@ -83,7 +82,6 @@ def write_sh(srcfile,ifile,ofile,logfile,outfile,errfile,dataset,filetag):
     #fsrc.write('+RequiresSharedFS = True \n')
 
     if CONNECT is True:
-        #transfer_input = 'transfer_input_files = '+TARGET+'config.tgz,/ospool/cms-user/zflowers/public/sandbox-CMSSW_10_6_5-6403d6f.tar.bz2\n'
         transfer_input = 'transfer_input_files = '+TARGET+'config.tgz,/ospool/cms-user/zflowers/public/sandbox-CMSSW_13_3_1-el9.tar.bz2\n'
     else:
         transfer_input = 'transfer_input_files = '+TARGET+'config.tgz,/uscms/home/z374f439/nobackup/whatever_you_want/sandbox-CMSSW_10_6_5-6403d6f.tar.bz2\n'
@@ -102,9 +100,10 @@ def write_sh(srcfile,ifile,ofile,logfile,outfile,errfile,dataset,filetag):
     fsrc.write('+ProjectName="cms.org.ku"\n')
     fsrc.write('+RequiresCVMFS = True \n')
     fsrc.write('Requirements = HAS_SINGULARITY == True\n')
-    fsrc.write('RequestCpus=ifthenelse(isUndefined(CpusUsage),1,MAX({RequestCpus+1 * 2, 32}))\n')
-    fsrc.write('periodic_hold = (CpusUsage >= ((RequestCpus) *5/4)) && (JobStatus == 2)\n')
-    fsrc.write('periodic_release = (HoldReasonCode == 12 && HoldReasonSubCode == 256 || HoldReasonCode == 13 && HoldReasonSubCode == 2 || HoldReasonCode == 12 && HoldReasonSubCode == 2)\n')
+    fsrc.write('RequestCpus=ifthenelse((isUndefined(CpusUsage) || CpusUsage < 2),1,MIN(RequestCpus+2, 32))\n')
+    fsrc.write('periodic_hold = (CpusUsage >= RequestCpus) && (JobStatus == 3)\n')
+    fsrc.write('periodic_hold_subcode = 42\n')
+    fsrc.write('periodic_release = (HoldReasonCode == 12 && HoldReasonSubCode == 256 || HoldReasonCode == 13 && HoldReasonSubCode == 2 || HoldReasonCode == 12 && HoldReasonSubCode == 2 || HoldReasonCode == 26 && HoldReasonSubCode == 120 || HoldReasonCode == 3 && HoldReasonSubCode == 0 || HoldReasonSubCode == 42)\n')
     fsrc.write('+REQUIRED_OS="rhel9"\n')
     fsrc.write('job_lease_duration = 3600\n')
     fsrc.write('MY.SingularityImage = "/cvmfs/singularity.opensciencegrid.org/cmssw/cms:rhel9"\n')
@@ -190,7 +189,8 @@ if __name__ == "__main__":
 
     datasetlist = []
 
-    knowntags = ["Fall17_94X","Autumn18_102X","Summer16_94X","Fall17_102X","Summer16_102X","Summer20UL16_102X","Summer20UL16APV_102X","Summer20UL17_102X","Summer20UL18_102X","RunIISummer20UL17NanoAODv9","Summer22_130X","Summer22EE_130X","Summer23_130X","Summer23BPix_130X"]
+    # tags need to follow the format of CAMPAIGN_CMSSWX and CMSSWX must be 5 chars for later DAS checks to work
+    knowntags = ["Autumn18_102X","Fall17_102X","Summer16_102X","Summer20UL16_106X","Summer20UL16APV_106X","Summer20UL17_106X","Summer20UL18_106X","Summer22_130X","Summer22EE_130X","Summer23_130X","Summer23BPix_130X"]
     
     with open(listfile,'r') as mylist:
         inputlist = mylist.readlines()

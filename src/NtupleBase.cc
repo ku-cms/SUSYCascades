@@ -3,6 +3,7 @@
 
 #include "NtupleBase.hh"
 #include "SUSYNANOBase.hh"
+#include "NANOULBase.hh"
 #include "NANORun3.hh"
 #include "NeventTool.hh"
 
@@ -182,5 +183,7 @@ void NtupleBase<Base>::WriteNtuple(const string& filename, int ichunk, int nchun
   
 }
 
+template class NtupleBase<SUSYNANOBase>;
+template class NtupleBase<NANOULBase>;
 template class NtupleBase<NANORun3>;
 

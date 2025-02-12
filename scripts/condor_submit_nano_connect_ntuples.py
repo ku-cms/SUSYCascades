@@ -344,7 +344,7 @@ if __name__ == "__main__":
         # make EventCount file
         if VERBOSE:
             print("making EventCount file")
-        os.system("hadd "+config+"EventCount.root root/EventCount/*130X*.root > /dev/null")
+        os.system("hadd "+config+"EventCount.root root/EventCount/*.root > /dev/null")
         EVTCNT = "./config/EventCount.root"
 
         # make FilterEff file 
@@ -415,7 +415,8 @@ if __name__ == "__main__":
     clean_inputlist = []
     input_info      = {}
 
-    knowntags = ["Fall17_94X","Autumn18_102X","Summer16_94X","Fall17_102X","Summer16_102X","Summer20UL16_102X","Summer20UL16APV_102X","Summer20UL17_102X","Summer20UL18_102X","RunIISummer20UL17NanoAODv9","Summer20UL16_130X","Summer20UL16APV_130X","Summer20UL17_130X","Summer20UL18_130X","Summer22_130X","Summer22EE_130X","Summer23_130X","Summer23BPix_130X"]
+    # tags need to follow the format of CAMPAIGN_CMSSWX and CMSSWX must be 5 chars for later DAS checks to work
+    knowntags = ["Autumn18_102X","Fall17_102X","Summer16_102X","Summer20UL16_102X","Summer20UL16APV_102X","Summer20UL17_102X","Summer20UL18_102X","Summer22_130X","Summer22EE_130X","Summer23_130X","Summer23BPix_130X"]
     
     n_samples = 0
     with open(listfile,'r') as mylist:
