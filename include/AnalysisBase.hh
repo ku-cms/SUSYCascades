@@ -93,6 +93,7 @@ public:
   virtual ParticleList GetJetsMET(TVector3& MET, int id = -1);
   virtual ParticleList GetGenJets();
   virtual ParticleList GetElectrons();
+  virtual ParticleList GetLowPtElectrons();
   virtual ParticleList GetMuons();
 
   virtual TVector3 GetAltMET();

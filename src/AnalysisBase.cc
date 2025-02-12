@@ -166,7 +166,6 @@ void AnalysisBase<Base>::AddMETTriggerFile(const string& csvfile){
   m_METTriggerTool.BuildMap(csvfile);
 }
 
-
 template <class Base>
 void AnalysisBase<Base>::InitializeHistograms(vector<TH1D*>& histos){}
 
@@ -199,6 +198,14 @@ template <class Base>
 bool AnalysisBase<Base>::PassEventFilter(){
   return true;
 }
+
+template <class Base>
+void AnalysisBase<Base>::AddPrefireFile(const string& prefirefile){
+  if(m_year > 2018) return; // prefire only need for Run2
+  bool UseEMpT = false; // seems to always be false from: https://twiki.cern.ch/twiki/bin/viewauth/CMS/L1PrefiringWeightRecipe
+  m_PrefireTool = PrefireTool(m_year,UseEMpT,prefirefile);
+}
+
 
 template <class Base>
 double AnalysisBase<Base>::GetPrefireWeight(int updown){
@@ -335,6 +342,11 @@ ParticleList AnalysisBase<Base>::GetJets(int id){
 
 template <class Base>
 ParticleList AnalysisBase<Base>::GetElectrons(){
+  return ParticleList();
+}
+
+template <class Base>
+ParticleList AnalysisBase<Base>::GetLowPtElectrons(){
   return ParticleList();
 }
 
@@ -981,12 +993,6 @@ double AnalysisBase<Base>::GetPDFWeight(int updown){
 /////////////////////////////////////////////////
 // Start SUSYNANOBase specific methods
 /////////////////////////////////////////////////
-
-template <class Base>
-void AnalysisBase<Base>::AddPrefireFile(const string& prefirefile){
-  bool UseEMpT = false; // seems to always be false from: https://twiki.cern.ch/twiki/bin/viewauth/CMS/L1PrefiringWeightRecipe
-  m_PrefireTool = PrefireTool(m_year,UseEMpT,prefirefile);
-}
 
 template<>
 double AnalysisBase<SUSYNANOBase>::EGvalue(int jetIndex, int updown){
@@ -3908,8 +3914,12 @@ ParticleList AnalysisBase<NANOULBase>::GetElectrons(){
         list.push_back(lep);
     }
   }
+  return list;
+}
 
-  // Adding the lowpt electrons here
+template <>
+ParticleList AnalysisBase<NANOULBase>::GetLowPtElectrons(){
+  ParticleList list;
 
   int N1 = nLowPtElectron;
   for(int i = 0; i < N1; i++){
@@ -3920,11 +3930,11 @@ ParticleList AnalysisBase<NANOULBase>::GetElectrons(){
       continue;
     if(fabs(LowPtElectron_dxy[i]) >= 0.05 || fabs(LowPtElectron_dz[i]) >= 0.1)
       continue;
-    if(LowPtElectron_ID[i] < 1.4) // need to tune after feedback from Brady
+    if(LowPtElectron_ID[i] < 1.8) // need to tune after feedback from Brady
       continue;
     
-    //if(LowPtElectron_dxyErr[i] < 1.e-8 || LowPtElectron_dzErr[i] < 1.e-8)
-    //  continue;
+    if(LowPtElectron_dxyErr[i] < 1.e-8 || LowPtElectron_dzErr[i] < 1.e-8)
+      continue;
     
     // Calculate IP_3D and SIP_3D = IP_3D / IP_3D_err for the LowPtElectron collection.
     // - IP_3D:     3D impact parameter wrt first PV, in cm
@@ -3933,16 +3943,21 @@ ParticleList AnalysisBase<NANOULBase>::GetElectrons(){
     float dz        = LowPtElectron_dz[i];
     float dxy_err   = LowPtElectron_dxyErr[i];
     float dz_err    = LowPtElectron_dzErr[i];
+    // the SIP_3D defined below is coming from Suyash's talk, its something we defined. The sigmas are needed for that
+    // calculation.
+    float sigma_xy  = dxy/dxy_err;
+    float sigma_z   = dz/dz_err;
     float IP_3D     = sqrt(dxy*dxy + dz*dz);
-    float SIP_3D    = IP_3D*IP_3D / sqrt((dxy*dxy)*(dxy_err*dxy_err) + (dz*dz)*(dz_err*dz_err));
+    float SIP_3D    = sqrt(sigma_xy*sigma_xy + sigma_z*sigma_z);
 
     // TODO: Review and tune SIP_3D cut.
-    //if (SIP_3D >= 8)
-    //  continue;
+    if (SIP_3D >= 2)
+      continue;
 
     // FIXME: fix PFIso requirement for the LowPtElectron collection.
-    //if(Electron_pfRelIso03_all[i]*Electron_pt[i] >= 20. + 300./Electron_pt[i])
-    //  continue;
+    // Fixed by Derek
+    if(LowPtElectron_miniPFRelIso_all[i]*LowPtElectron_pt[i] >= 20. + 300./LowPtElectron_pt[i])
+     continue;
 
     Particle lep;
     lep.SetPtEtaPhiM(LowPtElectron_pt[i], LowPtElectron_eta[i],
@@ -3970,6 +3985,7 @@ ParticleList AnalysisBase<NANOULBase>::GetElectrons(){
     list.push_back(lep);
   }
   return list;
+
 }
 
 template <>
@@ -4728,30 +4744,6 @@ double AnalysisBase<NANORun3>::GetMuVLIDSFWeight(const ParticleList& mus, int up
 }
 
 template <>
-double AnalysisBase<NANORun3>::GetMETTriggerSFWeight(double MET, double HT, int Nele, int Nmu, int updown){
-  if(IsData())
-    return 1.;
-
-  if(IsFastSim()){
-    return m_METTriggerTool.Get_EFF(MET, HT, m_year,
-				    (Nele > 0), (Nmu > 0),
-				    false, updown)*
-      m_METTriggerTool.Get_SF(MET, HT, m_year,
-			      (Nele > 0), (Nmu > 0),
-			      false, updown);
-  } else {
-    return m_METTriggerTool.Get_SF(MET, HT, m_year,
-				   (Nele > 0), (Nmu > 0),
-				   false, updown);
-  }
-}
-
-template <>
-int AnalysisBase<NANORun3>::GetMETTriggerSFCurve(double HT, int Nele, int Nmu){
-  return m_METTriggerTool.Get_Curve_Index(HT, m_year, (Nele > 0), (Nmu > 0), IsData());
-}
-
-template <>
 void AnalysisBase<NANORun3>::InitializeHistograms(vector<TH1D*>& histos){
   // nPU
   TH1D* h_nPU = new TH1D("hist_NPU", "hist_NPU", 75, 0., 75.);
@@ -5067,9 +5059,12 @@ ParticleList AnalysisBase<NANORun3>::GetElectrons(){
       }
     }
   }
+  return list;
+}
 
-  // Adding the lowpt electrons here
-
+template <>
+ParticleList AnalysisBase<NANORun3>::GetLowPtElectrons(){
+  ParticleList list;
   int N1 = nLowPtElectron;
   for(int i = 0; i < N1; i++){
     // baseline lepton definition
@@ -5079,11 +5074,11 @@ ParticleList AnalysisBase<NANORun3>::GetElectrons(){
       continue;
     if(fabs(LowPtElectron_dxy[i]) >= 0.05 || fabs(LowPtElectron_dz[i]) >= 0.1)
       continue;
-    if(LowPtElectron_ID[i] < 1.4) // need to tune after feedback from Brady
+    if(LowPtElectron_ID[i] < 1.8) // need to tune after feedback from Brady
       continue;
     
-    //if(LowPtElectron_dxyErr[i] < 1.e-8 || LowPtElectron_dzErr[i] < 1.e-8)
-    //  continue;
+    if(LowPtElectron_dxyErr[i] < 1.e-8 || LowPtElectron_dzErr[i] < 1.e-8)
+      continue;
     
     // Calculate IP_3D and SIP_3D = IP_3D / IP_3D_err for the LowPtElectron collection.
     // - IP_3D:     3D impact parameter wrt first PV, in cm
@@ -5092,16 +5087,21 @@ ParticleList AnalysisBase<NANORun3>::GetElectrons(){
     float dz        = LowPtElectron_dz[i];
     float dxy_err   = LowPtElectron_dxyErr[i];
     float dz_err    = LowPtElectron_dzErr[i];
+    // the SIP_3D defined below is coming from Suyash's talk, its something we defined. The sigmas are needed for that
+    // calculation.
+    float sigma_xy  = dxy/dxy_err;
+    float sigma_z   = dz/dz_err;
     float IP_3D     = sqrt(dxy*dxy + dz*dz);
-    float SIP_3D    = IP_3D*IP_3D / sqrt((dxy*dxy)*(dxy_err*dxy_err) + (dz*dz)*(dz_err*dz_err));
+    float SIP_3D    = sqrt(sigma_xy*sigma_xy + sigma_z*sigma_z);
 
     // TODO: Review and tune SIP_3D cut.
-    //if (SIP_3D >= 8)
-    //  continue;
+    if (SIP_3D >= 2)
+      continue;
 
     // FIXME: fix PFIso requirement for the LowPtElectron collection.
-    //if(Electron_pfRelIso03_all[i]*Electron_pt[i] >= 20. + 300./Electron_pt[i])
-    //  continue;
+    // Fixed by Derek
+    if(LowPtElectron_miniPFRelIso_all[i]*LowPtElectron_pt[i] >= 20. + 300./LowPtElectron_pt[i])
+     continue;
 
     Particle lep;
     lep.SetPtEtaPhiM(LowPtElectron_pt[i], LowPtElectron_eta[i],
@@ -5129,6 +5129,7 @@ ParticleList AnalysisBase<NANORun3>::GetElectrons(){
     list.push_back(lep);
   }
   return list;
+
 }
 
 template <>

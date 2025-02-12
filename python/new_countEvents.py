@@ -148,6 +148,7 @@ class EventCount:
                     print(f"dataset: {dataset} is at {perc}%")
                 else:
                     print(f"Got {DAS_counts[dataset]} events from the DAS check for {dataset}")
+                    print(Fore.RED + f"dataset: {dataset} has failed the check!" + Fore.RESET)
             else:
                 print(Fore.GREEN + f"dataset: {dataset} passes the DAS check" + Fore.RESET)
 

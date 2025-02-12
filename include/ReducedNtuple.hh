@@ -277,8 +277,6 @@ private:
   double m_PTS;
   double m_PzS;
 
-  double m_MX3a;
-  double m_MX3b;
   double m_EVa;
   double m_EVb;
   double m_PVa;
@@ -310,10 +308,10 @@ private:
   double m_PJ;
   double m_PL;
   
-  double m_PX3;
-  double m_PX3_BoostT;
-  double m_MX3a_BoostT;
-  double m_MX3b_BoostT;
+  double m_PX2;
+  double m_PX2_BoostT;
+  double m_MX2a_BoostT;
+  double m_MX2b_BoostT;
   double m_Mperp;
   double m_gammaT;
 
@@ -338,19 +336,6 @@ private:
   double m_cosLa;
   double m_cosLb;
 
-  double m_H11S;
-  double m_H21S;
-  double m_HT21S;
-  double m_H22S;
-  double m_HT22S;
-  double m_H42S;
-  double m_HT42S;
-  
-  double m_H11X3a;
-  double m_H11X3b;
-  double m_H21X3a;
-  double m_H21X3b;
-
   // ISR related variables
   double m_PISR;
   double m_PTISR;
@@ -358,46 +343,35 @@ private:
   double m_RISR;
   double m_RISRT;
 
-  // Cascade variables
-  vector<double>  m_c_MX3a_S; 
-  vector<double>  m_c_MX3b_S;
-  vector<double>  m_c_MX3a_Vis;
-  vector<double>  m_c_MX3b_Vis;
-  vector<double>  m_c_MX2a_S;
-  vector<double>  m_c_MX2b_S;
-  vector<double>  m_c_MX2a_Vis;
-  vector<double>  m_c_MX2b_Vis;
+  // New Observables for Run3/Cascades
+  // analysis using ISR boosted tree
+  // variables using 4-vects constructed by evaluating in CM frame and making perp to boost
+  double m_MSperpCM0; 
+  double m_MaPerpCM0;
+  double m_MbPerpCM0;
+  double m_MaVPerpCM0;
+  double m_MbVPerpCM0;
+  double m_MQperpCM0; // sqrt(Ma*Ma + Mb*Mb)/sqrt(2)
+  double m_gammaPerpCM0; // 2*MQ/MS
+  double m_MVisAperpCM0;
+  double m_MVisBperpCM0;
+  // variables using 4-vects constructed by evaluating in CM frame
+  double m_MSCM0; 
+  double m_MaCM0;
+  double m_MbCM0;
+  double m_MaVCM0;
+  double m_MbVCM0;
+  double m_MQCM0; // sqrt(Ma*Ma + Mb*Mb)/sqrt(2)
+  double m_gammaCM0; // 2*MQ/MS
+  double m_MVisACM0;
+  double m_MVisBCM0;
 
-  vector<int> m_c_Njet_ISR;
-  vector<int> m_c_Nbjet_ISR;
-  vector<int> m_c_Njet_a;
-  vector<int> m_c_Nbjet_a;
-  vector<int> m_c_Njet_b;
-  vector<int> m_c_Nbjet_b;
-  vector<int> m_c_Nlep_1a;
-  vector<int> m_c_Nlep_1b;
-  vector<int> m_c_Nlep_2b;
-  vector<vector<int>> m_c_index_jet_ISR;
-  vector<vector<int>> m_c_index_jet_a;
-  vector<vector<int>> m_c_index_jet_b;
-  vector<vector<int>> m_c_index_lep_1a;
-  vector<vector<int>> m_c_index_lep_1b;
-  vector<vector<int>> m_c_index_lep_2b;
-  
- 
   // RestFrames frames and friends
   LabRecoFrame*     LAB[m_aTrees];
   DecayRecoFrame*   CM[m_aTrees];
   DecayRecoFrame*   S[m_aTrees];
-  DecayRecoFrame*   X3a[m_aTrees];
-  DecayRecoFrame*   X3b[m_aTrees];
   DecayRecoFrame*   X2a[m_aTrees];
   DecayRecoFrame*   X2b[m_aTrees];
-  SelfAssemblingRecoFrame*   saJa[m_aTrees];
-  SelfAssemblingRecoFrame*   saJb[m_aTrees];
-  SelfAssemblingRecoFrame*   saLa[m_aTrees];
-  SelfAssemblingRecoFrame*   saLb[m_aTrees];
-  SelfAssemblingRecoFrame*   saL2b[m_aTrees];
   VisibleRecoFrame*   ISR[m_aTrees];
   VisibleRecoFrame*   Ja[m_aTrees];
   VisibleRecoFrame*   Jb[m_aTrees];
@@ -405,8 +379,6 @@ private:
   VisibleRecoFrame*   Lb[m_aTrees];
   InvisibleRecoFrame* X1a[m_aTrees];
   InvisibleRecoFrame* X1b[m_aTrees];
-  VisibleRecoFrame*   L2a[m_aTrees];
-  VisibleRecoFrame*   L2b[m_aTrees];
 
   InvisibleGroup*       INV[m_aTrees];
   SetMassInvJigsaw*     InvM[m_aTrees];
@@ -414,15 +386,12 @@ private:
   MinMassesSqInvJigsaw* InvSplit[m_aTrees];
   
   CombinatoricGroup*   COMB_J[m_aTrees];
-  MinMassesCombJigsaw*   CombSplit_ISR[m_aTrees];
+  MinMassesSqCombJigsaw* CombSplit_ISR[m_aTrees];
   MinMassesSqCombJigsaw* CombSplit_J[m_aTrees];
 
   CombinatoricGroup*   COMB_L[m_aTrees];
   MinMassesSqCombJigsaw* CombSplit_L[m_aTrees];
 
-  MinMassesSqCombJigsaw* CombSplit_L2[m_aTrees];
-  MinMassesSqCombJigsaw* CombSplit_Lb[m_aTrees];
- 
 };
 
 #endif

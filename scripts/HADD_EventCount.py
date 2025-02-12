@@ -17,7 +17,7 @@ def process_event_count_dirs(input_dir, output_dir):
         output_path = os.path.join(output_dir, f"EventCount_NANO_{subdir_cleaned}.root")
         
         # Construct and execute hadd command
-        command = f"hadd -j4 -f {input_path} {output_path}"
+        command = f"hadd -j 4 -f {output_path} {input_path}"
         print(f"Executing: {command}")
         os.system(command)
 

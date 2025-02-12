@@ -23,10 +23,10 @@ void LHETool::GetFromLHAPDF(int& nPDFWeights, std::vector<double>& PDFWeights, i
 void LHETool::AddLHAPDF(int year)
 {
 #ifdef _CMSSW_
-  if(year == 2017 || year == 2018)
-    pdfset = LHAPDF::getPDFSet("NNPDF31_nnlo_as_0118"); 
   if(year == 2016)
     pdfset = LHAPDF::getPDFSet("NNPDF30_lo_as_0130"); 
+  else // NNPDF31_nnlo_as_0118 for preUL '17 & '18, need to check for UL & Run3
+    pdfset = LHAPDF::getPDFSet("NNPDF31_nnlo_as_0118"); 
   pdfs = pdfset.mkPDFs(); 
 #endif
 }
