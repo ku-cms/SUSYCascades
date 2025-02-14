@@ -65,8 +65,6 @@ def write_sh(srcfile,ifile,ofile,logfile,outfile,errfile,dataset,filetag):
         fsrc.write('--data ')
     fsrc.write('-dataset='+dataset+" ")
     fsrc.write('-filetag='+filetag+" ")
-    #splitstring = '-split=%s,%d\n' % ('$$([$(Step)+1])', n)
-    #fsrc.write(splitstring)
 
     fsrc.write('\n')
     outlog = outfile+".out"
@@ -93,19 +91,20 @@ def write_sh(srcfile,ifile,ofile,logfile,outfile,errfile,dataset,filetag):
     transfer_out_files = 'transfer_output_files = '+ofile.split('/')[-1]+'\n'
     fsrc.write(transfer_out_files)
 
-    transfer_out_remap = 'transfer_output_remaps = "'+ofile.split('/')[-1]+'='+ofile
-    transfer_out_remap += '"\n'
+    transfer_out_remap = 'transfer_output_remaps = "'+ofile.split('/')[-1]+'='+ofile+'"\n'
     fsrc.write(transfer_out_remap)
     
     fsrc.write('+ProjectName="cms.org.ku"\n')
     fsrc.write('+RequiresCVMFS = True \n')
     fsrc.write('Requirements = HAS_SINGULARITY == True\n')
-    fsrc.write('RequestCpus=ifthenelse((isUndefined(CpusUsage) || CpusUsage < 2),1,MIN(RequestCpus+2, 32))\n')
+    fsrc.write('RequestCpus=IfThenElse((IsUndefined(CpusUsage) || CpusUsage < 2),1,MIN(CpusUsage+2, 32))\n')
     fsrc.write('periodic_hold = (CpusUsage >= RequestCpus) && (JobStatus == 3)\n')
     fsrc.write('periodic_hold_subcode = 42\n')
     fsrc.write('periodic_release = (HoldReasonCode == 12 && HoldReasonSubCode == 256 || HoldReasonCode == 13 && HoldReasonSubCode == 2 || HoldReasonCode == 12 && HoldReasonSubCode == 2 || HoldReasonCode == 26 && HoldReasonSubCode == 120 || HoldReasonCode == 3 && HoldReasonSubCode == 0 || HoldReasonSubCode == 42)\n')
     fsrc.write('+REQUIRED_OS="rhel9"\n')
     fsrc.write('job_lease_duration = 3600\n')
+    fsrc.write('on_exit_remove = (ExitCode == 0) || (NumJobStarts >= 3)\n')
+    fsrc.write('max_retries = 3\n')
     fsrc.write('MY.SingularityImage = "/cvmfs/singularity.opensciencegrid.org/cmssw/cms:rhel9"\n')
     fsrc.write('queue from '+ifile+'\n')
     fsrc.close()

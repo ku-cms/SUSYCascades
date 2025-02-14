@@ -28,6 +28,7 @@ public:
   double GetNweight_SMS(const std::string& dataset, const std::string& filetag, int MP, int MC) const;
   double GetFilterEff(const std::string& dataset, const std::string& filetag, int lumiblock = -1) const;
 
+  bool DatasetIsFastSim(const std::string& infile);
   int EventsInDAS(const std::string& u_dataset = "", const std::string& u_filetag = "");
 
 private:

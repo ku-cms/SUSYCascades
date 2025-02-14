@@ -133,7 +133,8 @@ int main(int argc, char* argv[]) {
   TBranch *b_genWeight;
   TBranch *b_luminosityBlock;
 
-  Int_t   nGenPart;
+  Int_t   nGenPart_Run3;
+  UInt_t  nGenPart_Run2;
   Float_t GenPart_mass[400];  
   Int_t   GenPart_pdgId[400];
   TBranch *b_nGenPart;
@@ -148,7 +149,11 @@ int main(int argc, char* argv[]) {
   chain->SetBranchAddress("genWeight", &genWeight, &b_genWeight);
   chain->SetBranchAddress("luminosityBlock", &luminosityBlock, &b_luminosityBlock);
   
-  chain->SetBranchAddress("nGenPart", &nGenPart, &b_nGenPart);
+  if(string(FileTag).find("130X") != std::string::npos) // Run3
+    chain->SetBranchAddress("nGenPart", &nGenPart_Run3, &b_nGenPart);
+  else
+    chain->SetBranchAddress("nGenPart", &nGenPart_Run2, &b_nGenPart);
+
   chain->SetBranchAddress("GenPart_mass", GenPart_mass, &b_GenPart_mass);
   chain->SetBranchAddress("GenPart_pdgId", GenPart_pdgId, &b_GenPart_pdgId);
   chain->SetBranchStatus("*",0);
@@ -174,6 +179,7 @@ int main(int argc, char* argv[]) {
 
   int NEVENT = chain->GetEntries();
   cout << "TOTAL of " << NEVENT << " entries" << endl;
+  if(NEVENT == 0) return 1;
   for(int e = 0; e < NEVENT; e++){
     int mymod = NEVENT/10;
     if(mymod < 1)
@@ -189,8 +195,12 @@ int main(int argc, char* argv[]) {
     if(DO_SMS){
       MP = 0;
       MC = 0;
-      int Ngen = nGenPart;
-      if(nGenPart > 400){
+      int Ngen = 0;
+      if(string(FileTag).find("130X") != std::string::npos) // Run3
+        Ngen = nGenPart_Run3;
+      else
+        Ngen = nGenPart_Run2;
+      if(Ngen > 400){
 	cout << "weight? " << genWeight << endl;
       }
       //cout << "NGEN " << Ngen << endl;
@@ -237,6 +247,7 @@ int main(int argc, char* argv[]) {
   // add DAS count
   NeventTool eventTool;
   NDAS = eventTool.EventsInDAS(dataset, filetag);
+  if(NDAS == 0) return 1; // will try to resubmit job
   if(DO_SMS){
     int Nmass = masses.size();
     for(int i = 0; i < Nmass; i++){

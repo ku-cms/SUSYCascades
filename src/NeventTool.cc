@@ -286,6 +286,25 @@ bool check_dataset_file(std::string dataset_name)
  return true;
 }
 
+bool NeventTool::DatasetIsFastSim(const std::string& infile_name)
+{
+ std::ifstream infile(infile_name);
+ std::vector<string> datasets;
+ std::string dataset = "";
+ while (getline(infile,dataset))
+  datasets.push_back(dataset);
+ for(int i = 0; i < int(datasets.size()); i++)
+ {
+  if(datasets[i].find("FS") == std::string::npos)
+  {
+   infile.close();
+   return false;
+  }
+ }
+ infile.close();
+ return true;
+}
+
 int NeventTool::EventsInDAS(const std::string& u_dataset, const std::string& u_filetag)
 {
  std::string dataset = u_dataset;
@@ -303,12 +322,15 @@ int NeventTool::EventsInDAS(const std::string& u_dataset, const std::string& u_f
    gSystem->Exec(("dasgoclient -query=\"dataset=/"+dataset+"/*"+filetag+"NanoAODv4*"+"/NANO*\" >> datasets_"+filetag+"_"+dataset+".txt").c_str());
  if(!check_dataset_file("datasets_"+filetag+"_"+dataset+".txt"))
    gSystem->Exec(("dasgoclient -query=\"dataset=/"+dataset+"/*"+filetag+"NanoAOD*"+"/NANO*\" >> datasets_"+filetag+"_"+dataset+".txt").c_str());
- std::ifstream infile("datasets_"+filetag+"_"+dataset+".txt");
 
- string dataset_fullname = "";
+ std::string infile_name = "datasets_"+filetag+"_"+dataset+".txt";
+ bool IsFS = DatasetIsFastSim(infile_name);
+ std::ifstream infile(infile_name);
+ std::string dataset_fullname = "";
  while(getline(infile,dataset_fullname))
  {
   if(dataset_fullname.find("JMENano") != std::string::npos) continue;
+  if(!IsFS && dataset_fullname.find("FS") != std::string::npos) continue;
   gSystem->Exec(("dasgoclient -query=\"file dataset="+dataset_fullname+"\" -json >> "+filetag+"_"+dataset+".json").c_str());
  }
  infile.close();
@@ -322,8 +344,8 @@ int NeventTool::EventsInDAS(const std::string& u_dataset, const std::string& u_f
    Events += std::stod(events_string);
   }
  }
- gSystem->Exec("rm datasets_*.txt");
- gSystem->Exec("rm *.json");
+ //gSystem->Exec("rm datasets_*.txt");
+ //gSystem->Exec("rm *.json");
  return Events;
 }
 
