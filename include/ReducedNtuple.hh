@@ -117,7 +117,6 @@ private:
   double m_PrefireWeight_down;
   
   bool m_METtrigger;
-  bool m_METHTtrigger;
   bool m_METORtrigger;
 
   bool m_SingleElectrontrigger;

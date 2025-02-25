@@ -1299,6 +1299,8 @@ public :
    Bool_t          HLT_PFHT700_PFMET95_PFMHT95_IDTight;
    Bool_t          HLT_PFHT800_PFMET75_PFMHT75_IDTight;
    Bool_t          HLT_PFHT800_PFMET85_PFMHT85_IDTight;
+   Bool_t          HLT_PFMET90_PFMHT90_IDTight;
+   Bool_t          HLT_PFMET100_PFMHT100_IDTight;
    Bool_t          HLT_PFMET110_PFMHT110_IDTight;
    Bool_t          HLT_PFMET120_PFMHT120_IDTight;
    Bool_t          HLT_PFMET130_PFMHT130_IDTight;
@@ -1315,6 +1317,8 @@ public :
    Bool_t          HLT_PFMETTypeOne120_PFMHT120_IDTight;
    Bool_t          HLT_PFMETTypeOne130_PFMHT130_IDTight;
    Bool_t          HLT_PFMETTypeOne140_PFMHT140_IDTight;
+   Bool_t          HLT_PFMETNoMu90_PFMHTNoMu90_IDTight;
+   Bool_t          HLT_PFMETNoMu100_PFMHTNoMu100_IDTight;
    Bool_t          HLT_PFMETNoMu110_PFMHTNoMu110_IDTight;
    Bool_t          HLT_PFMETNoMu120_PFMHTNoMu120_IDTight;
    Bool_t          HLT_PFMETNoMu130_PFMHTNoMu130_IDTight;
@@ -2970,6 +2974,8 @@ public :
    TBranch        *b_HLT_PFHT700_PFMET95_PFMHT95_IDTight;   //!
    TBranch        *b_HLT_PFHT800_PFMET75_PFMHT75_IDTight;   //!
    TBranch        *b_HLT_PFHT800_PFMET85_PFMHT85_IDTight;   //!
+   TBranch        *b_HLT_PFMET90_PFMHT90_IDTight;   //!
+   TBranch        *b_HLT_PFMET100_PFMHT100_IDTight;   //!
    TBranch        *b_HLT_PFMET110_PFMHT110_IDTight;   //!
    TBranch        *b_HLT_PFMET120_PFMHT120_IDTight;   //!
    TBranch        *b_HLT_PFMET130_PFMHT130_IDTight;   //!
@@ -2986,6 +2992,8 @@ public :
    TBranch        *b_HLT_PFMETTypeOne120_PFMHT120_IDTight;   //!
    TBranch        *b_HLT_PFMETTypeOne130_PFMHT130_IDTight;   //!
    TBranch        *b_HLT_PFMETTypeOne140_PFMHT140_IDTight;   //!
+   TBranch        *b_HLT_PFMETNoMu90_PFMHTNoMu90_IDTight;   //!
+   TBranch        *b_HLT_PFMETNoMu100_PFMHTNoMu100_IDTight;   //!
    TBranch        *b_HLT_PFMETNoMu110_PFMHTNoMu110_IDTight;   //!
    TBranch        *b_HLT_PFMETNoMu120_PFMHTNoMu120_IDTight;   //!
    TBranch        *b_HLT_PFMETNoMu130_PFMHTNoMu130_IDTight;   //!
@@ -4709,6 +4717,8 @@ inline void NANOULBase::Init(TTree *tree)
    fChain->SetBranchAddress("HLT_PFHT700_PFMET95_PFMHT95_IDTight", &HLT_PFHT700_PFMET95_PFMHT95_IDTight, &b_HLT_PFHT700_PFMET95_PFMHT95_IDTight);
    fChain->SetBranchAddress("HLT_PFHT800_PFMET75_PFMHT75_IDTight", &HLT_PFHT800_PFMET75_PFMHT75_IDTight, &b_HLT_PFHT800_PFMET75_PFMHT75_IDTight);
    fChain->SetBranchAddress("HLT_PFHT800_PFMET85_PFMHT85_IDTight", &HLT_PFHT800_PFMET85_PFMHT85_IDTight, &b_HLT_PFHT800_PFMET85_PFMHT85_IDTight);
+   fChain->SetBranchAddress("HLT_PFMET90_PFMHT90_IDTight", &HLT_PFMET90_PFMHT90_IDTight, &b_HLT_PFMET90_PFMHT90_IDTight);
+   fChain->SetBranchAddress("HLT_PFMET100_PFMHT100_IDTight", &HLT_PFMET100_PFMHT100_IDTight, &b_HLT_PFMET100_PFMHT100_IDTight);
    fChain->SetBranchAddress("HLT_PFMET110_PFMHT110_IDTight", &HLT_PFMET110_PFMHT110_IDTight, &b_HLT_PFMET110_PFMHT110_IDTight);
    fChain->SetBranchAddress("HLT_PFMET120_PFMHT120_IDTight", &HLT_PFMET120_PFMHT120_IDTight, &b_HLT_PFMET120_PFMHT120_IDTight);
    fChain->SetBranchAddress("HLT_PFMET130_PFMHT130_IDTight", &HLT_PFMET130_PFMHT130_IDTight, &b_HLT_PFMET130_PFMHT130_IDTight);
@@ -4725,6 +4735,8 @@ inline void NANOULBase::Init(TTree *tree)
    fChain->SetBranchAddress("HLT_PFMETTypeOne120_PFMHT120_IDTight", &HLT_PFMETTypeOne120_PFMHT120_IDTight, &b_HLT_PFMETTypeOne120_PFMHT120_IDTight);
    fChain->SetBranchAddress("HLT_PFMETTypeOne130_PFMHT130_IDTight", &HLT_PFMETTypeOne130_PFMHT130_IDTight, &b_HLT_PFMETTypeOne130_PFMHT130_IDTight);
    fChain->SetBranchAddress("HLT_PFMETTypeOne140_PFMHT140_IDTight", &HLT_PFMETTypeOne140_PFMHT140_IDTight, &b_HLT_PFMETTypeOne140_PFMHT140_IDTight);
+   fChain->SetBranchAddress("HLT_PFMETNoMu90_PFMHTNoMu90_IDTight", &HLT_PFMETNoMu90_PFMHTNoMu90_IDTight, &b_HLT_PFMETNoMu90_PFMHTNoMu90_IDTight);
+   fChain->SetBranchAddress("HLT_PFMETNoMu100_PFMHTNoMu100_IDTight", &HLT_PFMETNoMu100_PFMHTNoMu100_IDTight, &b_HLT_PFMETNoMu100_PFMHTNoMu100_IDTight);
    fChain->SetBranchAddress("HLT_PFMETNoMu110_PFMHTNoMu110_IDTight", &HLT_PFMETNoMu110_PFMHTNoMu110_IDTight, &b_HLT_PFMETNoMu110_PFMHTNoMu110_IDTight);
    fChain->SetBranchAddress("HLT_PFMETNoMu120_PFMHTNoMu120_IDTight", &HLT_PFMETNoMu120_PFMHTNoMu120_IDTight, &b_HLT_PFMETNoMu120_PFMHTNoMu120_IDTight);
    fChain->SetBranchAddress("HLT_PFMETNoMu130_PFMHTNoMu130_IDTight", &HLT_PFMETNoMu130_PFMHTNoMu130_IDTight, &b_HLT_PFMETNoMu130_PFMHTNoMu130_IDTight);

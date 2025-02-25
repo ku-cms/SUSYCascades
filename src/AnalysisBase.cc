@@ -116,13 +116,17 @@ void AnalysisBase<Base>::AddLabels(const string& dataset, const string& filetag)
   m_DataSet = dataset;
   m_FileTag = filetag;
   m_year = 2016;
-  if(m_FileTag.find("17") != std::string::npos) m_year = 2017;
+       if(m_FileTag.find("17") != std::string::npos) m_year = 2017;
   else if(m_FileTag.find("18") != std::string::npos) m_year = 2018;
   else if(m_FileTag.find("22") != std::string::npos) m_year = 2022;
   else if(m_FileTag.find("23") != std::string::npos) m_year = 2023;
   else if(m_FileTag.find("24") != std::string::npos) m_year = 2024;
   else if(m_FileTag.find("25") != std::string::npos) m_year = 2025;
   else if(m_FileTag.find("26") != std::string::npos) m_year = 2026;
+  if(m_FileTag.find("APV") != std::string::npos) m_IsAPV = true;
+  if(m_FileTag.find("UL") != std::string::npos) m_IsUL = true;
+  if(m_FileTag.find("EE") != std::string::npos) m_IsEE = true;
+  if(m_FileTag.find("BPix") != std::string::npos) m_IsBPix = true;
 }
 
 template <class Base>
@@ -147,7 +151,20 @@ void AnalysisBase<Base>::AddPUFolder(const string& pufold){
 
 template <class Base>
 void AnalysisBase<Base>::AddBtagFolder(const string& btagfold){
-  m_BtagSFTool.BuildMap(btagfold);
+  if(!m_IsUL and m_year < 2019)
+    m_BtagSFTool.BuildMap(btagfold);
+  else{
+    std::string Btag_file;
+    if(!m_IsUL)
+      Btag_file = btagfold+std::to_string(m_year)+"_"+m_FileTag.substr(0, m_FileTag.size() - 5)+"/btagging.json.gz";
+    else if(m_year != 2016)
+      Btag_file = btagfold+std::to_string(m_year)+"_UL"+"/btagging.json.gz";
+    else if(m_IsAPV)
+      Btag_file = btagfold+"2016preVFP_UL"+"/btagging.json.gz";
+    else
+      Btag_file = btagfold+"2016postVFP_UL"+"/btagging.json.gz";
+    m_cset_Btag = correction::CorrectionSet::from_file(Btag_file);
+  }
 }
 
 template <class Base>
@@ -292,11 +309,6 @@ TVector3 AnalysisBase<Base>::GetAltMET(){
 
 template <class Base>
 bool AnalysisBase<Base>::GetMETtrigger(){
-  return false;
-}
-
-template <class Base>
-bool AnalysisBase<Base>::GetMETHTtrigger(){
   return false;
 }
 
@@ -1100,21 +1112,6 @@ bool AnalysisBase<SUSYNANOBase>::GetMETtrigger(){
   return 0;
 }
   
-template <>
-bool AnalysisBase<SUSYNANOBase>::GetMETHTtrigger(){
-  if(m_year == 2016)
-    return (HLT_PFHT300_PFMET100 ||
-	    HLT_PFHT300_PFMET110);
-  if(m_year == 2017 || m_year == 2018)
-    return (HLT_PFHT500_PFMET100_PFMHT100_IDTight ||
-	    HLT_PFHT500_PFMET110_PFMHT110_IDTight ||
-	    HLT_PFHT700_PFMET85_PFMHT85_IDTight ||
-	    HLT_PFHT700_PFMET95_PFMHT95_IDTight ||
-	    HLT_PFHT800_PFMET75_PFMHT75_IDTight ||
-	    HLT_PFHT800_PFMET85_PFMHT85_IDTight);
-  return 0;
-}
-
 template <>
 bool AnalysisBase<SUSYNANOBase>::GetMETORtrigger(){
   if(m_year == 2016)
@@ -2574,7 +2571,7 @@ bool AnalysisBase<NANOULBase>::GetMETtrigger(){
   if(m_year == 2016)
     return (HLT_PFMET120_PFMHT120_IDTight ||
 	    HLT_PFMETNoMu120_PFMHTNoMu120_IDTight);
-  if(m_year == 2022 || m_year == 2023 || m_year == 2024)
+  if(m_year == 2017 || m_year == 2018)
     return (HLT_PFMET120_PFMHT120_IDTight ||
 	    HLT_PFMETNoMu120_PFMHTNoMu120_IDTight ||
 	    HLT_PFMET120_PFMHT120_IDTight_PFHT60 ||
@@ -2582,26 +2579,9 @@ bool AnalysisBase<NANOULBase>::GetMETtrigger(){
 
   return 0;
 }
-  
-template <>
-bool AnalysisBase<NANOULBase>::GetMETHTtrigger(){
-  if(m_year == 2016)
-    return (HLT_PFHT300_PFMET100 ||
-	    HLT_PFHT300_PFMET110);
-  if(m_year == 2017 ||
-     m_year == 2018)
-     return (HLT_PFHT500_PFMET100_PFMHT100_IDTight ||
-	     HLT_PFHT500_PFMET110_PFMHT110_IDTight ||
-	     HLT_PFHT700_PFMET85_PFMHT85_IDTight ||
-	     HLT_PFHT700_PFMET95_PFMHT95_IDTight ||
-	     HLT_PFHT800_PFMET75_PFMHT75_IDTight ||
-	     HLT_PFHT800_PFMET85_PFMHT85_IDTight);
-  return 0;
-}
 
 template <>
 bool AnalysisBase<NANOULBase>::GetMETORtrigger(){
-/*
   if(m_year == 2016)
     return (HLT_PFMETNoMu90_PFMHTNoMu90_IDTight ||
 	    HLT_PFMETNoMu100_PFMHTNoMu100_IDTight ||
@@ -2609,7 +2589,6 @@ bool AnalysisBase<NANOULBase>::GetMETORtrigger(){
 	    HLT_PFMETNoMu120_PFMHTNoMu120_IDTight ||
 	    HLT_PFMET90_PFMHT90_IDTight ||
 	    HLT_PFMET100_PFMHT100_IDTight ||
-	    HLT_PFMET100_PFMHT100_IDTight_BeamHaloCleaned ||
 	    HLT_PFMET110_PFMHT110_IDTight ||
 	    HLT_PFMET120_PFMHT120_IDTight);
   if(m_year == 2017 ||
@@ -2624,118 +2603,90 @@ bool AnalysisBase<NANOULBase>::GetMETORtrigger(){
 	    HLT_PFMETNoMu140_PFMHTNoMu140_IDTight ||
 	    HLT_PFMET120_PFMHT120_IDTight_PFHT60 ||
 	    HLT_PFMETNoMu120_PFMHTNoMu120_IDTight_PFHT60);
-
-*/
   return 0;
 }
 
 template <>
 bool AnalysisBase<NANOULBase>::GetSingleElectrontrigger(){
-/*
   if(m_year == 2016)
     return (HLT_Ele27_WPTight_Gsf);
-  if(m_year == 2017 ||
-     m_year == 2018)
+  if(m_year == 2017)
+    return (HLT_Ele35_WPTight_Gsf);
+  if(m_year == 2018)
     return (HLT_Ele32_WPTight_Gsf);
-*/
   return 0;
 }
 
 template <>
 bool AnalysisBase<NANOULBase>::GetSingleMuontrigger(){
-/*
-  if(m_year == 2016)
-    return (HLT_IsoMu24 ||
-            HLT_IsoTkMu24);
-  if(m_year == 2017 ||
-     m_year == 2018)
-    return (HLT_IsoMu24 ||
-            HLT_IsoTkMu24);
-*/
-  return 0;
+  return HLT_IsoMu24;
 }
 
 template <>
 bool AnalysisBase<NANOULBase>::GetDoubleElectrontrigger(){
-/*
-  if(m_year == 2016)
-    return (HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL);
-  if(m_year == 2017 ||
-     m_year == 2018)
-    return (HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL);
-*/
-  return 0;
+  return HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL;
 }
 
 template <>
 bool AnalysisBase<NANOULBase>::GetDoubleMuontrigger(){
-/*
-  if(m_year == 2016)
-    return (HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL);
-  if(m_year == 2017 ||
-     m_year == 2018)
-    return (HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL);
-*/
-  return 0;
+  return HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL;
 }
 
 template <>
 bool AnalysisBase<NANOULBase>::GetEMutrigger(){
-/*
-  if(m_year == 2016)
-    return (HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ);
-  if(m_year == 2017 ||
-     m_year == 2018)
-    return (HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ);
-*/
-  return 0;
+  return HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ;
 }
 
-template <>
-double AnalysisBase<NANOULBase>::GetBtagSFWeight(const ParticleList& jets, bool HForLF, int updown, ParticleIDType tag){
-  if(IsData())
-    return 1.;
+template <>  
+double AnalysisBase<NANOULBase>::GetBtagSFWeight(const ParticleList& jets, bool HForLF, int updown, ParticleIDType tag) {
+  if (IsData()) 
+      return 1.;
 
   bool FastSim = IsFastSim();
-  
   int Njet = jets.size();
-  int iflavor;
-  double EFF, SF;
-
-  double probMC   = 1.;
+  int iflavor = 0;
+  double probMC = 1.;
   double probDATA = 1.;
+  std::string syst = "central";
+  if(updown > 0) syst = "up";
+  else if(updown < 0) syst = "down";
   
-  for(int i = 0; i < Njet; i++){
-    if(abs(jets[i].PDGID()) == 5)
-      iflavor = 0;
-    else if(abs(jets[i].PDGID()) == 4)
-      iflavor = 1;
-    else
-      iflavor = 2;
+  for (int i = 0; i < Njet; i++) {
+      if(abs(jets[i].PDGID()) == 5)
+        iflavor = 5;
+      else if(abs(jets[i].PDGID()) == 4)
+        iflavor = 4;
+      if(HForLF && iflavor == 0)
+        continue;
+      if(!HForLF && iflavor != 0)
+        continue;
+      std::vector<std::variant<int, double, std::string>> evalArgs;
+      evalArgs.push_back(syst);
+      evalArgs.push_back("M"); // Working Point ('M' for medium)
+      evalArgs.push_back(iflavor);
+      evalArgs.push_back(abs(jets[i].Eta()));
+      evalArgs.push_back(jets[i].Pt());
 
-    if(HForLF && iflavor == 2)
-      continue;
-    if(!HForLF && iflavor != 2)
-      continue;
-    
-    EFF = m_BtagSFTool.EFF(jets[i].Pt(), m_year, iflavor, FastSim);
-    SF  = m_BtagSFTool.SF(jets[i].Pt(), m_year, iflavor, updown);
-    if(FastSim)
-      SF *= m_BtagSFTool.SF(jets[i].Pt(), m_year, iflavor, updown, FastSim);
+      double SF = 1.;
+      double EFF = 1.; // need to measure the efficiencies
+      if(iflavor == 0)
+        SF = m_cset_Btag->at("deepJet_incl")->evaluate(evalArgs);
+      else
+        SF = m_cset_Btag->at("deepJet_comb")->evaluate(evalArgs);
 
-    if(jets[i].BtagID() >= tag){
-      probMC   *= EFF;
-      probDATA *= SF*EFF;
-    } else {
-      probMC   *= (1.-EFF);
-      probDATA *= (1.-SF*EFF);
-    }
+      if (jets[i].BtagID() >= tag) {
+          probMC *= EFF;
+          probDATA *= SF * EFF;
+      } else {
+          probMC *= (1. - EFF);
+          probDATA *= (1. - SF * EFF);
+      }
   }
 
-  if(probMC <= 0. || probDATA <= 0.)
-    return 1.;
+  if (probMC <= 0. || probDATA <= 0.)
+      return 1.;
 
-  return probDATA/probMC;
+  return probDATA / probMC;
 }
 
 template <>
@@ -3432,43 +3383,51 @@ ParticleList AnalysisBase<NANOULBase>::GetJetsMET(TVector3& MET, int id){
       jet.SetParticleID(kMedium);
     else if(Jet_jetId[i] >= 1)
       jet.SetParticleID(kLoose);
-    
-    // DeepCSV tagger
-    // jet.SetBtag(Jet_btagDeepB[i]);
 
     // DeepFlavour tagger
     jet.SetBtag(Jet_btagDeepFlavB[i]);
 
-    // https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation2016Legacy
-    if(m_year == 2016){
+    // https://btv-wiki.docs.cern.ch/ScaleFactors/UL2016preVFP/#ak4-b-tagging
+    if(m_year == 2016 && !m_IsAPV){
       // Deep Flavor
-      if(jet.Btag() > 0.7221)
+      if(jet.Btag() > 0.6502)
 	jet.SetBtagID(kTight);
-      else if(jet.Btag() > 0.3093) 
+      else if(jet.Btag() > 0.2598) 
 	jet.SetBtagID(kMedium);
-      else if(jet.Btag() > 0.0614)
+      else if(jet.Btag() > 0.0508)
 	jet.SetBtagID(kLoose);
     }
 
-    // https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation94X
+    // https://btv-wiki.docs.cern.ch/ScaleFactors/UL2016postVFP/#ak4-b-tagging
+    if(m_year == 2016 && m_IsAPV){
+      // Deep Flavor
+      if(jet.Btag() > 0.6502)
+	jet.SetBtagID(kTight);
+      else if(jet.Btag() > 0.2598) 
+	jet.SetBtagID(kMedium);
+      else if(jet.Btag() > 0.0508)
+	jet.SetBtagID(kLoose);
+    }
+
+    // https://btv-wiki.docs.cern.ch/ScaleFactors/UL2017/#ak4-b-tagging
     if(m_year == 2017){
       // Deep Flavor
-      if(jet.Btag() > 0.7489)
+      if(jet.Btag() > 0.7476)
 	jet.SetBtagID(kTight);
-      else if(jet.Btag() > 0.3033) 
+      else if(jet.Btag() > 0.3040) 
 	jet.SetBtagID(kMedium);
-      else if(jet.Btag() > 0.0521)
+      else if(jet.Btag() > 0.0532)
 	jet.SetBtagID(kLoose);
     }
 
-    // https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation102X
+    // https://btv-wiki.docs.cern.ch/ScaleFactors/UL2018/#ak4-b-tagging
     if(m_year == 2018){
       // DeepFlavor
-      if(jet.Btag() > 0.7264)
+      if(jet.Btag() > 0.7100)
 	jet.SetBtagID(kTight);
-      else if(jet.Btag() > 0.2770) 
+      else if(jet.Btag() > 0.2783) 
 	jet.SetBtagID(kMedium);
-      else if(jet.Btag() > 0.0494)
+      else if(jet.Btag() > 0.0490)
 	jet.SetBtagID(kLoose);
     }
 
@@ -4057,202 +4016,115 @@ ParticleList AnalysisBase<NANOULBase>::GetMuons(){
 
 template <>
 bool AnalysisBase<NANORun3>::PassEventFilter(){
-//
-//  if(m_year == 2016){
-//    return Flag_goodVertices &&
-//      (IsFastSim() ? true : Flag_globalSuperTightHalo2016Filter) &&
-//      Flag_HBHENoiseFilter &&
-//      Flag_HBHENoiseIsoFilter &&
-//      Flag_EcalDeadCellTriggerPrimitiveFilter &&
-//      Flag_BadPFMuonFilter;
-//  }
-//  if(m_year == 2017){
-//    return Flag_goodVertices &&
-//      (IsFastSim() ? true : Flag_globalSuperTightHalo2016Filter) &&
-//      Flag_HBHENoiseFilter &&
-//      Flag_HBHENoiseIsoFilter &&
-//      Flag_EcalDeadCellTriggerPrimitiveFilter &&
-//      Flag_BadPFMuonFilter;
-//  }
-//  if(m_year == 2018){
-//    return Flag_goodVertices &&
-//      (IsFastSim() ? true : Flag_globalSuperTightHalo2016Filter) &&
-//      Flag_HBHENoiseFilter &&
-//      Flag_HBHENoiseIsoFilter &&
-//      Flag_EcalDeadCellTriggerPrimitiveFilter &&
-//      Flag_BadPFMuonFilter;
-//  }
-  
-  return true;
+// https://twiki.cern.ch/twiki/bin/viewauth/CMS/MissingETOptionalFiltersRun2#Run_3_2022_and_2023_data_and_MC
+   return Flag_goodVertices && 
+   Flag_globalSuperTightHalo2016Filter && 
+   Flag_EcalDeadCellTriggerPrimitiveFilter && 
+   Flag_BadPFMuonFilter && 
+   Flag_BadPFMuonDzFilter && 
+   Flag_hfNoisyHitsFilter && 
+   Flag_eeBadScFilter && 
+   Flag_ecalBadCalibFilter;
 }
 
 template <>
 bool AnalysisBase<NANORun3>::GetMETtrigger(){
-  if(m_year == 2016)
-    return (HLT_PFMET120_PFMHT120_IDTight ||
-	    HLT_PFMETNoMu120_PFMHTNoMu120_IDTight);
-  if(m_year == 2022 || m_year == 2023 || m_year == 2024)
-    return (HLT_PFMET120_PFMHT120_IDTight ||
-	    HLT_PFMETNoMu120_PFMHTNoMu120_IDTight ||
-	    HLT_PFMET120_PFMHT120_IDTight_PFHT60 ||
-	    HLT_PFMETNoMu120_PFMHTNoMu120_IDTight_PFHT60);
-
-  return 0;
-}
-  
-template <>
-bool AnalysisBase<NANORun3>::GetMETHTtrigger(){
-  if(m_year == 2016)
-    return (HLT_PFHT300_PFMET100 ||
-	    HLT_PFHT300_PFMET110);
-  if(m_year == 2017 ||
-     m_year == 2018)
-     return (HLT_PFHT500_PFMET100_PFMHT100_IDTight ||
-	     HLT_PFHT500_PFMET110_PFMHT110_IDTight ||
-	     HLT_PFHT700_PFMET85_PFMHT85_IDTight ||
-	     HLT_PFHT700_PFMET95_PFMHT95_IDTight ||
-	     HLT_PFHT800_PFMET75_PFMHT75_IDTight ||
-	     HLT_PFHT800_PFMET85_PFMHT85_IDTight);
-  return 0;
+// https://cmshltinfo.app.cern.ch/summary?search=HLT_PFMET&year=2023&paths=true&prescaled=true&stream-types=Physics
+  return (HLT_PFMET120_PFMHT120_IDTight ||
+    HLT_PFMETNoMu120_PFMHTNoMu120_IDTight ||
+    HLT_PFMET120_PFMHT120_IDTight_PFHT60 ||
+    HLT_PFMETNoMu120_PFMHTNoMu120_IDTight_PFHT60);
 }
 
 template <>
 bool AnalysisBase<NANORun3>::GetMETORtrigger(){
-/*
-  if(m_year == 2016)
-    return (HLT_PFMETNoMu90_PFMHTNoMu90_IDTight ||
-	    HLT_PFMETNoMu100_PFMHTNoMu100_IDTight ||
-	    HLT_PFMETNoMu110_PFMHTNoMu110_IDTight ||
-	    HLT_PFMETNoMu120_PFMHTNoMu120_IDTight ||
-	    HLT_PFMET90_PFMHT90_IDTight ||
-	    HLT_PFMET100_PFMHT100_IDTight ||
-	    HLT_PFMET100_PFMHT100_IDTight_BeamHaloCleaned ||
-	    HLT_PFMET110_PFMHT110_IDTight ||
-	    HLT_PFMET120_PFMHT120_IDTight);
-  if(m_year == 2017 ||
-     m_year == 2018)
-    return (HLT_PFMET110_PFMHT110_IDTight ||
-	    HLT_PFMET120_PFMHT120_IDTight ||
-	    HLT_PFMET130_PFMHT130_IDTight ||
-	    HLT_PFMET140_PFMHT140_IDTight ||
-	    HLT_PFMETNoMu110_PFMHTNoMu110_IDTight ||
-	    HLT_PFMETNoMu120_PFMHTNoMu120_IDTight ||
-	    HLT_PFMETNoMu130_PFMHTNoMu130_IDTight ||
-	    HLT_PFMETNoMu140_PFMHTNoMu140_IDTight ||
-	    HLT_PFMET120_PFMHT120_IDTight_PFHT60 ||
-	    HLT_PFMETNoMu120_PFMHTNoMu120_IDTight_PFHT60);
-
-*/
-  return 0;
+  return (HLT_PFMET110_PFMHT110_IDTight ||
+    HLT_PFMET120_PFMHT120_IDTight ||
+    HLT_PFMET130_PFMHT130_IDTight ||
+    HLT_PFMET140_PFMHT140_IDTight ||
+    HLT_PFMETNoMu110_PFMHTNoMu110_IDTight ||
+    HLT_PFMETNoMu120_PFMHTNoMu120_IDTight ||
+    HLT_PFMETNoMu130_PFMHTNoMu130_IDTight ||
+    HLT_PFMETNoMu140_PFMHTNoMu140_IDTight ||
+    HLT_PFMET120_PFMHT120_IDTight_PFHT60 ||
+    HLT_PFMETNoMu120_PFMHTNoMu120_IDTight_PFHT60);
 }
 
 template <>
 bool AnalysisBase<NANORun3>::GetSingleElectrontrigger(){
-/*
-  if(m_year == 2016)
-    return (HLT_Ele27_WPTight_Gsf);
-  if(m_year == 2017 ||
-     m_year == 2018)
-    return (HLT_Ele32_WPTight_Gsf);
-*/
-  return 0;
+  return HLT_Ele30_WPTight_Gsf;
 }
 
 template <>
 bool AnalysisBase<NANORun3>::GetSingleMuontrigger(){
-/*
-  if(m_year == 2016)
-    return (HLT_IsoMu24 ||
-            HLT_IsoTkMu24);
-  if(m_year == 2017 ||
-     m_year == 2018)
-    return (HLT_IsoMu24 ||
-            HLT_IsoTkMu24);
-*/
-  return 0;
+  return HLT_IsoMu24;
 }
 
 template <>
 bool AnalysisBase<NANORun3>::GetDoubleElectrontrigger(){
-/*
-  if(m_year == 2016)
-    return (HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL);
-  if(m_year == 2017 ||
-     m_year == 2018)
-    return (HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL);
-*/
-  return 0;
+  return HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL;
 }
 
 template <>
 bool AnalysisBase<NANORun3>::GetDoubleMuontrigger(){
-/*
-  if(m_year == 2016)
-    return (HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL);
-  if(m_year == 2017 ||
-     m_year == 2018)
-    return (HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL);
-*/
-  return 0;
+  return HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL;
 }
 
 template <>
 bool AnalysisBase<NANORun3>::GetEMutrigger(){
-/*
-  if(m_year == 2016)
-    return (HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ);
-  if(m_year == 2017 ||
-     m_year == 2018)
-    return (HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ);
-*/
-  return 0;
+  return HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ;
 }
 
-template <>
-double AnalysisBase<NANORun3>::GetBtagSFWeight(const ParticleList& jets, bool HForLF, int updown, ParticleIDType tag){
-  if(IsData())
-    return 1.;
+template <>  
+double AnalysisBase<NANORun3>::GetBtagSFWeight(const ParticleList& jets, bool HForLF, int updown, ParticleIDType tag) {
+  if (IsData()) 
+      return 1.;
 
   bool FastSim = IsFastSim();
-  
   int Njet = jets.size();
-  int iflavor;
-  double EFF, SF;
-
-  double probMC   = 1.;
+  int iflavor = 0;
+  double probMC = 1.;
   double probDATA = 1.;
+  std::string syst = "central";
+  if(updown > 0) syst = "up";
+  else if(updown < 0) syst = "down";
   
-  for(int i = 0; i < Njet; i++){
-    if(abs(jets[i].PDGID()) == 5)
-      iflavor = 0;
-    else if(abs(jets[i].PDGID()) == 4)
-      iflavor = 1;
-    else
-      iflavor = 2;
+  for (int i = 0; i < Njet; i++) {
+      if(abs(jets[i].PDGID()) == 5)
+        iflavor = 5;
+      else if(abs(jets[i].PDGID()) == 4)
+        iflavor = 4;
+      if(HForLF && iflavor == 0)
+        continue;
+      if(!HForLF && iflavor != 0)
+        continue;
+      std::vector<std::variant<int, double, std::string>> evalArgs;
+      evalArgs.push_back(syst);
+      evalArgs.push_back("M"); // Working Point ('M' for medium)
+      evalArgs.push_back(iflavor);
+      evalArgs.push_back(abs(jets[i].Eta()));
+      evalArgs.push_back(jets[i].Pt());
 
-    if(HForLF && iflavor == 2)
-      continue;
-    if(!HForLF && iflavor != 2)
-      continue;
-    
-    EFF = m_BtagSFTool.EFF(jets[i].Pt(), m_year, iflavor, FastSim);
-    SF  = m_BtagSFTool.SF(jets[i].Pt(), m_year, iflavor, updown);
-    if(FastSim)
-      SF *= m_BtagSFTool.SF(jets[i].Pt(), m_year, iflavor, updown, FastSim);
+      double SF = 1.;
+      double EFF = 1.; // need to measure the efficiencies
+      if(iflavor == 0)
+        SF = m_cset_Btag->at("deepJet_light")->evaluate(evalArgs);
+      else
+        SF = m_cset_Btag->at("deepJet_comb")->evaluate(evalArgs);
 
-    if(jets[i].BtagID() >= tag){
-      probMC   *= EFF;
-      probDATA *= SF*EFF;
-    } else {
-      probMC   *= (1.-EFF);
-      probDATA *= (1.-SF*EFF);
-    }
+      if (jets[i].BtagID() >= tag) {
+          probMC *= EFF;
+          probDATA *= SF * EFF;
+      } else {
+          probMC *= (1. - EFF);
+          probDATA *= (1. - SF * EFF);
+      }
   }
 
-  if(probMC <= 0. || probDATA <= 0.)
-    return 1.;
+  if (probMC <= 0. || probDATA <= 0.)
+      return 1.;
 
-  return probDATA/probMC;
+  return probDATA / probMC;
 }
 
 template <>
@@ -4925,43 +4797,112 @@ ParticleList AnalysisBase<NANORun3>::GetJetsMET(TVector3& MET, int id){
       jet.SetParticleID(kMedium);
     else if(Jet_jetId[i] >= 1)
       jet.SetParticleID(kLoose);
-    
-    // DeepCSV tagger
-    // jet.SetBtag(Jet_btagDeepB[i]);
 
     // DeepFlavour tagger
     jet.SetBtag(Jet_btagDeepFlavB[i]);
 
-    // https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation2016Legacy
-    if(m_year == 2016){
+    // https://btv-wiki.docs.cern.ch/ScaleFactors/Run3Summer22/#ak4-b-tagging
+    if(m_year == 2022 && !m_IsEE){
       // Deep Flavor
-      if(jet.Btag() > 0.7221)
+      if(jet.Btag() > 0.9512)
+	jet.SetBtagID(kVeryVeryTight);
+      else if(jet.Btag() > 0.8111)
+	jet.SetBtagID(kVeryTight);
+      else if(jet.Btag() > 0.7183)
 	jet.SetBtagID(kTight);
-      else if(jet.Btag() > 0.3093) 
+      else if(jet.Btag() > 0.3086) 
+	jet.SetBtagID(kMedium);
+      else if(jet.Btag() > 0.0583)
+	jet.SetBtagID(kLoose);
+    }
+
+    // https://btv-wiki.docs.cern.ch/ScaleFactors/Run3Summer22EE/#ak4-b-tagging
+    if(m_year == 2022 && m_IsEE){
+      // Deep Flavor
+      if(jet.Btag() > 0.9542)
+	jet.SetBtagID(kVeryVeryTight);
+      else if(jet.Btag() > 0.8184)
+	jet.SetBtagID(kVeryTight);
+      else if(jet.Btag() > 0.7300)
+	jet.SetBtagID(kTight);
+      else if(jet.Btag() > 0.3196) 
 	jet.SetBtagID(kMedium);
       else if(jet.Btag() > 0.0614)
 	jet.SetBtagID(kLoose);
     }
 
-    // https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation94X
-    if(m_year == 2017){
+    // https://btv-wiki.docs.cern.ch/ScaleFactors/Run3Summer23/#ak4-b-tagging
+    if(m_year == 2023 && !m_IsBPix){
       // Deep Flavor
-      if(jet.Btag() > 0.7489)
+      if(jet.Btag() > 0.9459)
+	jet.SetBtagID(kVeryVeryTight);
+      else if(jet.Btag() > 0.7667)
+	jet.SetBtagID(kVeryTight);
+      else if(jet.Btag() > 0.6553)
 	jet.SetBtagID(kTight);
-      else if(jet.Btag() > 0.3033) 
+      else if(jet.Btag() > 0.2431) 
 	jet.SetBtagID(kMedium);
-      else if(jet.Btag() > 0.0521)
+      else if(jet.Btag() > 0.0479)
 	jet.SetBtagID(kLoose);
     }
 
-    // https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation102X
-    if(m_year == 2018){
-      // DeepFlavor
-      if(jet.Btag() > 0.7264)
+    // https://btv-wiki.docs.cern.ch/ScaleFactors/Run3Summer23BPix/#ak4-b-tagging
+    if(m_year == 2023 && m_IsBPix){
+      // Deep Flavor
+      if(jet.Btag() > 0.9483)
+	jet.SetBtagID(kVeryVeryTight);
+      else if(jet.Btag() > 0.7671)
+	jet.SetBtagID(kVeryTight);
+      else if(jet.Btag() > 0.6563)
 	jet.SetBtagID(kTight);
-      else if(jet.Btag() > 0.2770) 
+      else if(jet.Btag() > 0.2435) 
 	jet.SetBtagID(kMedium);
-      else if(jet.Btag() > 0.0494)
+      else if(jet.Btag() > 0.0480)
+	jet.SetBtagID(kLoose);
+    }
+
+    // placeholders used for 2024, 2025, 2026
+    if(m_year == 2024){
+      // Deep Flavor
+      if(jet.Btag() > 0.9483)
+	jet.SetBtagID(kVeryVeryTight);
+      else if(jet.Btag() > 0.7671)
+	jet.SetBtagID(kVeryTight);
+      else if(jet.Btag() > 0.6563)
+	jet.SetBtagID(kTight);
+      else if(jet.Btag() > 0.2435) 
+	jet.SetBtagID(kMedium);
+      else if(jet.Btag() > 0.0480)
+	jet.SetBtagID(kLoose);
+    }
+
+    // placeholders used for 2024, 2025, 2026
+    if(m_year == 2025){
+      // Deep Flavor
+      if(jet.Btag() > 0.9483)
+	jet.SetBtagID(kVeryVeryTight);
+      else if(jet.Btag() > 0.7671)
+	jet.SetBtagID(kVeryTight);
+      else if(jet.Btag() > 0.6563)
+	jet.SetBtagID(kTight);
+      else if(jet.Btag() > 0.2435) 
+	jet.SetBtagID(kMedium);
+      else if(jet.Btag() > 0.0480)
+	jet.SetBtagID(kLoose);
+    }
+
+    // placeholders used for 2024, 2025, 2026
+    if(m_year == 2026){
+      // Deep Flavor
+      if(jet.Btag() > 0.9483)
+	jet.SetBtagID(kVeryVeryTight);
+      else if(jet.Btag() > 0.7671)
+	jet.SetBtagID(kVeryTight);
+      else if(jet.Btag() > 0.6563)
+	jet.SetBtagID(kTight);
+      else if(jet.Btag() > 0.2435) 
+	jet.SetBtagID(kMedium);
+      else if(jet.Btag() > 0.0480)
 	jet.SetBtagID(kLoose);
     }
 

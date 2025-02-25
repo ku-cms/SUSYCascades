@@ -6,6 +6,14 @@ using std::string;
 using std::cout;
 using std::endl;
 
+std::string get_str_between_two_str(const std::string &s, const std::string &start_delim, const std::string &stop_delim)
+{
+ unsigned first_delim_pos = s.find(start_delim);
+ unsigned end_pos_of_first_delim = first_delim_pos + start_delim.length();
+ unsigned last_delim_pos = s.find_first_of(stop_delim, end_pos_of_first_delim);
+ return s.substr(end_pos_of_first_delim,last_delim_pos - end_pos_of_first_delim);
+}
+
 NeventTool::NeventTool(){
 
   m_dataset = new std::string();
@@ -266,14 +274,6 @@ std::map<std::pair<std::string,std::string>,std::map<std::pair<int,int>,double> 
   return Label2Nweight;
 }
 
-std::string get_str_between_two_str(const std::string &s, const std::string &start_delim, const std::string &stop_delim)
-{
- unsigned first_delim_pos = s.find(start_delim);
- unsigned end_pos_of_first_delim = first_delim_pos + start_delim.length();
- unsigned last_delim_pos = s.find_first_of(stop_delim, end_pos_of_first_delim);
- return s.substr(end_pos_of_first_delim,last_delim_pos - end_pos_of_first_delim);
-}
-
 bool check_dataset_file(std::string dataset_name)
 {
  std::ifstream testfile(dataset_name);
@@ -286,66 +286,18 @@ bool check_dataset_file(std::string dataset_name)
  return true;
 }
 
-bool NeventTool::DatasetIsFastSim(const std::string& infile_name)
+int NeventTool::EventsInDAS(const std::string& u_file)
 {
- std::ifstream infile(infile_name);
- std::vector<string> datasets;
- std::string dataset = "";
- while (getline(infile,dataset))
-  datasets.push_back(dataset);
- for(int i = 0; i < int(datasets.size()); i++)
+ int Events = 0;
+ std::string filename = u_file;
+ size_t pos = filename.find("/store/");
+ if(pos != std::string::npos) filename = filename.substr(pos); // remove everything before root redirector for DAS query
+ TString das_output = gSystem->GetFromPipe(("dasgoclient -query=\"file ="+filename+"\" -json").c_str());
+ if(das_output.First("nevents"))
  {
-  if(datasets[i].find("FS") == std::string::npos)
-  {
-   infile.close();
-   return false;
-  }
+  string events_string = get_str_between_two_str(das_output.Data(),"nevents\":",",");
+  Events = std::stoi(events_string);
  }
- infile.close();
- return true;
-}
-
-int NeventTool::EventsInDAS(const std::string& u_dataset, const std::string& u_filetag)
-{
- std::string dataset = u_dataset;
- std::string filetag = u_filetag;
- if(filetag.find("_SMS") != std::string::npos)
-   filetag.erase(filetag.length()-4);
- filetag.erase(filetag.length()-5);
- double Events = 0.;
- gSystem->Exec(("dasgoclient -query=\"dataset=/"+dataset+"/*"+filetag+"NanoAODv12*"+"/NANO*\" >> datasets_"+filetag+"_"+dataset+".txt").c_str());
- if(!check_dataset_file("datasets_"+filetag+"_"+dataset+".txt"))
-   gSystem->Exec(("dasgoclient -query=\"dataset=/"+dataset+"/*"+filetag+"NanoAODv9*"+"/NANO*\" >> datasets_"+filetag+"_"+dataset+".txt").c_str());
- if(!check_dataset_file("datasets_"+filetag+"_"+dataset+".txt"))
-   gSystem->Exec(("dasgoclient -query=\"dataset=/"+dataset+"/*"+filetag+"NanoAODv7*"+"/NANO*\" >> datasets_"+filetag+"_"+dataset+".txt").c_str());
- if(!check_dataset_file("datasets_"+filetag+"_"+dataset+".txt"))
-   gSystem->Exec(("dasgoclient -query=\"dataset=/"+dataset+"/*"+filetag+"NanoAODv4*"+"/NANO*\" >> datasets_"+filetag+"_"+dataset+".txt").c_str());
- if(!check_dataset_file("datasets_"+filetag+"_"+dataset+".txt"))
-   gSystem->Exec(("dasgoclient -query=\"dataset=/"+dataset+"/*"+filetag+"NanoAOD*"+"/NANO*\" >> datasets_"+filetag+"_"+dataset+".txt").c_str());
-
- std::string infile_name = "datasets_"+filetag+"_"+dataset+".txt";
- bool IsFS = DatasetIsFastSim(infile_name);
- std::ifstream infile(infile_name);
- std::string dataset_fullname = "";
- while(getline(infile,dataset_fullname))
- {
-  if(dataset_fullname.find("JMENano") != std::string::npos) continue;
-  if(!IsFS && dataset_fullname.find("FS") != std::string::npos) continue;
-  gSystem->Exec(("dasgoclient -query=\"file dataset="+dataset_fullname+"\" -json >> "+filetag+"_"+dataset+".json").c_str());
- }
- infile.close();
- infile.open(filetag+"_"+dataset+".json");
- string line = "";
- while(getline(infile,line))
- {
-  if(line.find("nevents") != std::string::npos)
-  {
-   string events_string = get_str_between_two_str(line,"nevents\":",",");
-   Events += std::stod(events_string);
-  }
- }
- //gSystem->Exec("rm datasets_*.txt");
- //gSystem->Exec("rm *.json");
  return Events;
 }
 

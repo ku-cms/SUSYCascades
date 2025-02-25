@@ -12,7 +12,6 @@ RFGLIBS     = $(shell restframes-config --libs)
 
 CXX         = g++
 
-#CXXFLAGS       = -fPIC -Wall -O3 -g
 CXXFLAGS       = -fPIC $(filter-out -stdlib=libc++ -pthread , $(ROOTCFLAGS))
 CXXFLAGS      += $(filter-out -stdlib=libc++ -pthread , $(RFCFLAGS))
 
@@ -35,13 +34,26 @@ SRCDIR_CMSSW      = ./src_cmssw/
 
 SCXX   = $(CXX)
 
-
 #LHAPDF stuff is cmssw specific
 cmssw: LHAPDFCFLAGS = $(shell /cvmfs/cms.cern.ch/el9_amd64_gcc12/external/lhapdf/6.4.0-52852f9a177b8e8b5b72e2ae6b1327b6/bin/lhapdf-config --cflags --ldflags)
 cmssw: LHAPDFGLIBS = $(shell /cvmfs/cms.cern.ch/el9_amd64_gcc12/external/lhapdf/6.4.0-52852f9a177b8e8b5b72e2ae6b1327b6/bin/lhapdf-config --libs)
 cmssw: CXXFLAGS      += $(filter-out -stdlib=libc++ -pthread , $(LHAPDFCFLAGS))
 cmssw: GLIBS         += $(filter-out -stdlib=libc++ -pthread , $(LHAPDFGLIBS))
 cmssw: CXX += -I$(INCLUDEDIR_CMSSW)
+
+# Needed for correctionlib
+# PYTHON_INCLUDE = $(shell python3 -c "from sysconfig import get_paths as gp; print(gp()['include'])")
+# PYTHON_LIB = $(shell python3 -c "import sysconfig; print(sysconfig.get_config_var('LIBDIR'))")
+# CORRECTIONLIB_DIR = /cvmfs/cms.cern.ch/el9_amd64_gcc12/external/py3-correctionlib/2.2.2-4f091fd2adcff55f05f1d262b3254c25/lib/python3.9/site-packages/correctionlib/
+# INCLUDEDIR_CLIB = -I$(PYTHON_INCLUDE) -I$(CORRECTIONLIB_DIR)/include
+# LIBDIR_CLIB = -L$(PYTHON_LIB) -L$(CORRECTIONLIB_DIR)/lib
+CORRECTION_FLAGS = $(shell correction config --cflags --ldflags --rpath)
+
+# For correctionlib
+# cmssw : CXXFLAGS += $(INCLUDEDIR_CLIB)
+# cmssw : GLIBS += $(LIBDIR_CLIB)
+cmssw : CXXFLAGS += $(CORRECTION_FLAGS)
+cmssw : GLIBS += $(CORRECTION_FLAGS)
 
 CC_FILES := $(wildcard src/*.cc)
 HH_FILES := $(wildcard include/*.hh)
@@ -72,6 +84,7 @@ cmssw : CXX   += -D_CMSSW_
 locallib : GLIBS += -L/Users/christopherrogan/GitHub/lwtnn/lib -llwtnn
 locallib : CXX   += -I/Users/christopherrogan/GitHub/lwtnn/include
 
+
 all: alltargets lib
 
 #cmssw: alltargets lib BuildFit.x
@@ -84,6 +97,7 @@ locallib: lib
 lib: lib/libKUEWKino.so
 
 #alltargets: MakeReducedNtuple_NANO.x EventCountPlot.x MakeEventCount_NANO.x BuildFitInput.x Condor_Plot_1D_NANO.x BuildPlotInput.x BuildFitShapes.x BuildFitInputCondor.x BuildPlotInputCondor.x BuildFitCondor.x
+#alltargets: MakeReducedNtuple_NANO.x MakeEventCount_NANO.x Condor_Plot_1D_NANO.x Submit_Plot_1D_NANO.x BuildFitInput.x BuildFitInputCondor.x
 alltargets: MakeReducedNtuple_NANO.x MakeEventCount_NANO.x Condor_Plot_1D_NANO.x Submit_Plot_1D_NANO.x
 
 EventCountPlot.x:  $(SRCDIR)EventCountPlot.C $(OBJ_FILES) $(HH_FILES)

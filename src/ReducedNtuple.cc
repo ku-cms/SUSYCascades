@@ -246,7 +246,6 @@ TTree* ReducedNtuple<Base>::InitOutputTree(const string& sample, bool do_slim){
   tree->Branch("PrefireWeight_down", &m_PrefireWeight_down);
 
   tree->Branch("METtrigger", &m_METtrigger);
-  tree->Branch("METHTtrigger", &m_METHTtrigger);
   tree->Branch("METORtrigger", &m_METORtrigger);
 
   if(!do_slim){
@@ -1184,7 +1183,6 @@ void ReducedNtuple<Base>::FillOutputTree(TTree* tree, const Systematic& sys, boo
   m_NPV = AnalysisBase<Base>::GetNPV();
 
   m_METtrigger   = AnalysisBase<Base>::GetMETtrigger();
-  m_METHTtrigger = AnalysisBase<Base>::GetMETHTtrigger();
   m_METORtrigger = AnalysisBase<Base>::GetMETORtrigger();
 
   m_SingleElectrontrigger = AnalysisBase<Base>::GetSingleElectrontrigger();

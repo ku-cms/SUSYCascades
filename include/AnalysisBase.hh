@@ -24,6 +24,8 @@
 #include "Particle.hh"
 #include "Systematics.hh"
 
+#include "correction.h"
+
 using namespace std;
 
 class ParticleList;
@@ -78,7 +80,6 @@ public:
   virtual int GetNPUtrue();
 
   virtual bool GetMETtrigger();
-  virtual bool GetMETHTtrigger();
   virtual bool GetMETORtrigger();
 
   virtual bool GetSingleElectrontrigger();
@@ -156,6 +157,10 @@ protected:
   string m_DataSet;
   string m_FileTag;
   int m_year;
+  bool m_IsAPV = false;
+  bool m_IsUL = false;
+  bool m_IsEE = false;
+  bool m_IsBPix = false;
 
   Systematics m_Systematics;
   
@@ -184,16 +189,8 @@ private:
 
   const Systematic* m_CurSys;
   const Systematic& CurrentSystematic() const;
+  std::unique_ptr<correction::CorrectionSet> m_cset_Btag;
   
 };
 
 #endif
-
-
-
-
-
-
-
-
-
