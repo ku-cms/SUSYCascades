@@ -6,7 +6,7 @@
 class ParticleList;
 
 /// Particle ID level
-enum ParticleIDType { kNothing, kVeryLoose, kLoose, kMedium, kTight, kVeryTight };
+enum ParticleIDType { kNothing, kVeryLoose, kLoose, kMedium, kTight, kVeryTight, kVeryVeryTight };
 enum LepID { kGold, kSilver, kBronze };
 
 class Particle : public TLorentzVector {
