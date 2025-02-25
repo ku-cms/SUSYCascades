@@ -80,8 +80,7 @@ void PlotCondor_Cands_Plot_1D_NANO(){
   string base_output = "output_Plot_1D_NANO";
 
   vector<string> extra_tags = {
-    "_Sparticle2_RecoLep2_ge1JS_MET100_PTISR200_RISR0p5_SplitSJet",
-    "_Sparticle2_RecoLep2_0JS_MET100_PTISR200_RISR0p5_SplitSJet",
+    "_TESTSLIM",
   };
 
   std::map<string,double> ttbar_procs_2017 = {

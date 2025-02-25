@@ -166,8 +166,6 @@ int main(int argc, char* argv[]) {
 
   gSystem->Exec("make cmssw -j4");
   string work_dir = "SubmitCondor_Plot_1D_NANO";
-  //string work_dir = "SubmitCondor_Plot_1D_NANO_BDT_MET_S_leps_transverseJIG/"; // need '/' at end
-  //string work_dir = "SubmitCondor_Plot_1D_NANO_S_leps_SqJIG/"; // need '/' at end
   work_dir += otag + "/"; // need '/' at end
   gSystem->Exec(("mkdir -p "+work_dir+"src/").c_str());
   gSystem->Exec(("mkdir -p "+work_dir+"root/").c_str());
@@ -180,21 +178,6 @@ int main(int argc, char* argv[]) {
   string filetag = "";
   string era = "Run2";
   for(int d = 0; d < int(datasets.size()); d++){
-   //if(d == 0) 
-   //{
-   // cout << "   Submitting 2016..." << endl;
-   // filetag = "Summer16_102X";
-   //} 
-   //if(d == 1)
-   //{
-   // cout << "   Submitting 2017..." << endl;
-   // filetag = "Fall17_102X";
-   //} 
-   //if(d == 2)
-   //{
-   // cout << "   Submitting 2018..." << endl;
-   // filetag = "Autumn18_102X";
-   //} 
    if(d == 0) 
    {
     cout << "   Submitting 2017..." << endl;
