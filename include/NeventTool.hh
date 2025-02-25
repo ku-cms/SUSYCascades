@@ -29,7 +29,7 @@ public:
   double GetFilterEff(const std::string& dataset, const std::string& filetag, int lumiblock = -1) const;
 
   bool DatasetIsFastSim(const std::string& infile);
-  int EventsInDAS(const std::string& u_dataset = "", const std::string& u_filetag = "");
+  int EventsInDAS(const std::string& u_file = "");
 
 private:
   static std::map<std::pair<std::string,std::string>,double> m_Label2Nevent_BKG;

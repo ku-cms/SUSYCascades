@@ -92,8 +92,12 @@ class EventCount:
         chain = ROOT.TChain(tree)
         chain.Add(root_file)
         chain.GetEntry(0)
-        DAS_count = chain.NDAS
-        return DAS_count
+        n_entries = chain.GetEntries()
+        for i in range(n_entries):
+            chain.GetEntry(i)
+            n_DAS_Count = chain.NDAS
+            DAS_count += n_DAS_Count
+        return int(DAS_count)
 
     # count total events in a ROOT file
     # iterate over entries in the event count tree

@@ -179,17 +179,26 @@ int main(int argc, char* argv[]) {
   else
     chain = (TChain*) new TChain("Events");
   
+  // add DAS count
+  int NDAS = 0;
+  NeventTool eventTool;
   int Nfile = filenames.size();
   for(int i = 0; i < Nfile; i++){
     chain->Add(filenames[i].c_str());
-    cout << "   Adding file " << filenames[i] << endl;
+    NDAS += eventTool.EventsInDAS(filenames[i]);
+    cout << "   Added file " << filenames[i] << endl;
   }
+  if(NDAS == 0) return 1; // will try to resubmit job
 
   using NtupleVariant = std::variant<std::unique_ptr<ReducedNtuple<SUSYNANOBase>>, std::unique_ptr<ReducedNtuple<NANOULBase>>, std::unique_ptr<ReducedNtuple<NANORun3>>>;
   NtupleVariant ntuple;
   if(string(FileTag).find("130X") != std::string::npos){ cout << "Using Run3 base" << endl; ntuple = std::make_unique<ReducedNtuple<NANORun3>>(chain); }
   else if(string(FileTag).find("UL") != std::string::npos){ cout << "Using UL base" << endl; ntuple = std::make_unique<ReducedNtuple<NANOULBase>>(chain); }
   else ntuple = std::make_unique<ReducedNtuple<SUSYNANOBase>>(chain);
+
+  Long64_t N1, N0;
+  std::visit([&](auto& nt) { nt->GetChunks(NDAS, N1, N0, ICHUNK, NCHUNK); }, ntuple);
+  NDAS = N0 - N1;
 
   std::visit([&](auto& nt) { nt->AddLabels(string(DataSet),string(FileTag)); }, ntuple);
   std::visit([&](auto& nt) { nt->AddEventCountFile(string(EventCount)); }, ntuple);
@@ -232,8 +241,11 @@ int main(int argc, char* argv[]) {
     std::visit([](auto& nt) { nt->DoFastSim(); }, ntuple);
 
   cout << "writing output with ichunk=" << ICHUNK << " nchunk=" << NCHUNK << endl;
-  std::visit([&](auto& nt) { nt->WriteNtuple(string(outputFileName), ICHUNK, NCHUNK, DO_slim); }, ntuple);
- 
-  return 0;
+  bool passedDASCheck = std::visit([&](auto& nt) -> bool { return nt->WriteNtuple(string(outputFileName), ICHUNK, NCHUNK, DO_slim, NDAS); }, ntuple);
+  if(!passedDASCheck){
+    std::cout << "JOB FAILED DAS CHECK!" << std::endl;
+    return 1;
+  }
+  else return 0;
 
 }

@@ -237,6 +237,7 @@ int main(int argc, char* argv[]) {
   TTree* tout = (TTree*) new TTree("EventCount", "EventCount");
   
   int NDAS = 0;
+  int Nevent_tot = 0;
   tout->Branch("NDAS", &NDAS);
   tout->Branch("Nevent", &Nevent);
   tout->Branch("Nweight", &Nweight);
@@ -246,12 +247,14 @@ int main(int argc, char* argv[]) {
   tout->Branch("MC", &MC);
   // add DAS count
   NeventTool eventTool;
-  NDAS = eventTool.EventsInDAS(dataset, filetag);
+  for(int i = 0; i < Nfile; i++)
+    NDAS += eventTool.EventsInDAS(filenames[i]);
   if(NDAS == 0) return 1; // will try to resubmit job
   if(DO_SMS){
     int Nmass = masses.size();
     for(int i = 0; i < Nmass; i++){
       Nevent     = mapNevent[masses[i]];
+      Nevent_tot += Nevent;
       Nweight    = mapNweight[masses[i]];
       MP = masses[i].first;
       MC = masses[i].second;
@@ -264,6 +267,9 @@ int main(int argc, char* argv[]) {
   fout->cd();
   tout->Write("", TObject::kOverwrite);
   fout->Close();
- 
-  return 0;
+  if(NDAS != Nevent_tot){ 
+    std::cout << "JOB FAILED DAS CHECK!" << std::endl;
+    return 1;
+  }
+  else return 0;
 }
