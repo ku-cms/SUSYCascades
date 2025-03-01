@@ -84,8 +84,8 @@ double XsecTool::GetXsec_SMS(const std::string& dataset, double MP, unsigned int
       else if (code % 10 == 1) label += "_SlepSnu";
       else if (code % 10 == 2) label += "_SnuSnu";
       else label += "_SlepSlep";
-      if ((code / 10) % 10 == 0) label += "_left";
-      else if ((code / 10) % 10 == 1) label += "_right";
+      if ((code / 10) % 10 == 1) label += "_left";
+      else if ((code / 10) % 10 == 2) label += "_right";
       else label += "_left";
       if (code >= 100){
         if ((code / 100) % 10 == 1) label += "_plus";

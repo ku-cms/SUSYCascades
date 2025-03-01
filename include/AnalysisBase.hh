@@ -162,6 +162,7 @@ protected:
   bool m_IsUL = false;
   bool m_IsEE = false;
   bool m_IsBPix = false;
+  bool m_IsRun3 = false;
 
   Systematics m_Systematics;
   
