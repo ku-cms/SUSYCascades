@@ -102,6 +102,7 @@ def write_sh_single(srcfile,ifile,ofile,logfile,outfile,errfile,dataset,filetag,
     fsrc.write('-jme='+JMEFOLD+" ")
     fsrc.write('-metfile='+METFILE+" ")
     fsrc.write('-prefirefile='+PREFIREFILE+" ")
+    fsrc.write('-xsjsonfile='+XSJSONFILE+" ")
     fsrc.write('-split=1,'+str(n)+'\n')
 
     outlog = outfile+".out"
@@ -176,6 +177,7 @@ def write_sh(srcfile,ifile,ofile,logfile,outfile,errfile,dataset,filetag,n,NAME)
     fsrc.write('-jme='+JMEFOLD+" ")
     fsrc.write('-metfile='+METFILE+" ")
     fsrc.write('-prefirefile='+PREFIREFILE+" ")
+    fsrc.write('-xsjsonfile='+XSJSONFILE+" ")
     splitstring = '-split=%s,%d\n' % ('$$([$(Step)+1])', n)
     fsrc.write(splitstring)
 
@@ -260,7 +262,7 @@ if __name__ == "__main__":
     if '--data' in sys.argv:
         DO_DATA = 1
         argv_pos += 1
-    if '--dry-run' in sys.argv:
+    if '--dry-run' in sys.argv or '--dryrun' in sys.argv:
         DRY_RUN = 1
         argv_pos += 1
     if '--count' in sys.argv:
@@ -359,6 +361,13 @@ if __name__ == "__main__":
         os.system("cat json/GoodRunList/*.txt > "+config+"GRL_JSON.txt")
         os.system("echo -n $(tr -d '\n' < "+config+"GRL_JSON.txt) > "+config+"GRL_JSON.txt")
         JSON = "./config/GRL_JSON.txt"
+
+        # copy xs json file
+        XSJSONFILENAME = 'info_XSDB_2025-02-27_17-29.json'
+        if VERBOSE:
+            print("copying xs json file")
+        os.system(f"xrdcp -s root://cmseos.fnal.gov//store/user/z374f439/XSectionJSONs/{XSJSONFILENAME} {config}{XSJSONFILENAME}")
+        XSJSONFILE = f"./config/{XSJSONFILENAME}"
 
         # copy PU root files
         if VERBOSE:

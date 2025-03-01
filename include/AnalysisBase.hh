@@ -47,6 +47,7 @@ public:
   void AddJMEFolder(const string& jmefold);
   void AddMETTriggerFile(const string& csvfile);
   void AddPrefireFile(const string& prefirefile);
+  void AddXSecJSON(const string& XSjsonfile);
   #ifdef _CMSSW_
   void AddLHAPDF();
   #endif

@@ -258,7 +258,6 @@ TTree* ReducedNtuple<Base>::InitOutputTree(const string& sample, bool do_slim){
     tree->Branch("HEM_Veto", &m_HEM_Veto);
   }
 
-
   tree->Branch("SingleElectrontrigger", &m_SingleElectrontrigger);
   tree->Branch("SingleMuontrigger", &m_SingleMuontrigger);
   tree->Branch("EMutrigger", &m_EMutrigger);

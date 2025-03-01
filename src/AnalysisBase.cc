@@ -127,6 +127,7 @@ void AnalysisBase<Base>::AddLabels(const string& dataset, const string& filetag)
   if(m_FileTag.find("UL") != std::string::npos) m_IsUL = true;
   if(m_FileTag.find("EE") != std::string::npos) m_IsEE = true;
   if(m_FileTag.find("BPix") != std::string::npos) m_IsBPix = true;
+  m_XsecTool.SetFileTag(filetag);
 }
 
 template <class Base>
@@ -181,6 +182,11 @@ void AnalysisBase<Base>::AddJMEFolder(const string& jmefold){
 template <class Base>
 void AnalysisBase<Base>::AddMETTriggerFile(const string& csvfile){
   m_METTriggerTool.BuildMap(csvfile);
+}
+
+template <class Base>
+void AnalysisBase<Base>::AddXSecJSON(const string& XSjsonfile){
+  m_XsecTool.UpdateXsecFromJSON(XSjsonfile);
 }
 
 template <class Base>
@@ -856,7 +862,7 @@ std::pair<int,int> AnalysisBase<Base>::GetSUSYMasses(){
       }
     return std::pair<int,int>(MP,MC);
     } // if !constexpr
-  } // if(IsData)
+  } // if(!IsData)
   return std::pair<int,int>(0,0);
 }
 
