@@ -592,7 +592,7 @@ void ReducedNtuple<Base>::FillOutputTree(TTree* tree, const Systematic& sys, boo
   m_PrefireWeight_down = AnalysisBase<Base>::GetPrefireWeight(-1);
   
   if(std::isnan(ETMiss.Mag())) return;
-  if(ETMiss.Mag() < 10.)
+  if(ETMiss.Mag() < 100.)
     return;
   
   ClearVariables();
@@ -699,14 +699,6 @@ void ReducedNtuple<Base>::FillOutputTree(TTree* tree, const Systematic& sys, boo
   Jets.SortByPt();
   GenJets.SortByPt();
   
-  // skip event reconstruction for now if too many jets
-  // if((Jets.size()) >= 16){
-  //   m_event_skipped = true;
-  //   if(tree)
-  //     tree->Fill();
-  //   return;
-  // }
-  
   m_Njet = Jets.size();
   m_NGenjet = GenJets.size();  
 
@@ -726,7 +718,8 @@ void ReducedNtuple<Base>::FillOutputTree(TTree* tree, const Systematic& sys, boo
   m_Nlep = Leptons.size();
   
   // not enough stuff
-  if(m_Nlep + m_Njet < 2 || m_Njet < 1)
+  // if(m_Nlep + m_Njet < 2 || m_Njet < 1)
+  if(m_Nlep < 2 || m_Njet < 1)
     return;
 
   m_HEM_Veto = m_EventFlag_JetInHEM_Pt20;

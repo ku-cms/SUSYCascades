@@ -16,3 +16,4 @@ HADD_logs/
 local_*/
 *.pdf
 .vscode/
+*.debug

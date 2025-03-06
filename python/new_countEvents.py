@@ -6,25 +6,23 @@ import ROOT
 import argparse
 from colorama import Fore, Back, Style
 import tools
+import subprocess
+import json
 
-#
 # Count the number of "total" and "saved" events for all ROOT files in a directory.
-# Print the results and save results to a csv file.
 #
-# Example syntax:
+# Example for DAS check on connect:
 #
-# python python/countEvents.py --directory <path_to_directory> --csv <path_to_csv>
-#
-# python python/countEvents.py --directory <path_to_directory> --csv <path_to_csv> --year <year> --sms --verbose
-#
-# For DAS check on connect:
-#
-# python3 python/countEvents.py -d ../../../NTUPLES/Processing/Summer23_130X/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8_Summer23_130X/ -y 2023 -w
+# python3 python/new_countEvents.py -d /ospool/cms-user/zflowers/NTUPLES/Processing/Summer23BPix_130X/ -w
 #
 # Check event count file:
 #
-# python3 python/countEvents.py --eventCount --filetag Summer23_130X
-#
+# python3 python/new_countEvents.py --eventCount --filetag Summer23_130X
+# 
+# This script is intended for checking counts after the fact and only does "internal" DAS counts
+# For running on newly processed jobs, recommend using python/CheckFiles.py
+# CheckFiles is more robust and also has option for "offline" DAS checking
+# Functions called here only use "online" DAS check which looks at what's saved in the output root file
 
 # Make sure ROOT.TFile.Open(fileURL) does not seg fault when $ is in sys.argv (e.g. $ passed in as argument)
 ROOT.PyConfig.IgnoreCommandLineOptions = True
@@ -86,18 +84,88 @@ class EventCount:
     def SetAnalysisTree(self, analysis_tree):
         self.analysis_tree = analysis_tree
     
+    # Gets "on-the-fly" DAS count from root file
     def GetDASCount(self, root_file):
         DAS_count = 0
         tree = self.GetEventCountTree()
         chain = ROOT.TChain(tree)
         chain.Add(root_file)
-        chain.GetEntry(0)
         n_entries = chain.GetEntries()
         for i in range(n_entries):
             chain.GetEntry(i)
             n_DAS_Count = chain.NDAS
             DAS_count += n_DAS_Count
         return int(DAS_count)
+
+    def checkInternalDASCount(self, file):
+        NDAS = self.GetDASCount(file)   
+        Nevent = self.countTotalEvents(file)
+        return NDAS == Nevent
+
+    # Gets events directly from DAS (slow)
+    def EventsInDASFile(self, u_file):
+        """Get the number of events in DAS for the given file."""
+        events = 0
+        pos = u_file.find("/store/")
+        if pos != -1:
+            filename = u_file[pos:]  # Remove everything before "/store/"
+        else:
+            filename = u_file
+        try:
+            das_output = subprocess.check_output(
+                ["dasgoclient", "-query", f'file={filename}', "-json"],
+                text=True
+            )
+            das_data = json.loads(das_output)
+            # Extract number of events from JSON
+            if "nevents" in das_output:
+                events = int(das_output.split('"nevents":', 1)[1].split(',', 1)[0])
+        except (subprocess.CalledProcessError, ValueError, json.JSONDecodeError) as e:
+            print(f"Error querying DAS: {e}")
+        return events
+
+    # Gets events directly from DAS (slow)
+    def EventsInDASDataset(self, u_dataset):
+        events = 0
+        """Get the number of events in DAS for the given dataset."""
+        try:
+            das_output = subprocess.check_output(
+                ["dasgoclient", "-query", f'dataset={u_dataset}', "-json"],
+                text=True
+            )
+            das_data = json.loads(das_output)
+            # Extract number of events from JSON
+            if "nevents" in das_output:
+                events = int(das_output.split('"nevents":', 1)[1].split(',', 1)[0])
+        except (subprocess.CalledProcessError, ValueError, json.JSONDecodeError) as e:
+            print(f"Error querying DAS: {e}")
+        return events
+
+    def GetDatasetFromFile(self, u_file):
+        """Get dataset name from file"""
+        pos = u_file.find("/store/")
+        if pos != -1:
+            filename = u_file[pos:]  # Remove everything before "/store/"
+        else:
+            filename = u_file
+        try:
+            das_output = subprocess.check_output(
+                ["dasgoclient", "-query", f'dataset file={filename}'],
+                text=True,
+                stderr=subprocess.STDOUT
+            ).strip()
+            return das_output if das_output else ""
+        except subprocess.CalledProcessError as e:
+            print(f"Error querying DAS: {e.output.strip()}")
+            return ""
+
+    # Assume user is passing file, user can override to check for entire dataset
+    def EventsInDAS(self, u_input, file=True):
+        """Calls needed helper function based on file bool"""
+        if file:
+            return self.EventsInDASFile(u_input)
+        else:
+            return self.EventsInDASDataset(u_input)    
 
     # count total events in a ROOT file
     # iterate over entries in the event count tree
@@ -137,12 +205,16 @@ class EventCount:
             chain.GetEntry(i)
             dataset = str(chain.dataset)
             Nevent = int(chain.Nevent)
-            NDAS = int(chain.NDAS)
+            try:
+                NDAS = int(chain.NDAS)
+            except:
+                print(f'input root file does not have DAS values saved!') 
+                return
             if dataset in dataset_counts:
                 dataset_counts[dataset] += Nevent
+                DAS_counts[dataset] += NDAS
             else:
                 dataset_counts[dataset] = Nevent
-            if dataset not in DAS_counts:
                 DAS_counts[dataset] = NDAS
         for dataset in DAS_counts:
             if DAS_counts[dataset] != dataset_counts[dataset]:
@@ -226,6 +298,9 @@ class EventCount:
                     n_saved_events += n_file_saved_events
             else:
                 n_saved_events = self.countSavedEvents(root_file)
+            # Get DAS Count
+            if(das):
+                das_events += self.GetDASCount(root_file)
             n_total_events = self.countTotalEvents(root_file)
             n_events_map[base_name] = {}
             n_events_map[base_name]["n_total_events"] = n_total_events
@@ -268,19 +343,8 @@ class EventCount:
                 if base_events != ntuple_saved_events and verbose:
                     print(f"{key} missing {ntuple_saved_events/base_events} events")
                 output_data.append(row)
-        # Get DAS Count
-        if(das):
-            das_events = self.GetDASCount(root_files[0])
-            if(das_events == 0):
-                das_events = self.GetDASCount(root_files[1])
-            if(das_events == 0):
-                print("Couldn't get DAS events from file: ",root_files[0])
         
         # print results
-        if sms:
-            print("Sample: total events, DAS: events from DAS, Analysis tree: saved events")
-        else:
-            print("Sample: total events, DAS: events from DAS, Saved: saved events")
         for base_name in base_file_names:
             analysis_tree   = ""
             n_total_events = n_events_map[base_name]["n_total_events"]
@@ -295,10 +359,7 @@ class EventCount:
         if(das):
             base_name = base_file_names[0]
             das_percent = 100.*sum_total_events/das_events
-            base_name = base_name.split("_")
-            dataset = base_name[0]
-            for string in base_name[1:-3]:
-                dataset = dataset+"_"+string
+            dataset = base_name
             if(das_events == sum_total_events):
                 print(f"{dataset} passed the DAS check")
             else:
@@ -313,10 +374,9 @@ class EventCount:
 def run():
     # options
     parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    parser.add_argument("--directory",  "-d", default="",                               help="directory containing ROOT files (required)")
+    parser.add_argument("--directory",  "-d", default="",                               help="directory containing ROOT files")
     parser.add_argument("--pattern",    "-p", default="",                               help="pattern for root file names (optional)")
     parser.add_argument("--csv",        "-c", default="",                               help="output csv file name (optional)")
-    parser.add_argument("--year",       "-y", default="",                               help="year of data taking (optional)")
     parser.add_argument("--sms",        "-s", default = False,  action = "store_true",  help="run over signal sample (optional)")
     parser.add_argument("--eos",        "-e", default = False,  action = "store_true",  help="run over ROOT files on EOS")
     parser.add_argument("--verbose",    "-v", default = False,  action = "store_true",  help="verbose flag to print more things")
@@ -328,7 +388,6 @@ def run():
     directory   = options.directory
     pattern     = options.pattern
     csv         = options.csv
-    year        = options.year
     sms         = options.sms
     eos         = options.eos
     verbose     = options.verbose
@@ -336,17 +395,19 @@ def run():
     eventCount  = options.eventCount
     filetag     = options.filetag
 
-    # valid years of data taking
-    valid_years = ["2016", "2017", "2018", "2022", "2023"]
-
     if eventCount:
+        event_count = EventCount()
+        if directory: # option to pass directory to check intermediate event count root files
+            for dirpath, _, files in os.walk(directory):
+                for file in files:
+                    if file.endswith('.root'):
+                        if event_count.checkInternalDASCount(os.path.join(dirpath, file)): print(os.path.join(dirpath, file),"fails the DAS check!")
         # Check that the filetag is set.
-        if not filetag:
-            print("You asked to check event count (--eventCount) but did not provide the required filetag (--filetag FILETAG).")
+        elif not filetag:
+            print("You asked to check event count (--eventCount) but did not provide the required option filetag (--filetag FILETAG).")
             print("Please provide a filetag, for example: --filetag Summer23_130X")
             return
         else:
-            event_count = EventCount()
             event_count.checkEventCountFile(filetag)
 
     else:
@@ -355,19 +416,17 @@ def run():
             print(Fore.RED + "ERROR: 'directory' is not set. Please provide a directory using the -d option." + Fore.RESET)
             return
         
-        if year and year not in valid_years:
-            print(Fore.RED + "ERROR: The year '{0}' is not valid. Please provide a valid year {1} using the -y option.".format(year, valid_years) + Fore.RESET)
-            return
-
         if sms:
             event_count = EventCount(event_count_tree="EventCount", analysis_tree="", base_event_count=filetag)
         else:
             event_count = EventCount(base_event_count=filetag)
-        event_count.processDir(directory, pattern, csv, sms, eos, verbose, das)
-
-def main():
-    run()
+        # Check if directory has root files. If no root files, walk down to root files and loop over subdirs
+        # Need to have this just stop at top level directory with root files (no need to check staged hadded files (*_0.root, *_1.root, etc.)
+        for dirpath, _, files in os.walk(directory):
+            if any(f.endswith('.root') for f in files):
+                event_count.processDir(dirpath, pattern, csv, sms, eos, verbose, das)
+                break # Stop walking down once founded last stage of hadd files(?)
 
 if __name__ == "__main__":
-    main()
+    run()
 

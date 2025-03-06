@@ -10,6 +10,7 @@
 using std::string;
 
 class ReducedBase;
+enum SleptonFlavor {kSmu, kSel, kSmuSel};
 
 ///////////////////////////////////////////
 ////////// ScaleFactorTool class
@@ -27,15 +28,18 @@ public:
   double GetMETSF(double MET, int updown = 0);
 
   bool DileptonEvent(ReducedBase* base);
+  SleptonFlavor SleptonEvent(std::vector<int> &genPDGID_susy);
 
-  void AddBtagFolder(const string& btagfold);
-  double GetBtagSFWeight(ReducedBase* base, int year,  bool fastsim, bool HForLF, int updown = 0, ParticleIDType tag = kMedium);
-
+  void AddBtagFolder( const string& btagfold, const string& proc_rootfile="", int year=1);
+  //double GetBtagSFWeight(ReducedBase* base, int year,  bool fastsim, bool HForLF, int updown = 0, ParticleIDType tag = kMedium);
+  double GetBtagSFWeight( std::vector<double>& PT_jet, int year, bool fastsim, bool HForLF, int updown,ParticleIDType tag = kMedium,  double v2_weight=1. );
   
+  void init_bLambda();  
+  std::vector<double> GetbLambdas(std::string proc, std::string filename, int year);
 
 private:
   BtagSFTool m_BtagSFTool;
-
+  std::map<std::string, double> bLambdas{};
 };
 
 #endif

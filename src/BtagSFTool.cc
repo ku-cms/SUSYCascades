@@ -9,6 +9,8 @@
 
 using std::string;
 
+
+
 double BtagSFTool::EFF(double pT, int year, int flavor, bool FastSim){
   if(flavor < 0 || flavor > 2)
     return 0.;
@@ -71,8 +73,8 @@ double BtagSFTool::SF(double pT, int year, int flavor, int updown, bool FastSim)
   return 1;
 }
 
-void BtagSFTool::BuildMap(const std::string& btagSFfolder){
-  SetEfficiencies(btagSFfolder+"/BtagEff.root");
+void BtagSFTool::BuildMap(const std::string& btagSFfolder, const std::string& proc_rootfile, int year){
+  SetEfficiencies(btagSFfolder+"/BtagEff.root", proc_rootfile, year);
   SetSFs(btagSFfolder+"/DeepJet_2016.csv", 2016);
   SetSFs(btagSFfolder+"/DeepJet_2017.csv", 2017);
   SetSFs(btagSFfolder+"/DeepJet_2018.csv", 2018);
@@ -81,7 +83,8 @@ void BtagSFTool::BuildMap(const std::string& btagSFfolder){
   SetSFs(btagSFfolder+"/DeepFlav_13TEV_18SL_7_5_2019.csv", 2018, true);
 }
 
-void BtagSFTool::SetEfficiencies(const std::string& rootfile){
+
+void BtagSFTool::SetEfficiencies(const std::string& rootfile, const std::string& proc_rootfile, int year){
   for(int i = 0; i < 3; i++){
     if(m_BtagEff2016[i] != nullptr)
       delete m_BtagEff2016[i];
@@ -96,11 +99,50 @@ void BtagSFTool::SetEfficiencies(const std::string& rootfile){
     if(m_BtagEff2018_FastSim[i] != nullptr)
       delete m_BtagEff2018_FastSim[i];
   }
-
+//efficiency hack - load the normal root file for other years
+//but the specified year/process load the file from the ntuple
+std::cout<<"opening original BTAG rootfile: "<<rootfile<<"\n";
   TFile* input = new TFile(rootfile.c_str(),"READ");
   if(!input->IsOpen())
     return;
+  
+ // root://cmsxrootd.fnal.gov/
+  TFile* input2;
+  //s..td::string s1 = "root://cmsxrootd.fnal.gov/";
+  //root://cmseos.fnal.gov/
+  //std::string s2 = proc_rootfile.substr(23);
+  //s1 = s1+s2;
+  if( proc_rootfile != ""){  
+  input2 = TFile::Open(proc_rootfile.c_str(),"READ");
+   std::cout<<"opening Histograms: "<<proc_rootfile<<"\n";
+  //if(!input2->IsOpen())
+  //  return;
+  }
 
+  //create the TEffs from ntuple
+  //Histograms/hist_btag_flavor0_den
+  //Histograms/hist_btag_flavor0_num
+ /* commenting this out, in favor of additional SF 
+  TEfficiency *flav0, *flav1, *flav2;
+  TH1D *f0n, *f0d, *f1n, *f1d, *f2n, *f2d;
+  if (proc_rootfile != ""){
+  std::cout<<"loading histograms from: "<< proc_rootfile<<"\n";
+  input2->cd("Histograms");
+  f0n = (TH1D*) input2->Get("Histograms/hist_btag_flavor0_num");
+  f0d = (TH1D*) input2->Get("Histograms/hist_btag_flavor0_den");
+  f1n = (TH1D*) input2->Get("Histograms/hist_btag_flavor1_num");
+  f1d = (TH1D*) input2->Get("Histograms/hist_btag_flavor1_den");
+  f2n = (TH1D*) input2->Get("Histograms/hist_btag_flavor2_num");
+  f2d = (TH1D*) input2->Get("Histograms/hist_btag_flavor2_den");
+ 
+  flav0 = new TEfficiency(*f0n,*f0d);
+  flav1 = new TEfficiency(*f1n,*f1d);
+  flav2 = new TEfficiency(*f2n,*f2d);
+  std::cout<<" TEffciency created for year "<<year<<" \n";
+  
+  }*/
+
+   ///fill all data structures normally
   for(int i = 0; i < 3; i++){
     m_BtagEff2016[i] = (TEfficiency*)((TEfficiency*)input->Get(Form("BtagEff_2016_flavor%d",i)))->Clone("BEff_2016_flavor%d");
     m_BtagEff2017[i] = (TEfficiency*)((TEfficiency*)input->Get(Form("BtagEff_2017_flavor%d",i)))->Clone("BEff_2017_flavor%d");
@@ -109,8 +151,43 @@ void BtagSFTool::SetEfficiencies(const std::string& rootfile){
     m_BtagEff2017_FastSim[i] = (TEfficiency*)((TEfficiency*)input->Get(Form("BtagEff_2017_flavor%d",i)))->Clone("BEff_2017_FastSim_flavor%d");
     m_BtagEff2018_FastSim[i] = (TEfficiency*)((TEfficiency*)input->Get(Form("BtagEff_2018_flavor%d",i)))->Clone("BEff_2018_FastSim_flavor%d");
   }
-  
+
+  //overwrite the indicated eff datastructure
+  /*
+  if( proc_rootfile != ""){
+  if( year == 2016 ){
+	std::cout<<"overwriting 2016 TEfficiency\n";
+	m_BtagEff2016[0] = flav0;
+	m_BtagEff2016_FastSim[0] = flav0;
+	m_BtagEff2016[1] = flav1;
+        m_BtagEff2016_FastSim[1] = flav1;
+	m_BtagEff2016[2] = flav2;
+        m_BtagEff2016_FastSim[2] = flav2;	
+  }
+  if( year == 2017 ){
+	std::cout<<"overwriting 2017 TEfficiency\n";
+	m_BtagEff2017[0] = flav0;
+        m_BtagEff2017_FastSim[0] = flav0;
+        m_BtagEff2017[1] = flav1;
+        m_BtagEff2017_FastSim[1] = flav1;
+        m_BtagEff2017[2] = flav2;
+        m_BtagEff2017_FastSim[2] = flav2;
+  }
+  if( year == 2018 ){
+	std::cout<<"overwriting 2018 TEfficiency\n";
+	m_BtagEff2018[0] = flav0;
+        m_BtagEff2018_FastSim[0] = flav0;
+        m_BtagEff2018[1] = flav1;
+        m_BtagEff2018_FastSim[1] = flav1;
+        m_BtagEff2018[2] = flav2;
+        m_BtagEff2018_FastSim[2] = flav2;
+  }
+  }
+  */
   input->Close();
+  /*if( proc_rootfile != ""){
+  input2->Close();
+  }*/
 }
 
 void BtagSFTool::SetSFs(const std::string& csvfile, int year, bool FastSim){
@@ -259,7 +336,3 @@ std::string BtagSFTool::popcomma(std::string& line){
 
 //   return 1.;
 // }
-
-
-
-

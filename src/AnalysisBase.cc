@@ -152,9 +152,9 @@ void AnalysisBase<Base>::AddPUFolder(const string& pufold){
 }
 
 template <class Base>
-void AnalysisBase<Base>::AddBtagFolder(const string& btagfold){
+void AnalysisBase<Base>::AddBtagFolder(const string& btagfold, const string& proc_rootfile, int year){
   if(!m_IsUL and m_year < 2019)
-    m_BtagSFTool.BuildMap(btagfold);
+    m_BtagSFTool.BuildMap(btagfold, proc_rootfile, year);
   else{
     std::string Btag_file;
     if(!m_IsUL)

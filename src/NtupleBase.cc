@@ -157,9 +157,16 @@ bool NtupleBase<Base>::WriteNtuple(const string& filename, int ichunk, int nchun
   tout->Branch("MP", &MP);
   tout->Branch("MC", &MC);
   int Nmass = m_masses.size();
+  // Loop for DAS check
+  for(int i = 0; i < Nmass; i++){
+    Nevent_tot += m_mapNevent[m_masses[i]];
+  }
+  bool passed_DAS = true;
+  if(Nevent_tot != NDAS) passed_DAS = false;
+  // Loop to fill tree
   for(int i = 0; i < Nmass; i++){
     Nevent = m_mapNevent[m_masses[i]];
-    Nevent_tot += Nevent;
+    NDAS = Nevent; // since we already passed DAS check above, set NDAS to Nevent for filling tree
     MP = m_masses[i].first;
     MC = m_masses[i].second;
     tout->Fill();
@@ -181,8 +188,7 @@ bool NtupleBase<Base>::WriteNtuple(const string& filename, int ichunk, int nchun
 
   m_Trees.clear();
   m_Label2Tree.clear();
-  if(Nevent_tot != NDAS) return false;
-  else return true;
+  return passed_DAS;
   
 }
 

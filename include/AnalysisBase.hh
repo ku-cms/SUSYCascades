@@ -42,7 +42,7 @@ public:
   void AddFilterEffFile(const string& rootfile);
   void AddJSONFile(const string& jsonfile);
   void AddPUFolder(const string& pufold);
-  void AddBtagFolder(const string& btagfold);
+  void AddBtagFolder(const string& btagfold, const string& proc_rootfile="", int year=1);
   void AddLepFolder(const string& lepfold);
   void AddJMEFolder(const string& jmefold);
   void AddMETTriggerFile(const string& csvfile);

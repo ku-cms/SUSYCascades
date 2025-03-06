@@ -29,7 +29,6 @@
 
 using namespace std;
 
-
 string g_PlotTitle;
 string g_Xname;
 double g_Xmin;
@@ -44,10 +43,9 @@ using namespace RestFrames;
 
 void Plot_2D(){
 
-  
-   RestFrames::SetStyle();
+  RestFrames::SetStyle();
 
-  string NtuplePath = "/home/t3-ku/z374f439/storage/crogan/";
+  string NtuplePath = "/local-scratch/zflowers/NTUPLES/HADD/";
 
   cout << "Initializing sample maps from path " << NtuplePath << " for year " << 2017 << endl;
   SampleTool ST(NtuplePath, 2017);

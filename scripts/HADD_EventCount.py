@@ -1,6 +1,13 @@
 import os
 import argparse
 
+def run_command(command,dryrun):
+    if not dryrun:
+        print(f"Executing: {command}")
+        os.system(command)
+    else:
+        print(f"Command to be executed: {command}")
+
 def process_event_count_dirs(input_dir, output_dir, dryrun):
     if dryrun:
         print("Doing dryrun")
@@ -14,17 +21,19 @@ def process_event_count_dirs(input_dir, output_dir, dryrun):
         # Remove '_EventCount' from the subdirectory name
         subdir_cleaned = subdir.replace("_EventCount", "")
         
+        # Construct and execute hadd command
+        # First hadd intermediate datasets (reduce arg list for final hadd)
+        command = f"python3 scripts/DO_hadd.py -idir {input_dir}{subdir} -odir {input_dir}../HADD/{subdir} --skip-bad-files | tee HADD_logs/HADD_{subdir}.debug"
+        run_command(command,dryrun)
+        
         # Construct input and output paths
-        input_path = os.path.join(input_dir, subdir, "*", "*.root")
+        input_path = os.path.join(input_dir, "../HADD/", subdir, "*.root")
         output_path = os.path.join(output_dir, f"EventCount_NANO_{subdir_cleaned}.root")
         
         # Construct and execute hadd command
-        command = f"hadd -f -k -j 4 {output_path} {input_path}"
-        if not dryrun:
-            print(f"Executing: {command}")
-            os.system(command)
-        else:
-            print(f"Command to be executed: {command}")
+        # Second hadd for entire filetag
+        command = f"hadd -v 1 -f -k -j 4 {output_path} {input_path}"
+        run_command(command,dryrun)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Process EventCount directories and merge ROOT files.")

@@ -2,6 +2,8 @@
 
 import os, sys, time
 from colorama import Fore, Back, Style
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'python')))
+from CondorJobCountMonitor import CondorJobCountMonitor
 
 # Example submission: 
 #  python3 scripts/condor_submit_nano_connect_ntuples.py -split 10 -list samples/NANO/Lists/Fall17_102X.list --sys --slim --csv 
@@ -26,6 +28,7 @@ OUT_BASE    = "/ospool/cms-user/"+USER+"/NTUPLES/Processing"
 LIST        = "default.list"
 QUEUE       = ""
 SPLIT       = 1
+THRESHOLD   = 70000
 # ----------------------------------------------------------- #
 
 def new_listfile(rootlist, listfile):
@@ -228,6 +231,7 @@ if __name__ == "__main__":
         print (f"Usage: {sys.argv(0)} [-q queue] [-tree treename] [-list listfile.list] [-split S] [--sms] [--data] [--sys] [--fastsim] [--slim] [--dry-run] [--verbose] [--count] [--csv]")
         sys.exit(1)
 
+
     argv_pos    = 1
     DO_SMS      = 0
     DO_DATA     = 0
@@ -307,6 +311,8 @@ if __name__ == "__main__":
     if COUNT:
         print (" --- Only Counting (No Processing)")
 
+    condor_monitor = CondorJobCountMonitor(threshold=THRESHOLD,verbose=VERBOSE)
+
     # input sample list
     listfile = LIST
     listname = listfile.split("/")
@@ -380,6 +386,8 @@ if __name__ == "__main__":
             print("making BTAG file")
         os.system("cp -r root/BtagSF "+config+".")
         os.system("cp -r csv/BtagSF/* "+config+"BtagSF/.")
+        btag_pog_fold = '/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/BTV/'
+        os.system(f"cp -r {btag_pog_fold}* {config}BtagSF/")
         BTAGFOLD = "./config/BtagSF/"
 
         # copy LEP SF files
@@ -527,8 +535,9 @@ if __name__ == "__main__":
         #print "creating tarball from: ", TARGET
         os.system("sleep 10") # sleep so copy command(s) can catch up...
         os.system("tar -C "+config+"/../ -czf "+TARGET+"/config.tgz config")
-        os.system("mkdir -p /ospool/cms-user/"+USER+"/"+NAME)
-        os.system("cp "+TARGET+"/config.tgz /ospool/cms-user/"+USER+"/"+NAME+"/config.tgz")
+        # Why was this needed...???
+        # os.system("mkdir -p /ospool/cms-user/"+USER+"/"+NAME)
+        # os.system("cp "+TARGET+"/config.tgz /ospool/cms-user/"+USER+"/"+NAME+"/config.tgz")
         if VERBOSE:
             print("Created tar ball")
 
@@ -552,6 +561,7 @@ if __name__ == "__main__":
             sample_handle = sample_handle.replace(".submit",'')
             print (f"submitting: {f}")
             if CSV:
+                condor_monitor.wait_until_jobs_below()
                 os.system('condor_submit '+f+' | tee '+sample_handle+'.txt')
                 with open(sample_handle+'.txt','r') as sample_submit_file:
                     lines = sample_submit_file.read()
@@ -561,6 +571,7 @@ if __name__ == "__main__":
                         input_info[sample_handle]["clusterid"] = clusterid
                 os.system('rm '+sample_handle+'.txt')
             else:
+                condor_monitor.wait_until_jobs_below()
                 os.system('condor_submit ' + f)
             
     

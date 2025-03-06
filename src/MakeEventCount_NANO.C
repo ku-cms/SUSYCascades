@@ -233,11 +233,17 @@ int main(int argc, char* argv[]) {
 
   cout << "MAX NGEN " << maxNGEN << endl;
 
+  // add DAS count
+  int NDAS = 0;
+  int Nevent_tot = 0;
+  NeventTool eventTool;
+  for(int i = 0; i < Nfile; i++)
+    NDAS += eventTool.EventsInDAS(filenames[i]);
+  if(NDAS == 0) return 1; // will try to resubmit job
+
   TFile* fout = new TFile(string(outputFileName).c_str(),"RECREATE");
   TTree* tout = (TTree*) new TTree("EventCount", "EventCount");
   
-  int NDAS = 0;
-  int Nevent_tot = 0;
   tout->Branch("NDAS", &NDAS);
   tout->Branch("Nevent", &Nevent);
   tout->Branch("Nweight", &Nweight);
@@ -245,17 +251,21 @@ int main(int argc, char* argv[]) {
   tout->Branch("dataset", &dataset);
   tout->Branch("MP", &MP);
   tout->Branch("MC", &MC);
-  // add DAS count
-  NeventTool eventTool;
-  for(int i = 0; i < Nfile; i++)
-    NDAS += eventTool.EventsInDAS(filenames[i]);
-  if(NDAS == 0) return 1; // will try to resubmit job
+  int Nmass = masses.size();
+  for(int i = 0; i < Nmass; i++){
+      Nevent_tot += mapNevent[masses[i]];
+  }
+  bool passed_DAS = true;
+  if(NDAS != Nevent_tot){ 
+    std::cout << "JOB FAILED DAS CHECK!" << std::endl;
+    passed_DAS = false;
+  }
   if(DO_SMS){
     int Nmass = masses.size();
     for(int i = 0; i < Nmass; i++){
-      Nevent     = mapNevent[masses[i]];
-      Nevent_tot += Nevent;
-      Nweight    = mapNweight[masses[i]];
+      Nweight = mapNweight[masses[i]];
+      Nevent = mapNevent[masses[i]];
+      NDAS = Nevent; // since we already passed DAS check above, set NDAS to Nevent for filling tree
       MP = masses[i].first;
       MC = masses[i].second;
       tout->Fill();
@@ -267,9 +277,6 @@ int main(int argc, char* argv[]) {
   fout->cd();
   tout->Write("", TObject::kOverwrite);
   fout->Close();
-  if(NDAS != Nevent_tot){ 
-    std::cout << "JOB FAILED DAS CHECK!" << std::endl;
-    return 1;
-  }
-  else return 0;
+  if(passed_DAS) return 0;
+  else return 1;
 }

@@ -1,0 +1,2 @@
+root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL16NanoAODv9/DiPhotonJetsBox_MGG-8000toInf_13TeV-sherpa/NANOAODSIM/106X_mcRun2_asymptotic_v17-v2/50000/5307BBA5-7D52-C64B-AC29-2B3209C8CD72.root
+root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL16NanoAODv9/DiPhotonJetsBox_MGG-8000toInf_13TeV-sherpa/NANOAODSIM/106X_mcRun2_asymptotic_v17-v2/50000/D7F65E82-E8D4-274A-ABFE-64EDDB17D44E.root
