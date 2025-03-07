@@ -47,23 +47,23 @@ private:
 
   int YearMap(int year);
 
-//  void InitSMS(const string& prefix, const string& filename, double weight = 1., bool FS = false, bool DL = false);
   void InitSMS_treeSys(const string& treeSys, const string& prefix, const string& filename, double weight=1., bool FS=false, bool DL=false, SleptonFlavor kFlavor = kSmuSel);
 
   void InitSMS(const string& prefix, const string& filename, double weight = 1., bool FS = false, bool DL = false, SleptonFlavor kFlavor = kSmuSel);
 
   void InitProcMap();
   static bool m_ProcInit;
-  static std::map<Process, pair<vector<string>,string> > m_Proc[3];
+  static std::map<Process, pair<vector<string>,string> > m_Proc[11];
   static double m_Lumi[3];
   static double m_HEMLumi[2];
   // signal only
   void InitSignalProc(const Process& proc);
-  static std::map<Process, bool> m_SProcInit[3]; // checked combined normalizations already?
-  static std::map<Process, std::map<string,bool> >   m_SProcFS[3]; // FastSim?
-  static std::map<Process, std::map<string,bool> >   m_SProcDL[3]; // di-lepton filter (ZToLL or dilepton filter);
-  static std::map<Process, std::map<string,SleptonFlavor> >   m_SProcSlepFlavor[3]; // Slepton filter 
-  static std::map<Process, std::map<string,double> > m_SProcW[3];  // some additional weight to apply
+  // Note: Need to increase array sizes here to match total number of 'eras'
+  static std::map<Process, bool> m_SProcInit[11]; // checked combined normalizations already?
+  static std::map<Process, std::map<string,bool> >   m_SProcFS[11]; // FastSim?
+  static std::map<Process, std::map<string,bool> >   m_SProcDL[11]; // di-lepton filter (ZToLL or dilepton filter);
+  static std::map<Process, std::map<string,SleptonFlavor> >   m_SProcSlepFlavor[11]; // Slepton filter 
+  static std::map<Process, std::map<string,double> > m_SProcW[11];  // some additional weight to apply
   
   
 };

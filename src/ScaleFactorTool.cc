@@ -1,5 +1,6 @@
 #include "../include/ScaleFactorTool.hh"
 #include "ReducedBase.hh"
+#include "ReducedBase_V2.hh"
 
 #include "Math/DistFunc.h"
 
@@ -131,9 +132,10 @@ double ScaleFactorTool::GetX20BRSF(const string& filename, const string& treenam
      filename.find("ZToLL") == string::npos)
     return 1.;
   
-   int MP, MC;
+   int MP, MC, code;
   
-  sscanf(treename.c_str(), "SMS_%d_%d", &MP, &MC);
+  //sscanf(treename.c_str(), "SMS_%d_%d", &MP, &MC);
+  sscanf(treename.c_str(), "SMS_%d_%d_%d", &MP, &MC, &code);
   
   if(MP-MC < 5)
     return 1.;
@@ -176,7 +178,8 @@ double ScaleFactorTool::GetMETSF(double MET, int updown){
   return 1.;
 }
 
-bool ScaleFactorTool::DileptonEvent(ReducedBase* base){
+template <typename b>
+bool ScaleFactorTool::DileptonEvent(b* base){
 
   int NWnu = 0;
   for(int i = 0; i < base->genNnu; i++)
@@ -197,7 +200,6 @@ bool ScaleFactorTool::DileptonEvent(ReducedBase* base){
   return false;
 
 }
-
 
 void ScaleFactorTool::AddBtagFolder(const string& btagfold, const string& proc_rootfile, int year){
   m_BtagSFTool.BuildMap(btagfold, proc_rootfile, year);

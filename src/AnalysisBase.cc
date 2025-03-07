@@ -936,7 +936,8 @@ int AnalysisBase<Base>::GetSampleIndex(){
     int hash = 100000*MP + MC;
     if(m_HashToIndex.count(hash) == 0){
       m_HashToIndex[hash] = m_Nsample;
-      m_IndexToSample[m_Nsample]  = std::string(Form("SMS_%d_%d", MP, MC));
+      m_IndexToSample[m_Nsample]  = std::string(Form("SMS_%d_%d_%d", MP, MC, code));
+      //m_IndexToSample[m_Nsample]  = std::string(Form("SMS_%d_%d", MP, MC));
       m_IndexToXsec[m_Nsample]    = m_XsecTool.GetXsec_SMS(m_DataSet, MP, code, m_IsRun3);
       m_IndexToNevent[m_Nsample]  = m_NeventTool.GetNevent_SMS(m_DataSet, m_FileTag, MP, MC);
       m_IndexToNweight[m_Nsample] = m_NeventTool.GetNweight_SMS(m_DataSet, m_FileTag, MP, MC);

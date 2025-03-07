@@ -27,7 +27,8 @@ public:
   double GetMETEff(double MET, int updown = 0);
   double GetMETSF(double MET, int updown = 0);
 
-  bool DileptonEvent(ReducedBase* base);
+  template <typename b>
+  bool DileptonEvent(b* base);
   SleptonFlavor SleptonEvent(std::vector<int> &genPDGID_susy);
 
   void AddBtagFolder( const string& btagfold, const string& proc_rootfile="", int year=1);
