@@ -6,6 +6,7 @@
 import os, argparse, subprocess, itertools, ROOT
 import time
 from new_countEvents import EventCount as EventCount
+from CondorJobCountMonitor import CondorJobCountMonitor
 USER = os.environ['USER']
 DO_EVENTCOUNT = False # For checking event count files
 
@@ -48,7 +49,11 @@ def makeSubmitScript(tuple_pairs,submitName,resubmit,maxResub,DataSetName):
         file_content = file.read()
     if DO_EVENTCOUNT:
         file_content = file_content.replace("0.list","$(list).list")
-        file_content = file_content.replace("","")
+        file_content = file_content.replace("0.root","$(list).root")
+        file_content = file_content.replace("0.out","$(list).out")
+        file_content = file_content.replace("0.err","$(list).err")
+        file_content = file_content.replace("0.log","$(list).log")
+        file_content = file_content.replace("queue",f"queue list from {tuple_filelist}")
     else:
         file_content = file_content.replace("0_0","$(list)_$(split)")
         file_content = file_content.replace("-split=1","-split=$$([$(split)+1])")
@@ -64,6 +69,8 @@ def makeSubmitScript(tuple_pairs,submitName,resubmit,maxResub,DataSetName):
             print(f"You should double check there are no issues with your condor submissions.")
             print(f"If you are confident you want to resubmit, then you should rerun this script with '-l {resubmitFiles}'.")
         else:
+            condor_monitor = CondorJobCountMonitor(threshold=THRESHOLD,verbose=VERBOSE)
+            condor_monitor.wait_until_jobs_below()
             os.system(f"condor_submit {newFileName}")
 
 def testRootFile(root_file):
@@ -99,10 +106,21 @@ def checkJobs(workingDir,outputDir,skipEC,skipDAS,skipMissing,skipSmall,skipErr,
     print("------------------------------------------------------------")
     grep_ignore = "-e \"Warning\" -e \"WARNING\" -e \"TTree::SetBranchStatus\" -e \"libXrdSecztn.so\" -e \"Phi_mpi_pi\" -e \"tar: stdout: write error\" -e \"INFO\""
     grep_ignore += " -e \"SetBranchAddress\""
+    filter_list = [ # list of name of samples to explicitly check (empty list will check all)
+        #"SMS-TChipmWW_dM-3to50_genHT-160_genMET-80_TuneCP2_13TeV-madgraphMLM-pythia8_Autumn18_102X"
+    ]
     srcDir = os.listdir(workingDir+"/src/")
     nJobs = 0
     for file in srcDir:
         if "X.submit" not in file:
+            continue
+        do_name = False
+        if filter_list:
+            for name in filter_list:
+                if name in file:
+                    do_name = True
+                    break
+        if filter_list and not do_name:
             continue
         DataSetName = file.split(".")[0]
         resubmitFiles = []
@@ -214,7 +232,9 @@ def checkJobs(workingDir,outputDir,skipEC,skipDAS,skipMissing,skipSmall,skipErr,
             for outfile in outfiles:
                 NDAS += event_count.GetDASCount(os.path.join(outputDir+'/'+DataSetName,outfile))
             if NDAS != NDAS_true:
-                print(f'{DataSetName} failed the DAS check! ({round(NDAS/NDAS_true,3)}%) Use other options to investigate')
+                print(f'{DataSetName} failed the DAS check! ({100.*round(NDAS/NDAS_true,3)}%) Use other options to investigate')
+            else:
+                print(f'{DataSetName} passed the DAS check!')
         makeSubmitScript(resubmitFiles,workingDir+"/src/"+DataSetName,resubmit,maxResub,DataSetName)
         nJobs += len(resubmitFiles)
     return nJobs

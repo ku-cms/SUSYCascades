@@ -117,7 +117,7 @@ def write_sh_single(srcfile,ifile,ofile,logfile,outfile,errfile,dataset,filetag,
     #fsrc.write('Requirements = (Machine != "red-node000.unl.edu" && Machine != "ncm*.hpc.itc.rwth-aachen.de" && Machine != "*mh-epyc7662-8.t2.ucsd.edu" && Machine != "*sdsc-88.t2.ucsd.edu" && Machine != "*beowulf.cluster" && Machine != "*126.hep.olemiss.edu")\n')
     fsrc.write('request_memory = 2 GB \n')
     fsrc.write('+RequiresCVMFS = True \n')
-    #fsrc.write('+RequiresSharedFS = True \n')
+    fsrc.write('priority = 10 \n')
     if USE_URL:
         # Warning: The stash.osgconnect.net endpoint has been decommissioned.
         # CMS connect is working on implementing an OSDF endpoint solution.
@@ -220,7 +220,6 @@ def write_sh(srcfile,ifile,ofile,logfile,outfile,errfile,dataset,filetag,n,NAME)
     fsrc.write('periodic_release = (HoldReasonCode == 12 && HoldReasonSubCode == 256 || HoldReasonCode == 13 && HoldReasonSubCode == 2 || HoldReasonCode == 12 && HoldReasonSubCode == 2 || HoldReasonCode == 26 && HoldReasonSubCode == 120 || HoldReasonCode == 3 && HoldReasonSubCode == 0 || HoldReasonSubCode == 42)\n')
     #fsrc.write('priority = 10 \n')
     fsrc.write('+RequiresCVMFS = True \n')
-    #fsrc.write('+RequiresSharedFS = True \n')
     fsrc.write('Requirements = HAS_SINGULARITY == True\n')
     fsrc.write('MY.SingularityImage = "/cvmfs/singularity.opensciencegrid.org/cmssw/cms:rhel9"\n')
     fsrc.write('queue '+str(n)+' from '+ifile)

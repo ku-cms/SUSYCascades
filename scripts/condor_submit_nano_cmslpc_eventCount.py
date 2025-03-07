@@ -64,8 +64,6 @@ def write_sh(srcfile,ifile,ofile,logfile,outfile,errfile,dataset,filetag):
     fsrc.write('-tree='+TREE+" ")
     if DO_SMS == 1:
         fsrc.write('--sms ')
-    if DO_DATA == 1:
-        fsrc.write('--data ')
     fsrc.write('-dataset='+dataset+" ")
     fsrc.write('-filetag='+filetag+" ")
 
@@ -118,15 +116,11 @@ def write_sh_single(srcfile,ifile,ofile,logfile,outfile,errfile,dataset,filetag)
     logfile = logfile.replace('_$(ItemIndex)','_0')
     ifile = ifile.replace('_list','_0')
     if DO_SMS == 1:
-        ifile = ifile.replace(pwd+'/'+filetag+'_SMS','./config')
-    elif DO_DATA == 1:
-        ifile = ifile.replace(pwd+'/'+filetag+'_Data','./config')
-    else:
-        ifile = ifile.replace(pwd+'/'+filetag,'./config')
+        fsrc.write('--sms ')
 
     fsrc = open(srcfile,'w')
     fsrc.write('# Note: For only submitting 1 job! \n')
-    fsrc.write('# output, list and split args need to be updated \n')
+    fsrc.write('# output and list args need to be updated \n')
     fsrc.write('universe = vanilla \n')
     fsrc.write('executable = '+jobEXE+" \n")
     fsrc.write('use_x509userproxy = true \n')
@@ -177,7 +171,7 @@ def write_sh_single(srcfile,ifile,ofile,logfile,outfile,errfile,dataset,filetag)
     fsrc.write('on_exit_remove = (ExitCode == 0) || (NumJobStarts >= 3)\n')
     fsrc.write('max_retries = 3\n')
     fsrc.write('MY.SingularityImage = "/cvmfs/singularity.opensciencegrid.org/cmssw/cms:rhel9"\n')
-    fsrc.write('queue from '+ifile+'\n')
+    fsrc.write('queue\n')
     fsrc.close()
 
 if __name__ == "__main__":
@@ -336,7 +330,6 @@ if __name__ == "__main__":
 
     #print listdir
     os.system("cp -r "+listdir+" "+config)
-    #print "creating tarball from: ", TARGET
     os.system("tar -C "+config+"/../ -czf "+TARGET+"/config.tgz config")
 
     submit_dir  = srcdir        
@@ -344,7 +337,7 @@ if __name__ == "__main__":
 
     condor_monitor = CondorJobCountMonitor(threshold=THRESHOLD,verbose=False)
     for f in submit_list:
-        print("submitting: ", f)
         condor_monitor.wait_until_jobs_below()
+        print("submitting: ", f)
         os.system('condor_submit ' + f)
    
