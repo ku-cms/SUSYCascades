@@ -21,7 +21,6 @@
 #include <TLorentzVector.h>
 #include <TSystem.h>
 #include <TError.h>
-#include <TLorentzVector.h>
 #include <TEfficiency.h>
 #include <TGraphAsymmErrors.h>
 
