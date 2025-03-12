@@ -165,13 +165,14 @@ class EventCount:
                 text=True,
                 stderr=subprocess.STDOUT
             ).strip()
-            # need to search more generically to check for exts
             das_output = das_output.split('/')
             dataset_name = das_output[1]
             campaign_tags = das_output[2]
-            campaign_tags = campaign_tags.split('-')[0]
             aod_version = das_output[3]
-            query = f'dataset=/{dataset_name}/{campaign_tags}*/{aod_version}'
+            # need to search more generically to check for exts
+            if aod_version != "NANOAOD":
+                campaign_tags = campaign_tags.split('-')[0]+'*'
+            query = f'dataset=/{dataset_name}/{campaign_tags}/{aod_version}'
             das_output = subprocess.check_output(
                 ["dasgoclient", "-query", query],
                 text=True,
