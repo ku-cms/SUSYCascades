@@ -136,11 +136,20 @@ def write_sh_single(srcfile,ifile,ofile,logfile,outfile,errfile,dataset,filetag,
     transfer_out_remap = 'transfer_output_remaps = "'+ofile.split('/')[-1]+'='+ofile
     transfer_out_remap += '"\n'
     fsrc.write(transfer_out_remap)
-    
-    fsrc.write('RequestCpus=IfThenElse((IsUndefined(CpusUsage) || CpusUsage < 2),1,MIN(CpusUsage+2, 32))\n')
-    fsrc.write('periodic_hold = (CpusUsage >= RequestCpus) && (JobStatus == 3)\n')
+    # Trying new logic
+    fsrc.write('RequestCpus = 1\n')
+    fsrc.write('periodic_hold = (CpusUsage > RequestCpus) && (JobStatus == 2) && (CurrentTime - EnteredCurrentStatus > 60)\n')
     fsrc.write('periodic_hold_subcode = 42\n')
     fsrc.write('periodic_release = (HoldReasonCode == 12 && HoldReasonSubCode == 256 || HoldReasonCode == 13 && HoldReasonSubCode == 2 || HoldReasonCode == 12 && HoldReasonSubCode == 2 || HoldReasonCode == 26 && HoldReasonSubCode == 120 || HoldReasonCode == 3 && HoldReasonSubCode == 0 || HoldReasonSubCode == 42)\n')
+    fsrc.write('JOB_TRANSFORM_IncreaseCpus @=end\n')
+    fsrc.write('REQUIREMENTS = (HoldReasonSubCode == 42)\n')
+    fsrc.write('SET RequestCpus = MIN(RequestCpus + 1, 32)\n')
+    fsrc.write('@end\n')
+    
+    #fsrc.write('RequestCpus=IfThenElse((IsUndefined(CpusUsage) || CpusUsage <= 1),1,MIN(CpusUsage+2, 32))\n')
+    #fsrc.write('periodic_hold = (CpusUsage >= RequestCpus) && (JobStatus == 3)\n')
+    #fsrc.write('periodic_hold_subcode = 42\n')
+    #fsrc.write('periodic_release = (HoldReasonCode == 12 && HoldReasonSubCode == 256 || HoldReasonCode == 13 && HoldReasonSubCode == 2 || HoldReasonCode == 12 && HoldReasonSubCode == 2 || HoldReasonCode == 26 && HoldReasonSubCode == 120 || HoldReasonCode == 3 && HoldReasonSubCode == 0 || HoldReasonSubCode == 42)\n')
     fsrc.write('priority = 10 \n')
     fsrc.write('+REQUIRED_OS="rhel9"\n')
     fsrc.write('job_lease_duration = 3600\n')
@@ -370,7 +379,7 @@ if __name__ == "__main__":
         # copy xs json file
         XSJSONFILENAME = 'info_XSDB_2025-02-27_17-29.json'
         if VERBOSE:
-            print("copying xs json file")
+            print("making xs json file")
         os.system(f"xrdcp -s root://cmseos.fnal.gov//store/user/z374f439/XSectionJSONs/{XSJSONFILENAME} {config}{XSJSONFILENAME}")
         XSJSONFILE = f"./config/{XSJSONFILENAME}"
 
