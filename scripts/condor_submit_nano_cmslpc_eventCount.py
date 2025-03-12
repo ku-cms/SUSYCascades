@@ -17,8 +17,8 @@ RESTFRAMES  = './scripts/setup_RestFrames_connect.sh'
 CMSSW_SETUP = './scripts/cmssw_setup_connect_el9.sh'
 TREE        = "Events"
 USER        = os.environ['USER']
-#OUT         = "/uscms/home/"+USER+"/nobackup/EventCount/root/"
-OUT         = "/ospool/cms-user/"+USER+"/NTUPLES/Processing"
+OUT         = "/uscms/home/"+USER+"/nobackup/EventCount/root/"
+#OUT         = "/ospool/cms-user/"+USER+"/NTUPLES/Processing"
 LIST        = "default.list"
 QUEUE       = ""
 MAXN        = 1
@@ -81,7 +81,7 @@ def write_sh(srcfile,ifile,ofile,logfile,outfile,errfile,dataset,filetag):
     if CONNECT is True:
         transfer_input = 'transfer_input_files = '+TARGET+'config.tgz,/ospool/cms-user/zflowers/public/sandbox-CMSSW_13_3_1-el9.tar.bz2\n'
     else:
-        transfer_input = 'transfer_input_files = '+TARGET+'config.tgz,/uscms/home/z374f439/nobackup/whatever_you_want/sandbox-CMSSW_10_6_5-6403d6f.tar.bz2\n'
+        transfer_input = 'transfer_input_files = '+TARGET+'config.tgz,/uscms/home/z374f439/nobackup/whatever_you_want/sandbox-CMSSW_13_3_1-el9.tar.bz2\n'
     fsrc.write(transfer_input)
 
     fsrc.write('should_transfer_files = YES\n')
@@ -98,13 +98,10 @@ def write_sh(srcfile,ifile,ofile,logfile,outfile,errfile,dataset,filetag):
     fsrc.write('Requirements = HAS_SINGULARITY == True\n')
     # Trying new logic
     fsrc.write('RequestCpus = 1\n')
-    fsrc.write('periodic_hold = (CpusUsage > RequestCpus) && (JobStatus == 2) && (CurrentTime - EnteredCurrentStatus > 60)\n')
     fsrc.write('periodic_hold_subcode = 42\n')
+    fsrc.write('periodic_hold = (CpusUsage > RequestCpus) && (JobStatus == 2) && (CurrentTime - EnteredCurrentStatus > 60)\n')
+    fsrc.write('+JobTransforms = "if HoldReasonSubCode == 42 set RequestCpus = MIN(RequestCpus + 1, 32)"\n')
     fsrc.write('periodic_release = (HoldReasonCode == 12 && HoldReasonSubCode == 256 || HoldReasonCode == 13 && HoldReasonSubCode == 2 || HoldReasonCode == 12 && HoldReasonSubCode == 2 || HoldReasonCode == 26 && HoldReasonSubCode == 120 || HoldReasonCode == 3 && HoldReasonSubCode == 0 || HoldReasonSubCode == 42)\n')
-    fsrc.write('JOB_TRANSFORM_IncreaseCpus @=end\n')
-    fsrc.write('REQUIREMENTS = (HoldReasonSubCode == 42)\n')
-    fsrc.write('SET RequestCpus = MIN(RequestCpus + 1, 32)\n')
-    fsrc.write('@end\n')
     #fsrc.write('RequestCpus=IfThenElse((IsUndefined(CpusUsage) || CpusUsage <= 1),1,MIN(CpusUsage+2, 32))\n')
     #fsrc.write('periodic_hold = (CpusUsage >= RequestCpus) && (JobStatus == 3)\n')
     #fsrc.write('periodic_hold_subcode = 42\n')
@@ -124,8 +121,6 @@ def write_sh_single(srcfile,ifile,ofile,logfile,outfile,errfile,dataset,filetag)
     errfile = errfile.replace('_$(ItemIndex)','_0')
     logfile = logfile.replace('_$(ItemIndex)','_0')
     ifile = ifile.replace('_list','_0')
-    if DO_SMS == 1:
-        fsrc.write('--sms ')
 
     fsrc = open(srcfile,'w')
     fsrc.write('# Note: For only submitting 1 job! \n')
@@ -156,7 +151,7 @@ def write_sh_single(srcfile,ifile,ofile,logfile,outfile,errfile,dataset,filetag)
     if CONNECT is True:
         transfer_input = 'transfer_input_files = '+TARGET+'config.tgz,/ospool/cms-user/zflowers/public/sandbox-CMSSW_13_3_1-el9.tar.bz2\n'
     else:
-        transfer_input = 'transfer_input_files = '+TARGET+'config.tgz,/uscms/home/z374f439/nobackup/whatever_you_want/sandbox-CMSSW_10_6_5-6403d6f.tar.bz2\n'
+        transfer_input = 'transfer_input_files = '+TARGET+'config.tgz,/uscms/home/z374f439/nobackup/whatever_you_want/sandbox-CMSSW_13_3_1-el9.tar.bz2\n'
     fsrc.write(transfer_input)
 
     fsrc.write('should_transfer_files = YES\n')
@@ -171,10 +166,16 @@ def write_sh_single(srcfile,ifile,ofile,logfile,outfile,errfile,dataset,filetag)
     fsrc.write('+ProjectName="cms.org.ku"\n')
     fsrc.write('+RequiresCVMFS = True \n')
     fsrc.write('Requirements = HAS_SINGULARITY == True\n')
-    fsrc.write('RequestCpus=IfThenElse((IsUndefined(CpusUsage) || CpusUsage < 2),1,MIN(CpusUsage+2, 32))\n')
-    fsrc.write('periodic_hold = (CpusUsage >= RequestCpus) && (JobStatus == 3)\n')
+    # Trying new logic
+    fsrc.write('RequestCpus = 1\n')
     fsrc.write('periodic_hold_subcode = 42\n')
+    fsrc.write('periodic_hold = (CpusUsage > RequestCpus) && (JobStatus == 2) && (CurrentTime - EnteredCurrentStatus > 60)\n')
+    fsrc.write('+JobTransforms = "if HoldReasonSubCode == 42 set RequestCpus = MIN(RequestCpus + 1, 32)"\n')
     fsrc.write('periodic_release = (HoldReasonCode == 12 && HoldReasonSubCode == 256 || HoldReasonCode == 13 && HoldReasonSubCode == 2 || HoldReasonCode == 12 && HoldReasonSubCode == 2 || HoldReasonCode == 26 && HoldReasonSubCode == 120 || HoldReasonCode == 3 && HoldReasonSubCode == 0 || HoldReasonSubCode == 42)\n')
+    #fsrc.write('RequestCpus=IfThenElse((IsUndefined(CpusUsage) || CpusUsage <= 1),1,MIN(CpusUsage+2, 32))\n')
+    #fsrc.write('periodic_hold = (CpusUsage >= RequestCpus) && (JobStatus == 3)\n')
+    #fsrc.write('periodic_hold_subcode = 42\n')
+    #fsrc.write('periodic_release = (HoldReasonCode == 12 && HoldReasonSubCode == 256 || HoldReasonCode == 13 && HoldReasonSubCode == 2 || HoldReasonCode == 12 && HoldReasonSubCode == 2 || HoldReasonCode == 26 && HoldReasonSubCode == 120 || HoldReasonCode == 3 && HoldReasonSubCode == 0 || HoldReasonSubCode == 42)\n')
     fsrc.write('+REQUIRED_OS="rhel9"\n')
     fsrc.write('job_lease_duration = 3600\n')
     fsrc.write('on_exit_remove = (ExitCode == 0) || (NumJobStarts >= 3)\n')
@@ -191,6 +192,7 @@ if __name__ == "__main__":
     argv_pos = 1
     DO_SMS = 0
     DO_DATA = 0
+    DRY_RUN     = 0
   
     if '-q' in sys.argv:
         p = sys.argv.index('-q')
@@ -209,6 +211,9 @@ if __name__ == "__main__":
         argv_pos += 1
     if '--connect' in sys.argv:
         CONNECT = True
+        argv_pos += 1
+    if '--dry-run' in sys.argv or '--dryrun' in sys.argv:
+        DRY_RUN = 1
         argv_pos += 1
     
     if DO_DATA:
@@ -344,9 +349,10 @@ if __name__ == "__main__":
     submit_dir  = srcdir        
     submit_list = [os.path.join(submit_dir, f) for f in os.listdir(submit_dir) if (os.path.isfile(os.path.join(submit_dir, f)) and ('.submit' in f) and ('_single' not in f))]
 
-    condor_monitor = CondorJobCountMonitor(threshold=THRESHOLD,verbose=False)
-    for f in submit_list:
-        condor_monitor.wait_until_jobs_below()
-        print("submitting: ", f)
-        os.system('condor_submit ' + f)
+    if not DRY_RUN:
+        condor_monitor = CondorJobCountMonitor(threshold=THRESHOLD,verbose=False)
+        for f in submit_list:
+            condor_monitor.wait_until_jobs_below()
+            print("submitting: ", f)
+            os.system('condor_submit ' + f)
    
