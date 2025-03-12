@@ -9,9 +9,11 @@ class CondorJobCountMonitor:
         """Returns the total number of jobs in the HTCondor scheduler for the current user."""
         try:
             output = subprocess.check_output(f"condor_q $USER -total", shell=True, text=True)
+            total = 0
             for line in output.split("\n"):
                 if "Total for query" in line:
-                    return int(line.split(' ')[3])  # Extract total job count
+                    total += int(line.split(' ')[3])  # Extract total job count
+            return total
         except Exception as e:
             print(f"Error retrieving job count: {e}")
         return -1  # Return -1 if an error occurs
@@ -30,5 +32,5 @@ class CondorJobCountMonitor:
                 if check_count % 10 == 0:
                     print(f"Current jobs: {total_jobs}. Waiting for jobs to drop below {self.threshold}...")
             check_count += 1
-            time.sleep(5)  # Wait before checking again
+            time.sleep(5) # Wait before checking again
 
