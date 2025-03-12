@@ -229,10 +229,7 @@ int main(int argc, char* argv[]) {
     }
   }
 
-  int DASEvents = 0;
-
   cout << "MAX NGEN " << maxNGEN << endl;
-
   // add DAS count
   int NDAS = 0;
   int Nevent_tot = 0;
