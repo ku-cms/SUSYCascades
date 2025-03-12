@@ -69,7 +69,7 @@ def makeSubmitScript(tuple_pairs,submitName,resubmit,maxResub,DataSetName):
             print(f"You should double check there are no issues with your condor submissions.")
             print(f"If you are confident you want to resubmit, then you should rerun this script with '-l {resubmitFiles}'.")
         else:
-            condor_monitor = CondorJobCountMonitor(threshold=THRESHOLD,verbose=VERBOSE)
+            condor_monitor = CondorJobCountMonitor(threshold=80000,verbose=False)
             condor_monitor.wait_until_jobs_below()
             os.system(f"condor_submit {newFileName}")
 
@@ -101,14 +101,11 @@ def eventCountCheck(directory):
     return failed_nums
 
 # Check condor jobs
-def checkJobs(workingDir,outputDir,skipEC,skipDAS,skipMissing,skipSmall,skipErr,skipOut,skipZombie,resubmit,maxResub):
+def checkJobs(workingDir,outputDir,skipEC,skipDAS,skipMissing,skipSmall,skipErr,skipOut,skipZombie,resubmit,maxResub,filter_list):
     print("Running over the directory '{0}'.".format(workingDir))
     print("------------------------------------------------------------")
     grep_ignore = "-e \"Warning\" -e \"WARNING\" -e \"TTree::SetBranchStatus\" -e \"libXrdSecztn.so\" -e \"Phi_mpi_pi\" -e \"tar: stdout: write error\" -e \"INFO\""
     grep_ignore += " -e \"SetBranchAddress\""
-    filter_list = [ # list of name of samples to explicitly check (empty list will check all)
-        #"SMS-TChipmWW_dM-3to50_genHT-160_genMET-80_TuneCP2_13TeV-madgraphMLM-pythia8_Autumn18_102X"
-    ]
     srcDir = os.listdir(workingDir+"/src/")
     nJobs = 0
     for file in srcDir:
@@ -270,7 +267,11 @@ def main():
     skipZombie     = options.skipZombie
     maxResub       = int(options.maxResub)
 
-    nJobs = checkJobs(directory,output,skipEC,skipDAS,skipMissing,skipSmall,skipErr,skipOut,skipZombie,resubmit,maxResub)
+    filter_list = [ # list of name of samples to explicitly check (empty list will check all)
+        #"WZ_TuneCP5_13p6TeV_pythia8",
+    ]
+
+    nJobs = checkJobs(directory,output,skipEC,skipDAS,skipMissing,skipSmall,skipErr,skipOut,skipZombie,resubmit,maxResub,filter_list)
     # if resubmit and nJobs > 0: # Not needed since now submit script should automatically handle resource requests
     #     time.sleep(3)
     #     os.system("condor_qedit $USER RequestCpus=4 && condor_qedit $USER RequestDisk=2000000 && condor_qedit $USER RequestMemory=4000")

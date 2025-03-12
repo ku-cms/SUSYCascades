@@ -196,7 +196,7 @@ int main(int argc, char* argv[]) {
   NtupleVariant ntuple;
   if(string(FileTag).find("130X") != std::string::npos){ cout << "Using Run3 base" << endl; ntuple = std::make_unique<ReducedNtuple<NANORun3>>(chain); }
   else if(string(FileTag).find("UL") != std::string::npos){ cout << "Using UL base" << endl; ntuple = std::make_unique<ReducedNtuple<NANOULBase>>(chain); }
-  else ntuple = std::make_unique<ReducedNtuple<SUSYNANOBase>>(chain);
+  else { cout << "Using Run2 base" << endl; ntuple = std::make_unique<ReducedNtuple<SUSYNANOBase>>(chain); }
 
   Long64_t N1, N0;
   std::visit([&](auto& nt) { nt->GetChunks(NDAS, N1, N0, ICHUNK, NCHUNK); }, ntuple);

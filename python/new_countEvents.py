@@ -124,13 +124,14 @@ class EventCount:
             print(f"Error querying DAS: {e}")
         return events
 
-    # Gets events directly from DAS (slow)
+    # Gets events directly from DAS
     def EventsInDASDataset(self, u_dataset):
-        events = 0
         """Get the number of events in DAS for the given dataset."""
+        events = 0
         try:
+            query = f'dataset={u_dataset}'
             das_output = subprocess.check_output(
-                ["dasgoclient", "-query", f'dataset={u_dataset}', "-json"],
+                ["dasgoclient", "-query", query, "-json"],
                 text=True
             )
             das_data = json.loads(das_output)
@@ -139,6 +140,16 @@ class EventCount:
                 events = int(das_output.split('"nevents":', 1)[1].split(',', 1)[0])
         except (subprocess.CalledProcessError, ValueError, json.JSONDecodeError) as e:
             print(f"Error querying DAS: {e}")
+        return events
+
+    def EventsInDASDatasets(self, u_datasets):
+        """Get the number of events in DAS for the given datasets."""
+        events = 0
+        datasets = u_datasets
+        if type(datasets) is not list:
+            datasets = [datasets]
+        for dataset in datasets:
+            events += self.EventsInDASDataset(dataset)
         return events
 
     def GetDatasetFromFile(self, u_file):
@@ -154,10 +165,26 @@ class EventCount:
                 text=True,
                 stderr=subprocess.STDOUT
             ).strip()
-            return das_output if das_output else ""
+            # need to search more generically to check for exts
+            das_output = das_output.split('/')
+            dataset_name = das_output[1]
+            campaign_tags = das_output[2]
+            campaign_tags = campaign_tags.split('-')[0]
+            aod_version = das_output[3]
+            query = f'dataset=/{dataset_name}/{campaign_tags}*/{aod_version}'
+            das_output = subprocess.check_output(
+                ["dasgoclient", "-query", query],
+                text=True,
+                stderr=subprocess.STDOUT
+            ).strip()
+            das_output = das_output.split('\n')
+            for dataset in das_output:
+                if 'JME' in dataset or 'PUFor' in dataset:
+                    das_output.remove(dataset)
+            return das_output
         except subprocess.CalledProcessError as e:
             print(f"Error querying DAS: {e.output.strip()}")
-            return ""
+            return []
 
     # Assume user is passing file, user can override to check for entire dataset
     def EventsInDAS(self, u_input, file=True):
@@ -165,7 +192,7 @@ class EventCount:
         if file:
             return self.EventsInDASFile(u_input)
         else:
-            return self.EventsInDASDataset(u_input)    
+            return self.EventsInDASDatasets(u_input)    
 
     # count total events in a ROOT file
     # iterate over entries in the event count tree

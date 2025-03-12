@@ -156,9 +156,12 @@ void AnalysisBase<Base>::AddBtagFolder(const string& btagfold, const string& pro
   if(!m_IsUL and m_year < 2019)
     m_BtagSFTool.BuildMap(btagfold, proc_rootfile, year);
   else{
+    string filetag = m_FileTag;
+    clip_string(filetag, "_Data");
+    clip_string(filetag, "_SMS");
     std::string Btag_file;
     if(!m_IsUL)
-      Btag_file = btagfold+std::to_string(m_year)+"_"+m_FileTag.substr(0, m_FileTag.size() - 5)+"/btagging.json.gz";
+      Btag_file = btagfold+std::to_string(m_year)+"_"+filetag.substr(0, filetag.size() - 5)+"/btagging.json.gz";
     else if(m_year != 2016)
       Btag_file = btagfold+std::to_string(m_year)+"_UL"+"/btagging.json.gz";
     else if(m_IsAPV)
@@ -893,11 +896,9 @@ int AnalysisBase<Base>::GetSampleIndex(){
     int code = 0;
     bool has_Slep = false;
     bool has_Snu = false;
-    bool is_left = false;
-    bool is_right = false;
-    // minus and plus referring to charge of e or mu (not value of PDGID)
-    bool is_minus = false;
-    bool is_plus = false;
+    bool is_left = true;
+    // minus referring to charge of e or mu (not value of PDGID)
+    bool is_plus = true;
     for(int i = 0; i < Ngen; i++){
       PDGID = fabs(this->GenPart_pdgId[i]);
       if(PDGID > 1000000 && PDGID < 3000000){
@@ -910,34 +911,32 @@ int AnalysisBase<Base>::GetSampleIndex(){
       }
       // Getting 'code' for cascades
       if(m_DataSet.find("Cascade") != std::string::npos){
-        if(PDGID == 1000011 || PDGID == 1000013){
-          has_Slep = true; is_left = true; is_minus = true;
+        if (abs(PDGID) % 10000 == 11 || abs(PDGID) % 10000 == 13) {
+          has_Slep = true;
+          if (PDGID > 0) is_plus = false;
+        } 
+        else if (abs(PDGID) % 10000 == 12 || abs(PDGID) % 10000 == 14) {
+            has_Snu = true;
         }
-        else if(PDGID == -1000011 || PDGID == -1000013){
-          has_Slep = true; is_left = true; is_plus = true;
-        }
-        else if(abs(PDGID) == 1000012 || abs(PDGID) == 1000014){
-          has_Snu = true;
-        }
-        if(PDGID > 2000000) is_right = true;
+        if (PDGID > 2000000) is_left = false;
       }
-    }
+    } // for(int i = 0; i < Ngen; i++)
     if(m_DataSet.find("Cascade") != std::string::npos){
       // build code from booleans
-      // default code is SlepSlep
-      if(has_Slep && has_Snu) code += 1; // SlepSnu
-      else if(!has_Slep && has_Snu) code += 2; // SnuSnu
+      if(has_Slep && !has_Snu) code += 1; // SlepSlep
+      if(has_Slep && has_Snu) code += 2; // SlepSnu
+      if(!has_Slep && has_Snu) code += 3; // SnuSnu
       if(is_left) code += 10;
-      else if(is_right) code += 20;
+      else code += 20;
       if(is_plus) code += 100;
-      else if(is_minus) code += 200;
+      else code += 200;
     }
     
-    int hash = 100000*MP + MC;
+    // int hash = 100000*MP + MC;
+    long long hash = ((long long)MP << 28) | ((long long)MC << 14) | code;
     if(m_HashToIndex.count(hash) == 0){
       m_HashToIndex[hash] = m_Nsample;
       m_IndexToSample[m_Nsample]  = std::string(Form("SMS_%d_%d_%d", MP, MC, code));
-      //m_IndexToSample[m_Nsample]  = std::string(Form("SMS_%d_%d", MP, MC));
       m_IndexToXsec[m_Nsample]    = m_XsecTool.GetXsec_SMS(m_DataSet, MP, code, m_IsRun3);
       m_IndexToNevent[m_Nsample]  = m_NeventTool.GetNevent_SMS(m_DataSet, m_FileTag, MP, MC);
       m_IndexToNweight[m_Nsample] = m_NeventTool.GetNweight_SMS(m_DataSet, m_FileTag, MP, MC);

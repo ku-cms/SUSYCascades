@@ -80,9 +80,9 @@ double XsecTool::GetXsec_SMS(const std::string& dataset, double MP, unsigned int
     }
     if(dataset.find("Cascade")!=std::string::npos){
       label = "Cascade";
-      if (code % 10 == 0)      label += "_SlepSlep";
-      else if (code % 10 == 1) label += "_SlepSnu";
-      else if (code % 10 == 2) label += "_SnuSnu";
+      if (code % 10 == 1)      label += "_SlepSlep";
+      else if (code % 10 == 2) label += "_SlepSnu";
+      else if (code % 10 == 3) label += "_SnuSnu";
       else label += "_SlepSlep";
       if ((code / 10) % 10 == 1) label += "_left";
       else if ((code / 10) % 10 == 2) label += "_right";

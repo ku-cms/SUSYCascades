@@ -41,16 +41,68 @@ double SampleTool::HEMLumi(bool HEM_Veto){
 	}
 }
 
+/*
 ProcessList SampleTool::Get(const string& name) const {
   ProcessList list;
-
   for(auto p = m_Proc[m_iYear].begin(); p != m_Proc[m_iYear].end(); p++){
     if(p->first.Name().find(name) != std::string::npos)
       list += p->first;
   }
+  return list;
+}
+*/
+
+ProcessList SampleTool::Get(const string& name) const {
+  ProcessList list;
+
+  // Split the input name into components
+  vector<string> searchComponents;
+  size_t start = 0;
+  size_t end = name.find("_");
+  while (end != string::npos) {
+    searchComponents.push_back(name.substr(start, end - start));
+    start = end + 1;
+    end = name.find("_", start);
+  }
+  searchComponents.push_back(name.substr(start, end));
+
+  // Iterate over the stored processes
+  for (auto p = m_Proc[m_iYear].begin(); p != m_Proc[m_iYear].end(); p++) {
+    string procName = p->first.Name();
+    vector<string> procComponents;
+    
+    // Split the process name into components based on underscores
+    size_t procStart = 0;
+    size_t procEnd = procName.find("_");
+    while (procEnd != string::npos) {
+      procComponents.push_back(procName.substr(procStart, procEnd - procStart));
+      procStart = procEnd + 1;
+      procEnd = procName.find("_", procStart);
+    }
+    procComponents.push_back(procName.substr(procStart, procEnd));
+
+    // Now match the components considering wildcards
+    bool match = true;
+    for (size_t i = 0; i < searchComponents.size(); i++) {
+      // If the component is a wildcard, it matches any value
+      if (searchComponents[i] == "*")
+        continue;
+
+      // Otherwise, match the component
+      if (i >= procComponents.size() || searchComponents[i] != procComponents[i]) {
+        match = false;
+        break;
+      }
+    }
+
+    if (match) {
+      list += p->first;
+    }
+  }
 
   return list;
 }
+
 ProcessList SampleTool::GetStrictSignalMatch( const string& name) const {
   ProcessList list;
   bool isSigSysProc= false;
@@ -323,7 +375,7 @@ void SampleTool::InitSMS(const string& prefix, const string& filename, double we
  
   TIter list(file->GetListOfKeys());
   TKey* key;
-  int M0, M1;
+  int M0, M1, code;
   string name;
   VS files;
   while((key = (TKey*)list.Next())){
@@ -333,9 +385,10 @@ void SampleTool::InitSMS(const string& prefix, const string& filename, double we
     // skip systematics trees
     if(!isdigit(name.back()))
       continue;
-    sscanf(name.c_str(), "SMS_%d_%d", &M0, &M1);
+    sscanf(name.c_str(), "SMS_%d_%d_%d", &M0, &M1, &code);
 
-    Process proc(Form("%s_%d", prefix.c_str(), 10000*M0+M1), kSig);
+    Process proc(Form("%s_%d_%d_%d", prefix.c_str(), M0, M1, code), kSig);
+
     files.clear();
     if(m_Proc[m_iYear].count(proc) == 0){
       files += filename;

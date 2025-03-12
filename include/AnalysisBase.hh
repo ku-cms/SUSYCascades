@@ -183,7 +183,7 @@ private:
   int m_SampleIndex;
   virtual int GetSampleIndex();
   int m_Nsample;
-  std::map<int,int>         m_HashToIndex;
+  std::map<long long,int>         m_HashToIndex;
   std::map<int,std::string> m_IndexToSample;
   std::map<int,double>      m_IndexToXsec;
   std::map<int,double>      m_IndexToNevent;
@@ -192,7 +192,13 @@ private:
   const Systematic* m_CurSys;
   const Systematic& CurrentSystematic() const;
   std::unique_ptr<correction::CorrectionSet> m_cset_Btag;
+  virtual void clip_string(string& str, const string& clip){
+    size_t pos = str.find(clip);
+    if (pos != std::string::npos)
+      str.erase(pos, clip.length());
+  }
   
 };
+
 
 #endif
