@@ -59,6 +59,7 @@ def makeSubmitScript(tuple_pairs,submitName,resubmit,maxResub,DataSetName):
         file_content = file_content.replace("-split=1","-split=$$([$(split)+1])")
         file_content = file_content.replace("X_0.list","X_$(list).list")
         file_content = file_content.replace("queue",f"queue list,split from {tuple_filelist}")
+    file_content = file_content.replace('RequestCpus = 1','RequestCpus = 4')
     with open(newFileName, 'w') as file:
         file.write(file_content)
     # Check number of resubmitFiles

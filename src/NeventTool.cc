@@ -214,7 +214,7 @@ double NeventTool::GetNweight_BKG(const std::string& dataset, const std::string&
     Initialize_BKG(dataset, filetag);
 
   int Nweight = m_Label2Nweight_BKG[label];
-  std::cout << "Nweight is " << Nweight << std::endl;
+  std::cout << "Nweight from event tool is " << Nweight << std::endl;
 
   return Nweight;
 }

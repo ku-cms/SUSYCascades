@@ -170,7 +170,7 @@ class EventCount:
             campaign_tags = das_output[2]
             aod_version = das_output[3]
             # need to search more generically to check for exts
-            if aod_version != "NANOAOD":
+            if "SIM" in aod_version:
                 campaign_tags = campaign_tags.split('-')[0]+'*'
             query = f'dataset=/{dataset_name}/{campaign_tags}/{aod_version}'
             das_output = subprocess.check_output(

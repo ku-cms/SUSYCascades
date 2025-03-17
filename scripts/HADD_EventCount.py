@@ -14,8 +14,13 @@ def process_event_count_dirs(input_dir, output_dir, dryrun):
     # Ensure output directory exists
     os.makedirs(os.path.join(output_dir, "root", "EventCount"), exist_ok=True)
     
+    excluded_dirs = ["102X", "106X"]
     # List all subdirectories in input_dir that contain '_EventCount'
-    subdirs = [d for d in os.listdir(input_dir) if "_EventCount" in d and os.path.isdir(os.path.join(input_dir, d))]
+    # Excluding directories that we want to skip
+    subdirs = [d for d in os.listdir(input_dir)
+              if "_EventCount" in d and os.path.isdir(os.path.join(input_dir, d))
+              and not any(excluded in d for excluded in excluded_dirs)]
+    print("Subdirs to process",subdirs)
     
     for subdir in subdirs:
         # Remove '_EventCount' from the subdirectory name

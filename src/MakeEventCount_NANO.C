@@ -184,10 +184,10 @@ int main(int argc, char* argv[]) {
     int mymod = NEVENT/10;
     if(mymod < 1)
       mymod = 1;
-    if(e%mymod == 0)
-      cout << " event = " << e << " : " << NEVENT << endl;
 
     chain->GetEntry(e);
+    if(e%mymod == 0)
+      cout << " event = " << e << " : " << NEVENT << endl;
      
     Nevent += 1.;
     Nweight += genWeight;
@@ -248,13 +248,18 @@ int main(int argc, char* argv[]) {
   tout->Branch("dataset", &dataset);
   tout->Branch("MP", &MP);
   tout->Branch("MC", &MC);
-  int Nmass = masses.size();
-  for(int i = 0; i < Nmass; i++){
-      Nevent_tot += mapNevent[masses[i]];
+  if(DO_SMS){
+    int Nmass = masses.size();
+    for(int i = 0; i < Nmass; i++){
+        Nevent_tot += mapNevent[masses[i]];
+    }
   }
+  else Nevent_tot = Nevent;
   bool passed_DAS = true;
   if(NDAS != Nevent_tot){ 
     std::cout << "JOB FAILED DAS CHECK!" << std::endl;
+    std::cout << "  NDAS: " << NDAS << std::endl;
+    std::cout << "  Nevent_tot: " << Nevent_tot << std::endl;
     passed_DAS = false;
   }
   if(DO_SMS){

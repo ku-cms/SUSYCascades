@@ -121,6 +121,13 @@ def write_sh_single(srcfile,ifile,ofile,logfile,outfile,errfile,dataset,filetag)
     errfile = errfile.replace('_$(ItemIndex)','_0')
     logfile = logfile.replace('_$(ItemIndex)','_0')
     ifile = ifile.replace('_list','_0')
+    if DO_SMS == 1:
+        ifile = ifile.replace(pwd+'/'+filetag+'_SMS','./config')
+    elif DO_DATA == 1:
+        ifile = ifile.replace(pwd+'/'+filetag+'_Data','./config')
+    else:
+        ifile = ifile.replace(pwd+'/'+filetag,'./config')
+    ifile = ifile.replace('config_EventCount','config')
 
     fsrc = open(srcfile,'w')
     fsrc.write('# Note: For only submitting 1 job! \n')

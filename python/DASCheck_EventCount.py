@@ -11,7 +11,8 @@ def process_DASCheck_event_count(input_dir, working_dir, output_dir, dryrun, res
         for file in files:
             tag = file.replace("EventCount_NANO_", "").replace(".root", "")
             command = f"python3 python/new_countEvents.py --eventCount --filetag {tag}"
-            output_file = f"DASCheck_{tag}.txt"
+            os.makedirs("DASCheck_logs/",exist_ok=True)
+            output_file = f"DASCheck_logs/DASCheck_{tag}.txt"
             if not dryrun:
                 print(f"Executing: {command}")
                 with open(output_file, "w") as out:
@@ -25,7 +26,8 @@ def process_DASCheck_event_count(input_dir, working_dir, output_dir, dryrun, res
         for EC_dir in dirs:
             if EC_dir.endswith('_EventCount'):
                 command = f"python3 python/CheckFiles.py -d {EC_dir} -o {output_dir}{EC_dir} --eventCount -e"
-                output_file = f"DASCheck_{EC_dir}.txt"
+                os.makedirs("DASCheck_logs/",exist_ok=True)
+                output_file = f"DASCheck_logs/DASCheck_{EC_dir}.txt"
                 if not dryrun:
                     print(f"Executing: {command}")
                     with open(output_file, "w") as out:
