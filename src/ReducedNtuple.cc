@@ -571,8 +571,6 @@ void ReducedNtuple<Base>::FillOutputTree(TTree* tree, const Systematic& sys, boo
     if(!AnalysisBase<Base>::IsGoodEvent())
       return;
 
-  //cout << "Event Weight " << tree->GetName() << " " << AnalysisBase<Base>::GetEventWeight() << endl;
-  
   bool good_PV;
   TVector3 PV = AnalysisBase<Base>::GetPV(good_PV);
 
@@ -592,7 +590,7 @@ void ReducedNtuple<Base>::FillOutputTree(TTree* tree, const Systematic& sys, boo
   m_PrefireWeight_down = AnalysisBase<Base>::GetPrefireWeight(-1);
   
   if(std::isnan(ETMiss.Mag())) return;
-  if(ETMiss.Mag() < 100.)
+  if(ETMiss.Mag() < 0.)
     return;
   
   ClearVariables();
@@ -1057,6 +1055,7 @@ void ReducedNtuple<Base>::FillOutputTree(TTree* tree, const Systematic& sys, boo
 
   if(!AnalysisBase<Base>::IsData()){
     m_weight = AnalysisBase<Base>::GetEventWeight();
+    //cout << "Event Weight " << tree->GetName() << " " << m_weight << endl;
     
     m_PUweight = AnalysisBase<Base>::GetPUWeight(0);
     m_PUweight_up = AnalysisBase<Base>::GetPUWeight(1);
