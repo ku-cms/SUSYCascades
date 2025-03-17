@@ -13,7 +13,6 @@ B*.sh
 BFI_B*/
 BF_B*/
 HADD_logs/
-local_*/
 *.pdf
 .vscode/
 *.debug
