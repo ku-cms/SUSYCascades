@@ -17,3 +17,4 @@ local_*/
 *.pdf
 .vscode/
 *.debug
+DASCheck_logs/

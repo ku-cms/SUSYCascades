@@ -20,6 +20,7 @@
 #include <TError.h>
 #include <TEfficiency.h>
 #include <TGraphAsymmErrors.h>
+#include <TApplication.h>
 
 #include "../include/ReducedBase_V2.hh"
 #include "../include/SampleTool.hh"
@@ -53,9 +54,8 @@ vector<int> markers = {20,21,22,23,29,33,34,43,49};
 void Plot_Hist(TH1* h, bool Scale=true, double Scale_Val = 1);
 void Plot_Hist(TH2* h, bool Scale=true, double Scale_Val = 1);
 void Plot_Eff(TEfficiency* e);
-void Plot_Stack(vector<TH1*> vect_h, const ProcessList& samples);
 void Plot_Stack(vector<TH1*> vect_h, const std::map<std::string, ProcessList>& map_samples);
-//void Plot_Ratio(TH1* h_num, TH1* h_den);
+void Plot_Ratio(TH1* h_num, TH1* h_den);
 
 void Plot_Simple(){
 
@@ -68,12 +68,14 @@ void Plot_Simple(){
   
   ScaleFactorTool SF;
 
-  g_Label = "2 lepton";// ttbar CR";
+  g_Label = "2 lepton SR";
+  //g_Label = "2 lepton ttbar CR";
   g_NX = 128;
 
   int SKIP = 1; // TODO: need to change this to only apply SKIP to BKG
-  //int lumi = 138.; // Run 2
-  int lumi = 138.+109+27+34; // Run 2&3
+  //double lumi = 138.; // Run 2
+  //double lumi = 138.+109+27+34; // Run 2&3
+  double lumi = 9.451; // Summer23BPix
   bool Norm = true; // scale hists by lumi
 
   std::map<std::string, ProcessList> map_samples;
@@ -90,6 +92,16 @@ void Plot_Simple(){
     bkg += backgrounds[s];
     map_samples.insert(std::make_pair(backgrounds[s].Name(), bkg));
   }
+
+  // loop over data and add to map
+  ProcessList data = ST.Get(kData);
+  for(int s = 0; s < int(data.GetN()); s++){
+    ProcessList datum;
+    datum += data[s];
+    //map_samples.insert(std::make_pair(data[s].Name(), datum));
+  }
+
+  // loop over signals and add to map
   for(auto p = map_vsignals.begin(); p != map_vsignals.end(); p++){
     ProcessList signals;
     for(auto s : p->second){
@@ -114,7 +126,7 @@ void Plot_Simple(){
     string title = p->first;
 
     // Declare hists here
-    TH1D* hist_MET = new TH1D((title+"_MET").c_str(), (title+"_MET;MET;").c_str(), g_NX, 0., 500.);
+    TH1D* hist_MET = new TH1D((title+"_MET").c_str(), (title+"_MET;MET;").c_str(), g_NX/4, 100., 400.);
     // push_back hists that you want to plot at the end (hists are filled regardless of whether or not you push_back)
     hists1.push_back(hist_MET);
     hist_stack_MET.push_back(hist_MET); // example pushing hist into vector for stack plot
@@ -171,45 +183,47 @@ void Plot_Simple(){
               continue;
           
           // apply trigger to data and FullSim events
-          //if(!base->METORtrigger && !is_FastSim)
-          //  continue;
+          if(!base->METORtrigger && !is_FastSim)
+            continue;
           	
           double MET = base->MET;
           if(MET < 100)
             continue;
 
           if(base->PTISR < 200.)
+          //if(base->PTISR < 400.) // SR
             continue;
 
           // Cleaning cuts...
-          // double x = fabs(base->dphiCMI);
-          // 
-          // if(base->PTCM > 200.)
-          //   continue;
-          // if(base->PTCM > -500.*sqrt(std::max(0.,-2.777*x*x+1.388*x+0.8264))+575. &&
-          //    -2.777*x*x+1.388*x+0.8264 > 0.)
-          //   continue;
-          // if(base->PTCM > -500.*sqrt(std::max(0.,-1.5625*x*x+7.8125*x-8.766))+600. &&
-          //    -1.5625*x*x+7.8125*x-8.766 > 0.)
-          //   continue;
+          double x = fabs(base->dphiCMI);
+          
+          if(base->PTCM > 200.)
+            continue;
+          if(base->PTCM > -500.*sqrt(std::max(0.,-2.777*x*x+1.388*x+0.8264))+575. &&
+             -2.777*x*x+1.388*x+0.8264 > 0.)
+            continue;
+          if(base->PTCM > -500.*sqrt(std::max(0.,-1.5625*x*x+7.8125*x-8.766))+600. &&
+             -1.5625*x*x+7.8125*x-8.766 > 0.)
+            continue;
           // End Cleaning cuts...
             
           if(fabs(base->dphiMET_V) > acos(-1.)/2.)
             continue;
             
-          if(base->RISR < 0. || base->RISR > 1.0)
+          //if(base->RISR < 0. || base->RISR > 1.0)
           //if(base->RISR < 0.4 || base->RISR > 0.7) // CR
+          if(base->RISR < 0.9)
             continue;
 
           // Get Physics Objects
-
           int Nlep     = base->Nlep;
           int NjetS    = base->Njet_S;
           int NbjetS   = base->Nbjet_S;
           int NjetISR  = base->Njet_ISR;
           int NbjetISR = base->Nbjet_ISR;
 
-          //if(NbjetISR + NbjetS < 2) continue; // CR
+          //if(NbjetISR + NbjetS != 2) continue; // CR
+          if(NbjetISR + NbjetS > 1) continue; // SR
 
           if(Nlep != 2)
             continue;
@@ -245,7 +259,7 @@ void Plot_Simple(){
           
           LepList list_a;
           LepList list_b;
-            
+          LepList list_leps;  
           int index;
             
           // ID leps as gold, silver, or bronze
@@ -272,6 +286,7 @@ void Plot_Simple(){
             LepSource source = LepSource(base->SourceID_lep->at(index));
               
             list_a += Lep(flavor, charge, id, source);
+            list_leps += Lep(flavor, charge, id, source);
           }
           for(int i = 0; i < base->Nlep_b; i++){
             index = (*base->index_lep_b)[i];
@@ -296,7 +311,13 @@ void Plot_Simple(){
             LepSource source = LepSource(base->SourceID_lep->at(index));
             
             list_b += Lep(flavor, charge, id, source);
+            list_leps += Lep(flavor, charge, id, source);
           }
+
+          bool skip = false;
+          for(int i = 0; i < list_leps.GetN(); i++)
+            if(list_leps[i].ID() != kGold) skip = true;
+          if(skip) continue;
 
           // get variables from root files using base class
           double gammaT = base->gammaT;
@@ -305,8 +326,9 @@ void Plot_Simple(){
           double PTISR = base->PTISR;
           
           double weight = (base->weight != 0.) ? base->weight : 1.;
-          weight *= double(SKIP);
-          
+          if(!is_data)
+            weight *= double(SKIP);
+
           // Fill hists, effs, etc.
           hist_MET->Fill(MET, weight);
           hist_RISR_PTISR->Fill(RISR, PTISR, weight);
@@ -346,7 +368,7 @@ void Plot_Simple(){
      g_PlotTitle = "stack"+g_PlotTitle;
      Plot_Stack(*hist_stacks[stack_h], map_samples);
   }
-
+  gApplication->Terminate(0);
 } // End of macro
 
 void Plot_Eff(TEfficiency* e){
@@ -415,8 +437,9 @@ void Plot_Eff(TEfficiency* e){
 
 void Plot_Hist(TH1* h, bool Scale, double Scale_Val){
   if(Scale_Val == 0) Scale_Val = h->Integral();
-  h->Scale(Scale_Val);
   string title = h->GetName();
+  // do not scale data
+  if(title.find("data") == std::string::npos) { h->Scale(Scale_Val); }
   TCanvas* can = (TCanvas*) new TCanvas(("can_"+title).c_str(),("can_"+title).c_str(),700.,600);
 
   can->SetLeftMargin(0.15);
@@ -471,8 +494,9 @@ void Plot_Hist(TH1* h, bool Scale, double Scale_Val){
 
 void Plot_Hist(TH2* h, bool Scale, double Scale_Val){
   if(Scale_Val == 0) Scale_Val = h->Integral();
-  h->Scale(Scale_Val);
   string title = h->GetName();
+  // do not scale data
+  if(title.find("data") == std::string::npos) h->Scale(Scale_Val);
   TCanvas* can = (TCanvas*) new TCanvas(("can_"+title).c_str(),("can_"+title).c_str(),700.,600);
 
   can->SetLeftMargin(0.15);
@@ -534,149 +558,9 @@ void Plot_Hist(TH2* h, bool Scale, double Scale_Val){
   delete can;
 }
 
-void Plot_Stack(vector<TH1*> vect_h, const ProcessList& samples){
-  TH1D* h_BKG = nullptr;
-  bool isBKG = false;
-  int Nsample = samples.GetN();
-  if (Nsample != int(vect_h.size())){
-    std::cout << "hist stack size does not match sample stack size!" << std::endl;
-    return;
-  }
-  for(int i = 0; i < Nsample; i++){
-    if(samples[i].Type() == kBkg){
-      if(!isBKG){
-	h_BKG = (TH1D*) vect_h[i]->Clone("TOT_BKG");
-	isBKG = true;
-      } else {
-	for(int k = 0; k < i; k++){
-	  vect_h[k]->Add(vect_h[i]);
-	}
-	h_BKG->Add(vect_h[i]);
-      }
-    }
-  }
-  
-  double fmax = -1.;
-  int imax = -1;
-  for(int i = 0; i < Nsample; i++){
-    if(vect_h[i]->GetMaximum() > fmax){
-      fmax = vect_h[i]->GetMaximum();
-      imax = i;
-    }
-  }
-  float width = vect_h[0]->GetBinWidth(1);
-  char *yaxis = new char[100];
-  sprintf(yaxis,"Events / %.2f bin", width);
-
-  gStyle->SetOptTitle(0);
-  gStyle->SetOptStat(0);
-  gStyle->SetOptFit(11111111);
-  TCanvas* can = (TCanvas*) new TCanvas(("can_"+g_PlotTitle).c_str(),("can_"+g_PlotTitle).c_str(),700.,600);
-
-  can->SetLeftMargin(0.13);
-  can->SetRightMargin(0.04);
-  can->SetBottomMargin(0.15);
-  can->SetTopMargin(0.085);
-  can->SetGridx();
-  can->SetGridy();
-  can->Draw();
-  can->cd();
-  vect_h[imax]->Draw("hist");
-  vect_h[imax]->GetXaxis()->CenterTitle();
-  vect_h[imax]->GetXaxis()->SetTitleFont(132);
-  vect_h[imax]->GetXaxis()->SetTitleSize(0.06);
-  vect_h[imax]->GetXaxis()->SetTitleOffset(1.06);
-  vect_h[imax]->GetXaxis()->SetLabelFont(132);
-  vect_h[imax]->GetXaxis()->SetLabelSize(0.05);
-  vect_h[imax]->GetXaxis()->SetTitle(g_Xname.c_str());
-  vect_h[imax]->GetYaxis()->CenterTitle();
-  vect_h[imax]->GetYaxis()->SetTitleFont(132);
-  vect_h[imax]->GetYaxis()->SetTitleSize(0.06);
-  vect_h[imax]->GetYaxis()->SetTitleOffset(1.);
-  vect_h[imax]->GetYaxis()->SetLabelFont(132);
-  vect_h[imax]->GetYaxis()->SetLabelSize(0.05);
-  //vect_h[imax]->GetYaxis()->SetTitle("a. u.");
-  vect_h[imax]->GetYaxis()->SetTitle(yaxis);
-  vect_h[imax]->GetYaxis()->SetTitle("N_{evt} / fb^{-1}");
-
-  for(int i = 0; i < Nsample; i++){
-    if(samples[i].Type() == kBkg){
-      vect_h[i]->SetLineColor(kBlack);
-      vect_h[i]->SetLineWidth(1.0);
-      vect_h[i]->SetFillColor(colors[i]);
-      vect_h[i]->SetFillStyle(1001);
-      vect_h[i]->Draw("SAME HIST");
-    }
-  }
-
-  if(isBKG){
-    h_BKG->SetLineWidth(3.0);
-    h_BKG->SetLineColor(kRed);
-    h_BKG->SetMarkerSize(0);
-    h_BKG->Draw("SAME HIST");
-  }
-  
-  for(int i = 0; i < Nsample; i++){
-    if(!(samples[i].Type() == kBkg)){
-      vect_h[i]->SetLineWidth(3.0);
-      vect_h[i]->SetMarkerSize(0.);
-      vect_h[i]->SetMarkerColor(kBlack);
-      vect_h[i]->SetLineStyle(7);
-      vect_h[i]->SetLineColor(colors[i]);
-      vect_h[i]->Draw("SAME HIST");
-    }
-  }
-
-  TLegend* leg = new TLegend(0.688,0.22,0.93,0.42);
-  leg->SetTextFont(132);
-  leg->SetTextSize(0.045);
-  leg->SetFillColor(kWhite);
-  leg->SetLineColor(kWhite);
-  leg->SetShadowColor(kWhite);
-  if(isBKG) leg->AddEntry(h_BKG, "SM total");
-  for(int i = 0; i < Nsample; i++)
-    if(samples[i].Type() == kBkg)
-      leg->AddEntry(vect_h[i],samples[i].Name().c_str(),"F");
-    else
-      leg->AddEntry(vect_h[i],samples[i].Name().c_str());
-  leg->SetLineColor(kWhite);
-  leg->SetFillColor(kWhite);
-  leg->SetShadowColor(kWhite);
-  leg->Draw("SAME");
-
-  TLatex l;
-  l.SetTextFont(132);
-  l.SetNDC();
-  l.SetTextSize(0.05);
-  l.SetTextFont(132);
-  l.DrawLatex(0.65,0.943,g_PlotTitle.c_str());
-  l.SetTextSize(0.04);
-  l.SetTextFont(42);
-  l.DrawLatex(0.15,0.943,"#bf{#it{CMS}} Internal 13 TeV Simulation");
-  l.SetTextSize(0.05);
-  l.SetTextFont(132);
-  //string s_lumi = "#scale[0.6]{#int} #it{L dt} = "+to_string(int(g_Lumi))+" fb^{-1}";
-  //l.DrawLatex(0.43,0.79,s_lumi.c_str());	
-  
-  string pdf_title = g_PlotTitle+"_";
-  pdf_title += can->GetTitle();
-  gErrorIgnoreLevel = 1001;
-  if(SavePDF)
-    can->SaveAs((pdf_title+".pdf").c_str());
-  gErrorIgnoreLevel = 0;
-  TFile* file = new TFile(output_root_file.c_str(),"UPDATE");
-  can->Write(0,TObject::kWriteDelete);
-  file->Close();
-  for(int i = 0; i < Nsample; i++){
-    delete vect_h[i];
-  }
-  delete[] yaxis;
-  delete leg;
-  delete can;
-}
-
 void Plot_Stack(vector<TH1*> vect_h, const std::map<std::string, ProcessList>& map_samples){
   TH1D* h_BKG = nullptr;
+  TH1D* h_DATA = nullptr;
   bool isBKG = false;
   int Nsample = map_samples.size();
   if (Nsample != int(vect_h.size())){
@@ -695,6 +579,9 @@ void Plot_Stack(vector<TH1*> vect_h, const std::map<std::string, ProcessList>& m
         }
         h_BKG->Add(vect_h[index]);
       }
+    } // if(p->second[0].Type() == kBkg)
+    if(p->second[0].Type() == kData){
+      h_DATA = (TH1D*) vect_h[index]->Clone("TOT_DATA");
     }
     index++;
   }
@@ -714,7 +601,7 @@ void Plot_Stack(vector<TH1*> vect_h, const std::map<std::string, ProcessList>& m
   gStyle->SetOptTitle(0);
   gStyle->SetOptStat(0);
   gStyle->SetOptFit(11111111);
-  TCanvas* can = (TCanvas*) new TCanvas(("can_"+g_PlotTitle).c_str(),("can_"+g_PlotTitle).c_str(),700.,600);
+  TCanvas* can = (TCanvas*) new TCanvas(("can_"+g_PlotTitle).c_str(),("can_"+g_PlotTitle).c_str(),1278,775);
 
   can->SetLeftMargin(0.13);
   can->SetRightMargin(0.04);
@@ -724,6 +611,20 @@ void Plot_Stack(vector<TH1*> vect_h, const std::map<std::string, ProcessList>& m
   can->SetGridy();
   can->Draw();
   can->cd();
+
+  TPad* pad = new TPad("pad","pad",0,0.32,1.,1.);
+  pad->SetGridx();
+  pad->SetGridy();
+  pad->SetBottomMargin(0.02);
+  if(h_BKG != nullptr && h_DATA != nullptr){
+    if(h_BKG->GetEntries() > 0 && h_DATA->GetEntries() > 0){
+      pad->Draw();
+      pad->cd();
+      pad->Update();
+      can->Update();
+    }
+  }
+
   vect_h[imax]->Draw("hist");
   vect_h[imax]->GetXaxis()->CenterTitle();
   vect_h[imax]->GetXaxis()->SetTitleFont(132);
@@ -739,12 +640,12 @@ void Plot_Stack(vector<TH1*> vect_h, const std::map<std::string, ProcessList>& m
   vect_h[imax]->GetYaxis()->SetLabelFont(132);
   vect_h[imax]->GetYaxis()->SetLabelSize(0.05);
   //vect_h[imax]->GetYaxis()->SetTitle("a. u.");
-  vect_h[imax]->GetYaxis()->SetTitle(yaxis);
   vect_h[imax]->GetYaxis()->SetTitle("N_{evt} / fb^{-1}");
 
   index = 0;
   for(auto p = map_samples.begin(); p != map_samples.end(); p++){
     if(p->second[0].Type() == kBkg){
+      //if(vect_h[index]->GetEntries() == 0) continue;
       vect_h[index]->SetLineColor(kBlack);
       vect_h[index]->SetLineWidth(1.0);
       vect_h[index]->SetFillColor(colors[index]);
@@ -763,7 +664,7 @@ void Plot_Stack(vector<TH1*> vect_h, const std::map<std::string, ProcessList>& m
   
   index = 0;
   for(auto p = map_samples.begin(); p != map_samples.end(); p++){
-    if(!(p->second[0].Type() == kBkg)){
+    if(p->second[0].Type() == kSig){
       vect_h[index]->SetLineWidth(3.0);
       vect_h[index]->SetMarkerSize(0.);
       vect_h[index]->SetMarkerColor(kBlack);
@@ -771,10 +672,18 @@ void Plot_Stack(vector<TH1*> vect_h, const std::map<std::string, ProcessList>& m
       vect_h[index]->SetLineColor(colors[index]);
       vect_h[index]->Draw("SAME HIST");
     }
+    if(p->second[0].Type() == kData){
+      vect_h[index]->SetLineWidth(3.0);
+      vect_h[index]->SetMarkerSize(0.);
+      vect_h[index]->SetMarkerColor(kBlack);
+      vect_h[index]->SetLineStyle(7);
+      vect_h[index]->SetLineColor(colors[index]);
+      vect_h[index]->Draw("SAME");
+    }
     index++;
   }
 
-  TLegend* leg = new TLegend(0.688,0.22,0.93,0.42);
+  TLegend* leg = new TLegend(0.65,0.7,0.8,0.85);
   leg->SetTextFont(132);
   leg->SetTextSize(0.045);
   leg->SetFillColor(kWhite);
@@ -799,7 +708,7 @@ void Plot_Stack(vector<TH1*> vect_h, const std::map<std::string, ProcessList>& m
   l.SetNDC();
   l.SetTextSize(0.05);
   l.SetTextFont(132);
-  l.DrawLatex(0.65,0.943,g_PlotTitle.c_str());
+  l.DrawLatex(0.65,0.943,g_Label.c_str());
   l.SetTextSize(0.04);
   l.SetTextFont(42);
   l.DrawLatex(0.15,0.943,"#bf{#it{CMS}} Internal 13 TeV Simulation");
@@ -807,6 +716,47 @@ void Plot_Stack(vector<TH1*> vect_h, const std::map<std::string, ProcessList>& m
   l.SetTextFont(132);
   //string s_lumi = "#scale[0.6]{#int} #it{L dt} = "+to_string(int(g_Lumi))+" fb^{-1}";
   //l.DrawLatex(0.43,0.79,s_lumi.c_str());	
+  l.SetTextSize(0.045);
+  l.SetTextFont(42);
+
+  TPad *pad_res = new TPad("pad_res","pad_res",0.,0.03,1.,0.31);
+  pad_res->SetGridx(); 
+  pad_res->SetGridy();
+  pad_res->SetTopMargin(0.05);
+  pad_res->SetBottomMargin(0.2);
+  if(h_BKG != nullptr && h_DATA != nullptr){
+    if(h_BKG->GetEntries() > 0 && h_DATA->GetEntries() > 0){
+      vect_h[imax]->GetXaxis()->SetLabelOffset(0.05);
+      TH1D* h_res = (TH1D*) h_BKG->Clone("res");
+      h_res->Divide(h_DATA);
+      can->Update();
+      can->cd();
+      pad_res->Draw();
+      pad_res->cd();
+      pad_res->Update();
+      can->Update();
+      h_res->Draw("");
+      h_res->GetYaxis()->SetTitle("TOT BKG / DATA");
+      h_res->GetYaxis()->SetRangeUser(0.9*h_res->GetMinimum(),1.1*h_res->GetMaximum());
+      h_res->GetYaxis()->SetRangeUser(0., 8.);
+      h_res->GetXaxis()->CenterTitle();
+      h_res->GetXaxis()->SetTitleFont(132);
+      h_res->GetXaxis()->SetTitleSize(0.08);
+      h_res->GetXaxis()->SetTitleOffset(1.02);
+      h_res->GetXaxis()->SetLabelFont(132);
+      h_res->GetXaxis()->SetLabelSize(0.08);
+      h_res->GetXaxis()->SetTitle(g_Xname.c_str());
+      h_res->GetYaxis()->CenterTitle();
+      h_res->GetYaxis()->SetTitleFont(132);
+      h_res->GetYaxis()->SetTitleSize(0.06);
+      h_res->GetYaxis()->SetTitleOffset(1.02);
+      h_res->GetYaxis()->SetLabelFont(132);
+      h_res->GetYaxis()->SetLabelSize(0.08);
+      pad_res->Modified();
+      pad_res->Update();
+      can->Update();
+    }
+  }
   
   string pdf_title = g_PlotTitle+"_";
   pdf_title += can->GetTitle();
@@ -825,11 +775,9 @@ void Plot_Stack(vector<TH1*> vect_h, const std::map<std::string, ProcessList>& m
   delete can;
 }
 
-/*
 void Plot_Ratio(TH1* h_num, TH1* h_den){
-
-  hist_num[i]->Divide(hist_den[i]);  
-  float width = hist_num[0]->GetBinWidth(1);
+  h_num->Divide(h_den);  
+  float width = h_num->GetBinWidth(1);
   char *yaxis = new char[100];
   sprintf(yaxis,"Events / %f", width);
 
@@ -847,25 +795,25 @@ void Plot_Ratio(TH1* h_num, TH1* h_den){
   can->Draw();
   can->cd();
 
-  hist_num->Draw("hist");
-  hist_num->GetXaxis()->CenterTitle();
-  hist_num->GetXaxis()->SetTitleFont(42);
-  hist_num->GetXaxis()->SetTitleSize(0.06);
-  hist_num->GetXaxis()->SetTitleOffset(1.06);
-  hist_num->GetXaxis()->SetLabelFont(42);
-  hist_num->GetXaxis()->SetLabelSize(0.05);
-  hist_num->GetXaxis()->SetTitle(g_Xname.c_str());
-  hist_num->GetYaxis()->CenterTitle();
-  hist_num->GetYaxis()->SetTitleFont(42);
-  hist_num->GetYaxis()->SetTitleSize(0.06);
-  hist_num->GetYaxis()->SetTitleOffset(1.1);
-  hist_num->GetYaxis()->SetLabelFont(42);
-  hist_num->GetYaxis()->SetLabelSize(0.05);
-  hist_num->GetYaxis()->SetTitle("a. u.");
-  hist_num->GetYaxis()->SetRangeUser(0., hist_num[imax]->GetMaximum()*1.1);
+  h_num->Draw("hist");
+  h_num->GetXaxis()->CenterTitle();
+  h_num->GetXaxis()->SetTitleFont(42);
+  h_num->GetXaxis()->SetTitleSize(0.06);
+  h_num->GetXaxis()->SetTitleOffset(1.06);
+  h_num->GetXaxis()->SetLabelFont(42);
+  h_num->GetXaxis()->SetLabelSize(0.05);
+  h_num->GetXaxis()->SetTitle(g_Xname.c_str());
+  h_num->GetYaxis()->CenterTitle();
+  h_num->GetYaxis()->SetTitleFont(42);
+  h_num->GetYaxis()->SetTitleSize(0.06);
+  h_num->GetYaxis()->SetTitleOffset(1.1);
+  h_num->GetYaxis()->SetLabelFont(42);
+  h_num->GetYaxis()->SetLabelSize(0.05);
+  h_num->GetYaxis()->SetTitle("a. u.");
+  h_num->GetYaxis()->SetRangeUser(0., h_num->GetMaximum()*1.1);
   //hist->GetYaxis()->SetTitle(yaxis);
   //hist->GetYaxis()->SetTitle("N_{evt} / fb^{-1}");
-  hist_num->Draw("hist SAME");
+  h_num->Draw("hist SAME");
 
   TLatex l;
   l.SetTextFont(132);
@@ -886,10 +834,6 @@ void Plot_Ratio(TH1* h_num, TH1* h_den){
   TFile* file = new TFile(output_root_file.c_str(),"UPDATE");
   can->Write(0,TObject::kWriteDelete);
   file->Close();
-  for(int i = 0; i < Nsample; i++){
-    delete vect_h[i];
-  }
   delete[] yaxis;
   delete can;
 }
-*/

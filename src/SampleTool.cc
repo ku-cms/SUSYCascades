@@ -1447,14 +1447,13 @@ void SampleTool::InitProcMap(){
     // --- Data --- //
     // ------------ //
     
-    //Process data_obs("data_obs", kData);
-    //list.clear();
+    Process data_obs("data_obs", kData);
+    list.clear();
     
-    // waiting for ntuple processing
-    //list += m_Path + "Summer23BPix_130X_Data/JetMET0_Run2023D-22Sep2023_v2-v1_Summer23_130X_Data_Summer23_130X_Summer23BPix_130X.root";
-    //list += m_Path + "Summer23BPix_130X_Data/JetMET1_Run2023D-22Sep2023_v2-v1_Summer23_130X_Data_Summer23_130X_Summer23BPix_130X.root";
+    list += m_Path + "Summer23_130X_Data/JetMET0_Run2023D-22Sep2023_v2-v1_Summer23_130X_Data_Summer23_130X.root";
+    list += m_Path + "Summer23_130X_Data/JetMET1_Run2023D-22Sep2023_v2-v1_Summer23_130X_Data_Summer23_130X.root";
 
-    //m_Proc[m_iYear][data_obs] = pair<vector<string>,string>(list, "KUAnalysis");
+    m_Proc[m_iYear][data_obs] = pair<vector<string>,string>(list, "KUAnalysis");
 
   }
 

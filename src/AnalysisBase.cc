@@ -955,16 +955,15 @@ double AnalysisBase<Base>::GetEventWeight(){
   if(m_IndexToNweight[m_SampleIndex] > 0.){
     if constexpr (std::is_member_object_pointer<decltype(&Base::genWeight)>::value && 
                   std::is_member_object_pointer<decltype(&Base::luminosityBlock)>::value){
-      if(!m_DoSMS)
-        return this->genWeight*m_IndexToXsec[m_SampleIndex]/m_IndexToNweight[m_SampleIndex];
-
       //cout << "genWeight " << this->genWeight << endl;
       //cout << "Xsec " << m_IndexToXsec[m_SampleIndex] << endl;
       //cout << "Nweight " << m_IndexToNweight[m_SampleIndex] << endl;
       //cout << "Filter eff " << m_NeventTool.GetFilterEff(m_DataSet,m_FileTag,this->luminosityBlock) << endl;
+      if(!m_DoSMS)
+        return this->genWeight*m_IndexToXsec[m_SampleIndex]/m_IndexToNweight[m_SampleIndex];
+
       return this->genWeight*m_IndexToXsec[m_SampleIndex]/m_IndexToNweight[m_SampleIndex]*m_NeventTool.GetFilterEff(m_DataSet,m_FileTag,this->luminosityBlock);
-  } } else
-    return 0.;
+  } } else return 0.;
 }
 
 // [0] is muR=0.5 muF=0.5 ; [1] is muR=0.5 muF=1.0 ; [2] is muR=0.5 muF=2.0 ;
