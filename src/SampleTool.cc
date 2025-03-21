@@ -432,6 +432,15 @@ void SampleTool::InitProcMap(){
   m_HEMLumi[0] = 21.077794578; //pre hem
   m_HEMLumi[1] = 59.832475339; // full lumi
 
+  m_Lumi[3] = 0.5*36.333380074;   // 2016 UL preAPV
+  m_Lumi[4] = 0.5*36.333380074;   // 2016 UL postAPV
+  m_Lumi[5] = 41.479680529;   // 2017 UL
+  m_Lumi[6] = 21.077794578 + 0.95*38.662770624;   // 2018 UL
+  m_Lumi[7] = 7.9804;   // 2022 
+  m_Lumi[8] = 26.6717;   // 2022 EE 
+  m_Lumi[9] = 17.794;   // 2023 
+  m_Lumi[10] = 9.451;   // 2023 BPix
+
   // 2018 lumi ---> 21.077794578, 38.662770624 (pre/post HEM)
 
   VS list;
@@ -1471,5 +1480,5 @@ std::map<Process, std::map<string,bool> >   SampleTool::m_SProcDL[11]; // di-lep
 std::map<Process, std::map<string,SleptonFlavor> >   SampleTool::m_SProcSlepFlavor[11]; // filter sleptons
 std::map<Process, std::map<string,double> > SampleTool::m_SProcW[11];  // some additional weight to apply
 
-double SampleTool::m_Lumi[3];
+double SampleTool::m_Lumi[11];
 double SampleTool::m_HEMLumi[2];

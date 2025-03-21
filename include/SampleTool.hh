@@ -54,7 +54,7 @@ private:
   void InitProcMap();
   static bool m_ProcInit;
   static std::map<Process, pair<vector<string>,string> > m_Proc[11];
-  static double m_Lumi[3];
+  static double m_Lumi[11];
   static double m_HEMLumi[2];
   // signal only
   void InitSignalProc(const Process& proc);
