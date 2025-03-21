@@ -28,7 +28,7 @@ OUT_BASE    = "/ospool/cms-user/"+USER+"/NTUPLES/Processing"
 LIST        = "default.list"
 QUEUE       = ""
 SPLIT       = 1
-THRESHOLD   = 70000
+THRESHOLD   = 80000
 # ----------------------------------------------------------- #
 
 def new_listfile(rootlist, listfile):
