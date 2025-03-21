@@ -272,7 +272,9 @@ def main():
         #"WZ_TuneCP5_13p6TeV_pythia8",
     ]
 
+    #time.sleep(3600)
     nJobs = checkJobs(directory,output,skipEC,skipDAS,skipMissing,skipSmall,skipErr,skipOut,skipZombie,resubmit,maxResub,filter_list)
+    print(f"Resubmitted a total of {nJobs} job(s)!")
 
 if __name__ == "__main__":
     main()
