@@ -273,9 +273,6 @@ def main():
     ]
 
     nJobs = checkJobs(directory,output,skipEC,skipDAS,skipMissing,skipSmall,skipErr,skipOut,skipZombie,resubmit,maxResub,filter_list)
-    # if resubmit and nJobs > 0: # Not needed since now submit script should automatically handle resource requests
-    #     time.sleep(3)
-    #     os.system("condor_qedit $USER RequestCpus=4 && condor_qedit $USER RequestDisk=2000000 && condor_qedit $USER RequestMemory=4000")
 
 if __name__ == "__main__":
     main()
