@@ -37,7 +37,7 @@ def process_event_count_dirs(input_dir, output_dir, dryrun):
         
         # Construct and execute hadd command
         # Second hadd for entire filetag
-        command = f"hadd -v 1 -f -k -j 4 {output_path} {input_path}"
+        command = f"hadd -v 1 -f -k {output_path} {input_path}"
         run_command(command,dryrun)
 
 if __name__ == "__main__":

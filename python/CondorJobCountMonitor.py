@@ -4,6 +4,8 @@ class CondorJobCountMonitor:
     def __init__(self, threshold=10000, verbose=False):
         """Initialize the job monitor with a threshold value."""
         self.threshold = threshold
+        if self.threshold < 1:
+            self.threshold = 1
         self.verbose = verbose
     def get_total_jobs(self):
         """Returns the total number of jobs in the HTCondor scheduler for the current user."""

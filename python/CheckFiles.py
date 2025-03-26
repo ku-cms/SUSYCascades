@@ -279,6 +279,8 @@ def main():
     ]
 
     time.sleep(1)
+    condor_monitor = CondorJobCountMonitor(threshold=1,verbose=False)
+    condor_monitor.wait_until_jobs_below()
     nJobs = checkJobs(directory,output,skipEC,skipDAS,skipMissing,skipSmall,skipErr,skipOut,skipZombie,resubmit,maxResub,filter_list)
     print(f"Resubmitted a total of {nJobs} job(s)!")
 
