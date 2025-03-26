@@ -694,6 +694,7 @@ void ReducedNtuple<Base>::FillOutputTree(TTree* tree, const Systematic& sys, boo
 
   // merge jets until total number is combinatorically manageable
   Jets = Jets.BinaryMerge(13-Leptons.size());
+  Jets = Jets.PtEtaCut(20., 2.4);
   Jets.SortByPt();
   GenJets.SortByPt();
   
