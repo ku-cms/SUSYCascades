@@ -9,6 +9,7 @@
 #include <TH1D.h>
 #include <TRandom3.h>
 #include <string>
+#include <functional>
 
 #include "NeventTool.hh"
 #include "XsecTool.hh"
@@ -197,6 +198,7 @@ private:
     if (pos != std::string::npos)
       str.erase(pos, clip.length());
   }
+  bool minus_iso_hoe(int WPBitMap, int value, std::function<bool(int, int)> comp);
   
 };
 
