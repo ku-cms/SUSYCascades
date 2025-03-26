@@ -465,6 +465,30 @@ void AnalysisBase<Base>::MomTensorCalc(vector<TLorentzVector>& input, vector<dou
   }
 } 
 
+template <class Base>
+bool AnalysisBase<Base>::minus_iso_hoe(int WPBitMap, int threshold, std::function<bool(int, int)> comp){
+  if(!m_IsRun3) return true; // not needed for run2
+  // Define the bit shifts corresponding to each cut
+  std::pair<std::string, int> cuts[] = {
+    {"MinPtCut", 0},
+    {"GsfEleSCEtaMultiRangeCut", 3},
+    {"GsfEleDEtaInSeedCut", 6},
+    {"GsfEleDPhiInCut", 9},
+    {"GsfEleFull5x5SigmaIEtaIEtaCut", 12},
+    {"GsfEleEInverseMinusPInverseCut", 18},
+    {"GsfEleConversionVetoCut", 24},
+    {"GsfEleMissingHitsCut", 27}
+  };
+
+  // Check if all required bits pass threshold check
+  for (const auto& cut : cuts) {
+    int value = (WPBitMap >> cut.second) & 0b111;  // Extract 3-bit value
+    if (!comp(value, threshold))
+      return false;
+  }
+  return true; 
+}
+
 /////////////////////////////////////////////////
 // End Base generic methods
 /////////////////////////////////////////////////
@@ -5006,6 +5030,8 @@ ParticleList AnalysisBase<NANORun3>::GetElectrons(){
       continue;
     if(Electron_pfRelIso03_all[i]*Electron_pt[i] >= 20. + 300./Electron_pt[i])
       continue;
+    if(minus_iso_hoe(Electron_vidNestedWPBitmap[i], 1, std::less<int>()))
+      continue;
 
     Particle lep;
     lep.SetPtEtaPhiM(Electron_pt[i], Electron_eta[i],
@@ -5020,24 +5046,26 @@ ParticleList AnalysisBase<NANORun3>::GetElectrons(){
     lep.SetIP3D(Electron_ip3d[i]);
     lep.SetSIP3D(Electron_sip3d[i]);
     lep.SetIsLowPt(false);
+    lep.SetParticleID(kVeryLoose); // need to set to something
 
     lep.SetRelIso(Electron_pfRelIso03_all[i]);
     lep.SetMiniIso(Electron_miniPFRelIso_all[i]);
 
     // FO baseline criteria
     if(Electron_lostHits[i] == 0 && Electron_convVeto[i]){
-      if(Electron_mvaIso_WP80[i]){
-        if(lep.ParticleID() < kMedium || lep.MiniIso()*lep.Pt() >= 4. || lep.RelIso()*lep.Pt() >= 4.)
-	    lep.SetLepQual(kBronze);
-	  else if(lep.SIP3D() > 2.)
-	    lep.SetLepQual(kSilver);
-	  else
-	    lep.SetLepQual(kGold);
+      if(  lep.MiniIso()*lep.Pt() >= 4.
+        || lep.RelIso()*lep.Pt() >= 4.
+        || !minus_iso_hoe(Electron_vidNestedWPBitmap[i], 4, std::equal_to<int>())
+      )
+        lep.SetLepQual(kBronze);
+      else if(lep.SIP3D() > 2.)
+        lep.SetLepQual(kSilver);
+      else
+        lep.SetLepQual(kGold);
+      list.push_back(lep);
+    } // if(Electron_lostHits[i] == 0 && Electron_convVeto[i])
 
-        list.push_back(lep);
-      }
-    }
-  }
+  } // for(int i = 0; i < N; i++)
   return list;
 }
 
@@ -5077,8 +5105,6 @@ ParticleList AnalysisBase<NANORun3>::GetLowPtElectrons(){
     if (SIP_3D >= 2)
       continue;
 
-    // FIXME: fix PFIso requirement for the LowPtElectron collection.
-    // Fixed by Derek
     if(LowPtElectron_miniPFRelIso_all[i]*LowPtElectron_pt[i] >= 20. + 300./LowPtElectron_pt[i])
      continue;
 
