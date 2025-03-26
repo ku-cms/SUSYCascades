@@ -375,11 +375,11 @@ if __name__ == "__main__":
         JSON = "./config/GRL_JSON.txt"
 
         # copy xs json file
-        XSJSONFILENAME = 'info_XSDB_2025-02-27_17-29.json'
+        XSJSONFILENAME = 'info_XSDB_2025-03-21_12-21.json'
         if VERBOSE:
             print("making xs json file")
-        os.system(f"xrdcp -s root://cmseos.fnal.gov//store/user/z374f439/XSectionJSONs/{XSJSONFILENAME} {config}{XSJSONFILENAME}")
-        XSJSONFILE = f"./config/{XSJSONFILENAME}"
+        os.system(f"xrdcp -s root://cmseos.fnal.gov//store/user/z374f439/XSectionJSONs/{XSJSONFILENAME} {config}/XS_jsonfile.json")
+        XSJSONFILE = f"./config/XS_jsonfile.json"
 
         # copy PU root files
         if VERBOSE:
