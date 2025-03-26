@@ -3,8 +3,7 @@
 # Example call of script from SUSYCascades:
 #    python3 python/CheckFiles.py -d Summer23_130X/ -o ../../../NTUPLES/Processing/Summer23_130X/ -e -r
 # ------------------------------------------------------------------------------------------------
-import os, argparse, subprocess, itertools, ROOT
-import time
+import os, argparse, subprocess, itertools, ROOT, time, math
 from new_countEvents import EventCount as EventCount
 from CondorJobCountMonitor import CondorJobCountMonitor
 USER = os.environ['USER']
@@ -36,7 +35,7 @@ def makeSubmitScript(tuple_pairs,submitName,resubmit,maxResub,DataSetName):
     tuple_filelist = f"{submitName}_tuple.txt"
     resubmitFiles = 0
     if tuple_pairs == []:
-        return # Have no jobs to resubmit
+        return resubmitFiles # Have no jobs to resubmit
     tuple_pairs = list(set(tuple_pairs)) # remove potential dupes
     with open(tuple_filelist,'w') as tuple_file:
         for tuple_pair in tuple_pairs:
@@ -73,6 +72,7 @@ def makeSubmitScript(tuple_pairs,submitName,resubmit,maxResub,DataSetName):
             condor_monitor = CondorJobCountMonitor(threshold=80000,verbose=False)
             condor_monitor.wait_until_jobs_below()
             os.system(f"condor_submit {newFileName}")
+    return resubmitFiles
 
 def testRootFile(root_file):
     status = True
@@ -108,7 +108,7 @@ def checkJobs(workingDir,outputDir,skipEC,skipDAS,skipMissing,skipSmall,skipErr,
     grep_ignore = "-e \"Warning\" -e \"WARNING\" -e \"TTree::SetBranchStatus\" -e \"libXrdSecztn.so\" -e \"Phi_mpi_pi\" -e \"tar: stdout: write error\" -e \"INFO\""
     grep_ignore += " -e \"SetBranchAddress\""
     srcDir = os.listdir(workingDir+"/src/")
-    nJobs = 0
+    total_resubmit = 0
     for file in srcDir:
         if "X.submit" not in file:
             continue
@@ -122,6 +122,29 @@ def checkJobs(workingDir,outputDir,skipEC,skipDAS,skipMissing,skipSmall,skipErr,
             continue
         DataSetName = file.split(".")[0]
         resubmitFiles = []
+        if(not skipDAS):
+            NDAS_true = 0
+            NDAS = 0
+            event_count = EventCount()
+            listDir = os.path.join(workingDir, "config/list", DataSetName)
+            for lFile in os.listdir(listDir):
+                if lFile.endswith('.list') and not lFile.endswith('_list.list'):
+                    with open(os.path.join(listDir,lFile),'r') as input_root_files:
+                        input_root_filename = input_root_files.readline().strip()
+                        dataset = event_count.GetDatasetFromFile(input_root_filename)
+                        NDAS_true = event_count.EventsInDAS(dataset, False)
+                        break
+                        # Can get total per file if needed
+                        #NDAS_true += event_count.EventsInDAS(input_root_filename) # get true total events from DAS
+            outfiles = os.listdir(outputDir+'/'+DataSetName)
+            for outfile in outfiles:
+                NDAS += event_count.GetDASCount(os.path.join(outputDir+'/'+DataSetName,outfile))
+            if NDAS != NDAS_true:
+                comp_percent = 100.*math.floor(NDAS/NDAS_true * 1000) / 1000
+                print(f'{DataSetName} failed the DAS check! ({comp_percent}%) Use other options to investigate')
+            else:
+                print(f'{DataSetName} passed the DAS check!')
+                continue # no need to do any more checks if passed DAS check
         if(not skipMissing):
             with open(workingDir+"/src/"+DataSetName+".submit") as file:
                 file.seek(0,2)
@@ -155,12 +178,16 @@ def checkJobs(workingDir,outputDir,skipEC,skipDAS,skipMissing,skipSmall,skipErr,
                 num_small = num_small+1
             print(f"Got {num_small} small files for dataset {DataSetName}")
         if(not skipErr):
+            errorFiles = []
             bash = "grep -r -v "+grep_ignore+" "+workingDir+"/err/"+DataSetName+"/"
             # "errorFiles" is actually all lines with errors that we don't ignore
             # thus, the number of "errorFiles" is often much greater than number of files with an actual error
-            errorFiles = subprocess.check_output(['bash','-c',bash]).decode()
-            errorFiles = errorFiles.split("\n")
-            errorFiles.remove('')
+            try:
+                errorFiles = subprocess.check_output(['bash','-c',bash]).decode()
+                errorFiles = errorFiles.split("\n")
+                errorFiles.remove('')
+            except subprocess.CalledProcessError as e:
+                pass # exception means no err files have issues so just keep going
             num_error = 0
             # loop over all lines with errors
             for errorFile in errorFiles:
@@ -212,30 +239,9 @@ def checkJobs(workingDir,outputDir,skipEC,skipDAS,skipMissing,skipSmall,skipErr,
             failedEC = eventCountCheck(outputDir+'/'+DataSetName)
             resubmitFiles.extend(failedEC)
             print(f"Got {len(failedEC)} files failed EventCount check for dataset",DataSetName)
-        if(not skipDAS):
-            NDAS_true = 0
-            NDAS = 0
-            event_count = EventCount()
-            listDir = os.path.join(workingDir, "config/list", DataSetName)
-            for lFile in os.listdir(listDir):
-                if lFile.endswith('.list') and not lFile.endswith('_list.list'):
-                    with open(os.path.join(listDir,lFile),'r') as input_root_files:
-                        input_root_filename = input_root_files.readline().strip()
-                        dataset = event_count.GetDatasetFromFile(input_root_filename)
-                        NDAS_true = event_count.EventsInDAS(dataset, False)
-                        break
-                        # Can get total per file if needed
-                        #NDAS_true += event_count.EventsInDAS(input_root_filename) # get true total events from DAS
-            outfiles = os.listdir(outputDir+'/'+DataSetName)
-            for outfile in outfiles:
-                NDAS += event_count.GetDASCount(os.path.join(outputDir+'/'+DataSetName,outfile))
-            if NDAS != NDAS_true:
-                print(f'{DataSetName} failed the DAS check! ({100.*round(NDAS/NDAS_true,3)}%) Use other options to investigate')
-            else:
-                print(f'{DataSetName} passed the DAS check!')
-        makeSubmitScript(resubmitFiles,workingDir+"/src/"+DataSetName,resubmit,maxResub,DataSetName)
-        nJobs += len(resubmitFiles)
-    return nJobs
+        nJobs = makeSubmitScript(resubmitFiles,workingDir+"/src/"+DataSetName,resubmit,maxResub,DataSetName)
+        total_resubmit += nJobs
+    return total_resubmit
 
 def main():
     # options
@@ -272,7 +278,7 @@ def main():
         #"WZ_TuneCP5_13p6TeV_pythia8",
     ]
 
-    #time.sleep(3600)
+    time.sleep(1)
     nJobs = checkJobs(directory,output,skipEC,skipDAS,skipMissing,skipSmall,skipErr,skipOut,skipZombie,resubmit,maxResub,filter_list)
     print(f"Resubmitted a total of {nJobs} job(s)!")
 
