@@ -37,7 +37,7 @@ void NtupleBase<Base>::GetChunks(const Long64_t& NTOT, Long64_t& N0, Long64_t& N
 }
 
 template <class Base>
-bool NtupleBase<Base>::WriteNtuple(const string& filename, int ichunk, int nchunk, bool do_slim, int NDAS){
+bool NtupleBase<Base>::WriteNtuple(const string& filename, int ichunk, int nchunk, bool do_slim, int NDAS, const string& DAS_datasetname){
   TFile* outfile = new TFile(filename.c_str(),"RECREATE");
   outfile->cd();
 
@@ -149,11 +149,13 @@ bool NtupleBase<Base>::WriteNtuple(const string& filename, int ichunk, int nchun
   int Nevent_tot = 0;
   int MP;
   int MC;
+  std::string saved_DAS_datasetname = DAS_datasetname;
   tout->Branch("NDAS", &NDAS);
   tout->Branch("Nevent", &Nevent);
   tout->Branch("Nweight", &Nweight);
   tout->Branch("filetag", &filetag);
   tout->Branch("dataset", &dataset);
+  tout->Branch("DAS_datasetname", &saved_DAS_datasetname);
   tout->Branch("MP", &MP);
   tout->Branch("MC", &MC);
   int Nmass = m_masses.size();

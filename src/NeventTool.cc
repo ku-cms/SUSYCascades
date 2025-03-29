@@ -125,23 +125,15 @@ void NeventTool::Initialize_SMS(const std::string& dataset, const std::string& f
     
     //cout << (*m_dataset) << " " << (*m_filetag) << endl;
 
-    //if( (*m_dataset).find("mStop") != string::npos){
-    //	cout << (*m_dataset) << " " << (*m_filetag) << endl;
-    //	cout << m_Nevent << " " << m_Nweight << endl;
-    //	cout << m_MP << " " << m_MC << endl << endl;
-    //}
-    
-
     if((dataset == (*m_dataset)) &&
        (filetag == (*m_filetag))){
 
       std::pair<int,int> masses(m_MP,m_MC);
-      
       if(m_Label2Nevent_SMS[label].count(masses) == 0){
 	m_Label2Nevent_SMS[label][masses] = 0.;
 	m_Label2Nweight_SMS[label][masses] = 0.;
       } else {
-	//cout << "HEREEREERE" << endl;
+//cout << "HEREEREERE" << endl;
       }
       
       m_Label2Nevent_SMS[label][masses] += m_Nevent;
@@ -213,7 +205,7 @@ double NeventTool::GetNweight_BKG(const std::string& dataset, const std::string&
   if(m_Label2Nweight_BKG.count(label) == 0)
     Initialize_BKG(dataset, filetag);
 
-  int Nweight = m_Label2Nweight_BKG[label];
+  double Nweight = m_Label2Nweight_BKG[label];
   std::cout << "Nweight from event tool is " << Nweight << std::endl;
 
   return Nweight;
@@ -286,13 +278,22 @@ bool check_dataset_file(std::string dataset_name)
  return true;
 }
 
+std::string NeventTool::Get_DASdatasetname(const std::string& u_file)
+{
+ std::string filename = u_file;
+ size_t pos = filename.find("/store/");
+ if(pos != std::string::npos) filename = filename.substr(pos); // remove everything before root redirector for DAS query
+ TString das_output = gSystem->GetFromPipe(("dasgoclient -query=\"dataset file="+filename+"\"").c_str());
+ return std::string(das_output.Data());
+}
+
 int NeventTool::EventsInDAS(const std::string& u_file)
 {
  int Events = 0;
  std::string filename = u_file;
  size_t pos = filename.find("/store/");
  if(pos != std::string::npos) filename = filename.substr(pos); // remove everything before root redirector for DAS query
- TString das_output = gSystem->GetFromPipe(("dasgoclient -query=\"file ="+filename+"\" -json").c_str());
+ TString das_output = gSystem->GetFromPipe(("dasgoclient -query=\"file="+filename+"\" -json").c_str());
  if(das_output.First("nevents"))
  {
   string events_string = get_str_between_two_str(das_output.Data(),"nevents\":",",");

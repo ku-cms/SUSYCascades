@@ -102,6 +102,28 @@ class EventCount:
         Nevent = self.countTotalEvents(file)
         return NDAS == Nevent
 
+    def getDASDatasetNames(self, u_file):
+        file = ROOT.TFile(u_file, "READ")
+        tree = file.Get("EventCount")
+        dataset_dict = {}
+        for entry in tree:
+            key = f"{entry.dataset}_{entry.filetag}"
+            das_name = entry.DAS_datasetname
+            if key not in dataset_dict:
+                dataset_dict[key] = set()
+            dataset_dict[key].add(das_name)
+        # Convert sets to lists
+        dataset_dict = {k: list(v) for k, v in dataset_dict.items()}
+        return dataset_dict
+
+    def getEventsFromDASDatasetNames(self, u_file):
+        events = 0
+        dataset_dict = self.getDASDatasetNames(u_file)
+        for key, das_list in dataset_mapping.items():
+            for das_name in das_list:
+                events += self.EventsInDASDataset(das_name)
+        return events
+
     # Gets events directly from DAS (slow)
     def EventsInDASFile(self, u_file):
         """Get the number of events in DAS for the given file."""

@@ -191,6 +191,7 @@ int main(int argc, char* argv[]) {
     cout << "   Added file " << filenames[i] << endl;
   }
   if(NDAS == 0) return 1; // will try to resubmit job
+  std::string DAS_datasetname = eventTool.Get_DASdatasetname(filenames[0]);
 
   using NtupleVariant = std::variant<std::unique_ptr<ReducedNtuple<SUSYNANOBase>>, std::unique_ptr<ReducedNtuple<NANOULBase>>, std::unique_ptr<ReducedNtuple<NANORun3>>>;
   NtupleVariant ntuple;
@@ -244,7 +245,7 @@ int main(int argc, char* argv[]) {
     std::visit([](auto& nt) { nt->DoFastSim(); }, ntuple);
 
   cout << "writing output with ichunk=" << ICHUNK << " nchunk=" << NCHUNK << endl;
-  bool passedDASCheck = std::visit([&](auto& nt) -> bool { return nt->WriteNtuple(string(outputFileName), ICHUNK, NCHUNK, DO_slim, NDAS); }, ntuple);
+  bool passedDASCheck = std::visit([&](auto& nt) -> bool { return nt->WriteNtuple(string(outputFileName), ICHUNK, NCHUNK, DO_slim, NDAS, string(DAS_datasetname)); }, ntuple);
   if(!passedDASCheck){
     std::cout << "JOB FAILED DAS CHECK!" << std::endl;
     return 1;

@@ -236,6 +236,7 @@ int main(int argc, char* argv[]) {
   NeventTool eventTool;
   for(int i = 0; i < Nfile; i++)
     NDAS += eventTool.EventsInDAS(filenames[i]);
+  std::string DAS_datasetname = eventTool.Get_DASdatasetname(filenames[0]);
   if(NDAS == 0) return 1; // will try to resubmit job
 
   TFile* fout = new TFile(string(outputFileName).c_str(),"RECREATE");
@@ -246,6 +247,7 @@ int main(int argc, char* argv[]) {
   tout->Branch("Nweight", &Nweight);
   tout->Branch("filetag", &filetag);
   tout->Branch("dataset", &dataset);
+  tout->Branch("DAS_datasetname", &DAS_datasetname);
   tout->Branch("MP", &MP);
   tout->Branch("MC", &MC);
   if(DO_SMS){

@@ -30,6 +30,7 @@ public:
 
   bool DatasetIsFastSim(const std::string& infile);
   int EventsInDAS(const std::string& u_file = "");
+  std::string Get_DASdatasetname(const std::string& u_file);
 
 private:
   static std::map<std::pair<std::string,std::string>,double> m_Label2Nevent_BKG;

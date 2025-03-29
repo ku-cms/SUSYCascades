@@ -101,6 +101,32 @@ def eventCountCheck(directory):
                     else: failed_nums.append((int(file.split("_")[-2]), int(file.split("_")[-1])))
     return failed_nums
 
+def ReadFilterList(filterlist_filename):
+    try:
+        with open(filterlist_filename, 'r') as filterlist:
+            filterlist = [line.strip() for line in filterlist if line.strip()]
+            if filterlist:
+                return filterlist
+            else:
+                return None
+    except FileNotFoundError:
+        return []  # Return an empty list if the file doesn't exist
+
+def UpdateFilterList(DataSetName, filterlist_filename, add):
+# add == True means add to list, False means remove if in list
+    try:
+        with open(filterlist_filename,'r') as filterlist:
+            dataset_list = {line.strip() for line in filterlist}
+    except FileNotFoundError:
+        dataset_list = set()  # If file doesn't exist, start with an empty set
+    if add:
+        dataset_list.add(DataSetName)  # Add dataset if not already present
+    else:
+        dataset_list.discard(DataSetName)  # Remove dataset if present
+    # Write updated list back to the file
+    with open(filterlist_filename, 'w') as filterlist:
+        filterlist.write("\n".join(sorted(dataset_list)) + "\n")  # Sort for consistency
+
 # Check condor jobs
 def checkJobs(workingDir,outputDir,skipEC,skipDAS,skipMissing,skipSmall,skipErr,skipOut,skipZombie,resubmit,maxResub,filter_list):
     print("Running over the directory '{0}'.".format(workingDir))
@@ -142,8 +168,10 @@ def checkJobs(workingDir,outputDir,skipEC,skipDAS,skipMissing,skipSmall,skipErr,
             if NDAS != NDAS_true:
                 comp_percent = 100.*math.floor(NDAS/NDAS_true * 1000) / 1000
                 print(f'{DataSetName} failed the DAS check! ({comp_percent}%) Use other options to investigate')
+                UpdateFilterList(DataSetName, f"{workingDir}/CheckFiles_FilterList.txt", True)
             else:
                 print(f'{DataSetName} passed the DAS check!')
+                UpdateFilterList(DataSetName, f"{workingDir}/CheckFiles_FilterList.txt", False)
                 continue # no need to do any more checks if passed DAS check
         if(not skipMissing):
             with open(workingDir+"/src/"+DataSetName+".submit") as file:
@@ -228,6 +256,7 @@ def checkJobs(workingDir,outputDir,skipEC,skipDAS,skipMissing,skipSmall,skipErr,
             for zombFile in zombFiles:
                 if testRootFile(zombFile) is True:
                     continue
+                os.remove(zombFile)
                 zombFile = zombFile.split(".root")[0]
                 Tuple = None
                 if DO_EVENTCOUNT: Tuple = int(zombFile.split("_")[-1])
@@ -247,8 +276,9 @@ def main():
     # options
     parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("--eventCount",           action='store_true', help="for checking event count jobs")
-    parser.add_argument("--directory",      "-d", default="Summer22_130X/", help="working directory for condor submission")
-    parser.add_argument("--output",         "-o", default="/ospool/cms-user/"+USER+"/NTUPLES/Processing/Summer22_130X/", help="output area for root files")
+    parser.add_argument("--directory",      "-d", default=None, help="working directory for condor submission (ex: Summer23BPix_130X)")
+    parser.add_argument("--output",         "-o", default="/ospool/cms-user/"+USER+"/NTUPLES/Processing/Summer23BPix_130X/", help="output area for root files")
+    parser.add_argument("--checkAll",       "-a", action='store_true', help="explicitly check all datasets in working directory (overwrite past checks)")
     parser.add_argument("--skipResubmit",   "-r", action='store_false', help="do not resubmit files")
     parser.add_argument("--skipEC",         "-c", action='store_true', help="skip checking event count tree")
     parser.add_argument("--skipDAS",        "-w", action='store_true', help="skip checking compared to central DAS")
@@ -264,6 +294,7 @@ def main():
     DO_EVENTCOUNT  = options.eventCount
     directory      = options.directory	
     output         = options.output
+    checkAll       = options.checkAll
     resubmit       = options.skipResubmit
     skipEC         = options.skipEC
     skipDAS        = options.skipDAS
@@ -274,15 +305,39 @@ def main():
     skipZombie     = options.skipZombie
     maxResub       = int(options.maxResub)
 
-    filter_list = [ # list of name of samples to explicitly check (empty list will check all)
-        #"WZ_TuneCP5_13p6TeV_pythia8",
-    ]
+    if directory is None:
+        # quick strictly das check from root file (useful for final hadd test)
+        event_count = EventCount()
+        for filename in os.listdir(directory):
+            full_path = os.path.join(directory, filename)
+            if filename.endswith(".root") and os.path.isfile(full_path):
+                totalEvents = event_count.countTotalEvents(full_path)
+                DAS_events = getEventsFromDASDatasetNames(full_path)
+                if totalEvents != DAS_events:
+                    comp_percent = 100.*math.floor(totalEvents/DAS_events * 1000) / 1000
+                    print(f'{full_path} failed the DAS check! ({comp_percent}%) Use other options to investigate')
+                else:
+                    print(f'{full_path} passed the DAS check!')
 
-    time.sleep(1)
-    condor_monitor = CondorJobCountMonitor(threshold=1,verbose=False)
-    condor_monitor.wait_until_jobs_below()
-    nJobs = checkJobs(directory,output,skipEC,skipDAS,skipMissing,skipSmall,skipErr,skipOut,skipZombie,resubmit,maxResub,filter_list)
-    print(f"Resubmitted a total of {nJobs} job(s)!")
+    else:
+        # default checking that's robust
+        filter_list = [ # list of name of samples to explicitly check (empty list will check all)
+            #"WZ_TuneCP5_13p6TeV_pythia8",
+        ]
+        fileFilterList = ReadFilterList(f"{directory}/CheckFiles_FilterList.txt")
+        if fileFilterList is not None: filter_list.extend(fileFilterList)
+        else:
+            print("All datasets have already passed DAS check!")
+            print("Rerun with -a if you would like to explicitly check again...")
+            return
+        if checkAll: filter_list.clear()
+
+        time.sleep(1)
+        threshold = 100
+        condor_monitor = CondorJobCountMonitor(threshold=threshold,verbose=False)
+        condor_monitor.wait_until_jobs_below()
+        nJobs = checkJobs(directory,output,skipEC,skipDAS,skipMissing,skipSmall,skipErr,skipOut,skipZombie,resubmit,maxResub,filter_list)
+        print(f"Resubmitted a total of {nJobs} job(s)!")
 
 if __name__ == "__main__":
     main()
