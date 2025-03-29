@@ -979,14 +979,18 @@ double AnalysisBase<Base>::GetEventWeight(){
   if(m_IndexToNweight[m_SampleIndex] > 0.){
     if constexpr (std::is_member_object_pointer<decltype(&Base::genWeight)>::value && 
                   std::is_member_object_pointer<decltype(&Base::luminosityBlock)>::value){
-      //cout << "genWeight " << this->genWeight << endl;
-      //cout << "Xsec " << m_IndexToXsec[m_SampleIndex] << endl;
-      //cout << "Nweight " << m_IndexToNweight[m_SampleIndex] << endl;
-      //cout << "Filter eff " << m_NeventTool.GetFilterEff(m_DataSet,m_FileTag,this->luminosityBlock) << endl;
-      if(!m_DoSMS)
-        return this->genWeight*m_IndexToXsec[m_SampleIndex]/m_IndexToNweight[m_SampleIndex];
+      double weight = this->genWeight*m_IndexToXsec[m_SampleIndex]/m_IndexToNweight[m_SampleIndex];
+      if(m_DoSMS)
+        weight *= m_NeventTool.GetFilterEff(m_DataSet,m_FileTag,this->luminosityBlock);
+      if(weight == 0. || weight == 1.){
+        cout << "genWeight " << this->genWeight << endl;
+        cout << "Xsec " << m_IndexToXsec[m_SampleIndex] << endl;
+        cout << "Nweight " << m_IndexToNweight[m_SampleIndex] << endl;
+        if(m_DoSMS)
+          cout << "Filter eff " << m_NeventTool.GetFilterEff(m_DataSet,m_FileTag,this->luminosityBlock) << endl;
+      }
+      return weight;
 
-      return this->genWeight*m_IndexToXsec[m_SampleIndex]/m_IndexToNweight[m_SampleIndex]*m_NeventTool.GetFilterEff(m_DataSet,m_FileTag,this->luminosityBlock);
   } } else return 0.;
 }
 
@@ -5023,7 +5027,7 @@ ParticleList AnalysisBase<NANORun3>::GetElectrons(){
   int N = nElectron;
   for(int i = 0; i < N; i++){
     // baseline lepton definition
-    if(Electron_pt[i] < 5. || fabs(Electron_eta[i]) > 2.5)
+    if(Electron_pt[i] < 8. || fabs(Electron_eta[i]) > 2.5)
       continue;
     if(fabs(Electron_dxy[i]) >= 0.05 || fabs(Electron_dz[i]) >= 0.1 ||
        Electron_sip3d[i] >= 8)
@@ -5075,13 +5079,13 @@ ParticleList AnalysisBase<NANORun3>::GetLowPtElectrons(){
   int N1 = nLowPtElectron;
   for(int i = 0; i < N1; i++){
     // baseline lepton definition
-    if(LowPtElectron_pt[i] < 1. || LowPtElectron_pt[i] >= 5. || fabs(LowPtElectron_eta[i]) > 2.5)
+    if(LowPtElectron_pt[i] < 2. || LowPtElectron_pt[i] >= 8. || fabs(LowPtElectron_eta[i]) > 2.5)
       continue;
     if(LowPtElectron_convVeto[i] == 0)
       continue;
     if(fabs(LowPtElectron_dxy[i]) >= 0.05 || fabs(LowPtElectron_dz[i]) >= 0.1)
       continue;
-    if(LowPtElectron_ID[i] < 1.8) // need to tune after feedback from Brady
+    if(LowPtElectron_ID[i] < 1.)
       continue;
     
     if(LowPtElectron_dxyErr[i] < 1.e-8 || LowPtElectron_dzErr[i] < 1.e-8)
@@ -5094,15 +5098,14 @@ ParticleList AnalysisBase<NANORun3>::GetLowPtElectrons(){
     float dz        = LowPtElectron_dz[i];
     float dxy_err   = LowPtElectron_dxyErr[i];
     float dz_err    = LowPtElectron_dzErr[i];
-    // the SIP_3D defined below is coming from Suyash's talk, its something we defined. The sigmas are needed for that
-    // calculation.
+    // the SIP_3D defined below is coming from Suyash's talk, its something we defined.
+    // The sigmas are needed for that calculation.
     float sigma_xy  = dxy/dxy_err;
     float sigma_z   = dz/dz_err;
     float IP_3D     = sqrt(dxy*dxy + dz*dz);
     float SIP_3D    = sqrt(sigma_xy*sigma_xy + sigma_z*sigma_z);
 
-    // TODO: Review and tune SIP_3D cut.
-    if (SIP_3D >= 2)
+    if (SIP_3D > 8.)
       continue;
 
     if(LowPtElectron_miniPFRelIso_all[i]*LowPtElectron_pt[i] >= 20. + 300./LowPtElectron_pt[i])
@@ -5124,12 +5127,20 @@ ParticleList AnalysisBase<NANORun3>::GetLowPtElectrons(){
 
     lep.SetRelIso(LowPtElectron_miniPFRelIso_all[i]);
     lep.SetMiniIso(LowPtElectron_miniPFRelIso_all[i]);
-    lep.SetParticleID(kMedium);
+    lep.SetParticleID(kVeryLoose); // need to set to something for later on
     
-    //if (LowPtElectron_pt[i] < 3.0 || (LowPtElectron_pt[i] >= 3.0 && LowPtElectron_embeddedID[i] >=6))
-    //  lep.SetParticleID(kTight);
-    if (LowPtElectron_pt[i] < 3.0 || (LowPtElectron_pt[i] >= 3.0 && LowPtElectron_ID[i] >=1.4)) // need to tune after feedback from Brady
-      lep.SetParticleID(kTight);
+    if(LowPtElectron_lostHits[i] == 0){
+      if(  lep.MiniIso()*lep.Pt() >= 4.
+        || lep.RelIso()*lep.Pt() >= 4.
+        || LowPtElectron_ID[i] < 2.2 // TBD
+      )
+        lep.SetLepQual(kBronze);
+      else if(lep.SIP3D() > 2.)
+        lep.SetLepQual(kSilver);
+      else
+        lep.SetLepQual(kGold);
+      list.push_back(lep);
+    } // if(Electron_lostHits[i] == 0)
  
     list.push_back(lep);
   }

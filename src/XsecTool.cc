@@ -561,11 +561,18 @@ std::map<std::string,int> XsecTool::InitMap_N_SMS(){
   N_SMS["GluinoGluino"] = 499;
 
   // Run3
-  N_SMS["Cascade_SlepSlep_left_Run3"] = 1;
-  N_SMS["Cascade_SlepSlep_right_Run3"] = 1;
-  N_SMS["Cascade_SlepSnu_left_plus_Run3"] = 1;
-  N_SMS["Cascade_SlepSnu_left_minus_Run3"] = 1;
-  N_SMS["Cascade_SnuSnu_left_Run3"] = 1;
+  N_SMS["Cascade_SlepSlep_left_plus_Run3"] = 22;
+  N_SMS["Cascade_SlepSlep_left_minus_Run3"] = 22;
+  N_SMS["Cascade_SlepSlep_right_plus_Run3"] = 22;
+  N_SMS["Cascade_SlepSlep_right_minus_Run3"] = 22;
+  N_SMS["Cascade_SlepSnu_left_plus_Run3"] = 48;
+  N_SMS["Cascade_SlepSnu_left_minus_Run3"] = 48;
+  N_SMS["Cascade_SlepSnu_right_plus_Run3"] = 48;
+  N_SMS["Cascade_SlepSnu_right_minus_Run3"] = 48;
+  N_SMS["Cascade_SnuSnu_left_plus_Run3"] = 48;
+  N_SMS["Cascade_SnuSnu_left_minus_Run3"] = 48;
+  N_SMS["Cascade_SnuSnu_right_plus_Run3"] = 48;
+  N_SMS["Cascade_SnuSnu_right_minus_Run3"] = 48;
   
   return N_SMS;
 }
@@ -1896,31 +1903,33 @@ std::map<std::string,std::vector<double> > XsecTool::InitMap_Mass_SMS(){
   
   // https://twiki.cern.ch/twiki/bin/view/LHCPhysics/SUSYCrossSections13x6TeVslepslep
   // https://twiki.cern.ch/twiki/bin/view/LHCPhysics/SUSYCrossSections13x6TeVsneutrino
-  Label2Mass["Cascade_SlepSlep_left_Run3"] = std::vector<double>();
-  Label2Mass["Cascade_SlepSlep_left_Run3"].push_back(50);
-  Label2Mass["Cascade_SlepSlep_left_Run3"].push_back(75);
-  Label2Mass["Cascade_SlepSlep_left_Run3"].push_back(80);
-  Label2Mass["Cascade_SlepSlep_left_Run3"].push_back(100);
-  Label2Mass["Cascade_SlepSlep_left_Run3"].push_back(150);
-  Label2Mass["Cascade_SlepSlep_left_Run3"].push_back(200);
-  Label2Mass["Cascade_SlepSlep_left_Run3"].push_back(250);
-  Label2Mass["Cascade_SlepSlep_left_Run3"].push_back(300);
-  Label2Mass["Cascade_SlepSlep_left_Run3"].push_back(350);
-  Label2Mass["Cascade_SlepSlep_left_Run3"].push_back(400);
-  Label2Mass["Cascade_SlepSlep_left_Run3"].push_back(450);
-  Label2Mass["Cascade_SlepSlep_left_Run3"].push_back(500);
-  Label2Mass["Cascade_SlepSlep_left_Run3"].push_back(550);
-  Label2Mass["Cascade_SlepSlep_left_Run3"].push_back(600);
-  Label2Mass["Cascade_SlepSlep_left_Run3"].push_back(650);
-  Label2Mass["Cascade_SlepSlep_left_Run3"].push_back(700);
-  Label2Mass["Cascade_SlepSlep_left_Run3"].push_back(750);
-  Label2Mass["Cascade_SlepSlep_left_Run3"].push_back(800);
-  Label2Mass["Cascade_SlepSlep_left_Run3"].push_back(850);
-  Label2Mass["Cascade_SlepSlep_left_Run3"].push_back(900);
-  Label2Mass["Cascade_SlepSlep_left_Run3"].push_back(950);
-  Label2Mass["Cascade_SlepSlep_left_Run3"].push_back(1000);
+  Label2Mass["Cascade_SlepSlep_left_minus_Run3"] = std::vector<double>();
+  Label2Mass["Cascade_SlepSlep_left_minus_Run3"].push_back(50);
+  Label2Mass["Cascade_SlepSlep_left_minus_Run3"].push_back(75);
+  Label2Mass["Cascade_SlepSlep_left_minus_Run3"].push_back(80);
+  Label2Mass["Cascade_SlepSlep_left_minus_Run3"].push_back(100);
+  Label2Mass["Cascade_SlepSlep_left_minus_Run3"].push_back(150);
+  Label2Mass["Cascade_SlepSlep_left_minus_Run3"].push_back(200);
+  Label2Mass["Cascade_SlepSlep_left_minus_Run3"].push_back(250);
+  Label2Mass["Cascade_SlepSlep_left_minus_Run3"].push_back(300);
+  Label2Mass["Cascade_SlepSlep_left_minus_Run3"].push_back(350);
+  Label2Mass["Cascade_SlepSlep_left_minus_Run3"].push_back(400);
+  Label2Mass["Cascade_SlepSlep_left_minus_Run3"].push_back(450);
+  Label2Mass["Cascade_SlepSlep_left_minus_Run3"].push_back(500);
+  Label2Mass["Cascade_SlepSlep_left_minus_Run3"].push_back(550);
+  Label2Mass["Cascade_SlepSlep_left_minus_Run3"].push_back(600);
+  Label2Mass["Cascade_SlepSlep_left_minus_Run3"].push_back(650);
+  Label2Mass["Cascade_SlepSlep_left_minus_Run3"].push_back(700);
+  Label2Mass["Cascade_SlepSlep_left_minus_Run3"].push_back(750);
+  Label2Mass["Cascade_SlepSlep_left_minus_Run3"].push_back(800);
+  Label2Mass["Cascade_SlepSlep_left_minus_Run3"].push_back(850);
+  Label2Mass["Cascade_SlepSlep_left_minus_Run3"].push_back(900);
+  Label2Mass["Cascade_SlepSlep_left_minus_Run3"].push_back(950);
+  Label2Mass["Cascade_SlepSlep_left_minus_Run3"].push_back(1000);
 
-  Label2Mass["Cascade_SlepSlep_right_Run3"] = Label2Mass["Cascade_SlepSlep_left_Run3"];
+  Label2Mass["Cascade_SlepSlep_left_plus_Run3"] = Label2Mass["Cascade_SlepSlep_left_minus_Run3"];
+  Label2Mass["Cascade_SlepSlep_right_plus_Run3"] = Label2Mass["Cascade_SlepSlep_left_minus_Run3"];
+  Label2Mass["Cascade_SlepSlep_right_minus_Run3"] = Label2Mass["Cascade_SlepSlep_left_minus_Run3"];
 
   Label2Mass["Cascade_SlepSnu_left_plus_Run3"] = std::vector<double>();
   Label2Mass["Cascade_SlepSnu_left_plus_Run3"].push_back(50.0);
@@ -1974,8 +1983,18 @@ std::map<std::string,std::vector<double> > XsecTool::InitMap_Mass_SMS(){
 
   Label2Mass["Cascade_SlepSnu_left_minus_Run3"] = Label2Mass["Cascade_SlepSnu_left_plus_Run3"];
 
-  Label2Mass["Cascade_SnuSnu_left_Run3"] = Label2Mass["Cascade_SlepSnu_left_plus_Run3"];
+  Label2Mass["Cascade_SlepSnu_right_plus_Run3"] = Label2Mass["Cascade_SlepSnu_left_plus_Run3"];
   
+  Label2Mass["Cascade_SlepSnu_right_minus_Run3"] = Label2Mass["Cascade_SlepSnu_left_plus_Run3"];
+
+  Label2Mass["Cascade_SnuSnu_left_plus_Run3"] = Label2Mass["Cascade_SlepSnu_left_plus_Run3"];
+
+  Label2Mass["Cascade_SnuSnu_left_minus_Run3"] = Label2Mass["Cascade_SlepSnu_left_plus_Run3"];
+
+  Label2Mass["Cascade_SnuSnu_right_plus_Run3"] = Label2Mass["Cascade_SlepSnu_left_plus_Run3"];
+
+  Label2Mass["Cascade_SnuSnu_right_minus_Run3"] = Label2Mass["Cascade_SlepSnu_left_plus_Run3"];
+
   return Label2Mass;
 }
 
@@ -3588,55 +3607,57 @@ std::map<std::string,std::vector<double> > XsecTool::InitMap_Xsec_SMS(){
   Label2Xsec["GluinoGluino"].push_back(1000.*0.628E-05);
   Label2Xsec["GluinoGluino"].push_back(1000.*0.612E-05);
 
-// Need to add Cascade Xsec HERE
-  Label2Xsec["Cascade_SlepSlep_left_Run3"] = std::vector<double>();
-  Label2Xsec["Cascade_SlepSlep_left_Run3"].push_back(4521);
-  Label2Xsec["Cascade_SlepSlep_left_Run3"].push_back(837.7);
-  Label2Xsec["Cascade_SlepSlep_left_Run3"].push_back(663.4);
-  Label2Xsec["Cascade_SlepSlep_left_Run3"].push_back(300.2);
-  Label2Xsec["Cascade_SlepSlep_left_Run3"].push_back(70.77);
-  Label2Xsec["Cascade_SlepSlep_left_Run3"].push_back(24.51);
-  Label2Xsec["Cascade_SlepSlep_left_Run3"].push_back(10.43);
-  Label2Xsec["Cascade_SlepSlep_left_Run3"].push_back(5.053);
-  Label2Xsec["Cascade_SlepSlep_left_Run3"].push_back(2.673);
-  Label2Xsec["Cascade_SlepSlep_left_Run3"].push_back(1.509);
-  Label2Xsec["Cascade_SlepSlep_left_Run3"].push_back(0.8942);
-  Label2Xsec["Cascade_SlepSlep_left_Run3"].push_back(0.551);
-  Label2Xsec["Cascade_SlepSlep_left_Run3"].push_back(0.3502);
-  Label2Xsec["Cascade_SlepSlep_left_Run3"].push_back(0.2285);
-  Label2Xsec["Cascade_SlepSlep_left_Run3"].push_back(0.1523);
-  Label2Xsec["Cascade_SlepSlep_left_Run3"].push_back(0.1034);
-  Label2Xsec["Cascade_SlepSlep_left_Run3"].push_back(0.07129);
-  Label2Xsec["Cascade_SlepSlep_left_Run3"].push_back(0.04985);
-  Label2Xsec["Cascade_SlepSlep_left_Run3"].push_back(0.03528);
-  Label2Xsec["Cascade_SlepSlep_left_Run3"].push_back(0.02523);
-  Label2Xsec["Cascade_SlepSlep_left_Run3"].push_back(0.01823);
-  Label2Xsec["Cascade_SlepSlep_left_Run3"].push_back(0.01328);
-  
-  Label2Xsec["Cascade_SlepSlep_right_Run3"] = std::vector<double>();
-  Label2Xsec["Cascade_SlepSlep_right_Run3"].push_back(1516);
-  Label2Xsec["Cascade_SlepSlep_right_Run3"].push_back(288);
-  Label2Xsec["Cascade_SlepSlep_right_Run3"].push_back(230.1);
-  Label2Xsec["Cascade_SlepSlep_right_Run3"].push_back(106.9);
-  Label2Xsec["Cascade_SlepSlep_right_Run3"].push_back(26.02);
-  Label2Xsec["Cascade_SlepSlep_right_Run3"].push_back(9.145);
-  Label2Xsec["Cascade_SlepSlep_right_Run3"].push_back(3.929);
-  Label2Xsec["Cascade_SlepSlep_right_Run3"].push_back(1.915);
-  Label2Xsec["Cascade_SlepSlep_right_Run3"].push_back(1.018);
-  Label2Xsec["Cascade_SlepSlep_right_Run3"].push_back(0.5768);
-  Label2Xsec["Cascade_SlepSlep_right_Run3"].push_back(0.3432);
-  Label2Xsec["Cascade_SlepSlep_right_Run3"].push_back(0.2121);
-  Label2Xsec["Cascade_SlepSlep_right_Run3"].push_back(0.1352);
-  Label2Xsec["Cascade_SlepSlep_right_Run3"].push_back(0.08842);
-  Label2Xsec["Cascade_SlepSlep_right_Run3"].push_back(0.05908);
-  Label2Xsec["Cascade_SlepSlep_right_Run3"].push_back(0.04021);
-  Label2Xsec["Cascade_SlepSlep_right_Run3"].push_back(0.0278);
-  Label2Xsec["Cascade_SlepSlep_right_Run3"].push_back(0.01949);
-  Label2Xsec["Cascade_SlepSlep_right_Run3"].push_back(0.01382);
-  Label2Xsec["Cascade_SlepSlep_right_Run3"].push_back(0.009911);
-  Label2Xsec["Cascade_SlepSlep_right_Run3"].push_back(0.007176);
-  Label2Xsec["Cascade_SlepSlep_right_Run3"].push_back(0.005242);
+  Label2Xsec["Cascade_SlepSlep_left_minus_Run3"] = std::vector<double>();
+  Label2Xsec["Cascade_SlepSlep_left_minus_Run3"].push_back(4521);
+  Label2Xsec["Cascade_SlepSlep_left_minus_Run3"].push_back(837.7);
+  Label2Xsec["Cascade_SlepSlep_left_minus_Run3"].push_back(663.4);
+  Label2Xsec["Cascade_SlepSlep_left_minus_Run3"].push_back(300.2);
+  Label2Xsec["Cascade_SlepSlep_left_minus_Run3"].push_back(70.77);
+  Label2Xsec["Cascade_SlepSlep_left_minus_Run3"].push_back(24.51);
+  Label2Xsec["Cascade_SlepSlep_left_minus_Run3"].push_back(10.43);
+  Label2Xsec["Cascade_SlepSlep_left_minus_Run3"].push_back(5.053);
+  Label2Xsec["Cascade_SlepSlep_left_minus_Run3"].push_back(2.673);
+  Label2Xsec["Cascade_SlepSlep_left_minus_Run3"].push_back(1.509);
+  Label2Xsec["Cascade_SlepSlep_left_minus_Run3"].push_back(0.8942);
+  Label2Xsec["Cascade_SlepSlep_left_minus_Run3"].push_back(0.551);
+  Label2Xsec["Cascade_SlepSlep_left_minus_Run3"].push_back(0.3502);
+  Label2Xsec["Cascade_SlepSlep_left_minus_Run3"].push_back(0.2285);
+  Label2Xsec["Cascade_SlepSlep_left_minus_Run3"].push_back(0.1523);
+  Label2Xsec["Cascade_SlepSlep_left_minus_Run3"].push_back(0.1034);
+  Label2Xsec["Cascade_SlepSlep_left_minus_Run3"].push_back(0.07129);
+  Label2Xsec["Cascade_SlepSlep_left_minus_Run3"].push_back(0.04985);
+  Label2Xsec["Cascade_SlepSlep_left_minus_Run3"].push_back(0.03528);
+  Label2Xsec["Cascade_SlepSlep_left_minus_Run3"].push_back(0.02523);
+  Label2Xsec["Cascade_SlepSlep_left_minus_Run3"].push_back(0.01823);
+  Label2Xsec["Cascade_SlepSlep_left_minus_Run3"].push_back(0.01328);
 
+  Label2Xsec["Cascade_SlepSlep_left_plus_Run3"] = Label2Xsec["Cascade_SlepSlep_left_minus_Run3"];
+  
+  Label2Xsec["Cascade_SlepSlep_right_minus_Run3"] = std::vector<double>();
+  Label2Xsec["Cascade_SlepSlep_right_minus_Run3"].push_back(1516);
+  Label2Xsec["Cascade_SlepSlep_right_minus_Run3"].push_back(288);
+  Label2Xsec["Cascade_SlepSlep_right_minus_Run3"].push_back(230.1);
+  Label2Xsec["Cascade_SlepSlep_right_minus_Run3"].push_back(106.9);
+  Label2Xsec["Cascade_SlepSlep_right_minus_Run3"].push_back(26.02);
+  Label2Xsec["Cascade_SlepSlep_right_minus_Run3"].push_back(9.145);
+  Label2Xsec["Cascade_SlepSlep_right_minus_Run3"].push_back(3.929);
+  Label2Xsec["Cascade_SlepSlep_right_minus_Run3"].push_back(1.915);
+  Label2Xsec["Cascade_SlepSlep_right_minus_Run3"].push_back(1.018);
+  Label2Xsec["Cascade_SlepSlep_right_minus_Run3"].push_back(0.5768);
+  Label2Xsec["Cascade_SlepSlep_right_minus_Run3"].push_back(0.3432);
+  Label2Xsec["Cascade_SlepSlep_right_minus_Run3"].push_back(0.2121);
+  Label2Xsec["Cascade_SlepSlep_right_minus_Run3"].push_back(0.1352);
+  Label2Xsec["Cascade_SlepSlep_right_minus_Run3"].push_back(0.08842);
+  Label2Xsec["Cascade_SlepSlep_right_minus_Run3"].push_back(0.05908);
+  Label2Xsec["Cascade_SlepSlep_right_minus_Run3"].push_back(0.04021);
+  Label2Xsec["Cascade_SlepSlep_right_minus_Run3"].push_back(0.0278);
+  Label2Xsec["Cascade_SlepSlep_right_minus_Run3"].push_back(0.01949);
+  Label2Xsec["Cascade_SlepSlep_right_minus_Run3"].push_back(0.01382);
+  Label2Xsec["Cascade_SlepSlep_right_minus_Run3"].push_back(0.009911);
+  Label2Xsec["Cascade_SlepSlep_right_minus_Run3"].push_back(0.007176);
+  Label2Xsec["Cascade_SlepSlep_right_minus_Run3"].push_back(0.005242);
+
+  Label2Xsec["Cascade_SlepSlep_right_plus_Run3"] = Label2Xsec["Cascade_SlepSlep_right_minus_Run3"];
 
   Label2Xsec["Cascade_SlepSnu_left_plus_Run3"] = std::vector<double>();
   Label2Xsec["Cascade_SlepSnu_left_plus_Run3"].push_back(1.40E+04);
@@ -3687,7 +3708,6 @@ std::map<std::string,std::vector<double> > XsecTool::InitMap_Xsec_SMS(){
   Label2Xsec["Cascade_SlepSnu_left_plus_Run3"].push_back(0.08165);
   Label2Xsec["Cascade_SlepSnu_left_plus_Run3"].push_back(0.05903);
   Label2Xsec["Cascade_SlepSnu_left_plus_Run3"].push_back(0.043);
-
 
   Label2Xsec["Cascade_SlepSnu_left_minus_Run3"] = std::vector<double>();
   Label2Xsec["Cascade_SlepSnu_left_minus_Run3"].push_back(9696);
@@ -3839,105 +3859,109 @@ std::map<std::string,std::vector<double> > XsecTool::InitMap_Xsec_SMS(){
   Label2Xsec["Cascade_SlepSnu_right_plus_Run3"].push_back(0.002353137);
   Label2Xsec["Cascade_SlepSnu_right_plus_Run3"].push_back(0.001658284);
 
-  Label2Xsec["Cascade_SnuSnu_left_Run3"] = std::vector<double>();
-  Label2Xsec["Cascade_SnuSnu_left_Run3"].push_back(7327);
-  Label2Xsec["Cascade_SnuSnu_left_Run3"].push_back(2571);
-  Label2Xsec["Cascade_SnuSnu_left_Run3"].push_back(1291);
-  Label2Xsec["Cascade_SnuSnu_left_Run3"].push_back(750.2);
-  Label2Xsec["Cascade_SnuSnu_left_Run3"].push_back(474.4);
-  Label2Xsec["Cascade_SnuSnu_left_Run3"].push_back(318);
-  Label2Xsec["Cascade_SnuSnu_left_Run3"].push_back(222.5);
-  Label2Xsec["Cascade_SnuSnu_left_Run3"].push_back(160.9);
-  Label2Xsec["Cascade_SnuSnu_left_Run3"].push_back(119.5);
-  Label2Xsec["Cascade_SnuSnu_left_Run3"].push_back(90.73);
-  Label2Xsec["Cascade_SnuSnu_left_Run3"].push_back(70.16);
-  Label2Xsec["Cascade_SnuSnu_left_Run3"].push_back(55.08);
-  Label2Xsec["Cascade_SnuSnu_left_Run3"].push_back(43.85);
-  Label2Xsec["Cascade_SnuSnu_left_Run3"].push_back(35.33);
-  Label2Xsec["Cascade_SnuSnu_left_Run3"].push_back(28.77);
-  Label2Xsec["Cascade_SnuSnu_left_Run3"].push_back(23.64);
-  Label2Xsec["Cascade_SnuSnu_left_Run3"].push_back(19.6);
-  Label2Xsec["Cascade_SnuSnu_left_Run3"].push_back(16.37);
-  Label2Xsec["Cascade_SnuSnu_left_Run3"].push_back(13.77);
-  Label2Xsec["Cascade_SnuSnu_left_Run3"].push_back(11.65);
-  Label2Xsec["Cascade_SnuSnu_left_Run3"].push_back(9.915);
-  Label2Xsec["Cascade_SnuSnu_left_Run3"].push_back(8.488);
-  Label2Xsec["Cascade_SnuSnu_left_Run3"].push_back(7.297);
-  Label2Xsec["Cascade_SnuSnu_left_Run3"].push_back(6.302);
-  Label2Xsec["Cascade_SnuSnu_left_Run3"].push_back(5.463);
-  Label2Xsec["Cascade_SnuSnu_left_Run3"].push_back(4.756);
-  Label2Xsec["Cascade_SnuSnu_left_Run3"].push_back(4.154);
-  Label2Xsec["Cascade_SnuSnu_left_Run3"].push_back(3.641);
-  Label2Xsec["Cascade_SnuSnu_left_Run3"].push_back(3.202);
-  Label2Xsec["Cascade_SnuSnu_left_Run3"].push_back(2.824);
-  Label2Xsec["Cascade_SnuSnu_left_Run3"].push_back(2.497);
-  Label2Xsec["Cascade_SnuSnu_left_Run3"].push_back(2.214);
-  Label2Xsec["Cascade_SnuSnu_left_Run3"].push_back(1.968);
-  Label2Xsec["Cascade_SnuSnu_left_Run3"].push_back(1.753);
-  Label2Xsec["Cascade_SnuSnu_left_Run3"].push_back(1.566);
-  Label2Xsec["Cascade_SnuSnu_left_Run3"].push_back(1.401);
-  Label2Xsec["Cascade_SnuSnu_left_Run3"].push_back(0.8261);
-  Label2Xsec["Cascade_SnuSnu_left_Run3"].push_back(0.5069);
-  Label2Xsec["Cascade_SnuSnu_left_Run3"].push_back(0.3209);
-  Label2Xsec["Cascade_SnuSnu_left_Run3"].push_back(0.2086);
-  Label2Xsec["Cascade_SnuSnu_left_Run3"].push_back(0.1386);
-  Label2Xsec["Cascade_SnuSnu_left_Run3"].push_back(0.09375);
-  Label2Xsec["Cascade_SnuSnu_left_Run3"].push_back(0.06445);
-  Label2Xsec["Cascade_SnuSnu_left_Run3"].push_back(0.04492);
-  Label2Xsec["Cascade_SnuSnu_left_Run3"].push_back(0.03168);
-  Label2Xsec["Cascade_SnuSnu_left_Run3"].push_back(0.02259);
-  Label2Xsec["Cascade_SnuSnu_left_Run3"].push_back(0.01627);
-  Label2Xsec["Cascade_SnuSnu_left_Run3"].push_back(0.01181);
+  Label2Xsec["Cascade_SnuSnu_left_minus_Run3"] = std::vector<double>();
+  Label2Xsec["Cascade_SnuSnu_left_minus_Run3"].push_back(7327);
+  Label2Xsec["Cascade_SnuSnu_left_minus_Run3"].push_back(2571);
+  Label2Xsec["Cascade_SnuSnu_left_minus_Run3"].push_back(1291);
+  Label2Xsec["Cascade_SnuSnu_left_minus_Run3"].push_back(750.2);
+  Label2Xsec["Cascade_SnuSnu_left_minus_Run3"].push_back(474.4);
+  Label2Xsec["Cascade_SnuSnu_left_minus_Run3"].push_back(318);
+  Label2Xsec["Cascade_SnuSnu_left_minus_Run3"].push_back(222.5);
+  Label2Xsec["Cascade_SnuSnu_left_minus_Run3"].push_back(160.9);
+  Label2Xsec["Cascade_SnuSnu_left_minus_Run3"].push_back(119.5);
+  Label2Xsec["Cascade_SnuSnu_left_minus_Run3"].push_back(90.73);
+  Label2Xsec["Cascade_SnuSnu_left_minus_Run3"].push_back(70.16);
+  Label2Xsec["Cascade_SnuSnu_left_minus_Run3"].push_back(55.08);
+  Label2Xsec["Cascade_SnuSnu_left_minus_Run3"].push_back(43.85);
+  Label2Xsec["Cascade_SnuSnu_left_minus_Run3"].push_back(35.33);
+  Label2Xsec["Cascade_SnuSnu_left_minus_Run3"].push_back(28.77);
+  Label2Xsec["Cascade_SnuSnu_left_minus_Run3"].push_back(23.64);
+  Label2Xsec["Cascade_SnuSnu_left_minus_Run3"].push_back(19.6);
+  Label2Xsec["Cascade_SnuSnu_left_minus_Run3"].push_back(16.37);
+  Label2Xsec["Cascade_SnuSnu_left_minus_Run3"].push_back(13.77);
+  Label2Xsec["Cascade_SnuSnu_left_minus_Run3"].push_back(11.65);
+  Label2Xsec["Cascade_SnuSnu_left_minus_Run3"].push_back(9.915);
+  Label2Xsec["Cascade_SnuSnu_left_minus_Run3"].push_back(8.488);
+  Label2Xsec["Cascade_SnuSnu_left_minus_Run3"].push_back(7.297);
+  Label2Xsec["Cascade_SnuSnu_left_minus_Run3"].push_back(6.302);
+  Label2Xsec["Cascade_SnuSnu_left_minus_Run3"].push_back(5.463);
+  Label2Xsec["Cascade_SnuSnu_left_minus_Run3"].push_back(4.756);
+  Label2Xsec["Cascade_SnuSnu_left_minus_Run3"].push_back(4.154);
+  Label2Xsec["Cascade_SnuSnu_left_minus_Run3"].push_back(3.641);
+  Label2Xsec["Cascade_SnuSnu_left_minus_Run3"].push_back(3.202);
+  Label2Xsec["Cascade_SnuSnu_left_minus_Run3"].push_back(2.824);
+  Label2Xsec["Cascade_SnuSnu_left_minus_Run3"].push_back(2.497);
+  Label2Xsec["Cascade_SnuSnu_left_minus_Run3"].push_back(2.214);
+  Label2Xsec["Cascade_SnuSnu_left_minus_Run3"].push_back(1.968);
+  Label2Xsec["Cascade_SnuSnu_left_minus_Run3"].push_back(1.753);
+  Label2Xsec["Cascade_SnuSnu_left_minus_Run3"].push_back(1.566);
+  Label2Xsec["Cascade_SnuSnu_left_minus_Run3"].push_back(1.401);
+  Label2Xsec["Cascade_SnuSnu_left_minus_Run3"].push_back(0.8261);
+  Label2Xsec["Cascade_SnuSnu_left_minus_Run3"].push_back(0.5069);
+  Label2Xsec["Cascade_SnuSnu_left_minus_Run3"].push_back(0.3209);
+  Label2Xsec["Cascade_SnuSnu_left_minus_Run3"].push_back(0.2086);
+  Label2Xsec["Cascade_SnuSnu_left_minus_Run3"].push_back(0.1386);
+  Label2Xsec["Cascade_SnuSnu_left_minus_Run3"].push_back(0.09375);
+  Label2Xsec["Cascade_SnuSnu_left_minus_Run3"].push_back(0.06445);
+  Label2Xsec["Cascade_SnuSnu_left_minus_Run3"].push_back(0.04492);
+  Label2Xsec["Cascade_SnuSnu_left_minus_Run3"].push_back(0.03168);
+  Label2Xsec["Cascade_SnuSnu_left_minus_Run3"].push_back(0.02259);
+  Label2Xsec["Cascade_SnuSnu_left_minus_Run3"].push_back(0.01627);
+  Label2Xsec["Cascade_SnuSnu_left_minus_Run3"].push_back(0.01181);
 
-  Label2Xsec["Cascade_SnuSnu_right_Run3"] = std::vector<double>(); // not in twikis
-  Label2Xsec["Cascade_SnuSnu_right_Run3"].push_back(2503.433862);
-  Label2Xsec["Cascade_SnuSnu_right_Run3"].push_back(887.1116576);
-  Label2Xsec["Cascade_SnuSnu_right_Run3"].push_back(449.1352361);
-  Label2Xsec["Cascade_SnuSnu_right_Run3"].push_back(262.8456931);
-  Label2Xsec["Cascade_SnuSnu_right_Run3"].push_back(167.2480496);
-  Label2Xsec["Cascade_SnuSnu_right_Run3"].push_back(112.7296162);
-  Label2Xsec["Cascade_SnuSnu_right_Run3"].push_back(79.26760231);
-  Label2Xsec["Cascade_SnuSnu_right_Run3"].push_back(57.5810573);
-  Label2Xsec["Cascade_SnuSnu_right_Run3"].push_back(42.94225179);
-  Label2Xsec["Cascade_SnuSnu_right_Run3"].push_back(32.72816051);
-  Label2Xsec["Cascade_SnuSnu_right_Run3"].push_back(25.39769219);
-  Label2Xsec["Cascade_SnuSnu_right_Run3"].push_back(20.00454461);
-  Label2Xsec["Cascade_SnuSnu_right_Run3"].push_back(15.97509309);
-  Label2Xsec["Cascade_SnuSnu_right_Run3"].push_back(12.90851156);
-  Label2Xsec["Cascade_SnuSnu_right_Run3"].push_back(10.54046333);
-  Label2Xsec["Cascade_SnuSnu_right_Run3"].push_back(8.683418117);
-  Label2Xsec["Cascade_SnuSnu_right_Run3"].push_back(7.217141191);
-  Label2Xsec["Cascade_SnuSnu_right_Run3"].push_back(6.041874134);
-  Label2Xsec["Cascade_SnuSnu_right_Run3"].push_back(5.093584514);
-  Label2Xsec["Cascade_SnuSnu_right_Run3"].push_back(4.318559704);
-  Label2Xsec["Cascade_SnuSnu_right_Run3"].push_back(3.682897273);
-  Label2Xsec["Cascade_SnuSnu_right_Run3"].push_back(3.159001115);
-  Label2Xsec["Cascade_SnuSnu_right_Run3"].push_back(2.720838273);
-  Label2Xsec["Cascade_SnuSnu_right_Run3"].push_back(2.354071815);
-  Label2Xsec["Cascade_SnuSnu_right_Run3"].push_back(2.04421525);
-  Label2Xsec["Cascade_SnuSnu_right_Run3"].push_back(1.782643805);
-  Label2Xsec["Cascade_SnuSnu_right_Run3"].push_back(1.559522044);
-  Label2Xsec["Cascade_SnuSnu_right_Run3"].push_back(1.36906675);
-  Label2Xsec["Cascade_SnuSnu_right_Run3"].push_back(1.205819452);
-  Label2Xsec["Cascade_SnuSnu_right_Run3"].push_back(1.065030635);
-  Label2Xsec["Cascade_SnuSnu_right_Run3"].push_back(0.943046393);
-  Label2Xsec["Cascade_SnuSnu_right_Run3"].push_back(0.837319135);
-  Label2Xsec["Cascade_SnuSnu_right_Run3"].push_back(0.745281217);
-  Label2Xsec["Cascade_SnuSnu_right_Run3"].push_back(0.664725624);
-  Label2Xsec["Cascade_SnuSnu_right_Run3"].push_back(0.594569037);
-  Label2Xsec["Cascade_SnuSnu_right_Run3"].push_back(0.532579074);
-  Label2Xsec["Cascade_SnuSnu_right_Run3"].push_back(0.315835444);
-  Label2Xsec["Cascade_SnuSnu_right_Run3"].push_back(0.19478659);
-  Label2Xsec["Cascade_SnuSnu_right_Run3"].push_back(0.123878146);
-  Label2Xsec["Cascade_SnuSnu_right_Run3"].push_back(0.080862371);
-  Label2Xsec["Cascade_SnuSnu_right_Run3"].push_back(0.053932585);
-  Label2Xsec["Cascade_SnuSnu_right_Run3"].push_back(0.036608905);
-  Label2Xsec["Cascade_SnuSnu_right_Run3"].push_back(0.025249664);
-  Label2Xsec["Cascade_SnuSnu_right_Run3"].push_back(0.017652002);
-  Label2Xsec["Cascade_SnuSnu_right_Run3"].push_back(0.012484672);
-  Label2Xsec["Cascade_SnuSnu_right_Run3"].push_back(0.00892631);
-  Label2Xsec["Cascade_SnuSnu_right_Run3"].push_back(0.006445272);
-  Label2Xsec["Cascade_SnuSnu_right_Run3"].push_back(0.004689674);
+  Label2Xsec["Cascade_SnuSnu_left_plus_Run3"] = Label2Xsec["Cascade_SnuSnu_left_minus_Run3"];
+
+  Label2Xsec["Cascade_SnuSnu_right_minus_Run3"] = std::vector<double>(); // not in twikis
+  Label2Xsec["Cascade_SnuSnu_right_minus_Run3"].push_back(2503.433862);
+  Label2Xsec["Cascade_SnuSnu_right_minus_Run3"].push_back(887.1116576);
+  Label2Xsec["Cascade_SnuSnu_right_minus_Run3"].push_back(449.1352361);
+  Label2Xsec["Cascade_SnuSnu_right_minus_Run3"].push_back(262.8456931);
+  Label2Xsec["Cascade_SnuSnu_right_minus_Run3"].push_back(167.2480496);
+  Label2Xsec["Cascade_SnuSnu_right_minus_Run3"].push_back(112.7296162);
+  Label2Xsec["Cascade_SnuSnu_right_minus_Run3"].push_back(79.26760231);
+  Label2Xsec["Cascade_SnuSnu_right_minus_Run3"].push_back(57.5810573);
+  Label2Xsec["Cascade_SnuSnu_right_minus_Run3"].push_back(42.94225179);
+  Label2Xsec["Cascade_SnuSnu_right_minus_Run3"].push_back(32.72816051);
+  Label2Xsec["Cascade_SnuSnu_right_minus_Run3"].push_back(25.39769219);
+  Label2Xsec["Cascade_SnuSnu_right_minus_Run3"].push_back(20.00454461);
+  Label2Xsec["Cascade_SnuSnu_right_minus_Run3"].push_back(15.97509309);
+  Label2Xsec["Cascade_SnuSnu_right_minus_Run3"].push_back(12.90851156);
+  Label2Xsec["Cascade_SnuSnu_right_minus_Run3"].push_back(10.54046333);
+  Label2Xsec["Cascade_SnuSnu_right_minus_Run3"].push_back(8.683418117);
+  Label2Xsec["Cascade_SnuSnu_right_minus_Run3"].push_back(7.217141191);
+  Label2Xsec["Cascade_SnuSnu_right_minus_Run3"].push_back(6.041874134);
+  Label2Xsec["Cascade_SnuSnu_right_minus_Run3"].push_back(5.093584514);
+  Label2Xsec["Cascade_SnuSnu_right_minus_Run3"].push_back(4.318559704);
+  Label2Xsec["Cascade_SnuSnu_right_minus_Run3"].push_back(3.682897273);
+  Label2Xsec["Cascade_SnuSnu_right_minus_Run3"].push_back(3.159001115);
+  Label2Xsec["Cascade_SnuSnu_right_minus_Run3"].push_back(2.720838273);
+  Label2Xsec["Cascade_SnuSnu_right_minus_Run3"].push_back(2.354071815);
+  Label2Xsec["Cascade_SnuSnu_right_minus_Run3"].push_back(2.04421525);
+  Label2Xsec["Cascade_SnuSnu_right_minus_Run3"].push_back(1.782643805);
+  Label2Xsec["Cascade_SnuSnu_right_minus_Run3"].push_back(1.559522044);
+  Label2Xsec["Cascade_SnuSnu_right_minus_Run3"].push_back(1.36906675);
+  Label2Xsec["Cascade_SnuSnu_right_minus_Run3"].push_back(1.205819452);
+  Label2Xsec["Cascade_SnuSnu_right_minus_Run3"].push_back(1.065030635);
+  Label2Xsec["Cascade_SnuSnu_right_minus_Run3"].push_back(0.943046393);
+  Label2Xsec["Cascade_SnuSnu_right_minus_Run3"].push_back(0.837319135);
+  Label2Xsec["Cascade_SnuSnu_right_minus_Run3"].push_back(0.745281217);
+  Label2Xsec["Cascade_SnuSnu_right_minus_Run3"].push_back(0.664725624);
+  Label2Xsec["Cascade_SnuSnu_right_minus_Run3"].push_back(0.594569037);
+  Label2Xsec["Cascade_SnuSnu_right_minus_Run3"].push_back(0.532579074);
+  Label2Xsec["Cascade_SnuSnu_right_minus_Run3"].push_back(0.315835444);
+  Label2Xsec["Cascade_SnuSnu_right_minus_Run3"].push_back(0.19478659);
+  Label2Xsec["Cascade_SnuSnu_right_minus_Run3"].push_back(0.123878146);
+  Label2Xsec["Cascade_SnuSnu_right_minus_Run3"].push_back(0.080862371);
+  Label2Xsec["Cascade_SnuSnu_right_minus_Run3"].push_back(0.053932585);
+  Label2Xsec["Cascade_SnuSnu_right_minus_Run3"].push_back(0.036608905);
+  Label2Xsec["Cascade_SnuSnu_right_minus_Run3"].push_back(0.025249664);
+  Label2Xsec["Cascade_SnuSnu_right_minus_Run3"].push_back(0.017652002);
+  Label2Xsec["Cascade_SnuSnu_right_minus_Run3"].push_back(0.012484672);
+  Label2Xsec["Cascade_SnuSnu_right_minus_Run3"].push_back(0.00892631);
+  Label2Xsec["Cascade_SnuSnu_right_minus_Run3"].push_back(0.006445272);
+  Label2Xsec["Cascade_SnuSnu_right_minus_Run3"].push_back(0.004689674);
+
+  Label2Xsec["Cascade_SnuSnu_right_plus_Run3"] = Label2Xsec["Cascade_SnuSnu_right_minus_Run3"];
    
   return Label2Xsec;
 }

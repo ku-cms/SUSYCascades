@@ -1056,7 +1056,7 @@ void ReducedNtuple<Base>::FillOutputTree(TTree* tree, const Systematic& sys, boo
 
   if(!AnalysisBase<Base>::IsData()){
     m_weight = AnalysisBase<Base>::GetEventWeight();
-    //cout << "Event Weight " << tree->GetName() << " " << m_weight << endl;
+    //if(m_weight == 0.) cout << "Event Weight " << tree->GetName() << " " << m_weight << endl;
     
     m_PUweight = AnalysisBase<Base>::GetPUWeight(0);
     m_PUweight_up = AnalysisBase<Base>::GetPUWeight(1);
