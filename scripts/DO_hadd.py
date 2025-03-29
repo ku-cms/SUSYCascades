@@ -4,9 +4,10 @@ from subprocess import Popen as pop
 import subprocess, psutil
 
 # Example submission:
-#    nohup python scripts/DO_hadd.py -idir ../../../NTUPLES/Processing/Summer16_102X/ -odir ../../../NTUPLES/HADD/Summer16_102X/ > HADD_logs/HADD_Summer16_102X.debug 2>&1 &
-# After hadd finishes and ready to copy to LPC:
-#    nohup xrdcp --parallel 4 -f ../../../NTUPLES/HADD/Summer16_102X/* root://cmseos.fnal.gov//store/user/lpcsusylep/NTUPLES_v1/Summer16_102X/ > xrdcp_Summer16_102X.debug 2>&1 &
+#    nohup python3 scripts/DO_hadd.py -idir /ospool/cms-user/zflowers/NTUPLES/Processing/Summer23BPix_130X/ -odir /local-scratch/zflowers/NTUPLES/HADD/Summer23BPix_130X/ > HADD_logs/HADD_Summer23BPix_130X.debug 2>&1 &
+
+# After hadd finishes and ready to copy to LPC example command:
+#    nohup xrdcp --parallel 4 -f /local-scratch/zflowers/NTUPLES/HADD/Summer23BPix_130X/*.root root://cmseos.fnal.gov//store/user/lpcsusylep/NTUPLES_Cascades_v0/Summer23BPix_130X/ > xrdcp_Summer23BPix_130X.debug 2>&1 &
 
 def find_hadd_procs():
     current_user = psutil.Process().username()
@@ -110,15 +111,15 @@ def main():
 
         print(f"Target: {target}")
         hadd_sml_processes = []
-        if os.path.exists("HADD_logs/"+target) is True:
-            os.system("rm -r HADD_logs/"+target)
-        os.system("mkdir -p HADD_logs/"+target)
+        if os.path.exists(f"HADD_logs/{target}"):
+            os.system(f"rm -r HADD_logs/{target}")
+        os.system(f"mkdir -p HADD_logs/{target}")
         os.system(f"mkdir -p {OUT_DIR}/{target}")
         for i in range(0,10):
             os.system("mkdir -p "+OUT_DIR+"/"+target+"/"+target+"_"+str(i))
             if not DRY_RUN and not SKIP_COPY:
-                for f in glob(os.path.join(IN_DIR+"/"+target+"/"+target+"_*"+str(i)+".root")):
-                    os.system("cp "+f+" "+OUT_DIR+"/"+target+"/"+target+"_"+str(i)+"/") 
+                for f in glob(os.path.join(IN_DIR, target, f"{target}_*{i}.root")):
+                    os.system(f"rsync -aq {f} {OUT_DIR}/{target}/{target}_{i}/")
             command = ["hadd", "-f", f"{OUT_DIR}/{target}/{target}_{str(i)}.root"] + glob(f"{OUT_DIR}/{target}/{target}_{str(i)}/*.root")
             if SKIP_BAD_FILES:
                 command.insert(2, "-k")
