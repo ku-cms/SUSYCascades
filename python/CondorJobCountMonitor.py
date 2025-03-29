@@ -31,7 +31,7 @@ class CondorJobCountMonitor:
                 if self.verbose: print(f"Job count ({total_jobs}) is below the threshold ({self.threshold}). Proceeding...")
                 break
             else:
-                if check_count % 10 == 0:
+                if check_count % 10 == 0 and self.verbose:
                     print(f"Current jobs: {total_jobs}. Waiting for jobs to drop below {self.threshold}...")
             check_count += 1
             time.sleep(5) # Wait before checking again
