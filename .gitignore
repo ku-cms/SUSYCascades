@@ -17,3 +17,5 @@ HADD_logs/
 .vscode/
 *.debug
 DASCheck_logs/
+*_dictUmbrella.h
+*_dictContent.h
