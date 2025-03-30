@@ -375,7 +375,7 @@ if __name__ == "__main__":
         JSON = "./config/GRL_JSON.txt"
 
         # copy xs json file
-        XSJSONFILENAME = 'info_XSDB_2025-03-21_12-21.json'
+        XSJSONFILENAME = 'info_XSDB_2025-03-30_08-33.json'
         if VERBOSE:
             print("making xs json file")
         os.system(f"xrdcp -s root://cmseos.fnal.gov//store/user/z374f439/XSectionJSONs/{XSJSONFILENAME} {config}/XS_jsonfile.json")
@@ -541,9 +541,6 @@ if __name__ == "__main__":
         #print "creating tarball from: ", TARGET
         os.system("sleep 10") # sleep so copy command(s) can catch up...
         os.system("tar -C "+config+"/../ -czf "+TARGET+"/config.tgz config")
-        # Why was this needed...???
-        # os.system("mkdir -p /ospool/cms-user/"+USER+"/"+NAME)
-        # os.system("cp "+TARGET+"/config.tgz /ospool/cms-user/"+USER+"/"+NAME+"/config.tgz")
         if VERBOSE:
             print("Created tar ball")
 

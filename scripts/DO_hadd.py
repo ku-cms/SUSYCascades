@@ -113,7 +113,6 @@ def main():
         hadd_sml_processes = []
         if os.path.exists(f"HADD_logs/{target}"):
             os.system(f"rm -r HADD_logs/{target}")
-        os.system(f"mkdir -p HADD_logs/{target}")
         os.system(f"mkdir -p {OUT_DIR}/{target}")
         for i in range(0,10):
             os.system("mkdir -p "+OUT_DIR+"/"+target+"/"+target+"_"+str(i))
@@ -135,6 +134,7 @@ def main():
                 if err.strip():  # Check if error message is non-empty
                     filtered_lines = [line for line in err.splitlines() if "TFile::Cp" not in line]
                     if filtered_lines:
+                        os.system(f"mkdir -p HADD_logs/{target}")
                         log_path = f"HADD_logs/{target}/{target}_{i}.err"
                         with open(log_path, "a") as err_log:
                             for line in filtered_lines:
