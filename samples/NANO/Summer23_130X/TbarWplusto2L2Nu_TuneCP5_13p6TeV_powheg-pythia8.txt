@@ -6,10 +6,10 @@ root://cmsxrootd.fnal.gov//store/mc/Run3Summer23NanoAODv12/TbarWplusto2L2Nu_Tune
 root://cmsxrootd.fnal.gov//store/mc/Run3Summer23NanoAODv12/TbarWplusto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/NANOAODSIM/130X_mcRun3_2023_realistic_v15-v4/50000/913d5951-64a2-4788-9e56-8199eb62546d.root
 root://cmsxrootd.fnal.gov//store/mc/Run3Summer23NanoAODv12/TbarWplusto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/NANOAODSIM/130X_mcRun3_2023_realistic_v15-v4/50000/e245ced1-7195-476a-98b5-6bd122b22dca.root
 root://cmsxrootd.fnal.gov//store/mc/Run3Summer23NanoAODv12/TbarWplusto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/NANOAODSIM/130X_mcRun3_2023_realistic_v15-v4/50000/60eb6c95-46ea-43c4-9780-a24ee9736797.root
+root://cmsxrootd.fnal.gov//store/mc/Run3Summer23NanoAODv12/TbarWplusto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/NANOAODSIM/130X_mcRun3_2023_realistic_v15-v4/50000/d6fe4bd5-a921-4fdf-a68a-387ec4a01299.root
 root://cmsxrootd.fnal.gov//store/mc/Run3Summer23NanoAODv12/TbarWplusto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/NANOAODSIM/130X_mcRun3_2023_realistic_v15-v4/50000/ace03083-67e6-4436-8861-f7186e492608.root
 root://cmsxrootd.fnal.gov//store/mc/Run3Summer23NanoAODv12/TbarWplusto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/NANOAODSIM/130X_mcRun3_2023_realistic_v15-v4/50000/ef61b130-fa54-4eb9-9069-0af38b37246b.root
 root://cmsxrootd.fnal.gov//store/mc/Run3Summer23NanoAODv12/TbarWplusto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/NANOAODSIM/130X_mcRun3_2023_realistic_v15-v4/50000/c9a9cb46-ea37-4c73-a69d-95e5a583b958.root
-root://cmsxrootd.fnal.gov//store/mc/Run3Summer23NanoAODv12/TbarWplusto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/NANOAODSIM/130X_mcRun3_2023_realistic_v15-v4/50000/d6fe4bd5-a921-4fdf-a68a-387ec4a01299.root
 root://cmsxrootd.fnal.gov//store/mc/Run3Summer23NanoAODv12/TbarWplusto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/NANOAODSIM/130X_mcRun3_2023_realistic_v15-v4/50000/b2bce3cf-cd7c-41b0-905e-1b51681ec53f.root
 root://cmsxrootd.fnal.gov//store/mc/Run3Summer23NanoAODv12/TbarWplusto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/NANOAODSIM/130X_mcRun3_2023_realistic_v15-v4/50000/6e482143-1345-4dc0-abf5-62b7ed0eb91a.root
 root://cmsxrootd.fnal.gov//store/mc/Run3Summer23NanoAODv12/TbarWplusto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/NANOAODSIM/130X_mcRun3_2023_realistic_v15-v4/50000/b5e7141a-538f-43d7-8db9-ae4de6321cf4.root

@@ -16,9 +16,9 @@ root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL16NanoAODv9/ZZZ_TuneCP5_13TeV
 root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL16NanoAODv9/ZZZ_TuneCP5_13TeV-amcatnlo-pythia8/NANOAODSIM/106X_mcRun2_asymptotic_v17_ext1-v1/70000/D87D1325-6FDE-424C-B283-F13D3820E9A5.root
 root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL16NanoAODv9/ZZZ_TuneCP5_13TeV-amcatnlo-pythia8/NANOAODSIM/106X_mcRun2_asymptotic_v17_ext1-v1/130000/0587E3D8-9233-7342-95D3-1B44078F8242.root
 root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL16NanoAODv9/ZZZ_TuneCP5_13TeV-amcatnlo-pythia8/NANOAODSIM/106X_mcRun2_asymptotic_v17_ext1-v1/70000/F6B5F38D-B64B-DA44-AC87-781966802F21.root
+root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL16NanoAODv9/ZZZ_TuneCP5_13TeV-amcatnlo-pythia8/NANOAODSIM/106X_mcRun2_asymptotic_v17_ext1-v1/270000/BBE79A22-79AB-B749-8132-ADEEDC8C353B.root
 root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL16NanoAODv9/ZZZ_TuneCP5_13TeV-amcatnlo-pythia8/NANOAODSIM/106X_mcRun2_asymptotic_v17_ext1-v1/130000/47348ED1-E550-CF48-9E94-BED2742AB141.root
 root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL16NanoAODv9/ZZZ_TuneCP5_13TeV-amcatnlo-pythia8/NANOAODSIM/106X_mcRun2_asymptotic_v17_ext1-v1/130000/0ADF1859-C7DB-2A49-AB76-6E9659FEF7DB.root
 root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL16NanoAODv9/ZZZ_TuneCP5_13TeV-amcatnlo-pythia8/NANOAODSIM/106X_mcRun2_asymptotic_v17_ext1-v1/280000/BD1479E7-6972-2047-BF50-A55712C3357C.root
 root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL16NanoAODv9/ZZZ_TuneCP5_13TeV-amcatnlo-pythia8/NANOAODSIM/106X_mcRun2_asymptotic_v17_ext1-v1/120000/31A0B63A-2838-6548-AC46-4442C9C20E63.root
 root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL16NanoAODv9/ZZZ_TuneCP5_13TeV-amcatnlo-pythia8/NANOAODSIM/106X_mcRun2_asymptotic_v17_ext1-v1/70000/2C092041-8312-2947-90E5-B6C52EE4E0C3.root
-root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL16NanoAODv9/ZZZ_TuneCP5_13TeV-amcatnlo-pythia8/NANOAODSIM/106X_mcRun2_asymptotic_v17_ext1-v1/270000/BBE79A22-79AB-B749-8132-ADEEDC8C353B.root
