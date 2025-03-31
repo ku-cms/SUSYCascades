@@ -114,10 +114,8 @@ def write_sh_single(srcfile,ifile,ofile,logfile,outfile,errfile,dataset,filetag,
     fsrc.write('output = '+outlog+" \n")
     fsrc.write('error = '+errlog+" \n")
     fsrc.write('log = '+loglog+" \n")
-    #fsrc.write('Requirements = (Machine != "red-node000.unl.edu" && Machine != "ncm*.hpc.itc.rwth-aachen.de" && Machine != "*mh-epyc7662-8.t2.ucsd.edu" && Machine != "*sdsc-88.t2.ucsd.edu" && Machine != "*beowulf.cluster" && Machine != "*126.hep.olemiss.edu")\n')
     fsrc.write('request_memory = 2 GB \n')
     fsrc.write('+RequiresCVMFS = True \n')
-    fsrc.write('priority = 10 \n')
     if USE_URL:
         # Warning: The stash.osgconnect.net endpoint has been decommissioned.
         # CMS connect is working on implementing an OSDF endpoint solution.
@@ -136,18 +134,12 @@ def write_sh_single(srcfile,ifile,ofile,logfile,outfile,errfile,dataset,filetag,
     transfer_out_remap = 'transfer_output_remaps = "'+ofile.split('/')[-1]+'='+ofile
     transfer_out_remap += '"\n'
     fsrc.write(transfer_out_remap)
-    # Trying new logic
     fsrc.write('RequestCpus = 1\n')
     fsrc.write('periodic_hold_subcode = 42\n')
     fsrc.write('periodic_hold = (CpusUsage > RequestCpus) && (JobStatus == 2) && (CurrentTime - EnteredCurrentStatus > 60)\n')
     fsrc.write('+JobTransforms = "if HoldReasonSubCode == 42 set RequestCpus = MIN(RequestCpus + 1, 32)"\n')
     fsrc.write('periodic_release = (HoldReasonCode == 12 && HoldReasonSubCode == 256 || HoldReasonCode == 13 && HoldReasonSubCode == 2 || HoldReasonCode == 12 && HoldReasonSubCode == 2 || HoldReasonCode == 26 && HoldReasonSubCode == 120 || HoldReasonCode == 3 && HoldReasonSubCode == 0 || HoldReasonSubCode == 42)\n')
-    
-    #fsrc.write('RequestCpus=IfThenElse((IsUndefined(CpusUsage) || CpusUsage <= 1),1,MIN(CpusUsage+2, 32))\n')
-    #fsrc.write('periodic_hold = (CpusUsage >= RequestCpus) && (JobStatus == 3)\n')
-    #fsrc.write('periodic_hold_subcode = 42\n')
-    #fsrc.write('periodic_release = (HoldReasonCode == 12 && HoldReasonSubCode == 256 || HoldReasonCode == 13 && HoldReasonSubCode == 2 || HoldReasonCode == 12 && HoldReasonSubCode == 2 || HoldReasonCode == 26 && HoldReasonSubCode == 120 || HoldReasonCode == 3 && HoldReasonSubCode == 0 || HoldReasonSubCode == 42)\n')
-    fsrc.write('priority = 10 \n')
+    fsrc.write('priority = 10\n')
     fsrc.write('+REQUIRED_OS="rhel9"\n')
     fsrc.write('job_lease_duration = 3600\n')
     fsrc.write('+ProjectName="cms.org.ku"\n')
@@ -219,13 +211,12 @@ def write_sh(srcfile,ifile,ofile,logfile,outfile,errfile,dataset,filetag,n,NAME)
     fsrc.write('+ProjectName="cms.org.ku"\n')
     fsrc.write('+REQUIRED_OS="rhel9"\n')
     fsrc.write('job_lease_duration = 3600\n')
-    # Trying new logic
     fsrc.write('RequestCpus = 1\n')
     fsrc.write('periodic_hold_subcode = 42\n')
     fsrc.write('periodic_hold = (CpusUsage > RequestCpus) && (JobStatus == 2) && (CurrentTime - EnteredCurrentStatus > 60)\n')
     fsrc.write('+JobTransforms = "if HoldReasonSubCode == 42 set RequestCpus = MIN(RequestCpus + 1, 32)"\n')
     fsrc.write('periodic_release = (HoldReasonCode == 12 && HoldReasonSubCode == 256 || HoldReasonCode == 13 && HoldReasonSubCode == 2 || HoldReasonCode == 12 && HoldReasonSubCode == 2 || HoldReasonCode == 26 && HoldReasonSubCode == 120 || HoldReasonCode == 3 && HoldReasonSubCode == 0 || HoldReasonSubCode == 42)\n')
-    #fsrc.write('priority = 10 \n')
+    fsrc.write('priority = 1\n')
     fsrc.write('+RequiresCVMFS = True \n')
     fsrc.write('Requirements = HAS_SINGULARITY == True\n')
     fsrc.write('MY.SingularityImage = "/cvmfs/singularity.opensciencegrid.org/cmssw/cms:rhel9"\n')
@@ -585,7 +576,6 @@ if __name__ == "__main__":
                 condor_monitor.wait_until_jobs_below()
                 os.system('condor_submit ' + f)
             
-    
     # Number of ROOT files and jobs per sample 
     if VERBOSE:
         for f in clean_inputlist:
@@ -619,6 +609,7 @@ if __name__ == "__main__":
     if DRY_RUN or COUNT:
         print("No jobs were submitted.")
     else:
+        # os.system(f'nohup python3 python/CheckFiles.py -d f{filetag}/ -o {OUT_DIR} -e > /dev/null 2>&1 &')
         print(Fore.GREEN + "Congrats... your jobs were submitted!" + Fore.RESET)
         print('Run this after jobs have finished to check for failed jobs (and resubmit them):')
         print(f'nohup python3 python/CheckFiles.py -d f{filetag}/ -o {OUT_DIR} -e > CheckFiles_{filetag}.debug 2>&1 &')
