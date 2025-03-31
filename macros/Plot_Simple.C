@@ -80,8 +80,9 @@ void Plot_Simple(){
 
   int SKIP = 1; // note that this only applies to BKG
   //double lumi = 138.; // Run 2
-  double lumi = 138.+109+27+34; // Run 2&3
+  //double lumi = 138.+109+27+34; // Run 2&3
   //double lumi = 9.451; // Summer23BPix
+  double lumi = 400.;
   bool Norm = true; // scale hists by lumi
 
   std::vector<std::pair<std::string, ProcessList>> vec_samples;
@@ -151,7 +152,7 @@ void Plot_Simple(){
       
       int Nfile = ST.NTrees(proc);
  
-//      cout << "Processing " << Nfile << " files for process " << title << endl;
+      cout << "Processing " << Nfile << " files for process " << title << endl;
       for(int f = 0; f < Nfile; f++){
         string file = ST.FileName(proc, f);
         string tree = ST.TreeName(proc, f);
@@ -163,8 +164,8 @@ void Plot_Simple(){
         if(is_signal)
           sample_weight *= SF.GetX20BRSF(file, tree);
         
-//        cout << "   Processing file " << file << " w/ tree " << tree << " for sample: " << p->first << endl;
-//        cout << "      Sample weight is " << sample_weight << endl;
+        cout << "   Processing file " << file << " w/ tree " << tree << " for sample: " << p->first << endl;
+        //cout << "      Sample weight is " << sample_weight << endl;
         if(is_FastSim)
           cout << "      Is FastSim" << endl;
         if(do_FilterDilepton)
@@ -182,8 +183,8 @@ void Plot_Simple(){
         for(int e = 0; e < Nentry; e += BKG_SKIP){
           base->GetEntry(e);
           
-//          if((e/BKG_SKIP)%(std::max(1, int(Nentry/BKG_SKIP/10))) == 0)
-//            cout << "      event " << e << " | " << Nentry << endl;
+          if((e/BKG_SKIP)%(std::max(1, int(Nentry/BKG_SKIP/10))) == 0)
+            cout << "      event " << e << " | " << Nentry << endl;
 
           // Apply PreSelection
           
@@ -201,7 +202,7 @@ void Plot_Simple(){
 
           if(base->PTISR < 200.)
           //if(base->PTISR < 400.) // SR
-            continue;
+	    continue;
 
           // Cleaning cuts...
           double x = fabs(base->dphiCMI);
@@ -234,8 +235,8 @@ void Plot_Simple(){
           //if(NbjetISR + NbjetS != 2) continue; // CR
           //if(NbjetISR + NbjetS > 1) continue; // SR
 
-          //if(Nlep != 2) continue;
-          //if(NjetS != 0) continue;
+          if(Nlep != 2) continue;
+          if(NjetS != 0) continue;
 
           double minDR = 1000;
           double minMLL = 1000;
@@ -321,11 +322,11 @@ void Plot_Simple(){
             list_leps += Lep(flavor, charge, id, source);
           }
 
-          // cut on lepton id
-          //bool skip = false;
-          //for(int i = 0; i < list_leps.GetN(); i++)
-          //  if(list_leps[i].ID() != kGold) skip = true;
-          //if(skip) continue;
+          // cut on lepton quality
+          bool skip = false;
+          for(int i = 0; i < list_leps.GetN(); i++)
+            if(list_leps[i].ID() != kGold) skip = true;
+          if(skip) continue;
 
           // get variables from root files using base class
           double Mperp = base->Mperp;
@@ -335,10 +336,6 @@ void Plot_Simple(){
           double weight = (base->weight != 0.) ? base->weight : 1.;
           if(!is_data && !is_signal)
             weight *= double(BKG_SKIP);
-if(weight == 0. || weight == 1.){
-std::cout << "suspect weight is bugged for: " << file << std::endl;
-break;
-}
 
           // Fill hists, effs, etc.
           hist_MET->Fill(MET, weight);

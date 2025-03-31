@@ -447,6 +447,7 @@ if __name__ == "__main__":
 
     # tags need to follow the format of CAMPAIGN_CMSSWX and CMSSWX must be 5 chars for later DAS checks to work
     knowntags = ["Autumn18_102X","Fall17_102X","Summer16_102X","Summer20UL16_102X","Summer20UL16APV_102X","Summer20UL17_102X","Summer20UL18_102X","Summer22_130X","Summer22EE_130X","Summer23_130X","Summer23BPix_130X"]
+    filetag = ''
     
     n_samples = 0
     with open(listfile,'r') as mylist:
@@ -619,4 +620,6 @@ if __name__ == "__main__":
         print("No jobs were submitted.")
     else:
         print(Fore.GREEN + "Congrats... your jobs were submitted!" + Fore.RESET)
+        print('Run this after jobs have finished to check for failed jobs (and resubmit them):')
+        print(f'nohup python3 python/CheckFiles.py -d f{filetag}/ -o {OUT_DIR} -e > CheckFiles_{filetag}.debug 2>&1 &')
 
