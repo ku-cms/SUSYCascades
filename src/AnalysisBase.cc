@@ -5055,19 +5055,16 @@ ParticleList AnalysisBase<NANORun3>::GetElectrons(){
     lep.SetRelIso(Electron_pfRelIso03_all[i]);
     lep.SetMiniIso(Electron_miniPFRelIso_all[i]);
 
-    // FO baseline criteria
-    if(Electron_lostHits[i] == 0 && Electron_convVeto[i]){
-      if(  lep.MiniIso()*lep.Pt() >= 4.
-        || lep.RelIso()*lep.Pt() >= 4.
-        || !minus_iso_hoe(Electron_vidNestedWPBitmap[i], 4, std::equal_to<int>())
-      )
-        lep.SetLepQual(kBronze);
-      else if(lep.SIP3D() > 2.)
-        lep.SetLepQual(kSilver);
-      else
-        lep.SetLepQual(kGold);
-      list.push_back(lep);
-    } // if(Electron_lostHits[i] == 0 && Electron_convVeto[i])
+    if(  lep.MiniIso()*lep.Pt() >= 4.
+      || lep.RelIso()*lep.Pt() >= 4.
+      || !minus_iso_hoe(Electron_vidNestedWPBitmap[i], 4, std::equal_to<int>())
+    )
+      lep.SetLepQual(kBronze);
+    else if(lep.SIP3D() > 2.)
+      lep.SetLepQual(kSilver);
+    else
+      lep.SetLepQual(kGold);
+    list.push_back(lep);
 
   } // for(int i = 0; i < N; i++)
   return list;
