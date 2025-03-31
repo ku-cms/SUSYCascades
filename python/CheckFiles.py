@@ -59,6 +59,7 @@ def makeSubmitScript(tuple_pairs,submitName,resubmit,maxResub,DataSetName):
         file_content = file_content.replace("X_0.list","X_$(list).list")
         file_content = file_content.replace("queue",f"queue list,split from {tuple_filelist}")
     file_content = file_content.replace('RequestCpus = 1','RequestCpus = 4')
+    file_content = file_content.replace('priority = 10','priority = 20')
     with open(newFileName, 'w') as file:
         file.write(file_content)
     # Check number of resubmitFiles
@@ -322,11 +323,11 @@ def main():
     else:
         # default checking that's robust
         filter_list = [ # list of name of samples to explicitly check (empty list will check all)
-            #"WZ_TuneCP5_13p6TeV_pythia8",
+            #Example: "WZ_TuneCP5_13p6TeV_pythia8",
         ]
         fileFilterList = ReadFilterList(f"{directory}/CheckFiles_FilterList.txt")
         if fileFilterList is not None: filter_list.extend(fileFilterList)
-        else:
+        if not filter_list:
             print("All datasets have already passed DAS check!")
             print("Rerun with -a if you would like to explicitly check again...")
             return
@@ -335,9 +336,12 @@ def main():
         time.sleep(1)
         threshold = 100
         condor_monitor = CondorJobCountMonitor(threshold=threshold,verbose=False)
+        print(f"Waiting until minumum of {threshold} jobs in the queue")
         condor_monitor.wait_until_jobs_below()
+        print("Running checker...")
         nJobs = checkJobs(directory,output,skipEC,skipDAS,skipMissing,skipSmall,skipErr,skipOut,skipZombie,resubmit,maxResub,filter_list)
         print(f"Resubmitted a total of {nJobs} job(s)!")
+        print("Checker Complete!")
 
 if __name__ == "__main__":
     main()

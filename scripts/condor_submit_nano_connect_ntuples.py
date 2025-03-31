@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 
-import os, sys, time
+import os, sys, time, subprocess, re
 from colorama import Fore, Back, Style
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'python')))
 from CondorJobCountMonitor import CondorJobCountMonitor
@@ -376,6 +376,13 @@ if __name__ == "__main__":
 
         # copy xs json file
         XSJSONFILENAME = 'info_XSDB_2025-03-30_14-22.json'
+        command = ["xrdfs", "root://cmseos.fnal.gov/", "ls", "/store/user/z374f439/XSectionJSONs/"]
+        result = subprocess.run(command, capture_output=True, text=True, check=True)
+        pattern = re.compile(r"/store/user/z374f439/XSectionJSONs/info_XSDB_(\d{4}-\d{2}-\d{2}_\d{2}-\d{2})\.json")
+        files = pattern.findall(result.stdout)
+        if files:
+            newest_timestamp = max(files)
+            XSJSONFILENAME = f"info_XSDB_{newest_timestamp}.json"
         if VERBOSE:
             print("making xs json file")
         os.system(f"xrdcp -s root://cmseos.fnal.gov//store/user/z374f439/XSectionJSONs/{XSJSONFILENAME} {config}/XS_jsonfile.json")

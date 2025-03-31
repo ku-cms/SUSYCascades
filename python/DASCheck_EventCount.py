@@ -2,7 +2,7 @@ import os
 import argparse
 import subprocess
 
-def process_DASCheck_event_count(input_dir, working_dir, output_dir, dryrun, resubmit, file, directory):
+def process_DASCheck_event_count(input_dir, working_dir, output_dir, dryrun, file, directory):
     processes = []
     if dryrun:
         print("Doing dryrun")
@@ -48,7 +48,6 @@ if __name__ == "__main__":
                         help="Working directory containing EventCount subdirectories.")
     parser.add_argument("-o", "--output", default=f"/ospool/cms-user/{os.getenv('USER')}/EventCount/root/",
                         help="Output directory for condor jobs.")
-    parser.add_argument("-r", "--resubmit", action='store_true', help="Automatically resubmit jobs after eventcount check")
     parser.add_argument("--dryrun", action='store_true', help="Do not run countEvents check")
     parser.add_argument("-d", action='store_true', help="Check directory of output root files from condor jobs")
     parser.add_argument("-f", action='store_true', help="Check final hadded root files")
@@ -58,5 +57,6 @@ if __name__ == "__main__":
     if not args.d and not args.f:
         print("NEED TO SPECIFY WHETHER RUNNING OVER FILES OR DIRECTORY OF FILES")
     else:
-        process_DASCheck_event_count(args.input, args.working, args.output, args.dryrun, args.resubmit, args.f, args.d)
+        process_DASCheck_event_count(args.input, args.working, args.output, args.dryrun, args.f, args.d)
+
 

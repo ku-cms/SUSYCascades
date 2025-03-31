@@ -229,8 +229,9 @@ int main(int argc, char* argv[]) {
     }
   }
 
-  cout << "MAX NGEN " << maxNGEN << endl;
+  if(DO_SMS) cout << "MAX NGEN " << maxNGEN << endl;
   // add DAS count
+  cout << "Adding DAS info..." << endl;
   int NDAS = 0;
   int Nevent_tot = 0;
   NeventTool eventTool;
@@ -238,6 +239,7 @@ int main(int argc, char* argv[]) {
     NDAS += eventTool.EventsInDAS(filenames[i]);
   std::string DAS_datasetname = eventTool.Get_DASdatasetname(filenames[0]);
   if(NDAS == 0) return 1; // will try to resubmit job
+  cout << "Added DAS info!" << endl;
 
   TFile* fout = new TFile(string(outputFileName).c_str(),"RECREATE");
   TTree* tout = (TTree*) new TTree("EventCount", "EventCount");
