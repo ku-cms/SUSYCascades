@@ -1,6 +1,6 @@
 #include "PlottingTools.h"
 
-void Plot_Simple(){
+void Plot_Advanced(){
 
   std::cout << "Saving plots to: " << output_root_file << std::endl;
   RestFrames::SetStyle();
@@ -13,7 +13,7 @@ void Plot_Simple(){
   
   ScaleFactorTool SF;
 
-  output_root_file += "Simple";
+  output_root_file += "Advanced";
   //g_Label = "PreSelection";
   //g_Label = "2L gold 0J SR";
   //g_Label = "2 lepton SR";
@@ -22,7 +22,7 @@ void Plot_Simple(){
   // Replaces spaces in name of output file with _
   std::replace(output_root_file.begin(), output_root_file.end(), ' ', '_');
 
-  int SKIP = 1; // note that this only applies to BKG
+  int SKIP = 10000; // note that this only applies to BKG
   //double lumi = 138.; // Run 2
   //double lumi = 138.+109+27+34; // Run 2&3
   double lumi = 9.451; // Summer23BPix
