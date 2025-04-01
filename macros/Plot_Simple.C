@@ -37,7 +37,7 @@ string g_PlotTitle;
 string g_Xname;
 double g_Xmin;
 double g_Xmax;
-double g_NX;
+double g_NX = 128.;
 string g_Yname;
 double g_Ymin;
 double g_Ymax;
@@ -72,12 +72,13 @@ void Plot_Simple(){
   
   ScaleFactorTool SF;
 
-  g_Label = "PreSelection";
+  //g_Label = "PreSelection";
   //g_Label = "2L gold 0J";
   //g_Label = "2 lepton SR";
-  //g_Label = "2 lepton ttbar CR";
+  g_Label = "2 lepton ttbar CR";
   output_root_file += "_"+g_Label+".root";
-  g_NX = 128;
+  // Remove spaces from name of output file
+  output_root_file.erase(std::remove_if(output_root_file.begin(), output_root_file.end(), [](char c){ return (c == ' '); }), output_root_file.end());
 
   int SKIP = 1; // note that this only applies to BKG
   //double lumi = 138.; // Run 2
@@ -99,13 +100,12 @@ void Plot_Simple(){
     for(auto s : p->second){
       signals += ST.Get(s);
     }
-    vec_samples.push_back(std::make_pair(p->first, signals));
+//    vec_samples.push_back(std::make_pair(p->first, signals));
   }
   
   // loop over backgrounds and add to map
   ProcessList backgrounds = ST.Get(kBkg);
   //backgrounds = backgrounds.Remove("QCD");
-  //backgrounds = backgrounds.Remove("ZNuNu");
   for(int s = 0; s < int(backgrounds.GetN()); s++){
     ProcessList bkg;
     bkg += backgrounds[s];
@@ -117,7 +117,7 @@ void Plot_Simple(){
   for(int s = 0; s < int(data.GetN()); s++){
     ProcessList datum;
     datum += data[s];
-    //vec_samples.push_back(std::make_pair(data[s].Name(), datum));
+    vec_samples.push_back(std::make_pair(data[s].Name(), datum));
   }
 
   // vectors to hold 'generic' plotting objects
@@ -222,8 +222,8 @@ void Plot_Simple(){
           if(fabs(base->dphiMET_V) > acos(-1.)/2.)
             continue;
             
-          if(base->RISR < 0.5 || base->RISR > 1.0)
-          //if(base->RISR < 0.4 || base->RISR > 0.7) // CR
+          //if(base->RISR < 0.5 || base->RISR > 1.0)
+          if(base->RISR < 0.4 || base->RISR > 0.7) // CR
           //if(base->RISR < 0.9)
             continue;
 
@@ -234,10 +234,10 @@ void Plot_Simple(){
           int NjetISR  = base->Njet_ISR;
           int NbjetISR = base->Nbjet_ISR;
 
-          //if(NbjetISR + NbjetS != 2) continue; // CR
+          if(NbjetISR + NbjetS != 2) continue; // CR
           //if(NbjetISR + NbjetS > 1) continue; // SR
 
-          //if(Nlep != 2) continue;
+          if(Nlep != 2) continue;
           //if(NjetS != 0) continue;
 
           double minDR = 1000;
@@ -423,7 +423,7 @@ void Plot_Stack(vector<TH1*>& vect_h, std::vector<std::pair<std::string, Process
   
   double h_min, h_max;
   GetMinMaxIntegral(vect_h, h_min, h_max);
-  if(h_min <= 0.) h_min = 1.;
+  if(h_min <= 0.) h_min = 1.e-2;
   double fmax = -1.;
   int imax = -1;
   for(int i = 0; i < Nsample; i++){

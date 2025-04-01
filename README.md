@@ -103,6 +103,51 @@ cd SUSYCascades
 source scripts/setup_RestFrames_connect.sh
 make clean && make cmssw -j8
 ```
+### To submit ntuples:
+Choose appropriate list from samples/NANO/Lists/
+If there are datasets that you do not want to process, you can comment out with '#'
+To submit use scripts/condor_submit_nano_connect_ntuples.py
+```
+python3 scripts/condor_submit_nano_connect_ntuples.py -split 20 -list samples/NANO/Lists/NAME_OF_YOUR_LIST.list
+```
+If running on data or signal, add --sms or --data
+-split N defines how many jobs to split each input file into
+--count can be useful before launching jobs to check how many jobs you will be submitting
+NOTE: max number of jobs per batch (dataset) is ~15k, max number of jobs per user is 100k
+The submission script will protect against going over the second limit (user total)
+--csv will add a csv into the submission working directory will job info (not needed but useful)
+
+### After NTUPLE jobs finish
+Important to check for job failures after jobs finish.
+Note that you do not have to wait until EVERY job finishes before starting to run checks
+At the end of the submit script there is a print statement that tells you how to run the checker (also posted below)
+```
+nohup python3 python/CheckFiles.py -d f{filetag}/ -o {OUT_DIR} -e > CheckFiles_{filetag}.debug 2>&1 &
+```
+Recommended to run in background with nohup and direct output to a log file
+For ~100 datasets can take up to 8 hours the first time if all checks are run
+Use python3 python/CheckFiles.py to see breakdown of args
+-e is recommended because it is a) slow and b) can return false positives
+
+### After NTUPLE jobs pass checks
+After ntuple jobs are finished, should use hadd to reduce number of files.
+Python script in scripts/DO_hadd.py can be used to efficiently combine output files
+Has guardrails in place to handle large number of output files (another reason to keep total jobs/batch under 15k) and larger sets of data (>100 GB)
+Example submission:
+```
+nohup python3 scripts/DO_hadd.py -idir /ospool/cms-user/$USER/NTUPLES/Processing/{filetag}/ -odir /local-scratch/$USER/NTUPLES/HADD/{filetag}/ > HADD_logs/HADD_{filetag}.debug 2>&1 &
+```
+Again, note the use of nohup, &, and >.
+
+#### User quotas
+/home/ = 100GB
+/ospool/ = 1TB
+/local-scratch/ = 1TB
+
+### Updating Lists
+If needed to update lists or update cross-sections use this repo: https://github.com/ku-cms/ListMaker
+Only use if dataset is not already in samples/NANO/, otherwise can modify an existing list
+
 <!---
  ### Running combineTool.py on cms connect syntax
  To run text2workspace (T2W):
