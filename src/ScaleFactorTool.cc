@@ -298,3 +298,7 @@ double ScaleFactorTool::GetBtagSFWeight( std::vector<double>& PT_jet, int year, 
   return probDATA/probMC;
 
 }
+
+template bool ScaleFactorTool::DileptonEvent<ReducedBase>(ReducedBase* base);
+template bool ScaleFactorTool::DileptonEvent<ReducedBase_V2>(ReducedBase_V2* base);
+
