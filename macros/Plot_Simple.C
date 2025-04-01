@@ -50,13 +50,13 @@ vector<int> colors = {kBlue,kGreen+2,kRed+2,kOrange-3,kMagenta+1,kAzure+6,kSprin
 vector<int> markers = {20,21,22,23,29,32,33,34,35,36,43,49};
 
 // Plotting helper functions
-void Plot_Hist(TH1* h, bool Scale=true, double Scale_Val = 1);
-void Plot_Hist(TH2* h, bool Scale=true, double Scale_Val = 1);
+void Plot_Hist(TH1* h, bool Scale=true, double Scale_Val = 1., double signal_boost = 1., bool IsSMS = false);
+void Plot_Hist(TH2* h, bool Scale=true, double Scale_Val = 1., double signal_boost = 1., bool IsSMS = false);
 void Plot_Eff(TEfficiency* e);
 void SortHistogramsAndProcesses(std::vector<TH1*>& histograms, std::vector<std::pair<std::string, ProcessList>>& vec_samples);
 void GetMinMaxIntegral(const std::vector<TH1*>& histograms, double& minIntegral, double& maxIntegral);
 void SetMinimumBinContent(TH1* hist, double min_value);
-void Plot_Stack(vector<TH1*>& vect_h, std::vector<std::pair<std::string, ProcessList>>& vec_samples);
+void Plot_Stack(vector<TH1*>& vect_h, std::vector<std::pair<std::string, ProcessList>>& vec_samples, double signal_boost);
 void Plot_Ratio(TH1* h_num, TH1* h_den);
 
 void Plot_Simple(){
@@ -73,18 +73,19 @@ void Plot_Simple(){
   ScaleFactorTool SF;
 
   //g_Label = "PreSelection";
-  //g_Label = "2L gold 0J";
+  //g_Label = "2L gold 0J SR";
   //g_Label = "2 lepton SR";
   g_Label = "2 lepton ttbar CR";
   output_root_file += "_"+g_Label+".root";
-  // Remove spaces from name of output file
-  output_root_file.erase(std::remove_if(output_root_file.begin(), output_root_file.end(), [](char c){ return (c == ' '); }), output_root_file.end());
+  // Replaces spaces in name of output file with _
+  std::replace(output_root_file.begin(), output_root_file.end(), ' ', '_');
 
   int SKIP = 1; // note that this only applies to BKG
   //double lumi = 138.; // Run 2
   //double lumi = 138.+109+27+34; // Run 2&3
-  //double lumi = 9.451; // Summer23BPix
-  double lumi = 400.;
+  double lumi = 9.451; // Summer23BPix
+  //double lumi = 400.;
+  double signal_boost = 1000.;
   bool Norm = true; // scale hists by lumi
 
   std::vector<std::pair<std::string, ProcessList>> vec_samples;
@@ -145,12 +146,16 @@ void Plot_Simple(){
     TEfficiency* eff_METtrig = new TEfficiency((title+"_eff_METtrig").c_str(), "Efficiency of MET trigger;Eff;MET [GeV]", g_NX, 0., 500.);
     effs.push_back(eff_METtrig);
 
+    bool is_data = false;
+    bool is_bkg = false;
+    bool is_signal = false;
+
     for(int s = 0; s < Nsample; s++){
       Process proc = p->second[s];
       
-      bool is_data   = (proc.Type() == kData);
-      bool is_bkg    = (proc.Type() == kBkg);
-      bool is_signal = (proc.Type() == kSig);
+      is_data   = (proc.Type() == kData);
+      is_bkg    = (proc.Type() == kBkg);
+      is_signal = (proc.Type() == kSig);
       
       int Nfile = ST.NTrees(proc);
  
@@ -238,7 +243,7 @@ void Plot_Simple(){
           //if(NbjetISR + NbjetS > 1) continue; // SR
 
           if(Nlep != 2) continue;
-          //if(NjetS != 0) continue;
+          //if(NjetS != 0) continue; //SR
 
           double minDR = 1000;
           double minMLL = 1000;
@@ -325,10 +330,10 @@ void Plot_Simple(){
           }
 
           // cut on lepton quality
-          //bool skip = false;
-          //for(int i = 0; i < list_leps.GetN(); i++)
-          //  if(list_leps[i].ID() != kGold) skip = true;
-          //if(skip) continue;
+          bool skip = false;
+          for(int i = 0; i < list_leps.GetN(); i++)
+            if(list_leps[i].ID() != kGold) skip = true; // SR
+          //if(skip) continue; 
 
           // get variables from root files using base class
           double Mperp = base->Mperp;
@@ -352,10 +357,12 @@ void Plot_Simple(){
     } // for(int s = 0; s < Nsample; s++)
 
     // call plotting functions after looping over files in samples
-    for(int hist1 = 0; hist1 < int(hists1.size()); hist1++)
-      Plot_Hist(hists1[hist1], Norm, lumi);
-    for(int hist2 = 0; hist2 < int(hists2.size()); hist2++)
-      Plot_Hist(hists2[hist2], Norm, lumi);
+    for(int hist1 = 0; hist1 < int(hists1.size()); hist1++){
+      Plot_Hist(hists1[hist1], Norm, lumi, signal_boost, is_signal);
+    }
+    for(int hist2 = 0; hist2 < int(hists2.size()); hist2++){
+      Plot_Hist(hists2[hist2], Norm, lumi, signal_boost, is_signal);
+    }
     for(int eff = 0; eff < int(effs.size()); eff++)
       Plot_Eff(effs[eff]);
     hists1.clear();
@@ -384,12 +391,12 @@ void Plot_Simple(){
      }
      // add stack to title
      g_PlotTitle = "stack"+g_PlotTitle;
-     Plot_Stack(*hist_stacks[stack_h], vec_samples);
+     Plot_Stack(*hist_stacks[stack_h], vec_samples, signal_boost);
   }
   gApplication->Terminate(0);
 } // End of macro
 
-void Plot_Stack(vector<TH1*>& vect_h, std::vector<std::pair<std::string, ProcessList>>& vec_samples){
+void Plot_Stack(vector<TH1*>& vect_h, std::vector<std::pair<std::string, ProcessList>>& vec_samples, double signal_boost){
   TH1D* h_BKG = nullptr;
   TH1D* h_DATA = nullptr;
   bool isBKG = false;
@@ -537,6 +544,8 @@ void Plot_Stack(vector<TH1*>& vect_h, std::vector<std::pair<std::string, Process
     if(vect_h[index]->GetEntries() == 0) {index++; continue;}
     if(p->second[0].Type() == kBkg)
       leg->AddEntry(vect_h[index],p->first.c_str(),"F");
+    else if(p->second[0].Type() == kSig)
+      leg->AddEntry(vect_h[index],(p->first+" * "+std::to_string(int(signal_boost))).c_str(),"F");
     else
       leg->AddEntry(vect_h[index],p->first.c_str());
     index++;
@@ -682,11 +691,13 @@ void Plot_Eff(TEfficiency* e){
   delete can;
 }
 
-void Plot_Hist(TH1* h, bool Scale, double Scale_Val){
+void Plot_Hist(TH1* h, bool Scale, double Scale_Val, double signal_boost, bool IsSMS){
   if(Scale_Val == 0) Scale_Val = h->Integral();
+  if(IsSMS) Scale_Val *= signal_boost;
   string title = h->GetName();
   // do not scale data
-  if(title.find("data") == std::string::npos) { h->Scale(Scale_Val); }
+  if(title.find("data") == std::string::npos) h->Scale(Scale_Val);
+  if(IsSMS) Scale_Val /= signal_boost;
   TCanvas* can = (TCanvas*) new TCanvas(("can_"+title).c_str(),("can_"+title).c_str(),700.,600);
 
   can->SetLeftMargin(0.15);
@@ -739,11 +750,13 @@ void Plot_Hist(TH1* h, bool Scale, double Scale_Val){
   delete can;
 }
 
-void Plot_Hist(TH2* h, bool Scale, double Scale_Val){
+void Plot_Hist(TH2* h, bool Scale, double Scale_Val, double signal_boost, bool IsSMS){
   if(Scale_Val == 0) Scale_Val = h->Integral();
+  if(IsSMS) Scale_Val *= signal_boost;
   string title = h->GetName();
   // do not scale data
   if(title.find("data") == std::string::npos) h->Scale(Scale_Val);
+  if(IsSMS) Scale_Val /= signal_boost;
   TCanvas* can = (TCanvas*) new TCanvas(("can_"+title).c_str(),("can_"+title).c_str(),700.,600);
 
   can->SetLeftMargin(0.15);
