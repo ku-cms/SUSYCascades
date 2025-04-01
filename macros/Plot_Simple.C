@@ -44,9 +44,9 @@ double g_Ymax;
 double g_NY;
 string g_Label;
 // root file to store output of plots
-string output_root_file = "output_Plot_Simple.root";
+string output_root_file = "output_Plot_Simple";
 bool SavePDF = false; // whether or not to save pdfs of plots
-vector<int> colors = {kBlue,kGreen+2,kRed+2,kOrange-3,kMagenta-4,kAzure+6,kSpring,kRed-2,kBlue-1,kPink+1,kTeal,kBlack,kGray};
+vector<int> colors = {kBlue,kGreen+2,kRed+2,kOrange-3,kMagenta+1,kAzure+6,kSpring,kRed-2,kBlue-1,kPink+1,kTeal,kBlack,kGray};
 vector<int> markers = {20,21,22,23,29,32,33,34,35,36,43,49};
 
 // Plotting helper functions
@@ -76,6 +76,7 @@ void Plot_Simple(){
   //g_Label = "2L gold 0J";
   //g_Label = "2 lepton SR";
   //g_Label = "2 lepton ttbar CR";
+  output_root_file += "_"+g_Label+".root";
   g_NX = 128;
 
   int SKIP = 1; // note that this only applies to BKG
@@ -102,8 +103,10 @@ void Plot_Simple(){
   }
   
   // loop over backgrounds and add to map
-  //ProcessList backgrounds = ST.Get(kBkg);
-  ProcessList backgrounds = ST.Get(kBkg).Remove("ZDY");
+  ProcessList backgrounds = ST.Get(kBkg);
+  backgrounds = backgrounds.Remove("ZDY"); // redundant with ZNuNu and DY included
+  //backgrounds = backgrounds.Remove("QCD");
+  //backgrounds = backgrounds.Remove("ZNuNu");
   for(int s = 0; s < int(backgrounds.GetN()); s++){
     ProcessList bkg;
     bkg += backgrounds[s];
@@ -135,7 +138,7 @@ void Plot_Simple(){
 
     // Declare hists here
     // push_back hists that you want to plot at the end (hists are filled regardless of whether or not you push_back)
-    TH1D* hist_MET = new TH1D((title+"_MET").c_str(), (title+"_MET;MET [GeV]").c_str(), g_NX/4, 100., 400.);
+    TH1D* hist_MET = new TH1D((title+"_MET").c_str(), (title+"_MET;MET [GeV]").c_str(), g_NX/4, 100., 500.);
     hists1.push_back(hist_MET);
     hist_stack_MET.push_back(hist_MET); // example pushing hist into vector for stack plot
     TH2D* hist_RISR_PTISR = new TH2D((title+"_RISR_PTISR").c_str(), (title+"_RISR_PTISR;R_{ISR};p_{T}^{ISR} [GeV]").c_str(), g_NX/2., 0., 1., g_NX/2., 0., 800.);
@@ -235,8 +238,8 @@ void Plot_Simple(){
           //if(NbjetISR + NbjetS != 2) continue; // CR
           //if(NbjetISR + NbjetS > 1) continue; // SR
 
-          if(Nlep != 2) continue;
-          if(NjetS != 0) continue;
+          //if(Nlep != 2) continue;
+          //if(NjetS != 0) continue;
 
           double minDR = 1000;
           double minMLL = 1000;
@@ -323,10 +326,10 @@ void Plot_Simple(){
           }
 
           // cut on lepton quality
-          bool skip = false;
-          for(int i = 0; i < list_leps.GetN(); i++)
-            if(list_leps[i].ID() != kGold) skip = true;
-          if(skip) continue;
+          //bool skip = false;
+          //for(int i = 0; i < list_leps.GetN(); i++)
+          //  if(list_leps[i].ID() != kGold) skip = true;
+          //if(skip) continue;
 
           // get variables from root files using base class
           double Mperp = base->Mperp;
@@ -344,6 +347,7 @@ void Plot_Simple(){
         }
         delete base;
         delete chain;
+        std::cout << "Integral of file: " << file << " is " << hist_MET->Integral() << std::endl;
       } // for(int f = 0; f < Nfile; f++)
 
     } // for(int s = 0; s < Nsample; s++)
