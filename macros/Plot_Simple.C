@@ -104,7 +104,6 @@ void Plot_Simple(){
   
   // loop over backgrounds and add to map
   ProcessList backgrounds = ST.Get(kBkg);
-  backgrounds = backgrounds.Remove("ZDY"); // redundant with ZNuNu and DY included
   //backgrounds = backgrounds.Remove("QCD");
   //backgrounds = backgrounds.Remove("ZNuNu");
   for(int s = 0; s < int(backgrounds.GetN()); s++){

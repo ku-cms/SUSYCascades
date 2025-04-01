@@ -19,3 +19,4 @@ HADD_logs/
 DASCheck_logs/
 *_dictUmbrella.h
 *_dictContent.h
+lib/
