@@ -1,7 +1,9 @@
 #! /usr/bin/env python
 
-import os, sys, time
+import os, sys, time, subprocess, re
 from colorama import Fore, Back, Style
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'python')))
+from CondorJobCountMonitor import CondorJobCountMonitor
 
 # Example submission: 
 #  python3 scripts/condor_submit_nano_connect_ntuples.py -split 10 -list samples/NANO/Lists/Fall17_102X.list --sys --slim --csv 
@@ -26,6 +28,7 @@ OUT_BASE    = "/ospool/cms-user/"+USER+"/NTUPLES/Processing"
 LIST        = "default.list"
 QUEUE       = ""
 SPLIT       = 1
+THRESHOLD   = 80000
 # ----------------------------------------------------------- #
 
 def new_listfile(rootlist, listfile):
@@ -102,6 +105,7 @@ def write_sh_single(srcfile,ifile,ofile,logfile,outfile,errfile,dataset,filetag,
     fsrc.write('-jme='+JMEFOLD+" ")
     fsrc.write('-metfile='+METFILE+" ")
     fsrc.write('-prefirefile='+PREFIREFILE+" ")
+    fsrc.write('-xsjsonfile='+XSJSONFILE+" ")
     fsrc.write('-split=1,'+str(n)+'\n')
 
     outlog = outfile+".out"
@@ -110,10 +114,8 @@ def write_sh_single(srcfile,ifile,ofile,logfile,outfile,errfile,dataset,filetag,
     fsrc.write('output = '+outlog+" \n")
     fsrc.write('error = '+errlog+" \n")
     fsrc.write('log = '+loglog+" \n")
-    #fsrc.write('Requirements = (Machine != "red-node000.unl.edu" && Machine != "ncm*.hpc.itc.rwth-aachen.de" && Machine != "*mh-epyc7662-8.t2.ucsd.edu" && Machine != "*sdsc-88.t2.ucsd.edu" && Machine != "*beowulf.cluster" && Machine != "*126.hep.olemiss.edu")\n')
     fsrc.write('request_memory = 2 GB \n')
     fsrc.write('+RequiresCVMFS = True \n')
-    #fsrc.write('+RequiresSharedFS = True \n')
     if USE_URL:
         # Warning: The stash.osgconnect.net endpoint has been decommissioned.
         # CMS connect is working on implementing an OSDF endpoint solution.
@@ -132,12 +134,12 @@ def write_sh_single(srcfile,ifile,ofile,logfile,outfile,errfile,dataset,filetag,
     transfer_out_remap = 'transfer_output_remaps = "'+ofile.split('/')[-1]+'='+ofile
     transfer_out_remap += '"\n'
     fsrc.write(transfer_out_remap)
-    
-    fsrc.write('RequestCpus=ifthenelse((isUndefined(CpusUsage) || CpusUsage < 2),1,MIN(RequestCpus+2, 32))\n')
-    fsrc.write('periodic_hold = (CpusUsage >= RequestCpus) && (JobStatus == 3)\n')
+    fsrc.write('RequestCpus = 1\n')
     fsrc.write('periodic_hold_subcode = 42\n')
+    fsrc.write('periodic_hold = (CpusUsage > RequestCpus) && (JobStatus == 2) && (CurrentTime - EnteredCurrentStatus > 60)\n')
+    fsrc.write('+JobTransforms = "if HoldReasonSubCode == 42 set RequestCpus = MIN(RequestCpus + 1, 32)"\n')
     fsrc.write('periodic_release = (HoldReasonCode == 12 && HoldReasonSubCode == 256 || HoldReasonCode == 13 && HoldReasonSubCode == 2 || HoldReasonCode == 12 && HoldReasonSubCode == 2 || HoldReasonCode == 26 && HoldReasonSubCode == 120 || HoldReasonCode == 3 && HoldReasonSubCode == 0 || HoldReasonSubCode == 42)\n')
-    fsrc.write('priority = 10 \n')
+    fsrc.write('priority = 10\n')
     fsrc.write('+REQUIRED_OS="rhel9"\n')
     fsrc.write('job_lease_duration = 3600\n')
     fsrc.write('+ProjectName="cms.org.ku"\n')
@@ -176,6 +178,7 @@ def write_sh(srcfile,ifile,ofile,logfile,outfile,errfile,dataset,filetag,n,NAME)
     fsrc.write('-jme='+JMEFOLD+" ")
     fsrc.write('-metfile='+METFILE+" ")
     fsrc.write('-prefirefile='+PREFIREFILE+" ")
+    fsrc.write('-xsjsonfile='+XSJSONFILE+" ")
     splitstring = '-split=%s,%d\n' % ('$$([$(Step)+1])', n)
     fsrc.write(splitstring)
 
@@ -185,7 +188,6 @@ def write_sh(srcfile,ifile,ofile,logfile,outfile,errfile,dataset,filetag,n,NAME)
     fsrc.write('output = '+outlog+" \n")
     fsrc.write('error = '+errlog+" \n")
     fsrc.write('log = '+loglog+" \n")
-    #fsrc.write('Requirements = (Machine != "red-node000.unl.edu" && Machine != "ncm*.hpc.itc.rwth-aachen.de" && Machine != "*mh-epyc7662-8.t2.ucsd.edu" && Machine != "*sdsc-88.t2.ucsd.edu" && Machine != "*beowulf.cluster" && Machine != "*126.hep.olemiss.edu")\n')
     fsrc.write('request_memory = 2 GB \n')
     if USE_URL:
         # Warning: The stash.osgconnect.net endpoint has been decommissioned.
@@ -209,13 +211,13 @@ def write_sh(srcfile,ifile,ofile,logfile,outfile,errfile,dataset,filetag,n,NAME)
     fsrc.write('+ProjectName="cms.org.ku"\n')
     fsrc.write('+REQUIRED_OS="rhel9"\n')
     fsrc.write('job_lease_duration = 3600\n')
-    fsrc.write('RequestCpus=ifthenelse((isUndefined(CpusUsage) || CpusUsage < 2),1,MIN(RequestCpus+2, 32))\n')
-    fsrc.write('periodic_hold = (CpusUsage >= RequestCpus) && (JobStatus == 3)\n')
+    fsrc.write('RequestCpus = 1\n')
     fsrc.write('periodic_hold_subcode = 42\n')
+    fsrc.write('periodic_hold = (CpusUsage > RequestCpus) && (JobStatus == 2) && (CurrentTime - EnteredCurrentStatus > 60)\n')
+    fsrc.write('+JobTransforms = "if HoldReasonSubCode == 42 set RequestCpus = MIN(RequestCpus + 1, 32)"\n')
     fsrc.write('periodic_release = (HoldReasonCode == 12 && HoldReasonSubCode == 256 || HoldReasonCode == 13 && HoldReasonSubCode == 2 || HoldReasonCode == 12 && HoldReasonSubCode == 2 || HoldReasonCode == 26 && HoldReasonSubCode == 120 || HoldReasonCode == 3 && HoldReasonSubCode == 0 || HoldReasonSubCode == 42)\n')
-    #fsrc.write('priority = 10 \n')
+    fsrc.write('priority = 1\n')
     fsrc.write('+RequiresCVMFS = True \n')
-    #fsrc.write('+RequiresSharedFS = True \n')
     fsrc.write('Requirements = HAS_SINGULARITY == True\n')
     fsrc.write('MY.SingularityImage = "/cvmfs/singularity.opensciencegrid.org/cmssw/cms:rhel9"\n')
     fsrc.write('queue '+str(n)+' from '+ifile)
@@ -225,6 +227,7 @@ if __name__ == "__main__":
     if not len(sys.argv) > 1 or '-h' in sys.argv or '--help' in sys.argv:
         print (f"Usage: {sys.argv(0)} [-q queue] [-tree treename] [-list listfile.list] [-split S] [--sms] [--data] [--sys] [--fastsim] [--slim] [--dry-run] [--verbose] [--count] [--csv]")
         sys.exit(1)
+
 
     argv_pos    = 1
     DO_SMS      = 0
@@ -260,7 +263,7 @@ if __name__ == "__main__":
     if '--data' in sys.argv:
         DO_DATA = 1
         argv_pos += 1
-    if '--dry-run' in sys.argv:
+    if '--dry-run' in sys.argv or '--dryrun' in sys.argv:
         DRY_RUN = 1
         argv_pos += 1
     if '--count' in sys.argv:
@@ -305,6 +308,8 @@ if __name__ == "__main__":
     if COUNT:
         print (" --- Only Counting (No Processing)")
 
+    condor_monitor = CondorJobCountMonitor(threshold=THRESHOLD,verbose=VERBOSE)
+
     # input sample list
     listfile = LIST
     listname = listfile.split("/")
@@ -344,7 +349,7 @@ if __name__ == "__main__":
         # make EventCount file
         if VERBOSE:
             print("making EventCount file")
-        os.system("hadd "+config+"EventCount.root root/EventCount/*130X*.root > /dev/null")
+        os.system("hadd "+config+"EventCount.root root/EventCount/*.root > /dev/null")
         EVTCNT = "./config/EventCount.root"
 
         # make FilterEff file 
@@ -360,6 +365,20 @@ if __name__ == "__main__":
         os.system("echo -n $(tr -d '\n' < "+config+"GRL_JSON.txt) > "+config+"GRL_JSON.txt")
         JSON = "./config/GRL_JSON.txt"
 
+        # copy xs json file
+        XSJSONFILENAME = 'info_XSDB_2025-03-30_14-22.json'
+        command = ["xrdfs", "root://cmseos.fnal.gov/", "ls", "/store/user/z374f439/XSectionJSONs/"]
+        result = subprocess.run(command, capture_output=True, text=True, check=True)
+        pattern = re.compile(r"/store/user/z374f439/XSectionJSONs/info_XSDB_(\d{4}-\d{2}-\d{2}_\d{2}-\d{2})\.json")
+        files = pattern.findall(result.stdout)
+        if files:
+            newest_timestamp = max(files)
+            XSJSONFILENAME = f"info_XSDB_{newest_timestamp}.json"
+        if VERBOSE:
+            print("making xs json file")
+        os.system(f"xrdcp -s root://cmseos.fnal.gov//store/user/z374f439/XSectionJSONs/{XSJSONFILENAME} {config}/XS_jsonfile.json")
+        XSJSONFILE = f"./config/XS_jsonfile.json"
+
         # copy PU root files
         if VERBOSE:
             print("making Pileup file")
@@ -371,6 +390,8 @@ if __name__ == "__main__":
             print("making BTAG file")
         os.system("cp -r root/BtagSF "+config+".")
         os.system("cp -r csv/BtagSF/* "+config+"BtagSF/.")
+        btag_pog_fold = '/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/BTV/'
+        os.system(f"cp -r {btag_pog_fold}* {config}BtagSF/")
         BTAGFOLD = "./config/BtagSF/"
 
         # copy LEP SF files
@@ -415,7 +436,9 @@ if __name__ == "__main__":
     clean_inputlist = []
     input_info      = {}
 
-    knowntags = ["Fall17_94X","Autumn18_102X","Summer16_94X","Fall17_102X","Summer16_102X","Summer20UL16_102X","Summer20UL16APV_102X","Summer20UL17_102X","Summer20UL18_102X","RunIISummer20UL17NanoAODv9","Summer20UL16_130X","Summer20UL16APV_130X","Summer20UL17_130X","Summer20UL18_130X","Summer22_130X","Summer22EE_130X","Summer23_130X","Summer23BPix_130X"]
+    # tags need to follow the format of CAMPAIGN_CMSSWX and CMSSWX must be 5 chars for later DAS checks to work
+    knowntags = ["Autumn18_102X","Fall17_102X","Summer16_102X","Summer20UL16_102X","Summer20UL16APV_102X","Summer20UL17_102X","Summer20UL18_102X","Summer22_130X","Summer22EE_130X","Summer23_130X","Summer23BPix_130X"]
+    filetag = ''
     
     n_samples = 0
     with open(listfile,'r') as mylist:
@@ -517,8 +540,6 @@ if __name__ == "__main__":
         #print "creating tarball from: ", TARGET
         os.system("sleep 10") # sleep so copy command(s) can catch up...
         os.system("tar -C "+config+"/../ -czf "+TARGET+"/config.tgz config")
-        os.system("mkdir -p /ospool/cms-user/"+USER+"/"+NAME)
-        os.system("cp "+TARGET+"/config.tgz /ospool/cms-user/"+USER+"/"+NAME+"/config.tgz")
         if VERBOSE:
             print("Created tar ball")
 
@@ -542,6 +563,7 @@ if __name__ == "__main__":
             sample_handle = sample_handle.replace(".submit",'')
             print (f"submitting: {f}")
             if CSV:
+                condor_monitor.wait_until_jobs_below()
                 os.system('condor_submit '+f+' | tee '+sample_handle+'.txt')
                 with open(sample_handle+'.txt','r') as sample_submit_file:
                     lines = sample_submit_file.read()
@@ -551,9 +573,9 @@ if __name__ == "__main__":
                         input_info[sample_handle]["clusterid"] = clusterid
                 os.system('rm '+sample_handle+'.txt')
             else:
+                condor_monitor.wait_until_jobs_below()
                 os.system('condor_submit ' + f)
             
-    
     # Number of ROOT files and jobs per sample 
     if VERBOSE:
         for f in clean_inputlist:
@@ -587,5 +609,8 @@ if __name__ == "__main__":
     if DRY_RUN or COUNT:
         print("No jobs were submitted.")
     else:
+        # os.system(f'nohup python3 python/CheckFiles.py -d f{filetag}/ -o {OUT_DIR} -e > /dev/null 2>&1 &')
         print(Fore.GREEN + "Congrats... your jobs were submitted!" + Fore.RESET)
+        print('Run this after jobs have finished to check for failed jobs (and resubmit them):')
+        print(f'nohup python3 python/CheckFiles.py -d f{filetag}/ -o {OUT_DIR} -e > CheckFiles_{filetag}.debug 2>&1 &')
 

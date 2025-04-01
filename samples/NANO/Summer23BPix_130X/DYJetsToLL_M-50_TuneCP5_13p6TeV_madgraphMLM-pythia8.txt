@@ -1,5 +1,0 @@
-root://cmsxrootd.fnal.gov//store/mc/Run3Summer23BPixNanoAODv12/DYJetsToLL_M-50_TuneCP5_13p6TeV-madgraphMLM-pythia8/NANOAODSIM/PilotMuonHits_130X_mcRun3_2023_realistic_postBPix_v2-v2/2560000/c8b1f94a-9018-4106-81e8-58c9b956ce25.root
-root://cmsxrootd.fnal.gov//store/mc/Run3Summer23BPixNanoAODv12/DYJetsToLL_M-50_TuneCP5_13p6TeV-madgraphMLM-pythia8/NANOAODSIM/PilotMuonHits_130X_mcRun3_2023_realistic_postBPix_v2-v2/2560000/aa434c63-599e-44ad-8d58-cd9866d52ce5.root
-root://cmsxrootd.fnal.gov//store/mc/Run3Summer23BPixNanoAODv12/DYJetsToLL_M-50_TuneCP5_13p6TeV-madgraphMLM-pythia8/NANOAODSIM/PilotMuonHits_130X_mcRun3_2023_realistic_postBPix_v2-v2/2560000/315be222-b375-4924-8626-74aa6936560d.root
-root://cmsxrootd.fnal.gov//store/mc/Run3Summer23BPixNanoAODv12/DYJetsToLL_M-50_TuneCP5_13p6TeV-madgraphMLM-pythia8/NANOAODSIM/PilotMuonHits_130X_mcRun3_2023_realistic_postBPix_v2-v2/2560000/37ac9a3f-98ff-4b2c-ac2e-4fa03bbae987.root
-root://cmsxrootd.fnal.gov//store/mc/Run3Summer23BPixNanoAODv12/DYJetsToLL_M-50_TuneCP5_13p6TeV-madgraphMLM-pythia8/NANOAODSIM/Pilot_130X_mcRun3_2023_realistic_postBPix_v2-v3/2540000/97657669-9e19-46cf-bc5c-b132f23269cd.root

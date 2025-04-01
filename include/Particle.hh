@@ -6,7 +6,7 @@
 class ParticleList;
 
 /// Particle ID level
-enum ParticleIDType { kNothing, kVeryLoose, kLoose, kMedium, kTight, kVeryTight };
+enum ParticleIDType { kNothing, kVeryLoose, kLoose, kMedium, kTight, kVeryTight, kVeryVeryTight };
 enum LepID { kGold, kSilver, kBronze };
 
 class Particle : public TLorentzVector {
@@ -26,6 +26,12 @@ public:
 
   int SourceID() const;
   void SetSourceID(int sourceid);
+
+  int GenIndex() const;
+  void SetGenIndex(int genindex);
+
+  int GenMomIndex() const;
+  void SetGenMomIndex(int genmomindex);
 
   ParticleIDType ParticleID() const;
   void SetParticleID(ParticleIDType id);
@@ -84,6 +90,8 @@ private:
   int m_PDGID;
   int m_MomPDGID;
   int m_SourceID;
+  int m_GenIndex; // index of particle in gen record, for reco objects, corresponds to matched gen particle index
+  int m_GenMomIndex; // index of mom of particle in gen record, for reco objects, corresponds to mom of matched gen particle index
   ParticleIDType m_ParticleID;
   
   double m_Btag;

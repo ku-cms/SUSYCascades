@@ -7,6 +7,8 @@
 #include <stdio.h>
 #include <dirent.h>
 #include <vector>
+#include <variant>
+#include <memory>
 
 // ROOT includes
 #include <TROOT.h>
@@ -18,6 +20,8 @@
 #include <TLorentzVector.h>
 
 #include "ReducedNtuple.hh"
+#include "SUSYNANOBase.hh"
+#include "NANOULBase.hh"
 #include "NANORun3.hh"
 
 using namespace std;
@@ -45,6 +49,7 @@ int main(int argc, char* argv[]) {
   char JMEFOLD[400];
   char METTRIGFILE[400];
   char PREFIREFILE[400];
+  char XSJSONFILE[400];
 
   bool DO_FILE = false;
   bool DO_LIST = false;
@@ -109,6 +114,7 @@ int main(int argc, char* argv[]) {
     if (strncmp(argv[i],"-jme",4)==0)   sscanf(argv[i],"-jme=%s", JMEFOLD);
     if (strncmp(argv[i],"-metfile",8)==0)   sscanf(argv[i],"-metfile=%s", METTRIGFILE);
     if (strncmp(argv[i],"-prefirefile",12)==0)   sscanf(argv[i],"-prefirefile=%s", PREFIREFILE);
+    if (strncmp(argv[i],"-xsjsonfile",11)==0)   sscanf(argv[i],"-xsjsonfile=%s", XSJSONFILE);
     
     if (strncmp(argv[i],"--sms",5)==0)  DO_SMS = true;
     if (strncmp(argv[i],"--data",6)==0)  IS_DATA = true;
@@ -175,58 +181,75 @@ int main(int argc, char* argv[]) {
   else
     chain = (TChain*) new TChain("Events");
   
+  // add DAS count
+  int NDAS = 0;
+  NeventTool eventTool;
   int Nfile = filenames.size();
   for(int i = 0; i < Nfile; i++){
     chain->Add(filenames[i].c_str());
-    cout << "   Adding file " << filenames[i] << endl;
+    NDAS += eventTool.EventsInDAS(filenames[i]);
+    cout << "   Added file " << filenames[i] << endl;
   }
+  if(NDAS == 0) return 1; // will try to resubmit job
+  std::string DAS_datasetname = eventTool.Get_DASdatasetname(filenames[0]);
 
-  ReducedNtuple<NANORun3>* ntuple = new ReducedNtuple<NANORun3>(chain);
+  using NtupleVariant = std::variant<std::unique_ptr<ReducedNtuple<SUSYNANOBase>>, std::unique_ptr<ReducedNtuple<NANOULBase>>, std::unique_ptr<ReducedNtuple<NANORun3>>>;
+  NtupleVariant ntuple;
+  if(string(FileTag).find("130X") != std::string::npos){ cout << "Using Run3 base" << endl; ntuple = std::make_unique<ReducedNtuple<NANORun3>>(chain); }
+  else if(string(FileTag).find("UL") != std::string::npos){ cout << "Using UL base" << endl; ntuple = std::make_unique<ReducedNtuple<NANOULBase>>(chain); }
+  else { cout << "Using Run2 base" << endl; ntuple = std::make_unique<ReducedNtuple<SUSYNANOBase>>(chain); }
 
-  ntuple->AddLabels(string(DataSet),string(FileTag));
-  ntuple->AddEventCountFile(string(EventCount));
-  ntuple->AddFilterEffFile(string(FilterEff));
-  ntuple->AddPUFolder(string(PUFOLD));
-  ntuple->AddBtagFolder(string(BTAGFOLD));
-  ntuple->AddLepFolder(string(LEPFOLD));
-  ntuple->AddJMEFolder(string(JMEFOLD));
-  ntuple->AddMETTriggerFile(string(METTRIGFILE));
-  ntuple->AddPrefireFile(string(PREFIREFILE));
+  Long64_t N1, N0;
+  std::visit([&](auto& nt) { nt->GetChunks(NDAS, N1, N0, ICHUNK, NCHUNK); }, ntuple);
+  NDAS = N0 - N1;
+
+  std::visit([&](auto& nt) { nt->AddLabels(string(DataSet),string(FileTag)); }, ntuple);
+  std::visit([&](auto& nt) { nt->AddEventCountFile(string(EventCount)); }, ntuple);
+  std::visit([&](auto& nt) { nt->AddFilterEffFile(string(FilterEff)); }, ntuple);
+  std::visit([&](auto& nt) { nt->AddPUFolder(string(PUFOLD)); }, ntuple);
+  std::visit([&](auto& nt) { nt->AddBtagFolder(string(BTAGFOLD)); }, ntuple);
+  std::visit([&](auto& nt) { nt->AddLepFolder(string(LEPFOLD)); }, ntuple);
+  std::visit([&](auto& nt) { nt->AddJMEFolder(string(JMEFOLD)); }, ntuple);
+  std::visit([&](auto& nt) { nt->AddMETTriggerFile(string(METTRIGFILE)); }, ntuple);
+  std::visit([&](auto& nt) { nt->AddPrefireFile(string(PREFIREFILE)); }, ntuple);
+  std::visit([&](auto& nt) { nt->AddXSecJSON(string(XSJSONFILE)); }, ntuple);
   #ifdef _CMSSW_
   if(!DO_SMS && !IS_DATA)
-    ntuple->AddLHAPDF();
+    //ntuple->AddLHAPDF();
+    std::visit([](auto& nt) { nt->AddLHAPDF(); }, ntuple);
   #endif
 
   if(DO_SYS)
-    ntuple->AddSystematics();
+    std::visit([](auto& nt) { nt->AddSystematics(); }, ntuple);
   if(DO_SYS_JES)
-    ntuple->AddJESSystematics();
+    std::visit([](auto& nt) { nt->AddJESSystematics(); }, ntuple);
   if(DO_SYS_JER)
-    ntuple->AddJERSystematics();
+    std::visit([](auto& nt) { nt->AddJERSystematics(); }, ntuple);
   if(DO_SYS_MET)
-    ntuple->AddMETSystematics();
+    std::visit([](auto& nt) { nt->AddMETSystematics(); }, ntuple);
   if(DO_SYS_EES)
-    ntuple->AddEESSystematics();
+    std::visit([](auto& nt) { nt->AddEESSystematics(); }, ntuple);
   if(DO_SYS_MMS)
-    ntuple->AddMMSSystematics();
+    std::visit([](auto& nt) { nt->AddMMSSystematics(); }, ntuple);
   
   if(DO_JSON)
-    ntuple->AddJSONFile(string(JSONFile));
+    std::visit([&](auto& nt) { nt->AddJSONFile(string(JSONFile)); }, ntuple);
 
   if(DO_SMS)
-    ntuple->DoSMS();
+    std::visit([](auto& nt) { nt->DoSMS(); }, ntuple);
 
   if(IS_DATA)
-    ntuple->DoData();
+    std::visit([](auto& nt) { nt->DoData(); }, ntuple);
 
   if(IS_FASTSIM)
-    ntuple->DoFastSim();
+    std::visit([](auto& nt) { nt->DoFastSim(); }, ntuple);
 
   cout << "writing output with ichunk=" << ICHUNK << " nchunk=" << NCHUNK << endl;
-  ntuple->WriteNtuple(string(outputFileName), ICHUNK, NCHUNK, DO_slim);
-
-  delete ntuple;
- 
-  return 0;
+  bool passedDASCheck = std::visit([&](auto& nt) -> bool { return nt->WriteNtuple(string(outputFileName), ICHUNK, NCHUNK, DO_slim, NDAS, string(DAS_datasetname)); }, ntuple);
+  if(!passedDASCheck){
+    std::cout << "JOB FAILED DAS CHECK!" << std::endl;
+    return 1;
+  }
+  else return 0;
 
 }

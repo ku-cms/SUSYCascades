@@ -288,22 +288,42 @@ VSM ProcessList::GetSignalMasses() const {
   VSM signals;
 
   string name;
-  for(int p = 0; p < m_N; p++){
-    if(m_Proc[p].Type() != kSig)
+  for (int p = 0; p < m_N; p++) {
+    if (m_Proc[p].Type() != kSig)
       continue;
 
     name = m_Proc[p].Name();
     size_t l = name.rfind("_");
-    if(l == std::string::npos)
+    if (l == std::string::npos)
       continue;
 
+    // Extract the part before the last "_"
     SM sm(name.substr(0, l));
-    sm += name.substr(l+1,name.length()-l);
-    signals += sm;
+
+    // Extract the numeric parts after the last "_", and combine them with a 0 separator
+    string combinedNumbers = "";
+    size_t start = l + 1;
+    while (start < name.length()) {
+      size_t end = name.find("_", start);
+      if (end == std::string::npos) end = name.length();
+      
+      // Extract the numeric part and append it to the combined string with "0" separator
+      string number = name.substr(start, end - start);
+      if (!combinedNumbers.empty()) {
+        combinedNumbers += "0"; // Add separator before appending the next number
+      }
+      combinedNumbers += number;
+
+      start = end + 1;
+    }
+
+    sm += combinedNumbers; // Append the combined number to the signal name
+    signals += sm; 
   }
 
   return signals;
 }
+
 
 void ProcessList::Print() const {
    for(int p = 0; p < m_N; p++)

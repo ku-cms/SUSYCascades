@@ -12,7 +12,6 @@ RFGLIBS     = $(shell restframes-config --libs)
 
 CXX         = g++
 
-#CXXFLAGS       = -fPIC -Wall -O3 -g
 CXXFLAGS       = -fPIC $(filter-out -stdlib=libc++ -pthread , $(ROOTCFLAGS))
 CXXFLAGS      += $(filter-out -stdlib=libc++ -pthread , $(RFCFLAGS))
 
@@ -35,13 +34,21 @@ SRCDIR_CMSSW      = ./src_cmssw/
 
 SCXX   = $(CXX)
 
-
 #LHAPDF stuff is cmssw specific
 cmssw: LHAPDFCFLAGS = $(shell /cvmfs/cms.cern.ch/el9_amd64_gcc12/external/lhapdf/6.4.0-52852f9a177b8e8b5b72e2ae6b1327b6/bin/lhapdf-config --cflags --ldflags)
 cmssw: LHAPDFGLIBS = $(shell /cvmfs/cms.cern.ch/el9_amd64_gcc12/external/lhapdf/6.4.0-52852f9a177b8e8b5b72e2ae6b1327b6/bin/lhapdf-config --libs)
 cmssw: CXXFLAGS      += $(filter-out -stdlib=libc++ -pthread , $(LHAPDFCFLAGS))
 cmssw: GLIBS         += $(filter-out -stdlib=libc++ -pthread , $(LHAPDFGLIBS))
 cmssw: CXX += -I$(INCLUDEDIR_CMSSW)
+
+# Needed for correctionlib
+CORRECTION_FLAGS = $(shell correction config --cflags --ldflags --rpath)
+
+# For correctionlib
+# cmssw : CXXFLAGS += $(INCLUDEDIR_CLIB)
+# cmssw : GLIBS += $(LIBDIR_CLIB)
+cmssw : CXXFLAGS += $(CORRECTION_FLAGS)
+cmssw : GLIBS += $(CORRECTION_FLAGS)
 
 CC_FILES := $(wildcard src/*.cc)
 HH_FILES := $(wildcard include/*.hh)
@@ -72,6 +79,7 @@ cmssw : CXX   += -D_CMSSW_
 locallib : GLIBS += -L/Users/christopherrogan/GitHub/lwtnn/lib -llwtnn
 locallib : CXX   += -I/Users/christopherrogan/GitHub/lwtnn/include
 
+
 all: alltargets lib
 
 #cmssw: alltargets lib BuildFit.x
@@ -83,8 +91,8 @@ locallib: lib
 
 lib: lib/libKUEWKino.so
 
-#alltargets: MakeReducedNtuple_NANO.x EventCountPlot.x MakeEventCount_NANO.x BuildFitInput.x BuildPlotInput.x BuildFitShapes.x BuildFitInputCondor.x BuildPlotInputCondor.x BuildFitCondor.x
-alltargets: MakeReducedNtuple_NANO.x MakeEventCount_NANO.x
+#alltargets: MakeReducedNtuple_NANO.x EventCountPlot.x MakeEventCount_NANO.x BuildFitInput.x Condor_Plot_1D_NANO.x BuildPlotInput.x BuildFitShapes.x BuildFitInputCondor.x BuildPlotInputCondor.x BuildFitCondor.x
+alltargets: MakeReducedNtuple_NANO.x MakeEventCount_NANO.x Condor_Plot_1D_NANO.x Submit_Plot_1D_NANO.x BuildFitInput.x BuildFitInputCondor.x
 
 EventCountPlot.x:  $(SRCDIR)EventCountPlot.C $(OBJ_FILES) $(HH_FILES)
 	$(CXX) $(CXXFLAGS) -o EventCountPlot.x $(OUTOBJ)/*.o $(GLIBS) $ $<
@@ -117,6 +125,14 @@ BuildFitInput.x:  $(SRCDIR)BuildFitInput.C $(OBJ_FILES) $(HH_FILES)
 BuildPlotInput.x:  $(SRCDIR)BuildPlotInput.C $(SOBJ_FILES) $(HH_FILES)
 	$(CXX) $(CXXFLAGS) -o BuildPlotInput.x $(SOBJ_FILES) $(SGLIBS) $ $<
 	touch BuildPlotInput.x
+
+Condor_Plot_1D_NANO.x:  $(SRCDIR)Condor_Plot_1D_NANO.C $(OBJ_FILES) $(HH_FILES)
+	$(CXX) $(CXXFLAGS) -o Condor_Plot_1D_NANO.x $(OUTOBJ)/*.o $(GLIBS) $ $<
+	touch Condor_Plot_1D_NANO.x
+
+Submit_Plot_1D_NANO.x:  $(SRCDIR)SubmitCondor_Plot_1D_NANO.C $(OBJ_FILES) $(HH_FILES)
+	$(CXX) $(CXXFLAGS) -o Submit_Plot_1D_NANO.x $(OUTOBJ)/*.o $(GLIBS) $ $<
+	touch Submit_Plot_1D_NANO.x
 
 BuildFitShapes.x:  $(SRCDIR)BuildFitShapes.C $(OBJ_FILES) $(HH_FILES)
 	$(CXX) $(CXXFLAGS) -o BuildFitShapes.x $(OUTOBJ)/*.o $(GLIBS) $ $<

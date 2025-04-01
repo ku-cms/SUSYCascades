@@ -1,0 +1,2 @@
+root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL16NanoAODv9/ST_tWll_5f_TuneCP5_13TeV-madgraph-pythia8/NANOAODSIM/106X_mcRun2_asymptotic_v17-v1/2520000/3C08DEEB-DDCC-A341-BE52-8465C90FFBA7.root
+root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL16NanoAODv9/ST_tWll_5f_TuneCP5_13TeV-madgraph-pythia8/NANOAODSIM/106X_mcRun2_asymptotic_v17-v1/40000/B94ECEA7-0179-3248-ADFF-A0E4BC4A7DE1.root

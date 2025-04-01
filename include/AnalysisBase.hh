@@ -9,6 +9,7 @@
 #include <TH1D.h>
 #include <TRandom3.h>
 #include <string>
+#include <functional>
 
 #include "NeventTool.hh"
 #include "XsecTool.hh"
@@ -23,6 +24,8 @@
 
 #include "Particle.hh"
 #include "Systematics.hh"
+
+#include "correction.h"
 
 using namespace std;
 
@@ -40,11 +43,12 @@ public:
   void AddFilterEffFile(const string& rootfile);
   void AddJSONFile(const string& jsonfile);
   void AddPUFolder(const string& pufold);
-  void AddBtagFolder(const string& btagfold);
+  void AddBtagFolder(const string& btagfold, const string& proc_rootfile="", int year=1);
   void AddLepFolder(const string& lepfold);
   void AddJMEFolder(const string& jmefold);
   void AddMETTriggerFile(const string& csvfile);
   void AddPrefireFile(const string& prefirefile);
+  void AddXSecJSON(const string& XSjsonfile);
   #ifdef _CMSSW_
   void AddLHAPDF();
   #endif
@@ -78,7 +82,6 @@ public:
   virtual int GetNPUtrue();
 
   virtual bool GetMETtrigger();
-  virtual bool GetMETHTtrigger();
   virtual bool GetMETORtrigger();
 
   virtual bool GetSingleElectrontrigger();
@@ -93,6 +96,7 @@ public:
   virtual ParticleList GetJetsMET(TVector3& MET, int id = -1);
   virtual ParticleList GetGenJets();
   virtual ParticleList GetElectrons();
+  virtual ParticleList GetLowPtElectrons();
   virtual ParticleList GetMuons();
 
   virtual TVector3 GetAltMET();
@@ -122,6 +126,7 @@ public:
   
   string GetDataSet(){ return m_DataSet; }
   string GetFileTag(){ return m_FileTag; }
+  int    GetYear(){ return m_year; }
   
 protected:
   bool m_DoSMS;
@@ -153,6 +158,12 @@ protected:
 
   string m_DataSet;
   string m_FileTag;
+  int m_year;
+  bool m_IsAPV = false;
+  bool m_IsUL = false;
+  bool m_IsEE = false;
+  bool m_IsBPix = false;
+  bool m_IsRun3 = false;
 
   Systematics m_Systematics;
   
@@ -173,7 +184,7 @@ private:
   int m_SampleIndex;
   virtual int GetSampleIndex();
   int m_Nsample;
-  std::map<int,int>         m_HashToIndex;
+  std::map<long long,int>         m_HashToIndex;
   std::map<int,std::string> m_IndexToSample;
   std::map<int,double>      m_IndexToXsec;
   std::map<int,double>      m_IndexToNevent;
@@ -181,16 +192,15 @@ private:
 
   const Systematic* m_CurSys;
   const Systematic& CurrentSystematic() const;
+  std::unique_ptr<correction::CorrectionSet> m_cset_Btag;
+  virtual void clip_string(string& str, const string& clip){
+    size_t pos = str.find(clip);
+    if (pos != std::string::npos)
+      str.erase(pos, clip.length());
+  }
+  bool minus_iso_hoe(int WPBitMap, int value, std::function<bool(int, int)> comp);
   
 };
 
+
 #endif
-
-
-
-
-
-
-
-
-

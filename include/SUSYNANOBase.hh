@@ -18,7 +18,7 @@ class SUSYNANOBase {
 public :
   TTree          *fChain;   //!pointer to the analyzed TTree or TChain
   Int_t           fCurrent; //!current Tree number in a TChain
-
+  bool            m_Run3;
   // Fixed size dimensions of array or collections stored in the TTree if any.
 
   // Declaration of leaf types
@@ -114,6 +114,39 @@ public :
   Bool_t          Electron_mvaSpring16GP_WP80[25];   //[nElectron]
   Bool_t          Electron_mvaSpring16GP_WP90[25];   //[nElectron]
   Bool_t          Electron_mvaSpring16HZZ_WPL[25];   //[nElectron]
+  Bool_t          Electron_mvaNoIso_WP80[25];   //[nElectron]
+  Bool_t          Electron_mvaIso_WP80[25];   //[nElectron]
+  Int_t           nLowPtElectron;
+  Bool_t          LowPtElectron_convVeto[50];   //[nLowPtElectron]
+  UChar_t         LowPtElectron_convWP[50];   //[nLowPtElectron]
+  UChar_t         LowPtElectron_lostHits[50];   //[nLowPtElectron]
+  Short_t         LowPtElectron_electronIdx[50];   //[nLowPtElectron]
+  Short_t         LowPtElectron_photonIdx[50];   //[nLowPtElectron]
+  Int_t           LowPtElectron_charge[50];   //[nLowPtElectron]
+  Int_t           LowPtElectron_pdgId[50];   //[nLowPtElectron]
+  Float_t         LowPtElectron_ID[50];   //[nLowPtElectron]
+  Float_t         LowPtElectron_convVtxRadius[50];   //[nLowPtElectron]
+  Float_t         LowPtElectron_deltaEtaSC[50];   //[nLowPtElectron]
+  Float_t         LowPtElectron_dxy[50];   //[nLowPtElectron]
+  Float_t         LowPtElectron_dxyErr[50];   //[nLowPtElectron]
+  Float_t         LowPtElectron_dz[50];   //[nLowPtElectron]
+  Float_t         LowPtElectron_dzErr[50];   //[nLowPtElectron]
+  Float_t         LowPtElectron_eInvMinusPInv[50];   //[nLowPtElectron]
+  Float_t         LowPtElectron_energyErr[50];   //[nLowPtElectron]
+  Float_t         LowPtElectron_eta[50];   //[nLowPtElectron]
+  Float_t         LowPtElectron_hoe[50];   //[nLowPtElectron]
+  Float_t         LowPtElectron_mass[50];   //[nLowPtElectron]
+  Float_t         LowPtElectron_miniPFRelIso_all[50];   //[nLowPtElectron]
+  Float_t         LowPtElectron_miniPFRelIso_chg[50];   //[nLowPtElectron]
+  Float_t         LowPtElectron_phi[50];   //[nLowPtElectron]
+  Float_t         LowPtElectron_pt[50];   //[nLowPtElectron]
+  Float_t         LowPtElectron_ptbiased[50];   //[nLowPtElectron]
+  Float_t         LowPtElectron_r9[50];   //[nLowPtElectron]
+  Float_t         LowPtElectron_scEtOverPt[50];   //[nLowPtElectron]
+  Float_t         LowPtElectron_sieie[50];   //[nLowPtElectron]
+  Float_t         LowPtElectron_unbiased[50];   //[nLowPtElectron]
+  UChar_t         LowPtElectron_genPartFlav[50];   //[nLowPtElectron]
+  Short_t         LowPtElectron_genPartIdx[50];   //[nLowPtElectron]
   UInt_t          nFatJet;
   Float_t         FatJet_area[20];   //[nFatJet]
   Float_t         FatJet_btagCMVA[20];   //[nFatJet]
@@ -164,6 +197,7 @@ public :
   Float_t         GenPart_phi[400];   //[nGenPart]
   Float_t         GenPart_pt[400];   //[nGenPart]
   Int_t           GenPart_genPartIdxMother[400];   //[nGenPart]
+  Short_t         Run3GenPart_genPartIdxMother[400];   //[nGenPart]
   Int_t           GenPart_pdgId[400];   //[nGenPart]
   Int_t           GenPart_status[400];   //[nGenPart]
   Int_t           GenPart_statusFlags[400];   //[nGenPart]
@@ -259,6 +293,7 @@ public :
   Int_t           Jet_electronIdx1[80];   //[nJet]
   Int_t           Jet_electronIdx2[80];   //[nJet]
   Int_t           Jet_jetId[80];   //[nJet]
+  UChar_t         Run3Jet_jetId[80];   //[nJet]
   Int_t           Jet_muonIdx1[80];   //[nJet]
   Int_t           Jet_muonIdx2[80];   //[nJet]
   Int_t           Jet_nConstituents[80];   //[nJet]
@@ -387,6 +422,7 @@ public :
   Int_t           ResolvedTopCandidate_j2Idx[150];   //[nResolvedTopCandidate]
   Int_t           ResolvedTopCandidate_j3Idx[150];   //[nResolvedTopCandidate]
   Int_t           ResolvedTopCandidate_type[150];   //[nResolvedTopCandidate]
+  Float_t         Rho_fixedGridRhoFastjetAll;
   Float_t         fixedGridRhoFastjetAll;
   Float_t         fixedGridRhoFastjetCentralCalo;
   Float_t         fixedGridRhoFastjetCentralNeutral;
@@ -508,6 +544,7 @@ public :
   Int_t           Jet_genJetIdx[80];   //[nJet]
   Int_t           Jet_hadronFlavour[80];   //[nJet]
   Int_t           Jet_partonFlavour[80];   //[nJet]
+  Short_t         Run3Jet_partonFlavour[80];   //[nJet]
   Int_t           Muon_genPartIdx[20];   //[nMuon]
   UChar_t         Muon_genPartFlav[20];   //[nMuon]
   Int_t           Photon_genPartIdx[40];   //[nPhoton]
@@ -1284,6 +1321,39 @@ public :
   TBranch        *b_Electron_mvaSpring16GP_WP80;   //!
   TBranch        *b_Electron_mvaSpring16GP_WP90;   //!
   TBranch        *b_Electron_mvaSpring16HZZ_WPL;   //!
+  TBranch        *b_Electron_mvaNoIso_WP80;   //!
+  TBranch        *b_Electron_mvaIso_WP80;   //!
+  TBranch        *b_nLowPtElectron;   //!
+  TBranch        *b_LowPtElectron_convVeto;   //!
+  TBranch        *b_LowPtElectron_convWP;   //!
+  TBranch        *b_LowPtElectron_lostHits;   //!
+  TBranch        *b_LowPtElectron_electronIdx;   //!
+  TBranch        *b_LowPtElectron_photonIdx;   //!
+  TBranch        *b_LowPtElectron_charge;   //!
+  TBranch        *b_LowPtElectron_pdgId;   //!
+  TBranch        *b_LowPtElectron_ID;   //!
+  TBranch        *b_LowPtElectron_convVtxRadius;   //!
+  TBranch        *b_LowPtElectron_deltaEtaSC;   //!
+  TBranch        *b_LowPtElectron_dxy;   //!
+  TBranch        *b_LowPtElectron_dxyErr;   //!
+  TBranch        *b_LowPtElectron_dz;   //!
+  TBranch        *b_LowPtElectron_dzErr;   //!
+  TBranch        *b_LowPtElectron_eInvMinusPInv;   //!
+  TBranch        *b_LowPtElectron_energyErr;   //!
+  TBranch        *b_LowPtElectron_eta;   //!
+  TBranch        *b_LowPtElectron_hoe;   //!
+  TBranch        *b_LowPtElectron_mass;   //!
+  TBranch        *b_LowPtElectron_miniPFRelIso_all;   //!
+  TBranch        *b_LowPtElectron_miniPFRelIso_chg;   //!
+  TBranch        *b_LowPtElectron_phi;   //!
+  TBranch        *b_LowPtElectron_pt;   //!
+  TBranch        *b_LowPtElectron_ptbiased;   //!
+  TBranch        *b_LowPtElectron_r9;   //!
+  TBranch        *b_LowPtElectron_scEtOverPt;   //!
+  TBranch        *b_LowPtElectron_sieie;   //!
+  TBranch        *b_LowPtElectron_unbiased;   //!
+  TBranch        *b_LowPtElectron_genPartFlav;   //!
+  TBranch        *b_LowPtElectron_genPartIdx;   //!
   TBranch        *b_nFatJet;   //!
   TBranch        *b_FatJet_area;   //!
   TBranch        *b_FatJet_btagCMVA;   //!
@@ -1555,6 +1625,7 @@ public :
   TBranch        *b_ResolvedTopCandidate_j2Idx;   //!
   TBranch        *b_ResolvedTopCandidate_j3Idx;   //!
   TBranch        *b_ResolvedTopCandidate_type;   //!
+  TBranch        *b_Rho_fixedGridRhoFastjetAll;   //!
   TBranch        *b_fixedGridRhoFastjetAll;   //!
   TBranch        *b_fixedGridRhoFastjetCentralCalo;   //!
   TBranch        *b_fixedGridRhoFastjetCentralNeutral;   //!
@@ -2354,7 +2425,7 @@ public :
   TBranch        *b_HLT_PFMETNoMu130_PFMHTNoMu130_IDTight;   //!
   TBranch        *b_HLT_PFMETNoMu140_PFMHTNoMu140_IDTight;   //!
 
-  SUSYNANOBase(TTree *tree=0);
+  SUSYNANOBase(TTree *tree=0, bool Run3 = false);
   virtual ~SUSYNANOBase();
   virtual Int_t    Cut(Long64_t entry);
   virtual Int_t    GetEntry(Long64_t entry);
@@ -2367,7 +2438,7 @@ public :
 
 #endif
 
-inline SUSYNANOBase::SUSYNANOBase(TTree *tree) : fChain(0) 
+inline SUSYNANOBase::SUSYNANOBase(TTree *tree, bool Run3) : fChain(0) 
 {
   // if parameter tree is not specified (or zero), connect the file
   // used to generate this class and read the Tree.
@@ -2379,6 +2450,7 @@ inline SUSYNANOBase::SUSYNANOBase(TTree *tree) : fChain(0)
     f->GetObject("Events",tree);
 
   }
+  m_Run3 = Run3;
   Init(tree);
 }
 
@@ -2515,6 +2587,37 @@ inline void SUSYNANOBase::Init(TTree *tree)
   fChain->SetBranchAddress("Electron_mvaSpring16GP_WP80", Electron_mvaSpring16GP_WP80, &b_Electron_mvaSpring16GP_WP80);
   fChain->SetBranchAddress("Electron_mvaSpring16GP_WP90", Electron_mvaSpring16GP_WP90, &b_Electron_mvaSpring16GP_WP90);
   fChain->SetBranchAddress("Electron_mvaSpring16HZZ_WPL", Electron_mvaSpring16HZZ_WPL, &b_Electron_mvaSpring16HZZ_WPL);
+  fChain->SetBranchAddress("Electron_mvaNoIso_WP80", Electron_mvaNoIso_WP80, &b_Electron_mvaNoIso_WP80);
+  fChain->SetBranchAddress("Electron_mvaIso_WP80", Electron_mvaIso_WP80, &b_Electron_mvaIso_WP80);
+  fChain->SetBranchAddress("nLowPtElectron", &nLowPtElectron, &b_nLowPtElectron);
+  fChain->SetBranchAddress("LowPtElectron_convVeto", &LowPtElectron_convVeto, &b_LowPtElectron_convVeto);
+  fChain->SetBranchAddress("LowPtElectron_convWP", &LowPtElectron_convWP, &b_LowPtElectron_convWP);
+  fChain->SetBranchAddress("LowPtElectron_lostHits", &LowPtElectron_lostHits, &b_LowPtElectron_lostHits);
+  fChain->SetBranchAddress("LowPtElectron_electronIdx", &LowPtElectron_electronIdx, &b_LowPtElectron_electronIdx);
+  fChain->SetBranchAddress("LowPtElectron_photonIdx", &LowPtElectron_photonIdx, &b_LowPtElectron_photonIdx);
+  fChain->SetBranchAddress("LowPtElectron_charge", &LowPtElectron_charge, &b_LowPtElectron_charge);
+  fChain->SetBranchAddress("LowPtElectron_pdgId", &LowPtElectron_pdgId, &b_LowPtElectron_pdgId);
+  fChain->SetBranchAddress("LowPtElectron_ID", &LowPtElectron_ID, &b_LowPtElectron_ID);
+  fChain->SetBranchAddress("LowPtElectron_convVtxRadius", &LowPtElectron_convVtxRadius, &b_LowPtElectron_convVtxRadius);
+  fChain->SetBranchAddress("LowPtElectron_deltaEtaSC", &LowPtElectron_deltaEtaSC, &b_LowPtElectron_deltaEtaSC);
+  fChain->SetBranchAddress("LowPtElectron_dxy", &LowPtElectron_dxy, &b_LowPtElectron_dxy);
+  fChain->SetBranchAddress("LowPtElectron_dxyErr", &LowPtElectron_dxyErr, &b_LowPtElectron_dxyErr);
+  fChain->SetBranchAddress("LowPtElectron_dz", &LowPtElectron_dz, &b_LowPtElectron_dz);
+  fChain->SetBranchAddress("LowPtElectron_dzErr", &LowPtElectron_dzErr, &b_LowPtElectron_dzErr);
+  fChain->SetBranchAddress("LowPtElectron_eInvMinusPInv", &LowPtElectron_eInvMinusPInv, &b_LowPtElectron_eInvMinusPInv);
+  fChain->SetBranchAddress("LowPtElectron_energyErr", &LowPtElectron_energyErr, &b_LowPtElectron_energyErr);
+  fChain->SetBranchAddress("LowPtElectron_eta", &LowPtElectron_eta, &b_LowPtElectron_eta);
+  fChain->SetBranchAddress("LowPtElectron_hoe", &LowPtElectron_hoe, &b_LowPtElectron_hoe);
+  fChain->SetBranchAddress("LowPtElectron_mass", &LowPtElectron_mass, &b_LowPtElectron_mass);
+  fChain->SetBranchAddress("LowPtElectron_miniPFRelIso_all", &LowPtElectron_miniPFRelIso_all, &b_LowPtElectron_miniPFRelIso_all);
+  fChain->SetBranchAddress("LowPtElectron_miniPFRelIso_chg", &LowPtElectron_miniPFRelIso_chg, &b_LowPtElectron_miniPFRelIso_chg);
+  fChain->SetBranchAddress("LowPtElectron_phi", &LowPtElectron_phi, &b_LowPtElectron_phi);
+  fChain->SetBranchAddress("LowPtElectron_pt", &LowPtElectron_pt, &b_LowPtElectron_pt);
+  fChain->SetBranchAddress("LowPtElectron_ptbiased", &LowPtElectron_ptbiased, &b_LowPtElectron_ptbiased);
+  fChain->SetBranchAddress("LowPtElectron_r9", &LowPtElectron_r9, &b_LowPtElectron_r9);
+  fChain->SetBranchAddress("LowPtElectron_scEtOverPt", &LowPtElectron_scEtOverPt, &b_LowPtElectron_scEtOverPt);
+  fChain->SetBranchAddress("LowPtElectron_sieie", &LowPtElectron_sieie, &b_LowPtElectron_sieie);
+  fChain->SetBranchAddress("LowPtElectron_unbiased", &LowPtElectron_unbiased, &b_LowPtElectron_unbiased);
   fChain->SetBranchAddress("nFatJet", &nFatJet, &b_nFatJet);
   fChain->SetBranchAddress("FatJet_area", FatJet_area, &b_FatJet_area);
   fChain->SetBranchAddress("FatJet_btagCMVA", FatJet_btagCMVA, &b_FatJet_btagCMVA);
@@ -2564,7 +2667,8 @@ inline void SUSYNANOBase::Init(TTree *tree)
   fChain->SetBranchAddress("GenPart_mass", GenPart_mass, &b_GenPart_mass);
   fChain->SetBranchAddress("GenPart_phi", GenPart_phi, &b_GenPart_phi);
   fChain->SetBranchAddress("GenPart_pt", GenPart_pt, &b_GenPart_pt);
-  fChain->SetBranchAddress("GenPart_genPartIdxMother", GenPart_genPartIdxMother, &b_GenPart_genPartIdxMother);
+  if(m_Run3) fChain->SetBranchAddress("GenPart_genPartIdxMother", Run3GenPart_genPartIdxMother, &b_GenPart_genPartIdxMother);
+  else fChain->SetBranchAddress("GenPart_genPartIdxMother", GenPart_genPartIdxMother, &b_GenPart_genPartIdxMother);
   fChain->SetBranchAddress("GenPart_pdgId", GenPart_pdgId, &b_GenPart_pdgId);
   fChain->SetBranchAddress("GenPart_status", GenPart_status, &b_GenPart_status);
   fChain->SetBranchAddress("GenPart_statusFlags", GenPart_statusFlags, &b_GenPart_statusFlags);
@@ -2659,7 +2763,8 @@ inline void SUSYNANOBase::Init(TTree *tree)
   fChain->SetBranchAddress("Jet_bRegRes", Jet_bRegRes, &b_Jet_bRegRes);
   fChain->SetBranchAddress("Jet_electronIdx1", Jet_electronIdx1, &b_Jet_electronIdx1);
   fChain->SetBranchAddress("Jet_electronIdx2", Jet_electronIdx2, &b_Jet_electronIdx2);
-  fChain->SetBranchAddress("Jet_jetId", Jet_jetId, &b_Jet_jetId);
+  if(m_Run3) fChain->SetBranchAddress("Jet_jetId", Run3Jet_jetId, &b_Jet_jetId);
+  else fChain->SetBranchAddress("Jet_jetId", Jet_jetId, &b_Jet_jetId);
   fChain->SetBranchAddress("Jet_muonIdx1", Jet_muonIdx1, &b_Jet_muonIdx1);
   fChain->SetBranchAddress("Jet_muonIdx2", Jet_muonIdx2, &b_Jet_muonIdx2);
   fChain->SetBranchAddress("Jet_nConstituents", Jet_nConstituents, &b_Jet_nConstituents);
@@ -2786,6 +2891,7 @@ inline void SUSYNANOBase::Init(TTree *tree)
   fChain->SetBranchAddress("ResolvedTopCandidate_j2Idx", ResolvedTopCandidate_j2Idx, &b_ResolvedTopCandidate_j2Idx);
   fChain->SetBranchAddress("ResolvedTopCandidate_j3Idx", ResolvedTopCandidate_j3Idx, &b_ResolvedTopCandidate_j3Idx);
   fChain->SetBranchAddress("ResolvedTopCandidate_type", ResolvedTopCandidate_type, &b_ResolvedTopCandidate_type);
+  if(m_Run3) fChain->SetBranchAddress("Rho_fixedGridRhoFastjetAll", &Rho_fixedGridRhoFastjetAll, &b_Rho_fixedGridRhoFastjetAll);
   fChain->SetBranchAddress("fixedGridRhoFastjetAll", &fixedGridRhoFastjetAll, &b_fixedGridRhoFastjetAll);
   fChain->SetBranchAddress("fixedGridRhoFastjetCentralCalo", &fixedGridRhoFastjetCentralCalo, &b_fixedGridRhoFastjetCentralCalo);
   fChain->SetBranchAddress("fixedGridRhoFastjetCentralNeutral", &fixedGridRhoFastjetCentralNeutral, &b_fixedGridRhoFastjetCentralNeutral);
@@ -2906,7 +3012,8 @@ inline void SUSYNANOBase::Init(TTree *tree)
   fChain->SetBranchAddress("GenJet_hadronFlavour", GenJet_hadronFlavour, &b_GenJet_hadronFlavour);
   fChain->SetBranchAddress("Jet_genJetIdx", Jet_genJetIdx, &b_Jet_genJetIdx);
   fChain->SetBranchAddress("Jet_hadronFlavour", Jet_hadronFlavour, &b_Jet_hadronFlavour);
-  fChain->SetBranchAddress("Jet_partonFlavour", Jet_partonFlavour, &b_Jet_partonFlavour);
+  if(m_Run3) fChain->SetBranchAddress("Jet_partonFlavour", Jet_partonFlavour, &b_Jet_partonFlavour);
+  else fChain->SetBranchAddress("Jet_partonFlavour", Jet_partonFlavour, &b_Jet_partonFlavour);
   fChain->SetBranchAddress("Muon_genPartIdx", Muon_genPartIdx, &b_Muon_genPartIdx);
   fChain->SetBranchAddress("Muon_genPartFlav", Muon_genPartFlav, &b_Muon_genPartFlav);
   fChain->SetBranchAddress("Photon_genPartIdx", Photon_genPartIdx, &b_Photon_genPartIdx);

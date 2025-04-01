@@ -2,7 +2,7 @@
 #define BtagSFTool_h
 
 #include <TEfficiency.h>
-
+#include <TH1D.h>
 #include "../include/FormulaBin.hh"
 
 using std::vector;
@@ -53,9 +53,9 @@ public:
   double EFF(double pT, int year, int flavor, bool FastSim = false);
   double SF(double pT, int year, int flavor, int updown = 0, bool FastSim = false);
   
-  void BuildMap(const std::string& btagSFfolder);
+  void BuildMap(const std::string& btagSFfolder, const std::string& proc_rootfile="", int year=1);
 
-  void SetEfficiencies(const std::string& rootfile);
+  void SetEfficiencies(const std::string& rootfile, const std::string& proc_rootfile, int year=1);
   
   void SetSFs(const std::string& csvfile, int year, bool FastSim = false);
   
@@ -81,9 +81,3 @@ private:
 };
 
 #endif
-
-
-
-
-
-

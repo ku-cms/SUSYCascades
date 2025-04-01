@@ -3,6 +3,7 @@
 
 #include "NtupleBase.hh"
 #include "SUSYNANOBase.hh"
+#include "NANOULBase.hh"
 #include "NANORun3.hh"
 #include "NeventTool.hh"
 
@@ -22,7 +23,21 @@ NtupleBase<Base>::~NtupleBase(){
 }
 
 template <class Base>
-void NtupleBase<Base>::WriteNtuple(const string& filename, int ichunk, int nchunk, bool do_slim){
+void NtupleBase<Base>::GetChunks(const Long64_t& NTOT, Long64_t& N0, Long64_t& N1, int ichunk, int nchunk){
+  if(nchunk >= NTOT){
+    N1 = ichunk;
+    N0 = ichunk-1;
+  } else {
+    N1 = NTOT/nchunk;
+    if(NTOT%nchunk > 0)
+      N1++;
+    N0 = (ichunk-1)*N1;
+    N1 = N0 + N1;
+  }
+}
+
+template <class Base>
+bool NtupleBase<Base>::WriteNtuple(const string& filename, int ichunk, int nchunk, bool do_slim, int NDAS, const string& DAS_datasetname){
   TFile* outfile = new TFile(filename.c_str(),"RECREATE");
   outfile->cd();
 
@@ -39,19 +54,9 @@ void NtupleBase<Base>::WriteNtuple(const string& filename, int ichunk, int nchun
   gErrorIgnoreLevel = kFatal;
   Long64_t NTOT = Base::fChain->GetEntries();
   gErrorIgnoreLevel = 0;
-  cout << NTOT << endl;
+  cout << "NTOT: " << NTOT << endl;
   Long64_t N1, N0;
-  if(nchunk >= NTOT){
-    N1 = ichunk;
-    N0 = ichunk-1;
-  } else {
-    N1 = NTOT/nchunk;
-    if(NTOT%nchunk > 0)
-      N1++;
-    N0 = (ichunk-1)*N1;
-    N1 = N0 + N1;
-  }
-
+  GetChunks(NTOT, N0, N1, ichunk, nchunk);
   // Initialize Histogram Booking
   vector<TH1D*> histos;
   if(!AnalysisBase<Base>::IsData())
@@ -139,24 +144,31 @@ void NtupleBase<Base>::WriteNtuple(const string& filename, int ichunk, int nchun
   
   string dataset = string(AnalysisBase<Base>::GetDataSet());
   string filetag = string(AnalysisBase<Base>::GetFileTag());
-  int NDAS = 0;
   double Nevent;
   double Nweight = 0.;
+  int Nevent_tot = 0;
   int MP;
   int MC;
+  std::string saved_DAS_datasetname = DAS_datasetname;
   tout->Branch("NDAS", &NDAS);
   tout->Branch("Nevent", &Nevent);
   tout->Branch("Nweight", &Nweight);
   tout->Branch("filetag", &filetag);
   tout->Branch("dataset", &dataset);
+  tout->Branch("DAS_datasetname", &saved_DAS_datasetname);
   tout->Branch("MP", &MP);
   tout->Branch("MC", &MC);
-  // add DAS count
-  NeventTool eventTool;
-  NDAS = eventTool.EventsInDAS(dataset, filetag);
   int Nmass = m_masses.size();
+  // Loop for DAS check
+  for(int i = 0; i < Nmass; i++){
+    Nevent_tot += m_mapNevent[m_masses[i]];
+  }
+  bool passed_DAS = true;
+  if(Nevent_tot != NDAS) passed_DAS = false;
+  // Loop to fill tree
   for(int i = 0; i < Nmass; i++){
     Nevent = m_mapNevent[m_masses[i]];
+    NDAS = Nevent; // since we already passed DAS check above, set NDAS to Nevent for filling tree
     MP = m_masses[i].first;
     MC = m_masses[i].second;
     tout->Fill();
@@ -178,9 +190,11 @@ void NtupleBase<Base>::WriteNtuple(const string& filename, int ichunk, int nchun
 
   m_Trees.clear();
   m_Label2Tree.clear();
-
+  return passed_DAS;
   
 }
 
+template class NtupleBase<SUSYNANOBase>;
+template class NtupleBase<NANOULBase>;
 template class NtupleBase<NANORun3>;
 

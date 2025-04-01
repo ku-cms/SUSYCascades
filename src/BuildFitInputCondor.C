@@ -26,15 +26,17 @@ void WriteScriptConnect(const string& src_name,
 		 const string& command,
 		 const string& OutputFold);
 
+void MakeConnectTarball(const string& OutputFold);
+
 int main(int argc, char* argv[]) {
   int  maxN = 1;
   bool dryRun = false;
   bool connect = false;
   bool doSigFile = false;
   string SigFile = "";
-  
+  bool sigProc = false;  
   //string NtuplePath = "root://xrootd.unl.edu//store/user/zflowers/crogan/";
-  string NtuplePath = "root://cmseos.fnal.gov//store/user/lpcsusylep/NTUPLES_v0/";
+  string NtuplePath = "root://cmseos.fnal.gov//store/user/lpcsusylep/NTUPLES_v2/";
   string OutFile    = "BuildFitInput_output.root";
 
   bool bprint = false;
@@ -119,6 +121,9 @@ int main(int argc, char* argv[]) {
     if(strncmp(argv[i],"++sys", 5) == 0){
       BuildFitInputCmd += "++sys ";
     }
+    if(strncmp(argv[i],"++treesys",9) ==0){
+      BuildFitInputCmd += "++treesys ";
+    }
     if(strncmp(argv[i],"-maskSR", 7) == 0){
       BuildFitInputCmd += "-maskSR ";
     }
@@ -142,7 +147,21 @@ int main(int argc, char* argv[]) {
     } 
     if(strncmp(argv[i],"--connect", 9) == 0){
       connect = true;
-    } 
+    }
+    if(strncmp(argv[i],"-treeName", 9) == 0){
+        i++;
+	BuildFitInputCmd += "-treeName " + string(argv[i]) + " ";
+    }
+    if(strncmp(argv[i],"-treeSysName", 12) ==0){
+        i++;
+	BuildFitInputCmd += "-treeSysName " + string(argv[i]) + " ";
+    }
+    if(strncmp(argv[i],"+SMS", 4)==0){
+        sigProc = true;
+        BuildFitInputCmd += "+SMS ";
+    }
+   
+ 
   }
       
   if((proc_to_add.size() == 0) &&
@@ -198,7 +217,13 @@ int main(int argc, char* argv[]) {
   }
   for(int p = 0; p < int(proc_to_add.size()); p++){
     cout << "Adding processes that match \"" << proc_to_add[p] << "\"" << endl;
-    samples += ST.Get(proc_to_add[p]);
+    //samples += ST.Get(proc_to_add[p]);
+    if(sigProc){
+     samples += ST.GetStrictSignalMatch(proc_to_add[p]);
+    }else{
+    //otherwise do the normal thing 
+     samples += ST.Get(proc_to_add[p]);
+    }
   }
 
   // prepare output folder
@@ -274,6 +299,9 @@ int main(int argc, char* argv[]) {
      procs.clear();
     }
   }
+  if(connect){
+   MakeConnectTarball(RootFold);
+  }
   condorsubmit.close();
 
   if(dryRun){
@@ -285,7 +313,19 @@ int main(int argc, char* argv[]) {
   }
   
 }
-
+void MakeConnectTarball(const string& OutputFold){
+  gSystem->Exec("mkdir -p config_BuildFitInput");
+  gSystem->Exec("mkdir -p config_BuildFitInput/BtagSF");
+  gSystem->Exec("cp BuildFitInput.x config_BuildFitInput/");
+  gSystem->Exec("cp scripts/cmssw_setup_connect.sh config_BuildFitInput/");
+  gSystem->Exec("cp scripts/setup_RestFrames_connect.sh config_BuildFitInput/");
+  gSystem->Exec("cp root/BtagSF/*.root config_BuildFitInput/BtagSF/.");
+  gSystem->Exec("cp csv/BtagSF/* config_BuildFitInput/BtagSF/.");
+  gSystem->Exec("tar -czf config_BuildFitInput.tgz config_BuildFitInput/");
+  gSystem->Exec(("mv config_BuildFitInput.tgz "+OutputFold+"/../").c_str());
+  gSystem->Exec("rm -r config_BuildFitInput/");
+  return;
+}
 void WriteScriptConnect(const string& src_name,
 		 const string& log_name,
 		 const string& command,
@@ -299,7 +339,7 @@ void WriteScriptConnect(const string& src_name,
    root_output = root_output.substr(pos, root_output.length()-pos);
   }
 //cout << "command: " << command << endl;
-  
+/* outsource testing to speed up submission
   gSystem->Exec("mkdir -p config_BuildFitInput");
   gSystem->Exec("mkdir -p config_BuildFitInput/BtagSF");
   gSystem->Exec("cp BuildFitInput.x config_BuildFitInput/");
@@ -310,7 +350,7 @@ void WriteScriptConnect(const string& src_name,
   gSystem->Exec("tar -czf config_BuildFitInput.tgz config_BuildFitInput/");
   gSystem->Exec(("mv config_BuildFitInput.tgz "+OutputFold+"/../").c_str());
   gSystem->Exec("rm -r config_BuildFitInput/");
-  
+*/ 
   file << "universe = vanilla" << endl;
   file << "executable = execute_script_BuildFitInput.sh" << endl;
   file << "getenv = True" << endl;
@@ -321,12 +361,14 @@ void WriteScriptConnect(const string& src_name,
   file << "log = "    << log_name << ".log" << endl;
   file << "Requirements = (Machine != \"red-node000.unl.edu\") && (Machine != \"red-c2325.unl.edu\")" << endl;
   file << "request_memory = 2 GB" << endl;
-  file << "transfer_input_files = /uscms/home/z374f439/nobackup/CMSSW_10_6_5/src/KUEWKinoAnalysis/csv/METTrigger/Parameters.csv,/uscms/home/z374f439/nobackup/whatever_you_want/sandbox-CMSSW_10_6_5-6403d6f.tar.bz2,"+pwd+"/"+OutputFold+"/../config_BuildFitInput.tgz" << endl;
+  file << "transfer_input_files = /uscms/home/janguian/nobackup/CMSSW_10_6_5/src/KUEWKinoAnalysis_NewNtuples/csv/METTrigger/Parameters.csv,/uscms/home/z374f439/nobackup/whatever_you_want/sandbox-CMSSW_10_6_5-6403d6f.tar.bz2,"+pwd+"/"+OutputFold+"/../config_BuildFitInput.tgz" << endl;
+ // file << "transfer_input_files = /home/jsingera/jsingera/CMSSW_10_6_5/src/KUEWKinoAnalysis_treeSysDev/csv/METTrigger/Parameters.csv,/ospool/cms-user/zflowers/public/sandbox-CMSSW_10_6_5-6403d6f.tar.bz2,"+pwd+"/"+OutputFold+"/../config_BuildFitInput.tgz" << endl;
+
   file << "should_transfer_files = YES" << endl;
   file << "when_to_transfer_output = ON_EXIT" << endl;
   file << "transfer_output_files = "+root_output << endl;
   file << "transfer_output_remaps = \""+root_output+"="+pwd+"/"+OutputFold+"/"+command.substr(command.find("-o ")+3)+"\"" << endl;
-  file << "+ProjectName=\"cms.org.ku\""<< endl;
+  file << "+ProjectName=\"cms.org.cern\""<< endl;
   file << "+REQUIRED_OS=\"rhel7\"" << endl;
   file << "+RequiresCVMFS=True" << endl;
   file << "queue " << endl;

@@ -1,0 +1,10 @@
+root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/ZJetsToNuNu_HT-800To1200_TuneCP5_13TeV-madgraphMLM-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/70000/9772EA21-5ED9-3740-80A7-CE3B79789B83.root
+root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/ZJetsToNuNu_HT-800To1200_TuneCP5_13TeV-madgraphMLM-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/120000/FD7595B9-5951-5841-9BF1-4CDB1EAE22B0.root
+root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/ZJetsToNuNu_HT-800To1200_TuneCP5_13TeV-madgraphMLM-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/120000/40C2289D-80BC-4A4D-BD34-F34C103B1E44.root
+root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/ZJetsToNuNu_HT-800To1200_TuneCP5_13TeV-madgraphMLM-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/120000/677490DF-283F-B149-A391-C1002BA3C400.root
+root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/ZJetsToNuNu_HT-800To1200_TuneCP5_13TeV-madgraphMLM-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/270000/B1DA332F-6EC7-1844-B08C-AA89DCB9DF6E.root
+root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/ZJetsToNuNu_HT-800To1200_TuneCP5_13TeV-madgraphMLM-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/280000/2FF59E3E-B8C4-4D43-AADE-9A717B7A41AD.root
+root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/ZJetsToNuNu_HT-800To1200_TuneCP5_13TeV-madgraphMLM-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/280000/E2AFA167-F0C6-2D4C-8FB5-FCB1F87D2A1F.root
+root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/ZJetsToNuNu_HT-800To1200_TuneCP5_13TeV-madgraphMLM-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/130000/BA79B808-57CD-F441-9338-E0D728D22A7B.root
+root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/ZJetsToNuNu_HT-800To1200_TuneCP5_13TeV-madgraphMLM-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/270000/A3C026B7-4B0B-4442-8302-41754556F468.root
+root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/ZJetsToNuNu_HT-800To1200_TuneCP5_13TeV-madgraphMLM-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/70000/A542FA0A-7846-2943-9617-3645A412CA70.root

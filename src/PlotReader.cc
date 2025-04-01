@@ -181,44 +181,6 @@ void PlotReader::ReadHists(){
   }
 }
 
-
-    /*
-    if(name.find("SMS") == std::string::npos)
-      continue;
-    sscanf(name.c_str(), "SMS_%d_%d", &M0, &M1);
-
-    Process proc(Form("%s_%d", prefix.c_str(), 10000*M0+M1), kSig);
-  
-  int Nproc = m_Proc.GetN();
-  int Nsys  = ProcSys.GetN();
-  for(int p = 0; p < Nproc; p++){
-    Systematics sys;
-    string proc = m_Proc[p].Name();
-    //if(proc.find("Fakes") != std::string::npos) continue;
-    //cout << "proc #" << p << ": " << proc << endl;
-    for(int s = 0; s < Nsys; s++){
-      string label = ProcSys[s].Name();
-      if((proc.find("Fakes") == std::string::npos) &&
-	 (label.find("Fakes") != std::string::npos))
-	continue;
-if(label.find(proc+"_") == std::string::npos) continue;
-      if(label.find(proc) == 0){
-	label.replace(0,proc.length()+1,"");
-	if(label.find("Up") != std::string::npos)
-	  label.replace(label.find("Up"),2,"");
-	if(label.find("Down") != std::string::npos)
-	  label.replace(label.find("Down"),4,"");
-	sys += Systematic(label);
-      }
-    }
-    if(sys.GetN() > 0)
-      m_ProcSys[m_Proc[p]] = sys;
-    m_Sys += sys;
-  }
-}
- */
- 
-
 TH1D* PlotReader::GetHist(const string& name,
 			  const string& var,
 			  const string& proc,

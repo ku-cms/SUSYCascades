@@ -1,0 +1,10 @@
+root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL16NanoAODv9/ZJetsToNuNu_HT-200To400_TuneCP5_13TeV-madgraphMLM-pythia8/NANOAODSIM/106X_mcRun2_asymptotic_v17-v1/280000/9509C604-E49E-004A-BDF5-5AE4CB7F4F07.root
+root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL16NanoAODv9/ZJetsToNuNu_HT-200To400_TuneCP5_13TeV-madgraphMLM-pythia8/NANOAODSIM/106X_mcRun2_asymptotic_v17-v1/130000/669F718A-FE06-0C42-8676-60A9FC654021.root
+root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL16NanoAODv9/ZJetsToNuNu_HT-200To400_TuneCP5_13TeV-madgraphMLM-pythia8/NANOAODSIM/106X_mcRun2_asymptotic_v17-v1/130000/0BF41B16-76DA-554F-873C-3B1CC378BD2C.root
+root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL16NanoAODv9/ZJetsToNuNu_HT-200To400_TuneCP5_13TeV-madgraphMLM-pythia8/NANOAODSIM/106X_mcRun2_asymptotic_v17-v1/70000/65718F48-36AF-BB49-9B04-B2808B8B22B7.root
+root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL16NanoAODv9/ZJetsToNuNu_HT-200To400_TuneCP5_13TeV-madgraphMLM-pythia8/NANOAODSIM/106X_mcRun2_asymptotic_v17-v1/120000/044A5FB7-0855-F045-AFA0-4CE96672E873.root
+root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL16NanoAODv9/ZJetsToNuNu_HT-200To400_TuneCP5_13TeV-madgraphMLM-pythia8/NANOAODSIM/106X_mcRun2_asymptotic_v17-v1/120000/1B1FE48D-10E0-B048-B642-3F33A0D4EBDF.root
+root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL16NanoAODv9/ZJetsToNuNu_HT-200To400_TuneCP5_13TeV-madgraphMLM-pythia8/NANOAODSIM/106X_mcRun2_asymptotic_v17-v1/280000/C419EF23-1269-AA4E-996C-814346D81295.root
+root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL16NanoAODv9/ZJetsToNuNu_HT-200To400_TuneCP5_13TeV-madgraphMLM-pythia8/NANOAODSIM/106X_mcRun2_asymptotic_v17-v1/280000/B0F23177-D5BF-A04D-95CB-BE074AE6E4A6.root
+root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL16NanoAODv9/ZJetsToNuNu_HT-200To400_TuneCP5_13TeV-madgraphMLM-pythia8/NANOAODSIM/106X_mcRun2_asymptotic_v17-v1/270000/F81384DE-768F-D44B-8648-E707B743870E.root
+root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL16NanoAODv9/ZJetsToNuNu_HT-200To400_TuneCP5_13TeV-madgraphMLM-pythia8/NANOAODSIM/106X_mcRun2_asymptotic_v17-v1/270000/30A251DB-38C6-BB4C-80B2-63F41C8FC010.root
