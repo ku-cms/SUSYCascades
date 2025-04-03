@@ -15,5 +15,5 @@ root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WZGtoLNuZG_TuneCP5_13
 root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WZGtoLNuZG_TuneCP5_13p6TeV_amcatnlo-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/30000/abf0dae8-be71-469d-bbb7-01996fff8c14.root
 root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WZGtoLNuZG_TuneCP5_13p6TeV_amcatnlo-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/30000/3a2a64ab-e404-4fc4-82f4-d3b32608d106.root
 root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WZGtoLNuZG_TuneCP5_13p6TeV_amcatnlo-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/30000/edf3a308-1ae6-48b4-b9ad-6aaa23478854.root
-root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WZGtoLNuZG_TuneCP5_13p6TeV_amcatnlo-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/2550000/dbed95b1-06be-483c-9c2a-25dbd5bf4e53.root
 root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WZGtoLNuZG_TuneCP5_13p6TeV_amcatnlo-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/40000/9f11d9a5-0211-4435-9896-f57027809001.root
+root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WZGtoLNuZG_TuneCP5_13p6TeV_amcatnlo-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/2550000/dbed95b1-06be-483c-9c2a-25dbd5bf4e53.root
