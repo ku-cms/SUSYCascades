@@ -109,9 +109,9 @@ def ReadFilterList(filterlist_filename):
             if filterlist:
                 return filterlist
             else:
-                return None
+                return []
     except FileNotFoundError:
-        return []  # Return an empty list if the file doesn't exist
+        return None
 
 def UpdateFilterList(DataSetName, filterlist_filename, add):
 # add == True means add to list, False means remove if in list
@@ -327,10 +327,6 @@ def main():
         ]
         fileFilterList = ReadFilterList(f"{directory}/CheckFiles_FilterList.txt")
         if fileFilterList is not None: filter_list.extend(fileFilterList)
-        if not filter_list:
-            print("All datasets have already passed DAS check!")
-            print("Rerun with -a if you would like to explicitly check again...")
-            return
         if checkAll: filter_list.clear()
 
         time.sleep(1)
