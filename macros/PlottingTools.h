@@ -26,6 +26,7 @@
 #include "../include/SampleTool.hh"
 #include "../include/ScaleFactorTool.hh"
 #include "../include/Leptonic.hh"
+#include "../include/FitPlotter.hh"
 
 #include "RestFrames/RestFrames.hh"
 
@@ -45,9 +46,10 @@ double g_NY;
 string g_Label;
 // root file to store output of plots
 string output_root_file = "output_Plot_";
-bool SavePDF = false; // whether or not to save pdfs of plots
-vector<int> colors = {kBlue,kGreen+2,kRed+2,kOrange-3,kMagenta+1,kAzure+6,kSpring,kRed-2,kBlue-1,kPink+1,kTeal,kBlack,kGray};
-vector<int> markers = {20,21,22,23,29,32,33,34,35,36,43,49};
+bool SavePDF = true; // whether or not to save pdfs of plots
+string folder_name = "";
+
+FitPlotter FP("","","");
 
 // Function to sort histograms and reorder the map accordingly
 void SortHistogramsAndProcesses(std::vector<TH1*>& histograms, std::vector<std::pair<std::string, ProcessList>>& vec_samples){
@@ -98,7 +100,7 @@ void SetMinimumBinContent(TH1* hist, double min_value) {
 }
 
 
-void Plot_Stack(vector<TH1*>& vect_h, std::vector<std::pair<std::string, ProcessList>>& vec_samples, double signal_boost){
+void Plot_Stack(vector<TH1*>& vect_h, std::vector<std::pair<std::string, ProcessList>> vec_samples, double signal_boost){
   TH1D* h_BKG = nullptr;
   TH1D* h_DATA = nullptr;
   bool isBKG = false;
@@ -132,7 +134,7 @@ void Plot_Stack(vector<TH1*>& vect_h, std::vector<std::pair<std::string, Process
   
   double h_min, h_max;
   GetMinMaxIntegral(vect_h, h_min, h_max);
-  if(h_min <= 0.) h_min = 1.e-2;
+  if(h_min <= 0.) h_min = 1.e-1;
   double fmax = -1.;
   int imax = -1;
   for(int i = 0; i < Nsample; i++){
@@ -148,7 +150,7 @@ void Plot_Stack(vector<TH1*>& vect_h, std::vector<std::pair<std::string, Process
   gStyle->SetOptTitle(0);
   gStyle->SetOptStat(0);
   gStyle->SetOptFit(11111111);
-  TCanvas* can = (TCanvas*) new TCanvas(("can_"+g_PlotTitle).c_str(),("can_"+g_PlotTitle).c_str(),1200,700);
+  TCanvas* can = (TCanvas*) new TCanvas(("can_"+g_PlotTitle).c_str(),("can_"+g_PlotTitle).c_str(),1200,600); // 1200, 700 is default
 
   double hlo = 0.09;
   double hhi = 0.22;
@@ -199,7 +201,7 @@ void Plot_Stack(vector<TH1*>& vect_h, std::vector<std::pair<std::string, Process
       if(vect_h[index]->GetEntries() == 0) {index++; continue;}
       vect_h[index]->SetLineColor(kBlack);
       vect_h[index]->SetLineWidth(1.0);
-      vect_h[index]->SetFillColor(colors[index]);
+      vect_h[index]->SetFillColor(FP.getColor(p->first));
       vect_h[index]->SetFillStyle(1001);
       vect_h[index]->Draw("SAME HIST");
     }
@@ -220,7 +222,7 @@ void Plot_Stack(vector<TH1*>& vect_h, std::vector<std::pair<std::string, Process
       vect_h[index]->SetMarkerSize(0.);
       vect_h[index]->SetMarkerColor(kBlack);
       vect_h[index]->SetLineStyle(7);
-      vect_h[index]->SetLineColor(colors[index]);
+      vect_h[index]->SetLineColor(FP.getColor(p->first));
       vect_h[index]->Draw("SAME HIST");
     }
     if(p->second[0].Type() == kData){
@@ -228,7 +230,7 @@ void Plot_Stack(vector<TH1*>& vect_h, std::vector<std::pair<std::string, Process
       vect_h[index]->SetMarkerSize(0.);
       vect_h[index]->SetMarkerColor(kBlack);
       vect_h[index]->SetLineStyle(7);
-      vect_h[index]->SetLineColor(colors[index]);
+      vect_h[index]->SetLineColor(FP.getColor(p->first));
       vect_h[index]->Draw("SAME");
     }
     index++;
@@ -245,11 +247,11 @@ void Plot_Stack(vector<TH1*>& vect_h, std::vector<std::pair<std::string, Process
   for (auto p = vec_samples.begin(); p != vec_samples.end(); p++){
     if(vect_h[index]->GetEntries() == 0) {index++; continue;}
     if(p->second[0].Type() == kBkg)
-      leg->AddEntry(vect_h[index],p->first.c_str(),"F");
-    else if(p->second[0].Type() == kSig)
-      leg->AddEntry(vect_h[index],(p->first+" * "+std::to_string(int(signal_boost))).c_str(),"F");
+      leg->AddEntry(vect_h[index],FP.getTitle(p->first).c_str(),"F");
+    else if(p->second[0].Type() == kSig && signal_boost != 1.)
+      leg->AddEntry(vect_h[index],(FP.getTitle(p->first)+" * "+std::to_string(int(signal_boost))).c_str(),"F");
     else
-      leg->AddEntry(vect_h[index],p->first.c_str());
+      leg->AddEntry(vect_h[index],FP.getTitle(p->first).c_str());
     index++;
   }
   leg->SetLineColor(kWhite);
@@ -262,10 +264,10 @@ void Plot_Stack(vector<TH1*>& vect_h, std::vector<std::pair<std::string, Process
   l.SetNDC();
   l.SetTextSize(0.05);
   l.SetTextFont(132);
-  l.DrawLatex(0.65,0.943,g_Label.c_str());
+  l.DrawLatex(0.55,0.943,g_Label.c_str());
   l.SetTextSize(0.04);
   l.SetTextFont(42);
-  l.DrawLatex(0.15,0.943,"#bf{#it{CMS}} Internal 13 TeV Simulation");
+  l.DrawLatex(0.09,0.943,"#bf{#it{CMS}} Internal 13 TeV Simulation");
   l.SetTextSize(0.05);
   l.SetTextFont(132);
   //string s_lumi = "#scale[0.6]{#int} #it{L dt} = "+to_string(int(g_Lumi))+" fb^{-1}";
@@ -312,7 +314,7 @@ void Plot_Stack(vector<TH1*>& vect_h, std::vector<std::pair<std::string, Process
     }
   }
   
-  string pdf_title = g_PlotTitle+"_";
+  string pdf_title = folder_name+"/"+g_PlotTitle+"_";
   pdf_title += can->GetTitle();
   gErrorIgnoreLevel = 1001;
   if(SavePDF)
@@ -380,7 +382,7 @@ void Plot_Eff(TEfficiency* e){
   l.SetTextFont(42);
   l.DrawLatex(0.7,0.04,g_Label.c_str());
 
-  string pdf_title = g_PlotTitle+"_";
+  string pdf_title = folder_name+"/"+g_PlotTitle+"_";
   pdf_title += can->GetTitle();
   gErrorIgnoreLevel = 1001;
   if(SavePDF)
@@ -440,7 +442,7 @@ void Plot_Hist(TH1* h, bool Scale, double Scale_Val, double signal_boost, bool I
   l.SetTextFont(42);
   l.DrawLatex(0.7,0.04,g_Label.c_str());
 
-  string pdf_title = g_PlotTitle+"_";
+  string pdf_title = folder_name+"/"+g_PlotTitle+"_";
   pdf_title += can->GetTitle();
   gErrorIgnoreLevel = 1001;
   if(SavePDF)
@@ -507,7 +509,7 @@ void Plot_Hist(TH2* h, bool Scale, double Scale_Val, double signal_boost, bool I
   l.SetTextFont(42);
   l.DrawLatex(0.7,0.04,g_Label.c_str());
 
-  string pdf_title = g_PlotTitle+"_";
+  string pdf_title = folder_name+"/"+g_PlotTitle+"_";
   pdf_title += can->GetTitle();
   gErrorIgnoreLevel = 1001;
   if(SavePDF)
@@ -570,7 +572,7 @@ void Plot_Ratio(TH1* h_num, TH1* h_den){
   l.SetTextFont(42);
   l.DrawLatex(0.135,0.943,"#bf{CMS} Simulation Preliminary");
 
-  string pdf_title = g_PlotTitle+"_";
+  string pdf_title = folder_name+"/"+g_PlotTitle+"_";
   pdf_title += can->GetTitle();
   gErrorIgnoreLevel = 1001;
   if(SavePDF)

@@ -2,7 +2,7 @@
 
 void Plot_Advanced(){
 
-  std::cout << "Saving plots to: " << output_root_file << std::endl;
+  Long64_t start = gSystem->Now();
   RestFrames::SetStyle();
 
   string NtuplePath = "/local-scratch/zflowers/NTUPLES/HADD/";
@@ -13,21 +13,29 @@ void Plot_Advanced(){
   
   ScaleFactorTool SF;
 
-  output_root_file += "Advanced";
+  output_root_file += "Advanced_";
   //g_Label = "PreSelection";
-  //g_Label = "2L gold 0J SR";
+  g_Label = "2L GG 0B inclS SR";
+  //g_Label = "2L notGG 0B inclS SR";
   //g_Label = "2 lepton SR";
   //g_Label = "2 lepton ttbar CR";
-  output_root_file += "_"+g_Label+".root";
+  output_root_file += g_Label+".root";
   // Replaces spaces in name of output file with _
   std::replace(output_root_file.begin(), output_root_file.end(), ' ', '_');
+  folder_name = output_root_file;
+  size_t str_root_pos = folder_name.rfind(".root");
+  if (str_root_pos != std::string::npos && str_root_pos == folder_name.length() - 5)
+    folder_name.erase(str_root_pos, 5);
+  if(SavePDF)
+    gSystem->Exec(("mkdir -p "+folder_name).c_str());
+  std::cout << "Saving plots to: " << output_root_file << std::endl;
 
-  int SKIP = 10000; // note that this only applies to BKG
+  int SKIP = 1; // note that this only applies to BKG
   //double lumi = 138.; // Run 2
   //double lumi = 138.+109+27+34; // Run 2&3
-  double lumi = 9.451; // Summer23BPix
-  //double lumi = 400.;
-  double signal_boost = 1000.;
+  //double lumi = 9.451; // Summer23BPix
+  double lumi = 400.; // estimated Run2+Run3
+  double signal_boost = 10.;
   bool Norm = true; // scale hists by lumi
 
   std::vector<std::pair<std::string, ProcessList>> vec_samples;
@@ -43,7 +51,7 @@ void Plot_Advanced(){
     for(auto s : p->second){
       signals += ST.Get(s);
     }
-//    vec_samples.push_back(std::make_pair(p->first, signals));
+    vec_samples.push_back(std::make_pair(p->first, signals));
   }
   
   // loop over backgrounds and add to map
@@ -60,13 +68,37 @@ void Plot_Advanced(){
   for(int s = 0; s < int(data.GetN()); s++){
     ProcessList datum;
     datum += data[s];
-    vec_samples.push_back(std::make_pair(data[s].Name(), datum));
+//    vec_samples.push_back(std::make_pair(data[s].Name(), datum));
   }
 
   // vectors to hold 'generic' plotting objects
   vector<vector<TH1*>*> hist_stacks; // vector for holding hist stacks
   vector<TH1*> hist_stack_MET; // example of vector for stacking all MET hists
-  hist_stacks.push_back(&hist_stack_MET);
+  hist_stacks.push_back(&hist_stack_MET); // example of pushing back stack onto stacks
+  vector<TH1*> hist_stack_RISR;
+  hist_stacks.push_back(&hist_stack_RISR);
+  vector<TH1*> hist_stack_PTISR;
+  hist_stacks.push_back(&hist_stack_PTISR);
+  vector<TH1*> hist_stack_gammaPerp;
+  hist_stacks.push_back(&hist_stack_gammaPerp);
+  vector<TH1*> hist_stack_MQperp;
+  hist_stacks.push_back(&hist_stack_MQperp);
+  vector<TH1*> hist_stack_MSperpCM0;
+  hist_stacks.push_back(&hist_stack_MSperpCM0);
+  vector<TH1*> hist_stack_MQperpCM0;
+  hist_stacks.push_back(&hist_stack_MQperpCM0);
+  vector<TH1*> hist_stack_gammaPerpCM0;
+  hist_stacks.push_back(&hist_stack_gammaPerpCM0);
+  vector<TH1*> hist_stack_MSCM0;
+  hist_stacks.push_back(&hist_stack_MSCM0);
+  vector<TH1*> hist_stack_MQCM0;
+  hist_stacks.push_back(&hist_stack_MQCM0);
+  vector<TH1*> hist_stack_gammaCM0;
+  hist_stacks.push_back(&hist_stack_gammaCM0);
+  vector<TH1*> hist_stack_ML;
+  hist_stacks.push_back(&hist_stack_ML);
+  vector<TH1*> hist_stack_MJ;
+  hist_stacks.push_back(&hist_stack_MJ);
 
   for (auto p = vec_samples.begin(); p != vec_samples.end(); p++){
     // vectors to hold 'generic' plotting objects
@@ -80,12 +112,142 @@ void Plot_Advanced(){
 
     // Declare hists here
     // push_back hists that you want to plot at the end (hists are filled regardless of whether or not you push_back)
-    TH1D* hist_MET = new TH1D((title+"_MET").c_str(), (title+"_MET;MET [GeV]").c_str(), g_NX/4, 100., 500.);
+    TH1D* hist_MET = new TH1D((title+"_MET").c_str(), (title+"_MET;MET [GeV]").c_str(), g_NX/4, 100., 1000.);
     hists1.push_back(hist_MET);
     hist_stack_MET.push_back(hist_MET); // example pushing hist into vector for stack plot
-    TH2D* hist_RISR_PTISR = new TH2D((title+"_RISR_PTISR").c_str(), (title+"_RISR_PTISR;R_{ISR};p_{T}^{ISR} [GeV]").c_str(), g_NX/2., 0., 1., g_NX/2., 0., 800.);
-    hists2.push_back(hist_RISR_PTISR);   
-    TEfficiency* eff_METtrig = new TEfficiency((title+"_eff_METtrig").c_str(), "Efficiency of MET trigger;Eff;MET [GeV]", g_NX, 0., 500.);
+    TH1D* hist_RISR = new TH1D((title+"_RISR").c_str(), (title+"_RISR;R_{ISR}").c_str(), g_NX/4, 0., 1.);
+    hists1.push_back(hist_RISR);
+    hist_stack_RISR.push_back(hist_RISR);    
+    TH1D* hist_PTISR = new TH1D((title+"_PTISR").c_str(), (title+"_PTISR;p_{T}^{ISR} [GeV]").c_str(), g_NX/4, 0., 1000.);
+    hists1.push_back(hist_PTISR);
+    hist_stack_PTISR.push_back(hist_PTISR);
+    TH1D* hist_gammaPerp = new TH1D((title+"_gammaPerp").c_str(), (title+"_gammaPerp;#gamma_{#perp}").c_str(), g_NX/4, 0., 1.);
+    hists1.push_back(hist_gammaPerp);
+    hist_stack_gammaPerp.push_back(hist_gammaPerp);
+    TH1D* hist_MQperp = new TH1D((title+"_MQperp").c_str(), (title+"_MQperp;M_{#perp}").c_str(), g_NX/4, 0., 150.);
+    hists1.push_back(hist_MQperp);
+    hist_stack_MQperp.push_back(hist_MQperp);
+    TH1D* hist_MSperpCM0 = new TH1D((title+"_MSperpCM0").c_str(), (title+"_MSperpCM0;MS_{#perp CM0}").c_str(), g_NX/4, 0., 600.);
+    hists1.push_back(hist_MSperpCM0);
+    hist_stack_MSperpCM0.push_back(hist_MSperpCM0);
+    TH1D* hist_MQperpCM0 = new TH1D((title+"_MQperpCM0").c_str(), (title+"_MQperpCM0;MQ_{#perp CM0}").c_str(), g_NX/4, 0., 200.);
+    hists1.push_back(hist_MQperpCM0);
+    hist_stack_MQperpCM0.push_back(hist_MQperpCM0);
+    TH1D* hist_gammaPerpCM0 = new TH1D((title+"_gammaPerpCM0").c_str(), (title+"_gammaPerpCM0;#gamma_{#perp CM0}").c_str(), g_NX/4, 0., 1.);
+    hists1.push_back(hist_gammaPerpCM0);
+    hist_stack_gammaPerpCM0.push_back(hist_gammaPerpCM0);
+    TH1D* hist_MSCM0 = new TH1D((title+"_MSCM0").c_str(), (title+"_MSCM0;MS_{CM0}").c_str(), g_NX/4, 0., 600.);
+    hists1.push_back(hist_MSCM0);
+    hist_stack_MSCM0.push_back(hist_MSCM0);
+    TH1D* hist_MQCM0 = new TH1D((title+"_MQCM0").c_str(), (title+"_MQCM0;MQ_{CM0}").c_str(), g_NX/4, 0., 200.);
+    hists1.push_back(hist_MQCM0);
+    hist_stack_MQCM0.push_back(hist_MQCM0);
+    TH1D* hist_gammaCM0 = new TH1D((title+"_gammaCM0").c_str(), (title+"_gammaCM0;#gamma_{CM0}").c_str(), g_NX/4, 0., 1.);
+    hists1.push_back(hist_gammaCM0);
+    hist_stack_gammaCM0.push_back(hist_gammaCM0);
+    TH1D* hist_ML = new TH1D((title+"_ML").c_str(), (title+"_ML;ML").c_str(), g_NX/4, 0., 150.);
+    hists1.push_back(hist_ML);
+    hist_stack_ML.push_back(hist_ML);
+    TH1D* hist_MJ = new TH1D((title+"_MJ").c_str(), (title+"_MJ;MJ").c_str(), g_NX/4, 0., 150.);
+    hists1.push_back(hist_MJ);
+    hist_stack_MJ.push_back(hist_MJ);
+
+    TH2D* hist_RISR_PTISR = new TH2D((title+"_RISR_PTISR").c_str(), (title+"_RISR_PTISR;R_{ISR};p_{T}^{ISR} [GeV]").c_str(), g_NX/2., 0., 1., g_NX/2., 0., 1000.);
+    hists2.push_back(hist_RISR_PTISR);
+    TH2D* hist_RISR_Mperp = new TH2D((title+"_RISR_Mperp").c_str(), (title+"_RISR_Mperp;R_{ISR};M_{#perp} [GeV]").c_str(), g_NX/2., 0., 1., g_NX/2., 0., 100.);
+    hists2.push_back(hist_RISR_Mperp);
+    TH2D* hist_dphiCMI_PTCM = new TH2D((title+"_dphiCMI_PTCM").c_str(), (title+"_dphiCMI_PTCM;#Delta #phi_{(CM,I)};p_{T}^{CM}").c_str(), g_NX/2., 0., 3.15, g_NX/2., 0., 500.);
+    hists2.push_back(hist_dphiCMI_PTCM);
+    TH2D* hist_dphiMETV_PTISR = new TH2D((title+"_dphiMETV_PTISR").c_str(), (title+"_dphiMETV_PTISR;#Delta #phi_{(I,V)};p_{T}^{ISR}").c_str(), g_NX/2., 0., 3.15, g_NX/2., 200., 800.);
+    hists2.push_back(hist_dphiMETV_PTISR);
+    TH2D* hist_gammaPerp_RISR = new TH2D((title+"_gammaPerp_RISR").c_str(), (title+"_gammaPerp_RISR;#gamma_{#perp};RISR").c_str(), g_NX/2., 0., 1., g_NX/2., 0.5, 1.);
+    hists2.push_back(hist_gammaPerp_RISR);
+    TH2D* hist_RISR_mllLEAD = new TH2D((title+"_RISR_mllLEAD").c_str(), (title+"_RISR_mllLEAD;R_{ISR};m_{ll}LEAD").c_str(), g_NX/2., 0.5, 1., g_NX/2., 0., 150.);
+    hists2.push_back(hist_RISR_mllLEAD);
+    TH2D* hist_RISR_mL = new TH2D((title+"_RISR_mL").c_str(), (title+"_RISR_mL;R_{ISR};mL").c_str(), g_NX/2., 0.5, 1., g_NX/2., 0., 150.); // mass of leptonic system
+    hists2.push_back(hist_RISR_mL);
+
+    TH2D* hist_MSperpCM0_RISR = new TH2D((title+"_MSperpCM0_RISR").c_str(), (title+"_MSperpCM0_RISR;MS_{#perp CM0};RISR").c_str(), g_NX/2., 0., 500., g_NX/2., 0.5, 1.);
+    hists2.push_back(hist_MSperpCM0_RISR);
+    TH2D* hist_MQperpCM0_RISR = new TH2D((title+"_MQperpCM0_RISR").c_str(), (title+"_MQperpCM0_RISR;MQ_{#perp CM0};RISR").c_str(), g_NX/2., 0., 300., g_NX/2., 0.5, 1.); // quad sum of Ma and Mb / sqrt(2)
+    hists2.push_back(hist_MQperpCM0_RISR);
+    TH2D* hist_gammaPerpCM0_RISR = new TH2D((title+"_gammaPerpCM0_RISR").c_str(), (title+"_gammaPerpCM0_RISR;#gamma_{#perp CM0};RISR").c_str(), g_NX/2., 0., 1., g_NX/2., 0.5, 1.);
+    hists2.push_back(hist_gammaPerpCM0_RISR);
+
+    TH2D* hist_MSperpCM0_gammaPerpCM0 = new TH2D((title+"_MSperpCM0_gammaPerpCM0").c_str(), (title+"_MSperpCM0_gammaPerpCM0;MS_{#perp CM0};#gamma_{#perp CM0}").c_str(), g_NX/2., 0., 500., g_NX/2., 0., 1.);
+    hists2.push_back(hist_MSperpCM0_gammaPerpCM0);
+    TH2D* hist_MSperpCM0_MQperpCM0 = new TH2D((title+"_MSperpCM0_MQperpCM0").c_str(), (title+"_MSperpCM0_MQperpCM0;MS_{#perp CM0};MQ_{#perp CM0}").c_str(), g_NX/2., 0., 500., g_NX/2., 0., 300.);
+    hists2.push_back(hist_MSperpCM0_MQperpCM0);
+    TH2D* hist_gammaPerpCM0_MQperpCM0 = new TH2D((title+"_gammaPerpCM0_MQperpCM0").c_str(), (title+"_gammaPerpCM0_MQperpCM0;#gamma_{#perp CM0};MQ_{#perp CM0}").c_str(), g_NX/2., 0., 1., g_NX/2., 0., 300.);
+    hists2.push_back(hist_gammaPerpCM0_MQperpCM0);
+    
+    TH2D* hist_MJ_MQperpCM0 = new TH2D((title+"_MJ_MQperpCM0").c_str(), (title+"_MJ_MQperpCM0;MJ;MQ_{#perp CM0}").c_str(), g_NX/2., 0., 300., g_NX/2., 0., 300.);
+    hists2.push_back(hist_MJ_MQperpCM0);
+    TH2D* hist_MLa_MQperpCM0 = new TH2D((title+"_MLa_MQperpCM0").c_str(), (title+"_MLa_MQperpCM0;MLa;MQ_{#perp CM0}").c_str(), g_NX/2., 0., 300., g_NX/2., 0., 300.);
+    hists2.push_back(hist_MLa_MQperpCM0);
+    TH2D* hist_MLb_MQperpCM0 = new TH2D((title+"_MLb_MQperpCM0").c_str(), (title+"_MLb_MQperpCM0;MLb;MQ_{#perp CM0}").c_str(), g_NX/2., 0., 300., g_NX/2., 0., 300.);
+    hists2.push_back(hist_MLb_MQperpCM0);
+    TH2D* hist_MJ_MSperpCM0 = new TH2D((title+"_MJ_MSperpCM0").c_str(), (title+"_MJ_MSperpCM0;MJ;MS_{#perp CM0}").c_str(), g_NX/2., 0., 300., g_NX/2., 0., 500.);
+    hists2.push_back(hist_MJ_MSperpCM0);
+    TH2D* hist_MLa_MSperpCM0 = new TH2D((title+"_MLa_MSperpCM0").c_str(), (title+"_MLa_MSperpCM0;MLa;MS_{#perp CM0}").c_str(), g_NX/2., 0., 300., g_NX/2., 0., 500.);
+    hists2.push_back(hist_MLa_MSperpCM0);
+    TH2D* hist_MLb_MSperpCM0 = new TH2D((title+"_MLb_MSperpCM0").c_str(), (title+"_MLb_MSperpCM0;MLb;MS_{#perp CM0}").c_str(), g_NX/2., 0., 300., g_NX/2., 0., 500.);
+    hists2.push_back(hist_MLb_MSperpCM0);
+    TH2D* hist_MJ_gammaPerpCM0 = new TH2D((title+"_MJ_gammaPerpCM0").c_str(), (title+"_MJ_gammaPerpCM0;MJ;#gamma_{#perp CM0}").c_str(), g_NX/2., 0., 300., g_NX/2., 0., 1.);
+    hists2.push_back(hist_MJ_gammaPerpCM0);
+    TH2D* hist_MLa_gammaPerpCM0 = new TH2D((title+"_MLa_gammaPerpCM0").c_str(), (title+"_MLa_gammaPerpCM0;MLa;#gamma_{#perp CM0}").c_str(), g_NX/2., 0., 300., g_NX/2., 0., 1.);
+    hists2.push_back(hist_MLa_gammaPerpCM0);
+    TH2D* hist_MLb_gammaPerpCM0 = new TH2D((title+"_MLb_gammaPerpCM0").c_str(), (title+"_MLb_gammaPerpCM0;MLb;#gamma_{#perp CM0}").c_str(), g_NX/2., 0., 300., g_NX/2., 0., 1.);
+    hists2.push_back(hist_MLb_gammaPerpCM0);
+
+    TH2D* hist_MSCM0_RISR = new TH2D((title+"_MSCM0_RISR").c_str(), (title+"_MSCM0_RISR;MS_{CM0};RISR").c_str(), g_NX/2., 0., 500., g_NX/2., 0.5, 1.);
+    hists2.push_back(hist_MSCM0_RISR);
+    TH2D* hist_MQCM0_RISR = new TH2D((title+"_MQCM0_RISR").c_str(), (title+"_MQCM0_RISR;MQ_{CM0};RISR").c_str(), g_NX/2., 0., 300., g_NX/2., 0.5, 1.); // quad sum of Ma and Mb / sqrt(2)
+    hists2.push_back(hist_MQCM0_RISR);
+    TH2D* hist_gammaCM0_RISR = new TH2D((title+"_gammaCM0_RISR").c_str(), (title+"_gammaCM0_RISR;#gamma_{CM0};RISR").c_str(), g_NX/2., 0., 1., g_NX/2., 0.5, 1.);
+    hists2.push_back(hist_gammaCM0_RISR);
+
+    TH2D* hist_MSCM0_gammaCM0 = new TH2D((title+"_MSCM0_gammaCM0").c_str(), (title+"_MSCM0_gammaCM0;MS_{CM0};#gamma_{CM0}").c_str(), g_NX/2., 0., 500., g_NX/2., 0., 1.);
+    hists2.push_back(hist_MSCM0_gammaCM0);
+    TH2D* hist_MSCM0_MQCM0 = new TH2D((title+"_MSCM0_MQCM0").c_str(), (title+"_MSCM0_MQCM0;MS_{CM0};MQ_{CM0}").c_str(), g_NX/2., 0., 500., g_NX/2., 0., 300.);
+    hists2.push_back(hist_MSCM0_MQCM0);
+    TH2D* hist_gammaCM0_MQCM0 = new TH2D((title+"_gammaCM0_MQCM0").c_str(), (title+"_gammaCM0_MQCM0;#gamma_{CM0};MQ_{CM0}").c_str(), g_NX/2., 0., 1., g_NX/2., 0., 300.);
+    hists2.push_back(hist_gammaCM0_MQCM0);
+    
+    TH2D* hist_MJ_MQCM0 = new TH2D((title+"_MJ_MQCM0").c_str(), (title+"_MJ_MQCM0;MJ;MQ_{CM0}").c_str(), g_NX/2., 0., 300., g_NX/2., 0., 300.);
+    hists2.push_back(hist_MJ_MQCM0);
+    TH2D* hist_MLa_MQCM0 = new TH2D((title+"_MLa_MQCM0").c_str(), (title+"_MLa_MQCM0;MLa;MQ_{CM0}").c_str(), g_NX/2., 0., 300., g_NX/2., 0., 300.);
+    hists2.push_back(hist_MLa_MQCM0);
+    TH2D* hist_MLb_MQCM0 = new TH2D((title+"_MLb_MQCM0").c_str(), (title+"_MLb_MQCM0;MLb;MQ_{CM0}").c_str(), g_NX/2., 0., 300., g_NX/2., 0., 300.);
+    hists2.push_back(hist_MLb_MQCM0);
+    TH2D* hist_MJ_MSCM0 = new TH2D((title+"_MJ_MSCM0").c_str(), (title+"_MJ_MSCM0;MJ;MS_{CM0}").c_str(), g_NX/2., 0., 300., g_NX/2., 0., 500.);
+    hists2.push_back(hist_MJ_MSCM0);
+    TH2D* hist_MLa_MSCM0 = new TH2D((title+"_MLa_MSCM0").c_str(), (title+"_MLa_MSCM0;MLa;MS_{CM0}").c_str(), g_NX/2., 0., 300., g_NX/2., 0., 500.);
+    hists2.push_back(hist_MLa_MSCM0);
+    TH2D* hist_MLb_MSCM0 = new TH2D((title+"_MLb_MSCM0").c_str(), (title+"_MLb_MSCM0;MLb;MS_{CM0}").c_str(), g_NX/2., 0., 300., g_NX/2., 0., 500.);
+    hists2.push_back(hist_MLb_MSCM0);
+    TH2D* hist_MJ_gammaCM0 = new TH2D((title+"_MJ_gammaCM0").c_str(), (title+"_MJ_gammaCM0;MJ;#gamma_{CM0}").c_str(), g_NX/2., 0., 300., g_NX/2., 0., 1.);
+    hists2.push_back(hist_MJ_gammaCM0);
+    TH2D* hist_MLa_gammaCM0 = new TH2D((title+"_MLa_gammaCM0").c_str(), (title+"_MLa_gammaCM0;MLa;#gamma_{CM0}").c_str(), g_NX/2., 0., 300., g_NX/2., 0., 1.);
+    hists2.push_back(hist_MLa_gammaCM0);
+    TH2D* hist_MLb_gammaCM0 = new TH2D((title+"_MLb_gammaCM0").c_str(), (title+"_MLb_gammaCM0;MLb;#gamma_{CM0}").c_str(), g_NX/2., 0., 300., g_NX/2., 0., 1.);
+    hists2.push_back(hist_MLb_gammaCM0);
+
+    TH2D* hist_MLb_MJ = new TH2D((title+"_MLb_MJ").c_str(), (title+"_MLb_MJ;MLb;MJ").c_str(), g_NX/2., 0., 300., g_NX/2., 0., 300.);
+    hists2.push_back(hist_MLb_MJ);
+    TH2D* hist_MLa_MJ = new TH2D((title+"_MLa_MJ").c_str(), (title+"_MLa_MJ;MLa;MJ").c_str(), g_NX/2., 0., 300., g_NX/2., 0., 300.);
+    hists2.push_back(hist_MLa_MJ);
+    TH2D* hist_MLa_MLb = new TH2D((title+"_MLa_MLb").c_str(), (title+"_MLa_MLb;MLa;MLb").c_str(), g_NX/2., 0., 300., g_NX/2., 0., 300.);
+    hists2.push_back(hist_MLa_MLb);
+
+    TH2D* hist_RISR_MJ = new TH2D((title+"_RISR_MJ").c_str(), (title+"_RISR_MJ;R_{ISR};MJ").c_str(), g_NX/2., 0.5, 1., g_NX/2., 0., 300.);
+    hists2.push_back(hist_RISR_MJ);
+    TH2D* hist_RISR_MLa = new TH2D((title+"_RISR_MLa").c_str(), (title+"_RISR_MLa;R_{ISR};MLa").c_str(), g_NX/2., 0.5, 1., g_NX/2., 0., 300.);
+    hists2.push_back(hist_RISR_MLa);
+    TH2D* hist_RISR_MLb = new TH2D((title+"_RISR_MLb").c_str(), (title+"_RISR_MLb;R_{ISR};MLb").c_str(), g_NX/2., 0.5, 1., g_NX/2., 0., 300.);
+    hists2.push_back(hist_RISR_MLb);
+
+    TEfficiency* eff_METtrig = new TEfficiency((title+"_eff_METtrig").c_str(), "Efficiency of MET trigger;Eff;MET [GeV]", g_NX, 0., 700.);
     effs.push_back(eff_METtrig);
 
     bool is_data = false;
@@ -125,6 +287,7 @@ void Plot_Advanced(){
         ReducedBase_V2* base = new ReducedBase_V2(chain);
         
         int Nentry = base->fChain->GetEntries(); 
+        if(SKIP < 1.) SKIP = 1.;
         int BKG_SKIP = SKIP;
         if(is_data || is_signal) BKG_SKIP = 1; // only use skip on BKG
         
@@ -146,32 +309,40 @@ void Plot_Advanced(){
             continue;
           	
           double MET = base->MET;
+          // get variables from root files using base class
+          double Mperp = base->Mperp;
+          double RISR = base->RISR;
+          double PTISR = base->PTISR;
+
           if(MET < 100)
             continue;
 
-          if(base->PTISR < 200.)
-          //if(base->PTISR < 400.) // SR
+          //if(PTISR < 200.)
+          if(PTISR < 300.) // SR
 	    continue;
 
           // Cleaning cuts...
-          double x = fabs(base->dphiCMI);
+          double dphiCMI = base->dphiCMI;
+          double PTCM = base->PTCM;
+          double x = fabs(dphiCMI);
           
-          if(base->PTCM > 200.)
+          if(PTCM > 200.)
             continue;
-          if(base->PTCM > -500.*sqrt(std::max(0.,-2.777*x*x+1.388*x+0.8264))+575. &&
+          if(PTCM > -500.*sqrt(std::max(0.,-2.777*x*x+1.388*x+0.8264))+575. &&
              -2.777*x*x+1.388*x+0.8264 > 0.)
             continue;
-          if(base->PTCM > -500.*sqrt(std::max(0.,-1.5625*x*x+7.8125*x-8.766))+600. &&
+          if(PTCM > -500.*sqrt(std::max(0.,-1.5625*x*x+7.8125*x-8.766))+600. &&
              -1.5625*x*x+7.8125*x-8.766 > 0.)
             continue;
           // End of Cleaning cuts...
             
+          double dphiMET_V = base->dphiMET_V;
           if(fabs(base->dphiMET_V) > acos(-1.)/2.)
             continue;
             
-          //if(base->RISR < 0.5 || base->RISR > 1.0)
-          if(base->RISR < 0.4 || base->RISR > 0.7) // CR
-          //if(base->RISR < 0.9)
+          if(RISR < 0.5 || RISR > 1.0)
+          //if(RISR < 0.4 || RISR > 0.7) // CR
+          //if(RISR < 0.9)
             continue;
 
           // Get Physics Objects
@@ -181,8 +352,8 @@ void Plot_Advanced(){
           int NjetISR  = base->Njet_ISR;
           int NbjetISR = base->Nbjet_ISR;
 
-          if(NbjetISR + NbjetS != 2) continue; // CR
-          //if(NbjetISR + NbjetS > 1) continue; // SR
+          //if(NbjetISR + NbjetS != 2) continue; // CR
+          if(NbjetISR + NbjetS > 1) continue; // SR
 
           if(Nlep != 2) continue;
           //if(NjetS != 0) continue; //SR
@@ -225,15 +396,10 @@ void Plot_Advanced(){
               
             int PDGID = base->PDGID_lep->at(index);
               
-            LepID id;
-            if(base->ID_lep->at(index) < 3 ||
-               base->MiniIso_lep->at(index)*base->PT_lep->at(index) >= 4. ||
-               base->RelIso_lep->at(index)*base->PT_lep->at(index) >= 4.)
-              id = kBronze;
-            else if(base->SIP3D_lep->at(index) > 2.)
-              id = kSilver;
-            else
-              id = kGold;
+            int qual = base->LepQual_lep->at(index);
+            LepID id = kBronze;
+            if(qual == 0) id = kGold;
+            if(qual == 1) id = kSilver;
             LepFlavor flavor;
             if(abs(PDGID) == 11)
               flavor = LepFlavor::kElectron;
@@ -250,15 +416,10 @@ void Plot_Advanced(){
             
             int PDGID = base->PDGID_lep->at(index);
 
-            LepID id;
-            if(base->ID_lep->at(index) < 3 ||
-               base->MiniIso_lep->at(index)*base->PT_lep->at(index) >= 4. ||
-               base->RelIso_lep->at(index)*base->PT_lep->at(index) >= 4.)
-              id = kBronze;
-            else if(base->SIP3D_lep->at(index) > 2.)
-              id = kSilver;
-            else
-              id = kGold;
+            int qual = base->LepQual_lep->at(index);
+            LepID id = kBronze;
+            if(qual == 0) id = kGold;
+            if(qual == 1) id = kSilver;
             LepFlavor flavor;
             if(abs(PDGID) == 11)
               flavor = LepFlavor::kElectron;
@@ -273,22 +434,95 @@ void Plot_Advanced(){
 
           // cut on lepton quality
           bool skip = false;
-          for(int i = 0; i < list_leps.GetN(); i++)
-            if(list_leps[i].ID() != kGold) skip = true; // SR
-          //if(skip) continue; 
-
-          // get variables from root files using base class
-          double Mperp = base->Mperp;
-          double RISR = base->RISR;
-          double PTISR = base->PTISR;
+          int nGL = 0; // number of Gold leps
+          for(int i = 0; i < list_leps.GetN(); i++){
+            if(list_leps[i].ID() == kGold) nGL++;
+          }
+          if(nGL < 2) skip = true; // SR GG
+          //if(nGL == 2) skip = true; // CR notGG
+          if(skip) continue; 
           
           double weight = (base->weight != 0.) ? base->weight : 1.;
           if(!is_data && !is_signal)
             weight *= double(BKG_SKIP);
 
+          // grab vars from ntuple
+          double MSperpCM0 = base->MSperpCM0;
+          double MQperpCM0 = base->MQperpCM0;
+          double gammaPerpCM0 = base->gammaPerpCM0;
+          double MJ = base->MJ;
+          double ML = base->ML;
+          double MLa = base->MLa;
+          double MLb = base->MLb;
+          double MSCM0 = base->MSCM0;
+          double MQCM0 = base->MQCM0;
+          double gammaCM0 = base->gammaCM0;
+
           // Fill hists, effs, etc.
           hist_MET->Fill(MET, weight);
           hist_RISR_PTISR->Fill(RISR, PTISR, weight);
+          hist_RISR_Mperp->Fill(RISR, Mperp, weight);
+          hist_gammaPerp_RISR->Fill(base->gammaT, RISR, weight);
+          hist_RISR_mL->Fill(RISR, ML, weight);
+          hist_dphiCMI_PTCM->Fill(dphiCMI, PTCM, weight);
+          hist_dphiMETV_PTISR->Fill(dphiMET_V, PTISR, weight);
+
+          hist_MSperpCM0_RISR->Fill(MSperpCM0, RISR, weight);
+          hist_MQperpCM0_RISR->Fill(MQperpCM0, RISR, weight);
+          hist_gammaPerpCM0_RISR->Fill(gammaPerpCM0, RISR, weight);
+
+          hist_MSperpCM0_gammaPerpCM0->Fill(MSperpCM0, gammaPerpCM0, weight);
+          hist_MSperpCM0_MQperpCM0->Fill(MSperpCM0, MQperpCM0, weight);
+          hist_gammaPerpCM0_MQperpCM0->Fill(gammaPerpCM0, MQperpCM0, weight);
+
+          hist_MJ_MQperpCM0->Fill(MJ, MQperpCM0, weight);
+          hist_MLa_MQperpCM0->Fill(MLa, MQperpCM0, weight);
+          hist_MLb_MQperpCM0->Fill(MLb, MQperpCM0, weight);
+          hist_MJ_MSperpCM0->Fill(MJ, MSperpCM0, weight);
+          hist_MLa_MSperpCM0->Fill(MLa, MSperpCM0, weight);
+          hist_MLb_MSperpCM0->Fill(MLb, MSperpCM0, weight);
+          hist_MJ_gammaPerpCM0->Fill(MJ, gammaPerpCM0, weight);
+          hist_MLa_gammaPerpCM0->Fill(MLa, gammaPerpCM0, weight);
+          hist_MLb_gammaPerpCM0->Fill(MLb, gammaPerpCM0, weight);
+
+          hist_MSCM0_RISR->Fill(MSCM0, RISR, weight);
+          hist_MQCM0_RISR->Fill(MQCM0, RISR, weight);
+          hist_gammaCM0_RISR->Fill(gammaCM0, RISR, weight);
+
+          hist_MSCM0_gammaCM0->Fill(MSCM0, gammaCM0, weight);
+          hist_MSCM0_MQCM0->Fill(MSCM0, MQCM0, weight);
+          hist_gammaCM0_MQCM0->Fill(gammaCM0, MQCM0, weight);
+
+          hist_MJ_MQCM0->Fill(MJ, MQCM0, weight);
+          hist_MLa_MQCM0->Fill(MLa, MQCM0, weight);
+          hist_MLb_MQCM0->Fill(MLb, MQCM0, weight);
+          hist_MJ_MSCM0->Fill(MJ, MSCM0, weight);
+          hist_MLa_MSCM0->Fill(MLa, MSCM0, weight);
+          hist_MLb_MSCM0->Fill(MLb, MSCM0, weight);
+          hist_MJ_gammaCM0->Fill(MJ, gammaCM0, weight);
+          hist_MLa_gammaCM0->Fill(MLa, gammaCM0, weight);
+          hist_MLb_gammaCM0->Fill(MLb, gammaCM0, weight);
+
+          hist_MLa_MJ->Fill(MLa, MJ, weight);
+          hist_MLb_MJ->Fill(MLb, MJ, weight);
+          hist_MLa_MLb->Fill(MLa, MLb, weight);
+          hist_RISR_MJ->Fill(RISR, MJ, weight);
+          hist_RISR_MLa->Fill(RISR, MLa, weight);
+          hist_RISR_MLb->Fill(RISR, MLb, weight);
+
+          hist_RISR->Fill(RISR, weight);    
+          hist_PTISR->Fill(PTISR, weight);
+          hist_gammaPerp->Fill(base->gammaT, weight);
+          hist_MQperp->Fill(Mperp, weight);
+          hist_MSperpCM0->Fill(MSperpCM0, weight);
+          hist_MQperpCM0->Fill(MQperpCM0, weight);
+          hist_gammaPerpCM0->Fill(gammaPerpCM0, weight);
+          hist_MSCM0->Fill(MSCM0, weight);
+          hist_MQCM0->Fill(MQCM0, weight);
+          hist_gammaCM0->Fill(gammaCM0, weight);
+          hist_ML->Fill(ML, weight);
+          hist_MJ->Fill(MJ, weight);
+
           eff_METtrig->Fill(base->METtrigger, MET, weight);
         }
         delete base;
@@ -335,5 +569,7 @@ void Plot_Advanced(){
      g_PlotTitle = "stack"+g_PlotTitle;
      Plot_Stack(*hist_stacks[stack_h], vec_samples, signal_boost);
   }
+  Long64_t end = gSystem->Now();
+  std::cout << "Time to process " << (end-start)/1000.0 << " seconds" << std::endl;
   gApplication->Terminate(0);
 } // End of macro

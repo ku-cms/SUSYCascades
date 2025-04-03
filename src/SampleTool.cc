@@ -1444,8 +1444,6 @@ void SampleTool::InitProcMap(){
     // --- Background --- //
     // ------------------ //
  
-// debugging...
-// commenting out samples that have suspected correct weights (!=1)
     Process ttbar("ttbar", kBkg);
     list.clear();
     list += m_Path + "Summer23BPix_130X/TTto2L2Nu-2Jets_TuneCP5_13p6TeV_amcatnloFXFX-pythia8_Summer23BPix_130X.root";
@@ -1533,7 +1531,7 @@ void SampleTool::InitProcMap(){
     list += m_Path + "Summer23BPix_130X/DYto2L-4Jets_MLL-50to120_HT-800to1500_TuneCP5_13p6TeV_madgraphMLM-pythia8_Summer23BPix_130X.root";
     m_Proc[m_iYear][DY] = pair<vector<string>,string>(list, "KUAnalysis");
 
-    Process ZNuNu("ZNuNu", kBkg); // ZNuNu only
+    Process ZInv("ZInv", kBkg); // ZInv only
     list.clear();
     list += m_Path + "Summer23BPix_130X/Zto2Nu-4Jets_HT-100to200_TuneCP5_13p6TeV_madgraphMLM-pythia8_Summer23BPix_130X.root";
     list += m_Path + "Summer23BPix_130X/Zto2Nu-4Jets_HT-1500to2500_TuneCP5_13p6TeV_madgraphMLM-pythia8_Summer23BPix_130X.root";
@@ -1541,7 +1539,7 @@ void SampleTool::InitProcMap(){
     list += m_Path + "Summer23BPix_130X/Zto2Nu-4Jets_HT-2500_TuneCP5_13p6TeV_madgraphMLM-pythia8_Summer23BPix_130X.root";
     list += m_Path + "Summer23BPix_130X/Zto2Nu-4Jets_HT-400to800_TuneCP5_13p6TeV_madgraphMLM-pythia8_Summer23BPix_130X.root";
     list += m_Path + "Summer23BPix_130X/Zto2Nu-4Jets_HT-800to1500_TuneCP5_13p6TeV_madgraphMLM-pythia8_Summer23BPix_130X.root";
-    m_Proc[m_iYear][ZNuNu] = pair<vector<string>,string>(list, "KUAnalysis");
+    m_Proc[m_iYear][ZInv] = pair<vector<string>,string>(list, "KUAnalysis");
 
     Process DB("DB+TB", kBkg);
     list.clear();

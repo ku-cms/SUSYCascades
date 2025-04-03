@@ -21,6 +21,7 @@ public:
   FitPlotter(const string& inputfile,
 	     const string& otherfile = "",
 	     const string& otherfold = "");
+  //FitPlotter();
 
   virtual ~FitPlotter();
 
@@ -72,6 +73,12 @@ public:
 		       PlotType pType = kFull,
 		       bool do_ratio = false);
 
+  TCanvas* Plot1DstackPullRatio(const string& can_name,
+				const VS& proc,
+				const CategoryTree& CT,
+				PlotType pType = kFull,
+				bool do_ratio = false);
+  
   TCanvas* Plot2D(const string& can_name,
 		  const VS& proc,
 		  const CategoryTree& CT);
@@ -105,6 +112,9 @@ public:
 			     const string& name);
 
   map<string,VS> m_Strings;
+
+  int getColor(const string& str);
+  string getTitle(const string& str);
   
 private:
   string m_CMSLabel;

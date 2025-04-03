@@ -22,7 +22,17 @@
 FitReader::FitReader(const string& inputfile,
 		     const string& otherfile,
 		     const string& otherfold)
-  : m_File(inputfile.c_str(), "READ") {
+  : m_File(inputfile.c_str(), "READ"),
+    cms1(8001, 0.24705882352941178, 0.5647058823529412, 0.8549019607843137),  //blue
+    cms2(8002, 1., 0.6627450980392157, 0.054901960784313725),                 // gold
+    cms3(8003, 0.7411764705882353, 0.12156862745098039, 0.00392156862745098), //red
+    cms4(8004, 0.5803921568627451, 0.6431372549019608, 0.6352941176470588),   // grey
+    cms5(8005, 0.5137254901960784, 0.17647058823529413, 0.7137254901960784),  // purple
+    cms6(8006, 0.6627450980392157, 0.4196078431372549, 0.34901960784313724),  // brown
+    cms7(8007, 0.9058823529411765, 0.38823529411764707, 0.),                  // orange
+    cms8(8008, 0.7254901960784313, 0.6745098039215687, 0.4392156862745098),   // tan
+    cms9(8009, 0.44313725490196076, 0.4588235294117647, 0.5058823529411764),  // charcoal
+    cms10(8010, 0.5725490196078431, 0.8549019607843137, 0.8666666666666667) { // light blue
 
   
   if(otherfile != ""){
@@ -57,13 +67,18 @@ void FitReader::ReadProcesses(){
   int N = tree->GetEntries();
   for(int i = 0; i < N; i++){
     tree->GetEntry(i);
-    
     Process p = m_ProcBranch.GetProcess();
 
+  //  std::cout<<"assessing subproc "<<p.Name()<<" ";
+
+
     //std::cout << p.Name() << endl;
+
     if((p.Name().find("Up") != std::string::npos) ||
-       (p.Name().find("Down") != std::string::npos))
+       (p.Name().find("Down") != std::string::npos)){
       ProcSys += p;
+    //  std::cout<<"+ procsys\n";
+    }
     else
       m_Proc += p;
   }
@@ -87,6 +102,7 @@ void FitReader::ReadProcesses(){
 	  label.replace(label.find("Up"),2,"");
 	if(label.find("Down") != std::string::npos)
 	  label.replace(label.find("Down"),4,"");
+//	std::cout<<"in Nsys loop, adding systematic with label: "<<label<<"\n";
 	sys += Systematic(label);
       }
     }
@@ -94,6 +110,21 @@ void FitReader::ReadProcesses(){
       m_ProcSys[m_Proc[p]] = sys;
     m_Sys += sys;
   }
+  //check sig procs sys
+  /*if(m_FilePtr) m_ProcSys = Process("total_signal",kSig);
+  m_ProcSys.Remove("METUncer_GenMET");
+  Nproc = m_ProcSys.GetN();
+  for(int p=0; p< Nproc; p++){
+	string proc = m_ProcSys	
+  }*/
+  //hack to check signal systematics only
+/*  std::vector<std::string> sysLabels{"JESUncer_Total", "JERUncer_Total",  "METUncer_UnClust", "METUncer_GenMET" };
+  Systematics sysSig;
+  for(int i=0; i<sysLabels.size(); i++){
+    sysSig+= Systematic( sysLabels[i] );
+  }
+  m_Sys += sysSig;
+*/
 }
 
 void FitReader::ReadCategories(){
@@ -439,7 +470,7 @@ bool FitReader::IsThere(const Category&   cat,
       string label = cat.Label()+"_"+cat.GetLabel();
       string shistUp   = label+"/"+proc.Name()+"_"+sys.Label()+"Up";
       string shistDown = label+"/"+proc.Name()+"_"+sys.Label()+"Down";
-       
+  //    std::cout<<"isTHere, trying to get labels: "<<label<<" "<<shistUp<<" "<<shistDown<<"\n"; 
 //      hist  = m_ProcHistSys[proc][sys][cat].first  = (TH1D*) m_File.Get(shistUp.c_str());
 //      hist2 = m_ProcHistSys[proc][sys][cat].second = (TH1D*) m_File.Get(shistDown.c_str());
       hist  = (TH1D*) m_File.Get(shistUp.c_str());

@@ -5,6 +5,7 @@
 #include <TH2D.h>
 #include <TFile.h>
 #include <TTree.h>
+#include <TColor.h>
 #include <iostream>
 #include <vector>
 
@@ -85,9 +86,23 @@ public:
   const CategoryList& GetCategories(const string& channel = "") const;         
   const Systematics&  GetSystematics() const;
 
-map<string,VS> m_Strings;
+  map<string,VS> m_Strings;
   mutable map<Process,Systematics> m_ProcSys;
 
+  TColor cms1, cms2, cms3, cms4, cms5, cms6, cms7, cms8, cms9, cms10;
+  
+  /*
+  const TColor cms1(8001, 0.24705882352941178, 0.5647058823529412, 0.8549019607843137);
+  const TColor cms2(8002, 1., 0.6627450980392157, 0.054901960784313725);
+  const TColor cms3(8004, 0.7411764705882353, 0.12156862745098039, 0.00392156862745098);
+  const	TColor cms4(8005, 0.5803921568627451, 0.6431372549019608, 0.6352941176470588);
+  const	TColor cms5(8006, 0.5137254901960784, 0.17647058823529413, 0.7137254901960784);
+  const	TColor cms6(8007, 0.6627450980392157, 0.4196078431372549, 0.34901960784313724);
+  const	TColor cms7(8008, 0.9058823529411765, 0.38823529411764707, 0.);
+  const	TColor cms8(8009, 0.7254901960784313, 0.6745098039215687, 0.4392156862745098);
+  const	TColor cms9(8010, 0.44313725490196076, 0.4588235294117647, 0.5058823529411764);
+  const TColor cms10(8011, 0.5725490196078431, 0.8549019607843137, 0.8666666666666667);
+  */
 protected:
   mutable TFile  m_File;
   mutable TFile* m_FilePtr;
