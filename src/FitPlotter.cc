@@ -5444,41 +5444,54 @@ void FitPlotter::InitializeRecipes(){
   m_Strings["Data"] = VS().a("data_obs");
   
   m_Title["ttbar"] = "t #bar{t} + X";
-  //m_Color["ttbar"] = 7011;
-  m_Color["ttbar"] = 8003;
+  m_Color["ttbar"] = 7011;
+  //m_Color["ttbar"] = 8003;
 
   m_Title["ST"] = "single top";
-  //m_Color["ST"] = 7010;
-  m_Color["ST"] = 8004;
+  m_Color["ST"] = 7010;
+  //m_Color["ST"] = 8004;
 
   m_Title["DB"] = "dibosons";
-  //m_Color["DB"] = 7051;
-  m_Color["DB"] = 8002;
+  m_Color["DB"] = 7051;
+  //m_Color["DB"] = 8002;
 
   m_Title["TB"] = "tribosons";
-  //m_Color["TB"] = 7050;
-  m_Color["TB"] = 8006;
+  m_Color["TB"] = 7050;
+  //m_Color["TB"] = 8006;
+  
+  m_Title["DB+TB"] = "di & tri-bosons";
+  m_Color["DB+TB"] = 7050;
+  //m_Color["DB+TB"] = 8006;
 
   m_Title["ZDY"] = "Z / #gamma* + jets";
-  //m_Color["ZDY"] = 7000;
-  m_Color["ZDY"] = 8005;
+  m_Color["ZDY"] = 7000;
+  //m_Color["ZDY"] = 8005;
 
   m_Title["Wjets"] = "W + jets";
-  //m_Color["Wjets"] = 7001;
-  m_Color["Wjets"] = 8001; 
+  m_Color["Wjets"] = 7001;
+  //m_Color["Wjets"] = 8001; 
+  
+  m_Title["QCD"] = "QCD multijets";
+  m_Color["QCD"] = 7023;
+  //m_Color["QCD"] = 8007;
 
   m_Title["ZInv"] = "Z Inv";
-  m_Color["ZInv"] = 8005;
+  m_Color["ZInv"] = 7022;
+  //m_Color["ZInv"] = 8005;
   
   m_Title["DY"] = "DY";
-  m_Color["DY"] = 8006;
+  m_Color["DY"] = 7021;
+  //m_Color["DY"] = 8006;
   
   m_Title["Cascades_220"] = "Cascades 220";
-  m_Color["Cascades_220"] = 8007;
+  m_Color["Cascades_220"] = 7071;
+  //m_Color["Cascades_220"] = 8007;
   m_Title["Cascades_260"] = "Cascades 260";
-  m_Color["Cascades_260"] = 8008;
+  m_Color["Cascades_260"] = 7041;
+  //m_Color["Cascades_260"] = 8008;
   m_Title["Cascades_270"] = "Cascades 270";
-  m_Color["Cascades_270"] = 8009;
+  m_Color["Cascades_270"] = 7061;
+  //m_Color["Cascades_270"] = 8009;
 
   VS s_Fakes_HF;
   s_Fakes_HF.a("Fakes_elf1G").a("Fakes_muf1G").a("Fakes_elf1S")
@@ -5506,9 +5519,6 @@ void FitPlotter::InitializeRecipes(){
     .a("Fakes_elf0Gmuf0G").a("Fakes_elf0Gmuf0S").a("Fakes_elf0Smuf0G").a("Fakes_elf0Gmuf0B")
     .a("Fakes_elf0Bmuf0G").a("Fakes_elf0Smuf0S").a("Fakes_elf0Smuf0B").a("Fakes_elf0Bmuf0S");
   
-  m_Title["QCD"] = "QCD multijets";
-  //m_Color["QCD"] = 7023;
-  m_Color["QCD"] = 8007;
   m_Strings["QCD"] = VS().a("QCD");
   m_Strings["QCD"] += AddPrefix("QCD", s_Fakes_HF);
   m_Strings["QCD"] += AddPrefix("QCD", s_Fakes_LF);
