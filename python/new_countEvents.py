@@ -124,7 +124,7 @@ class EventCount:
                 events += self.EventsInDASDataset(das_name)
         return events
 
-    # Gets events directly from DAS (slow)
+    # Gets events directly from DAS
     def EventsInDASFile(self, u_file):
         """Get the number of events in DAS for the given file."""
         events = 0
@@ -201,9 +201,7 @@ class EventCount:
                 stderr=subprocess.STDOUT
             ).strip()
             das_output = das_output.split('\n')
-            for dataset in das_output:
-                if 'JME' in dataset or 'PUFor' in dataset:
-                    das_output.remove(dataset)
+            das_output = [dataset for dataset in das_output if 'JME' not in dataset and 'PUFor' not in dataset]
             return das_output
         except subprocess.CalledProcessError as e:
             print(f"Error querying DAS: {e.output.strip()}")
