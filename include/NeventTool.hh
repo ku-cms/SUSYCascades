@@ -23,9 +23,9 @@ public:
   void BuildFilterEffMap(const std::string& rootfile);
 
   double GetNevent_BKG(const std::string& dataset, const std::string& filetag) const;
-  double GetNevent_SMS(const std::string& dataset, const std::string& filetag, int MP, int MC) const;
+  double GetNevent_SMS(const std::string& dataset, const std::string& filetag, int MP, int MC, int code) const;
   double GetNweight_BKG(const std::string& dataset, const std::string& filetag) const;
-  double GetNweight_SMS(const std::string& dataset, const std::string& filetag, int MP, int MC) const;
+  double GetNweight_SMS(const std::string& dataset, const std::string& filetag, int MP, int MC, int code) const;
   double GetFilterEff(const std::string& dataset, const std::string& filetag, int lumiblock = -1) const;
 
   bool DatasetIsFastSim(const std::string& infile);
@@ -37,10 +37,10 @@ private:
   static std::map<std::pair<std::string,std::string>,double> InitMap_Nevent_BKG();
   static std::map<std::pair<std::string,std::string>,double> m_Label2Nweight_BKG;
   static std::map<std::pair<std::string,std::string>,double> InitMap_Nweight_BKG();
-  static std::map<std::pair<std::string,std::string>,std::map<std::pair<int,int>,double> > m_Label2Nevent_SMS;
-  static std::map<std::pair<std::string,std::string>,std::map<std::pair<int,int>,double> > InitMap_Nevent_SMS();
-  static std::map<std::pair<std::string,std::string>,std::map<std::pair<int,int>,double> > m_Label2Nweight_SMS;
-  static std::map<std::pair<std::string,std::string>,std::map<std::pair<int,int>,double> > InitMap_Nweight_SMS();
+  static std::map<std::pair<std::string,std::string>,std::map<std::pair<int,std::pair<int,int>>,double>> m_Label2Nevent_SMS;
+  static std::map<std::pair<std::string,std::string>,std::map<std::pair<int,std::pair<int,int>>,double>> InitMap_Nevent_SMS();
+  static std::map<std::pair<std::string,std::string>,std::map<std::pair<int,std::pair<int,int>>,double>> m_Label2Nweight_SMS;
+  static std::map<std::pair<std::string,std::string>,std::map<std::pair<int,std::pair<int,int>>,double>> InitMap_Nweight_SMS();
 
   static std::map<std::string,std::map<int,double> > InitMap_FilterEff();
   static std::map<std::string,std::map<int,double> > m_Label2FilterEff;
@@ -62,6 +62,7 @@ private:
   std::string* m_filetag;
   int m_MP;
   int m_MC;
+  int m_Code;
   TBranch* b_m_lumiblock;  
   TBranch* b_m_efficiency; 
   TBranch* b_m_NDAS;  
@@ -71,6 +72,7 @@ private:
   TBranch* b_m_filetag;
   TBranch* b_m_MP;
   TBranch* b_m_MC;
+  TBranch* b_m_Code;
 
   void Initialize_BKG(const std::string& dataset, const std::string& filetag) const;
   void Initialize_SMS(const std::string& dataset, const std::string& filetag) const;

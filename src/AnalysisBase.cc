@@ -962,8 +962,8 @@ int AnalysisBase<Base>::GetSampleIndex(){
       m_HashToIndex[hash] = m_Nsample;
       m_IndexToSample[m_Nsample]  = std::string(Form("SMS_%d_%d_%d", MP, MC, code));
       m_IndexToXsec[m_Nsample]    = m_XsecTool.GetXsec_SMS(m_DataSet, MP, code, m_IsRun3);
-      m_IndexToNevent[m_Nsample]  = m_NeventTool.GetNevent_SMS(m_DataSet, m_FileTag, MP, MC);
-      m_IndexToNweight[m_Nsample] = m_NeventTool.GetNweight_SMS(m_DataSet, m_FileTag, MP, MC);
+      m_IndexToNevent[m_Nsample]  = m_NeventTool.GetNevent_SMS(m_DataSet, m_FileTag, MP, MC, code);
+      m_IndexToNweight[m_Nsample] = m_NeventTool.GetNweight_SMS(m_DataSet, m_FileTag, MP, MC, code);
     
       m_Nsample++;
     }
@@ -3945,17 +3945,16 @@ ParticleList AnalysisBase<NANOULBase>::GetElectrons(){
 template <>
 ParticleList AnalysisBase<NANOULBase>::GetLowPtElectrons(){
   ParticleList list;
-
   int N1 = nLowPtElectron;
   for(int i = 0; i < N1; i++){
     // baseline lepton definition
-    if(LowPtElectron_pt[i] < 1. || LowPtElectron_pt[i] >= 5. || fabs(LowPtElectron_eta[i]) > 2.5)
+    if(LowPtElectron_pt[i] < 2. || LowPtElectron_pt[i] >= 8. || fabs(LowPtElectron_eta[i]) > 2.5)
       continue;
     if(LowPtElectron_convVeto[i] == 0)
       continue;
     if(fabs(LowPtElectron_dxy[i]) >= 0.05 || fabs(LowPtElectron_dz[i]) >= 0.1)
       continue;
-    if(LowPtElectron_ID[i] < 1.8) // need to tune after feedback from Brady
+    if(LowPtElectron_ID[i] < 1.)
       continue;
     
     if(LowPtElectron_dxyErr[i] < 1.e-8 || LowPtElectron_dzErr[i] < 1.e-8)
@@ -3968,19 +3967,16 @@ ParticleList AnalysisBase<NANOULBase>::GetLowPtElectrons(){
     float dz        = LowPtElectron_dz[i];
     float dxy_err   = LowPtElectron_dxyErr[i];
     float dz_err    = LowPtElectron_dzErr[i];
-    // the SIP_3D defined below is coming from Suyash's talk, its something we defined. The sigmas are needed for that
-    // calculation.
+    // the SIP_3D defined below is coming from Suyash's talk, its something we defined.
+    // The sigmas are needed for that calculation.
     float sigma_xy  = dxy/dxy_err;
     float sigma_z   = dz/dz_err;
     float IP_3D     = sqrt(dxy*dxy + dz*dz);
     float SIP_3D    = sqrt(sigma_xy*sigma_xy + sigma_z*sigma_z);
 
-    // TODO: Review and tune SIP_3D cut.
-    if (SIP_3D >= 2)
+    if (SIP_3D > 8.)
       continue;
 
-    // FIXME: fix PFIso requirement for the LowPtElectron collection.
-    // Fixed by Derek
     if(LowPtElectron_miniPFRelIso_all[i]*LowPtElectron_pt[i] >= 20. + 300./LowPtElectron_pt[i])
      continue;
 
@@ -4000,12 +3996,45 @@ ParticleList AnalysisBase<NANOULBase>::GetLowPtElectrons(){
 
     lep.SetRelIso(LowPtElectron_miniPFRelIso_all[i]);
     lep.SetMiniIso(LowPtElectron_miniPFRelIso_all[i]);
-    lep.SetParticleID(kMedium);
+    lep.SetParticleID(kVeryLoose); // need to set to something for later on
     
-    //if (LowPtElectron_pt[i] < 3.0 || (LowPtElectron_pt[i] >= 3.0 && LowPtElectron_embeddedID[i] >=6))
-    //  lep.SetParticleID(kTight);
-    if (LowPtElectron_pt[i] < 3.0 || (LowPtElectron_pt[i] >= 3.0 && LowPtElectron_ID[i] >=1.4)) // need to tune after feedback from Brady
-      lep.SetParticleID(kTight);
+    if(LowPtElectron_lostHits[i] == 0){
+      float pt = lep.Pt();
+      float absEta = std::abs(lep.Eta());
+      float id = LowPtElectron_ID[i];
+
+      bool failsIso = lep.MiniIso() * pt >= 4. || lep.RelIso() * pt >= 4.;
+      if (failsIso) {
+        lep.SetLepQual(kBronze);
+      } else {
+        bool passesID = false;
+
+        if (pt >= 2. && pt < 5.) {
+          if (absEta >= 1.48 && absEta < 2.5)
+            passesID = false; // always Bronze
+          else if (absEta >= 0.8 && absEta < 1.48)
+            passesID = id >= 3;
+          else if (absEta < 0.8)
+            passesID = id >= 2.3;
+        } else if (pt >= 5. && pt < 8.) {
+          if (absEta >= 1.48 && absEta < 2.5)
+            passesID = id >= 3.5;
+          else if (absEta >= 0.8 && absEta < 1.48)
+            passesID = id >= 3;
+          else if (absEta < 0.8)
+            passesID = id >= 2.3;
+        }
+
+        if (!passesID) {
+          lep.SetLepQual(kBronze);
+        } else if (lep.SIP3D() > 2.) {
+          lep.SetLepQual(kSilver);
+        } else {
+          lep.SetLepQual(kGold);
+        }
+      } // else
+
+    } // if(Electron_lostHits[i] == 0)
  
     list.push_back(lep);
   }
@@ -5127,16 +5156,41 @@ ParticleList AnalysisBase<NANORun3>::GetLowPtElectrons(){
     lep.SetParticleID(kVeryLoose); // need to set to something for later on
     
     if(LowPtElectron_lostHits[i] == 0){
-      if(  lep.MiniIso()*lep.Pt() >= 4.
-        || lep.RelIso()*lep.Pt() >= 4.
-        || LowPtElectron_ID[i] < 2.2 // TBD
-      )
+      float pt = lep.Pt();
+      float absEta = std::abs(lep.Eta());
+      float id = LowPtElectron_ID[i];
+
+      bool failsIso = lep.MiniIso() * pt >= 4. || lep.RelIso() * pt >= 4.;
+      if (failsIso) {
         lep.SetLepQual(kBronze);
-      else if(lep.SIP3D() > 2.)
-        lep.SetLepQual(kSilver);
-      else
-        lep.SetLepQual(kGold);
-      list.push_back(lep);
+      } else {
+        bool passesID = false;
+
+        if (pt >= 2. && pt < 5.) {
+          if (absEta >= 1.48 && absEta < 2.5)
+            passesID = false; // always Bronze
+          else if (absEta >= 0.8 && absEta < 1.48)
+            passesID = id >= 3;
+          else if (absEta < 0.8)
+            passesID = id >= 2.3;
+        } else if (pt >= 5. && pt < 8.) {
+          if (absEta >= 1.48 && absEta < 2.5)
+            passesID = id >= 3.5;
+          else if (absEta >= 0.8 && absEta < 1.48)
+            passesID = id >= 3;
+          else if (absEta < 0.8)
+            passesID = id >= 2.3;
+        }
+
+        if (!passesID) {
+          lep.SetLepQual(kBronze);
+        } else if (lep.SIP3D() > 2.) {
+          lep.SetLepQual(kSilver);
+        } else {
+          lep.SetLepQual(kGold);
+        }
+      } // else
+
     } // if(Electron_lostHits[i] == 0)
  
     list.push_back(lep);

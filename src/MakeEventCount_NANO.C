@@ -170,10 +170,11 @@ int main(int argc, char* argv[]) {
 
   int MP = 0;
   int MC = 0;
+  int Code = 0;
   int PDGID;
-  std::vector<std::pair<int,int> > masses;
-  std::map<std::pair<int,int>,double > mapNevent;
-  std::map<std::pair<int,int>,double > mapNweight;
+  std::vector<std::pair<int,std::pair<int,int>>> masses;
+  std::map<std::pair<int,std::pair<int,int>>,double > mapNevent;
+  std::map<std::pair<int,std::pair<int,int>>,double > mapNweight;
    
   int maxNGEN = 0;
 
@@ -206,6 +207,45 @@ int main(int argc, char* argv[]) {
       //cout << "NGEN " << Ngen << endl;
       if(Ngen > maxNGEN)
 	maxNGEN = Ngen;
+      // for cascades
+      int code = 0;
+      bool has_Slep = false;
+      bool has_Snu = false;
+      bool is_left = true;
+      // minus referring to charge of e or mu (not value of PDGID)
+      bool is_plus = true;
+      for(int i = 0; i < Ngen; i++){
+        PDGID = fabs(GenPart_pdgId[i]);
+        if(PDGID > 1000000 && PDGID < 3000000){
+          int mass = int(GenPart_mass[i]+0.5);
+          if(PDGID == 1000022)
+            MC = mass;
+          else
+            if(mass > MP)
+              MP = mass;
+        }
+        // Getting 'code' for cascades
+        if(dataset.find("Cascade") != std::string::npos){
+          if (abs(PDGID) % 10000 == 11 || abs(PDGID) % 10000 == 13) {
+            has_Slep = true;
+            if (PDGID > 0) is_plus = false;
+          } 
+          else if (abs(PDGID) % 10000 == 12 || abs(PDGID) % 10000 == 14) {
+              has_Snu = true;
+          }
+          if (PDGID > 2000000) is_left = false;
+        }
+      } // for(int i = 0; i < Ngen; i++)
+      if(dataset.find("Cascade") != std::string::npos){
+        // build code from booleans
+        if(has_Slep && !has_Snu) code += 1; // SlepSlep
+        if(has_Slep && has_Snu) code += 2; // SlepSnu
+        if(!has_Slep && has_Snu) code += 3; // SnuSnu
+        if(is_left) code += 10;
+        else code += 20;
+        if(is_plus) code += 100;
+        else code += 200;
+      }
       for(int i = 0; i < Ngen; i++){
 	PDGID = abs(GenPart_pdgId[i]);
 	if(PDGID > 1000000 && PDGID < 3000000){
@@ -217,7 +257,9 @@ int main(int argc, char* argv[]) {
 	      MP = mass;
 	}
       }
-      std::pair<int,int> masspair(MP,MC);
+      Code = code;
+      std::pair<int,std::pair<int,int>> masspair;
+      masspair = std::make_pair(Code,std::make_pair(MP,MC));
       if(mapNevent.count(masspair) == 0){
 	masses.push_back(masspair);
 	mapNevent[masspair]    = 0.;
@@ -252,6 +294,7 @@ int main(int argc, char* argv[]) {
   tout->Branch("DAS_datasetname", &DAS_datasetname);
   tout->Branch("MP", &MP);
   tout->Branch("MC", &MC);
+  tout->Branch("Code", &Code);
   if(DO_SMS){
     int Nmass = masses.size();
     for(int i = 0; i < Nmass; i++){
@@ -272,8 +315,9 @@ int main(int argc, char* argv[]) {
       Nweight = mapNweight[masses[i]];
       Nevent = mapNevent[masses[i]];
       NDAS = Nevent; // since we already passed DAS check above, set NDAS to Nevent for filling tree
-      MP = masses[i].first;
-      MC = masses[i].second;
+      Code = masses[i].first;
+      MP = masses[i].second.first;
+      MC = masses[i].second.second;
       tout->Fill();
     }
   } else {
