@@ -1,6 +1,4 @@
-import os
-import argparse
-import subprocess
+import os, argparse, subprocess, time
 
 def process_DASCheck_event_count(input_dir, working_dir, output_dir, dryrun, file, directory):
     processes = []
@@ -54,6 +52,7 @@ if __name__ == "__main__":
     
     args = parser.parse_args()
     
+    time.sleep(1)
     if not args.d and not args.f:
         print("NEED TO SPECIFY WHETHER RUNNING OVER FILES OR DIRECTORY OF FILES")
     else:
