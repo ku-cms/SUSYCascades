@@ -15,10 +15,12 @@ void Plot_Advanced(){
 
   output_root_file += "Advanced_";
   //g_Label = "PreSelection";
-  g_Label = "2L GG 0B inclS SR";
+  //g_Label = "2L GG 0B inclS SR";
   //g_Label = "2L notGG 0B inclS SR";
   //g_Label = "2 lepton SR";
   //g_Label = "2 lepton ttbar CR";
+  g_Label = "No Cuts";
+  //g_Label = "TESTING";
   output_root_file += g_Label+".root";
   // Replaces spaces in name of output file with _
   std::replace(output_root_file.begin(), output_root_file.end(), ' ', '_');
@@ -26,8 +28,10 @@ void Plot_Advanced(){
   size_t str_root_pos = folder_name.rfind(".root");
   if (str_root_pos != std::string::npos && str_root_pos == folder_name.length() - 5)
     folder_name.erase(str_root_pos, 5);
-  if(SavePDF)
+  if(SavePDF){
+    std::cout << "making dir for plots: " << folder_name << std::endl;
     gSystem->Exec(("mkdir -p "+folder_name).c_str());
+  }
   std::cout << "Saving plots to: " << output_root_file << std::endl;
 
   int SKIP = 1; // note that this only applies to BKG
@@ -100,7 +104,13 @@ void Plot_Advanced(){
   vector<TH1*> hist_stack_MJ;
   hist_stacks.push_back(&hist_stack_MJ);
 
+  // hists for holding number of events
+  TH2D* hist_EventCount = new TH2D("EventCount", "EventCount", 22, 0, 22, 10, 0, 10);
+
+  int vec_samples_index = 0;
   for (auto p = vec_samples.begin(); p != vec_samples.end(); p++){
+
+    hist_EventCount->GetYaxis()->SetBinLabel(vec_samples_index+1, FP.getTitle(p->first).c_str());
     // vectors to hold 'generic' plotting objects
     vector<TH1*> hists1;
     vector<TH2*> hists2;
@@ -305,45 +315,45 @@ void Plot_Advanced(){
               continue;
           
           // apply trigger to data and FullSim events
-          if(!base->METORtrigger && !is_FastSim)
-            continue;
+          //if(!base->METORtrigger && !is_FastSim)
+          //  continue;
           	
-          double MET = base->MET;
           // get variables from root files using base class
+          double MET = base->MET;
           double Mperp = base->Mperp;
           double RISR = base->RISR;
           double PTISR = base->PTISR;
 
-          if(MET < 100)
-            continue;
+          //if(MET < 100)
+          //  continue;
 
           //if(PTISR < 200.)
-          if(PTISR < 300.) // SR
-	    continue;
+          //if(PTISR < 300.) // SR
+	  //  continue;
 
           // Cleaning cuts...
           double dphiCMI = base->dphiCMI;
           double PTCM = base->PTCM;
           double x = fabs(dphiCMI);
           
-          if(PTCM > 200.)
-            continue;
-          if(PTCM > -500.*sqrt(std::max(0.,-2.777*x*x+1.388*x+0.8264))+575. &&
-             -2.777*x*x+1.388*x+0.8264 > 0.)
-            continue;
-          if(PTCM > -500.*sqrt(std::max(0.,-1.5625*x*x+7.8125*x-8.766))+600. &&
-             -1.5625*x*x+7.8125*x-8.766 > 0.)
-            continue;
+          //if(PTCM > 200.)
+          //  continue;
+          //if(PTCM > -500.*sqrt(std::max(0.,-2.777*x*x+1.388*x+0.8264))+575. &&
+          //   -2.777*x*x+1.388*x+0.8264 > 0.)
+          //  continue;
+          //if(PTCM > -500.*sqrt(std::max(0.,-1.5625*x*x+7.8125*x-8.766))+600. &&
+          //   -1.5625*x*x+7.8125*x-8.766 > 0.)
+          //  continue;
           // End of Cleaning cuts...
             
           double dphiMET_V = base->dphiMET_V;
-          if(fabs(base->dphiMET_V) > acos(-1.)/2.)
-            continue;
+          //if(fabs(base->dphiMET_V) > acos(-1.)/2.)
+          //  continue;
             
-          if(RISR < 0.5 || RISR > 1.0)
+          //if(RISR < 0.5 || RISR > 1.0)
           //if(RISR < 0.4 || RISR > 0.7) // CR
           //if(RISR < 0.9)
-            continue;
+          //  continue;
 
           // Get Physics Objects
           int Nlep     = base->Nlep;
@@ -353,9 +363,9 @@ void Plot_Advanced(){
           int NbjetISR = base->Nbjet_ISR;
 
           //if(NbjetISR + NbjetS != 2) continue; // CR
-          if(NbjetISR + NbjetS > 1) continue; // SR
+          //if(NbjetISR + NbjetS > 1) continue; // SR
 
-          if(Nlep != 2) continue;
+          //if(Nlep != 2) continue;
           //if(NjetS != 0) continue; //SR
 
           double minDR = 1000;
@@ -438,9 +448,9 @@ void Plot_Advanced(){
           for(int i = 0; i < list_leps.GetN(); i++){
             if(list_leps[i].ID() == kGold) nGL++;
           }
-          if(nGL < 2) skip = true; // SR GG
+          //if(nGL < 2) skip = true; // SR GG
           //if(nGL == 2) skip = true; // CR notGG
-          if(skip) continue; 
+          //if(skip) continue; 
           
           double weight = (base->weight != 0.) ? base->weight : 1.;
           if(!is_data && !is_signal)
@@ -524,6 +534,54 @@ void Plot_Advanced(){
           hist_MJ->Fill(MJ, weight);
 
           eff_METtrig->Fill(base->METtrigger, MET, weight);
+
+          // Event Counting
+          int EC_X = 0; // root hists have underflow in bin 0
+          int EC_Y = vec_samples_index+1; // root hists have underflow in bin 0
+          int cat_Nleps = list_leps.GetN();
+          if (cat_Nleps > 4) cat_Nleps = 4; // ge4L is upper limit
+          
+          // Extract total lepton charge
+          std::vector<LepFlavor> flavors;
+          std::vector<LepCharge> charges;
+          int total_charge = 0;
+          for (int i = 0; i < cat_Nleps; i++){
+            flavors.push_back(list_leps[i].Flavor());
+            charges.push_back(list_leps[i].Charge());
+            total_charge += (charges.back() == LepCharge::kPos) ? 1 : -1;
+          }
+          std::sort(flavors.begin(), flavors.end());
+          int num_e = std::count(flavors.begin(), flavors.end(), LepFlavor::kElectron);
+          int abs_charge = abs(total_charge);
+          
+          if (cat_Nleps == 2) {
+            bool same_flavor = (flavors[0] == flavors[1]);
+            bool opposite_sign = (charges[0] != charges[1]);
+
+            if (same_flavor && opposite_sign)       EC_X = 1; //flavor_category = "OSSF";
+            else if (same_flavor && !opposite_sign) EC_X = 2; //flavor_category = "SSSF";
+            else if (!same_flavor && opposite_sign) EC_X = 3; //flavor_category = "OSOF";
+            else                                    EC_X = 4; //flavor_category = "SSOF";
+            hist_EventCount->SetBinContent(EC_X,EC_Y,hist_EventCount->GetBinContent(EC_X,EC_Y)+1);
+          }
+          else if(cat_Nleps == 3) {
+            EC_X = 5;
+            EC_X += num_e;
+            hist_EventCount->SetBinContent(EC_X,EC_Y,hist_EventCount->GetBinContent(EC_X,EC_Y)+1);
+            EC_X = 9;
+            EC_X += abs_charge;
+            hist_EventCount->SetBinContent(EC_X,EC_Y,hist_EventCount->GetBinContent(EC_X,EC_Y)+1);
+          }
+          else {
+            EC_X = 13;
+            EC_X += num_e;
+            hist_EventCount->SetBinContent(EC_X,EC_Y,hist_EventCount->GetBinContent(EC_X,EC_Y)+1);
+            EC_X = 18;
+            EC_X += abs_charge;
+            hist_EventCount->SetBinContent(EC_X,EC_Y,hist_EventCount->GetBinContent(EC_X,EC_Y)+1);
+          }
+          hist_EventCount->SetBinContent(0,EC_Y,hist_EventCount->GetBinContent(0,EC_Y)+1); // normalized to selection
+
         }
         delete base;
         delete chain;
@@ -544,6 +602,7 @@ void Plot_Advanced(){
     hists1.clear();
     hists2.clear();
     effs.clear();
+    vec_samples_index++;
 
   } // for (auto p = vec_samples.begin(); p != vec_samples.end(); p++){
 
@@ -569,6 +628,10 @@ void Plot_Advanced(){
      g_PlotTitle = "stack"+g_PlotTitle;
      Plot_Stack(*hist_stacks[stack_h], vec_samples, signal_boost);
   }
+
+  Plot_EventCount((TH2*)hist_EventCount->Clone("EventCount_Scaled"), true, lumi);
+  Plot_EventCount(hist_EventCount, false, lumi);
+
   Long64_t end = gSystem->Now();
   std::cout << "Time to process " << (end-start)/1000.0 << " seconds" << std::endl;
   gApplication->Terminate(0);

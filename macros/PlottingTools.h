@@ -150,11 +150,11 @@ void Plot_Stack(vector<TH1*>& vect_h, std::vector<std::pair<std::string, Process
   gStyle->SetOptTitle(0);
   gStyle->SetOptStat(0);
   gStyle->SetOptFit(11111111);
-  TCanvas* can = (TCanvas*) new TCanvas(("can_"+g_PlotTitle).c_str(),("can_"+g_PlotTitle).c_str(),1200,600); // 1200, 700 is default
+  TCanvas* can = (TCanvas*) new TCanvas(("can_"+g_PlotTitle).c_str(),("can_"+g_PlotTitle).c_str(),1200,700);
 
   double hlo = 0.09;
   double hhi = 0.22;
-  double hbo = 0.27;
+  double hbo = 0.15;
   double hto = 0.07;
   can->SetLeftMargin(hlo);
   can->SetRightMargin(hhi);
@@ -264,10 +264,10 @@ void Plot_Stack(vector<TH1*>& vect_h, std::vector<std::pair<std::string, Process
   l.SetNDC();
   l.SetTextSize(0.05);
   l.SetTextFont(132);
-  l.DrawLatex(0.55,0.943,g_Label.c_str());
+  l.DrawLatex(0.7,0.943,g_Label.c_str());
   l.SetTextSize(0.04);
   l.SetTextFont(42);
-  l.DrawLatex(0.09,0.943,"#bf{#it{CMS}} Internal 13 TeV Simulation");
+  l.DrawLatex(0.01,0.943,"#bf{#it{CMS}} Internal 13 TeV Simulation");
   l.SetTextSize(0.05);
   l.SetTextFont(132);
   //string s_lumi = "#scale[0.6]{#int} #it{L dt} = "+to_string(int(g_Lumi))+" fb^{-1}";
@@ -582,5 +582,124 @@ void Plot_Ratio(TH1* h_num, TH1* h_den){
   can->Write(0,TObject::kWriteDelete);
   file->Close();
   delete[] yaxis;
+  delete can;
+}
+
+void Plot_EventCount(TH2* h, bool Scale, double Scale_Val){
+  if(Scale_Val == 0) Scale_Val = h->Integral();
+  string title = h->GetName();
+  if(Scale)
+    h->Scale(Scale_Val);
+  TCanvas* can = (TCanvas*) new TCanvas(("can_"+title).c_str(),("can_"+title).c_str(),700.,600);
+
+  int bin = 1;
+  
+  // --- 2L Labels: OSSF, SSSF, OSOF, SSOF ---
+  std::vector<std::string> twoL_labels = {"OSSF", "SSSF", "OSOF", "SSOF"};
+  for (const auto& label : twoL_labels) {
+    h->GetXaxis()->SetBinLabel(bin, ("2L " + label).c_str());
+    bin++;
+  }
+  
+  // --- 3L Labels: uuu, euu, eeu, eee ---
+  std::vector<std::string> sf_labels_3L = {"uuu", "euu", "eeu", "eee"};
+  for (const auto& label : sf_labels_3L) {
+    h->GetXaxis()->SetBinLabel(bin, ("3L " + label).c_str());
+    bin++;
+  }
+  
+  // --- 3L Charge Labels: Q0, Q1, Q2, Q3 ---
+  std::vector<std::string> charge_labels_3L = {"Q0", "Q1", "Q2", "Q3"};
+  for (const auto& label : charge_labels_3L) {
+    h->GetXaxis()->SetBinLabel(bin, ("3L " + label).c_str());
+    bin++;
+  }
+  
+  // --- 4L Labels: uuuu, euuu, eeuu, eeeu, eeee ---
+  std::vector<std::string> sf_labels_4L = {"uuuu", "euuu", "eeuu", "eeeu", "eeee"};
+  for (const auto& label : sf_labels_4L) {
+    h->GetXaxis()->SetBinLabel(bin, ("4L " + label).c_str());
+    bin++;
+  }
+  
+  // --- 4L Charge Labels: Q0, Q1, Q2, Q3, Q4 ---
+  std::vector<std::string> charge_labels_4L = {"Q0", "Q1", "Q2", "Q3", "Q4"};
+  for (const auto& label : charge_labels_4L) {
+    h->GetXaxis()->SetBinLabel(bin, ("4L " + label).c_str());
+    bin++;
+  }
+
+  if(!Scale){
+    for(int i = 1; i <= h->GetNbinsX(); i++){
+      for(int j = 1; j <= h->GetNbinsY(); j++){
+        if(h->GetBinContent(i,j) > 0){
+          h->SetBinContent(i,j, h->GetBinContent(i,j)/h->GetBinContent(0,j));
+        }
+      }
+    }
+  }
+  else
+    h->Scale(Scale_Val);
+
+  can->SetLeftMargin(0.1);
+  can->SetRightMargin(0.13);
+  can->SetBottomMargin(0.13);
+  can->SetGridx();
+  can->SetGridy();
+  can->SetLogz();
+  can->Draw();
+  can->cd();
+  // note need to call this method again if opening the
+  // canvas later on in the saved output root file
+  gStyle->SetPaintTextFormat(".2g");
+  h->Draw("COLZ TEXT");  // Draw the histogram with text
+  h->SetMarkerSize(0.7);
+  h->GetXaxis()->CenterTitle();
+  h->GetXaxis()->SetTitleFont(42);
+  h->GetXaxis()->SetTitleSize(0.06);
+  h->GetXaxis()->SetTitleOffset(1.06);
+  h->GetXaxis()->SetLabelFont(42);
+  h->GetXaxis()->SetLabelSize(0.03);
+  h->GetYaxis()->CenterTitle();
+  h->GetYaxis()->SetTitleFont(42);
+  h->GetYaxis()->SetTitleSize(0.06);
+  h->GetYaxis()->SetTitleOffset(1.12);
+  h->GetYaxis()->SetLabelFont(42);
+  h->GetYaxis()->SetLabelSize(0.025);
+  h->GetZaxis()->CenterTitle();
+  h->GetZaxis()->SetTitleFont(42);
+  h->GetZaxis()->SetTitleSize(0.025);
+  h->GetZaxis()->SetTitleOffset(1.08);
+  h->GetZaxis()->SetLabelFont(42);
+  h->GetZaxis()->SetLabelSize(0.025);
+  if(Scale)
+    h->GetZaxis()->SetTitle(("N_{events} passing category / "+std::to_string(int(Scale_Val))+" fb^{-1}").c_str());
+  else
+    h->GetZaxis()->SetTitle(("N_{events} passing category / N_{events} passing "+g_Label).c_str());
+  h->GetZaxis()->SetRangeUser(0.9*h->GetMinimum(0.0),1.1*h->GetMaximum());
+
+  TLatex l;
+  l.SetTextFont(42);
+  l.SetNDC();
+  l.SetTextSize(0.035);
+  l.SetTextFont(42);
+  l.SetTextSize(0.04);
+  l.DrawLatex(0.75,0.943,g_Label.c_str());
+  l.SetTextFont(42);
+  l.DrawLatex(0.11,0.943,"#bf{CMS} Simulation Preliminary");
+
+  l.SetTextSize(0.045);
+  l.SetTextFont(42);
+
+  string pdf_title = folder_name+"/"+g_Label+"_";
+  pdf_title += can->GetTitle();
+  gErrorIgnoreLevel = 1001;
+  if(SavePDF)
+    can->SaveAs((pdf_title+".pdf").c_str());
+  gErrorIgnoreLevel = 0;
+  TFile* file = new TFile(output_root_file.c_str(),"UPDATE");
+  can->Write(0,TObject::kWriteDelete);
+  file->Close();
+  delete h;
   delete can;
 }
