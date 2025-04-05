@@ -114,7 +114,7 @@ def ReadFilterList(filterlist_filename):
         return None
 
 def UpdateFilterList(DataSetName, filterlist_filename, add):
-# add == True means add to list, False means remove if in list
+    # add == True means add to list, False means remove if in list
     try:
         with open(filterlist_filename,'r') as filterlist:
             dataset_list = {line.strip() for line in filterlist}
@@ -327,6 +327,9 @@ def main():
         ]
         fileFilterList = ReadFilterList(f"{directory}/CheckFiles_FilterList.txt")
         if fileFilterList is not None: filter_list.extend(fileFilterList)
+        if fileFilterList == [] and not checkAll:
+            print("All datasets passed DAS check!")
+            return
         if checkAll: filter_list.clear()
 
         time.sleep(1)

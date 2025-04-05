@@ -201,7 +201,10 @@ class EventCount:
                 stderr=subprocess.STDOUT
             ).strip()
             das_output = das_output.split('\n')
-            das_output = [dataset for dataset in das_output if 'JME' not in dataset and 'PUFor' not in dataset]
+            das_output = [dataset for dataset in das_output if 'JME' not in dataset and 'PUFor' not in dataset and 'PU35ForTRK' not in dataset and 'LowPU' not in dataset]
+            is_fs_only = all("FS" in dataset for dataset in das_output)
+            if not is_fs_only:
+                das_output = [dataset for dataset in das_output if "FS" not in dataset]
             return das_output
         except subprocess.CalledProcessError as e:
             print(f"Error querying DAS: {e.output.strip()}")
