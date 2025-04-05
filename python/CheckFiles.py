@@ -289,6 +289,8 @@ def main():
     parser.add_argument("--skipOut",        "-u", action='store_true', help="skip checking out files")
     parser.add_argument("--skipZombie",     "-z", action='store_true', help="skip checking zombie root files")
     parser.add_argument("--maxResub",       "-l", default=100, help="max number of jobs to resubmit")
+    parser.add_argument("--threshold",      "-t", default=100, help="min number of jobs running before starting checker")
+    parser.add_argument("--sleep",          "-p", default=1, help="time to sleep before starting checker")
 
     global DO_EVENTCOUNT
     options        = parser.parse_args()
@@ -305,6 +307,8 @@ def main():
     skipOut        = options.skipOut
     skipZombie     = options.skipZombie
     maxResub       = int(options.maxResub)
+    threshold      = int(options.threshold)
+    sleep_time     = int(options.sleep)
 
     if directory is None:
         # quick strictly das check from root file (useful for final hadd test)
@@ -332,8 +336,7 @@ def main():
             return
         if checkAll: filter_list.clear()
 
-        time.sleep(1)
-        threshold = 100
+        time.sleep(sleep_time)
         condor_monitor = CondorJobCountMonitor(threshold=threshold,verbose=False)
         print(f"Waiting until minumum of {threshold} jobs in the queue")
         condor_monitor.wait_until_jobs_below()
