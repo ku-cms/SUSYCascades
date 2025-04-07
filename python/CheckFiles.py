@@ -69,6 +69,7 @@ def makeSubmitScript(tuple_pairs,submitName,resubmit,maxResub,DataSetName):
             print(f"You are about to make {resubmitFiles} and resubmit {resubmitFiles} jobs for dataset: {DataSetName}!")
             print(f"You should double check there are no issues with your condor submissions.")
             print(f"If you are confident you want to resubmit, then you should rerun this script with '-l {resubmitFiles}'.")
+            print(f"Or run condor_submit {newFileName}")
         else:
             condor_monitor = CondorJobCountMonitor(threshold=80000,verbose=False)
             condor_monitor.wait_until_jobs_below()

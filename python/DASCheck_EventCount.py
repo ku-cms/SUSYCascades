@@ -1,6 +1,6 @@
 import os, argparse, subprocess, time
 
-def process_DASCheck_event_count(input_dir, working_dir, output_dir, dryrun, file, directory):
+def process_DASCheck_event_count(input_dir, working_dir, output_dir, dryrun, file, directory, threshold):
     processes = []
     if dryrun:
         print("Doing dryrun")
@@ -23,7 +23,7 @@ def process_DASCheck_event_count(input_dir, working_dir, output_dir, dryrun, fil
         dirs = os.listdir(working_dir)
         for EC_dir in dirs:
             if EC_dir.endswith('_EventCount'):
-                command = f"python3 python/CheckFiles.py -d {EC_dir} -o {output_dir}{EC_dir} --eventCount"
+                command = f"python3 python/CheckFiles.py -d {EC_dir} -o {output_dir}{EC_dir} --eventCount -t {threshold}"
                 os.makedirs("DASCheck_logs/",exist_ok=True)
                 output_file = f"DASCheck_logs/DASCheck_{EC_dir}.txt"
                 if not dryrun:
@@ -49,13 +49,15 @@ if __name__ == "__main__":
     parser.add_argument("--dryrun", action='store_true', help="Do not run countEvents check")
     parser.add_argument("-d", action='store_true', help="Check directory of output root files from condor jobs")
     parser.add_argument("-f", action='store_true', help="Check final hadded root files")
+    parser.add_argument("--threshold", "-t", default=100, help="min number of jobs running before starting checker")
+    parser.add_argument("--sleep", "-p", default=1, help="time to sleep before starting checker")
     
     args = parser.parse_args()
     
-    time.sleep(1)
+    time.sleep(int(args.sleep))
     if not args.d and not args.f:
         print("NEED TO SPECIFY WHETHER RUNNING OVER FILES OR DIRECTORY OF FILES")
     else:
-        process_DASCheck_event_count(args.input, args.working, args.output, args.dryrun, args.f, args.d)
+        process_DASCheck_event_count(args.input, args.working, args.output, args.dryrun, args.f, args.d, args.threshold)
 
 
