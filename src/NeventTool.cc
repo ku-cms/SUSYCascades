@@ -137,7 +137,6 @@ void NeventTool::Initialize_SMS(const std::string& dataset, const std::string& f
       } else {
 //cout << "HEREEREERE" << endl;
       }
-      
       m_Label2Nevent_SMS[label][masses] += m_Nevent;
       m_Label2Nweight_SMS[label][masses] += m_Nweight;
     }
@@ -190,7 +189,7 @@ double NeventTool::GetNevent_SMS(const std::string& dataset, const std::string& 
     Initialize_SMS(dataset, filetag);
 
   std::pair<int,std::pair<int,int>> masses;
-  masses = std::make_pair(m_Code,std::make_pair(m_MP,m_MC));
+  masses = std::make_pair(Code,std::make_pair(MP,MC));
 
   if(m_Label2Nevent_SMS[label].count(masses) == 0)
     return 0.;
@@ -228,7 +227,7 @@ double NeventTool::GetFilterEff(const std::string& dataset, const std::string& f
   return m_Label2FilterEff[dataset][-1];
 }
 
-double NeventTool::GetNweight_SMS(const std::string& dataset, const std::string& filetag, int MP, int MC, int code) const {
+double NeventTool::GetNweight_SMS(const std::string& dataset, const std::string& filetag, int MP, int MC, int Code) const {
   if(!m_Tree)
     return 0.;
 
@@ -238,11 +237,10 @@ double NeventTool::GetNweight_SMS(const std::string& dataset, const std::string&
     Initialize_SMS(dataset, filetag);
   
   std::pair<int,std::pair<int,int>> masses;
-  masses = std::make_pair(m_Code,std::make_pair(m_MP,m_MC));
+  masses = std::make_pair(Code,std::make_pair(MP,MC));
 
   if(m_Label2Nweight_SMS[label].count(masses) == 0)
     return 0.;
-  
   return m_Label2Nweight_SMS[label][masses];
 }
 

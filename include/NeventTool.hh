@@ -23,9 +23,9 @@ public:
   void BuildFilterEffMap(const std::string& rootfile);
 
   double GetNevent_BKG(const std::string& dataset, const std::string& filetag) const;
-  double GetNevent_SMS(const std::string& dataset, const std::string& filetag, int MP, int MC, int code) const;
+  double GetNevent_SMS(const std::string& dataset, const std::string& filetag, int MP, int MC, int Code) const;
   double GetNweight_BKG(const std::string& dataset, const std::string& filetag) const;
-  double GetNweight_SMS(const std::string& dataset, const std::string& filetag, int MP, int MC, int code) const;
+  double GetNweight_SMS(const std::string& dataset, const std::string& filetag, int MP, int MC, int Code) const;
   double GetFilterEff(const std::string& dataset, const std::string& filetag, int lumiblock = -1) const;
 
   bool DatasetIsFastSim(const std::string& infile);
