@@ -20,14 +20,13 @@ void Plot_Advanced(){
   //g_Label = "2 lepton SR";
   //g_Label = "2 lepton ttbar CR";
   g_Label = "No Cuts";
+  //g_Label = "MET > 150";
   //g_Label = "TESTING";
-  output_root_file += g_Label+".root";
-  // Replaces spaces in name of output file with _
-  std::replace(output_root_file.begin(), output_root_file.end(), ' ', '_');
+  
+  output_root_file += g_Label;
+  SanitizeString(output_root_file);
   folder_name = output_root_file;
-  size_t str_root_pos = folder_name.rfind(".root");
-  if (str_root_pos != std::string::npos && str_root_pos == folder_name.length() - 5)
-    folder_name.erase(str_root_pos, 5);
+  output_root_file += ".root";
   if(SavePDF){
     std::cout << "making dir for plots: " << folder_name << std::endl;
     gSystem->Exec(("mkdir -p "+folder_name).c_str());
@@ -39,7 +38,7 @@ void Plot_Advanced(){
   //double lumi = 138.+109+27+34; // Run 2&3
   //double lumi = 9.451; // Summer23BPix
   double lumi = 400.; // estimated Run2+Run3
-  double signal_boost = 10.;
+  double signal_boost = 1.;
   bool Norm = true; // scale hists by lumi
 
   std::vector<std::pair<std::string, ProcessList>> vec_samples;
@@ -48,16 +47,7 @@ void Plot_Advanced(){
   map_vsignals.insert(std::make_pair("Cascades_220", VS({"Cascades_*_220_*"})));
   map_vsignals.insert(std::make_pair("Cascades_260", VS({"Cascades_*_260_*"})));
   map_vsignals.insert(std::make_pair("Cascades_270", VS({"Cascades_*_270_*"})));
-   
-  // loop over signals and add to map
-  for(auto p = map_vsignals.begin(); p != map_vsignals.end(); p++){
-    ProcessList signals;
-    for(auto s : p->second){
-      signals += ST.Get(s);
-    }
-    vec_samples.push_back(std::make_pair(p->first, signals));
-  }
-  
+    
   // loop over backgrounds and add to map
   ProcessList backgrounds = ST.Get(kBkg);
   //backgrounds = backgrounds.Remove("QCD");
@@ -65,6 +55,15 @@ void Plot_Advanced(){
     ProcessList bkg;
     bkg += backgrounds[s];
     vec_samples.push_back(std::make_pair(backgrounds[s].Name(), bkg));
+  }
+
+  // loop over signals and add to map
+  for(auto p = map_vsignals.begin(); p != map_vsignals.end(); p++){
+    ProcessList signals;
+    for(auto s : p->second){
+      signals += ST.Get(s);
+    }
+    vec_samples.push_back(std::make_pair(p->first, signals));
   }
 
   // loop over data and add to map
@@ -105,12 +104,17 @@ void Plot_Advanced(){
   hist_stacks.push_back(&hist_stack_MJ);
 
   // hists for holding number of events
-  TH2D* hist_EventCount = new TH2D("EventCount", "EventCount", 22, 0, 22, 10, 0, 10);
+  const int EC_bins = vec_samples.size() + 1;
+  const int Zbi_bins = map_vsignals.size();
+  TH2D* hist_EventCount = new TH2D("EventCount", "EventCount", 22, 0, 22, EC_bins, 0, EC_bins);
+  hist_EventCount->GetYaxis()->SetBinLabel(EC_bins, "TOT BKG");
+  TH2D* hist_Zbi = new TH2D("Zbi", "Zbi", 22, 0, 22, Zbi_bins, 0, Zbi_bins);
 
   int vec_samples_index = 0;
+  int Zbi_samples_index = 0;
   for (auto p = vec_samples.begin(); p != vec_samples.end(); p++){
-
     hist_EventCount->GetYaxis()->SetBinLabel(vec_samples_index+1, FP.getTitle(p->first).c_str());
+
     // vectors to hold 'generic' plotting objects
     vector<TH1*> hists1;
     vector<TH2*> hists2;
@@ -270,6 +274,9 @@ void Plot_Advanced(){
       is_data   = (proc.Type() == kData);
       is_bkg    = (proc.Type() == kBkg);
       is_signal = (proc.Type() == kSig);
+    
+      if(is_signal)
+        hist_Zbi->GetYaxis()->SetBinLabel(Zbi_samples_index+1, FP.getTitle(p->first).c_str());
       
       int Nfile = ST.NTrees(proc);
  
@@ -310,9 +317,9 @@ void Plot_Advanced(){
 
           // Apply PreSelection
           
-          if(do_FilterDilepton)
-            if(SF.DileptonEvent(base))
-              continue;
+          //if(do_FilterDilepton)
+          //  if(SF.DileptonEvent(base))
+          //    continue;
           
           // apply trigger to data and FullSim events
           //if(!base->METORtrigger && !is_FastSim)
@@ -324,7 +331,7 @@ void Plot_Advanced(){
           double RISR = base->RISR;
           double PTISR = base->PTISR;
 
-          //if(MET < 100)
+          //if(MET < 150.)
           //  continue;
 
           //if(PTISR < 200.)
@@ -538,6 +545,7 @@ void Plot_Advanced(){
           // Event Counting
           int EC_X = 0; // root hists have underflow in bin 0
           int EC_Y = vec_samples_index+1; // root hists have underflow in bin 0
+          int Zbi_EC_Y = Zbi_samples_index+1;
           int cat_Nleps = list_leps.GetN();
           if (cat_Nleps > 4) cat_Nleps = 4; // ge4L is upper limit
           
@@ -562,25 +570,42 @@ void Plot_Advanced(){
             else if (same_flavor && !opposite_sign) EC_X = 2; //flavor_category = "SSSF";
             else if (!same_flavor && opposite_sign) EC_X = 3; //flavor_category = "OSOF";
             else                                    EC_X = 4; //flavor_category = "SSOF";
-            hist_EventCount->SetBinContent(EC_X,EC_Y,hist_EventCount->GetBinContent(EC_X,EC_Y)+1);
+            hist_EventCount->SetBinContent(EC_X,EC_Y,hist_EventCount->GetBinContent(EC_X,EC_Y)+weight);
+            if(is_signal) hist_Zbi->SetBinContent(EC_X,Zbi_EC_Y,hist_Zbi->GetBinContent(EC_X,Zbi_EC_Y)+weight);
+            if(is_bkg) hist_EventCount->SetBinContent(EC_X,EC_bins,hist_EventCount->GetBinContent(EC_X,EC_bins)+weight);
+            if(is_bkg) hist_Zbi->SetBinContent(EC_X,0,hist_Zbi->GetBinContent(EC_X,0)+weight); // store tot bkg in underflow
           }
           else if(cat_Nleps == 3) {
             EC_X = 5;
             EC_X += num_e;
-            hist_EventCount->SetBinContent(EC_X,EC_Y,hist_EventCount->GetBinContent(EC_X,EC_Y)+1);
+            hist_EventCount->SetBinContent(EC_X,EC_Y,hist_EventCount->GetBinContent(EC_X,EC_Y)+weight);
+            if(is_signal) hist_Zbi->SetBinContent(EC_X,Zbi_EC_Y,hist_Zbi->GetBinContent(EC_X,Zbi_EC_Y)+weight);
+            if(is_bkg) hist_EventCount->SetBinContent(EC_X,EC_bins,hist_EventCount->GetBinContent(EC_X,EC_bins)+weight);
+            if(is_bkg) hist_Zbi->SetBinContent(EC_X,0,hist_Zbi->GetBinContent(EC_X,0)+weight); // store tot bkg in underflow
             EC_X = 9;
             EC_X += abs_charge;
-            hist_EventCount->SetBinContent(EC_X,EC_Y,hist_EventCount->GetBinContent(EC_X,EC_Y)+1);
+            hist_EventCount->SetBinContent(EC_X,EC_Y,hist_EventCount->GetBinContent(EC_X,EC_Y)+weight);
+            if(is_signal) hist_Zbi->SetBinContent(EC_X,Zbi_EC_Y,hist_Zbi->GetBinContent(EC_X,Zbi_EC_Y)+weight);
+            if(is_bkg) hist_EventCount->SetBinContent(EC_X,EC_bins,hist_EventCount->GetBinContent(EC_X,EC_bins)+weight);
+            if(is_bkg) hist_Zbi->SetBinContent(EC_X,0,hist_Zbi->GetBinContent(EC_X,0)+weight); // store tot bkg in underflow
           }
           else {
             EC_X = 13;
             EC_X += num_e;
-            hist_EventCount->SetBinContent(EC_X,EC_Y,hist_EventCount->GetBinContent(EC_X,EC_Y)+1);
+            hist_EventCount->SetBinContent(EC_X,EC_Y,hist_EventCount->GetBinContent(EC_X,EC_Y)+weight);
+            if(is_signal) hist_Zbi->SetBinContent(EC_X,Zbi_EC_Y,hist_Zbi->GetBinContent(EC_X,Zbi_EC_Y)+weight);
+            if(is_bkg) hist_EventCount->SetBinContent(EC_X,EC_bins,hist_EventCount->GetBinContent(EC_X,EC_bins)+weight);
+            if(is_bkg) hist_Zbi->SetBinContent(EC_X,0,hist_Zbi->GetBinContent(EC_X,0)+weight); // store tot bkg in underflow
             EC_X = 18;
             EC_X += abs_charge;
-            hist_EventCount->SetBinContent(EC_X,EC_Y,hist_EventCount->GetBinContent(EC_X,EC_Y)+1);
+            hist_EventCount->SetBinContent(EC_X,EC_Y,hist_EventCount->GetBinContent(EC_X,EC_Y)+weight);
+            if(is_signal) hist_Zbi->SetBinContent(EC_X,Zbi_EC_Y,hist_Zbi->GetBinContent(EC_X,Zbi_EC_Y)+weight);
+            if(is_bkg) hist_EventCount->SetBinContent(EC_X,EC_bins,hist_EventCount->GetBinContent(EC_X,EC_bins)+weight);
+            if(is_bkg) hist_Zbi->SetBinContent(EC_X,0,hist_Zbi->GetBinContent(EC_X,0)+weight); // store tot bkg in underflow
           }
-          hist_EventCount->SetBinContent(0,EC_Y,hist_EventCount->GetBinContent(0,EC_Y)+1); // normalized to selection
+          hist_EventCount->SetBinContent(0,EC_Y,hist_EventCount->GetBinContent(0,EC_Y)+weight); // normalized to selection
+          if(is_bkg) // total SM bkg
+            hist_EventCount->SetBinContent(0,EC_bins,hist_EventCount->GetBinContent(0,EC_bins)+weight); // normalized to selection
 
         }
         delete base;
@@ -603,6 +628,8 @@ void Plot_Advanced(){
     hists2.clear();
     effs.clear();
     vec_samples_index++;
+    if(is_signal)
+      Zbi_samples_index++;
 
   } // for (auto p = vec_samples.begin(); p != vec_samples.end(); p++){
 
@@ -629,8 +656,11 @@ void Plot_Advanced(){
      Plot_Stack(*hist_stacks[stack_h], vec_samples, signal_boost);
   }
 
-  Plot_EventCount((TH2*)hist_EventCount->Clone("EventCount_Scaled"), true, lumi);
-  Plot_EventCount(hist_EventCount, false, lumi);
+  Plot_EventCount((TH2*)hist_EventCount->Clone("EventCount_Scaled"), true, lumi, false, 0., false, false);
+  Plot_EventCount((TH2*)hist_EventCount->Clone("EventCount_SoBAllBKG"), true, lumi, false, 0., true, true);
+  Plot_EventCount(hist_EventCount, false, lumi, false, 0., false, false);
+  Plot_EventCount((TH2*)hist_Zbi->Clone("EventCount_SoB"), true, lumi, false, 0., true, false);
+  Plot_EventCount(hist_Zbi, true, lumi, true, 0.2, false, false);
 
   Long64_t end = gSystem->Now();
   std::cout << "Time to process " << (end-start)/1000.0 << " seconds" << std::endl;

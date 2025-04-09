@@ -13,7 +13,8 @@
 #include <TLatex.h>
 #include <TColor.h>
 #include <TColorWheel.h>
-#include <TH1D.h>
+#include <TH1.h>
+#include <TH2.h>
 #include <TStyle.h>
 #include <TLorentzVector.h>
 #include <TSystem.h>
@@ -585,7 +586,7 @@ void Plot_Ratio(TH1* h_num, TH1* h_den){
   delete can;
 }
 
-void Plot_EventCount(TH2* h, bool Scale, double Scale_Val){
+void Plot_EventCount(TH2* h, bool Scale, double Scale_Val, bool Zbi, double Zbi_unc, bool SoB, bool SoB_AllBKG){ // SoB == S/B
   if(Scale_Val == 0) Scale_Val = h->Integral();
   string title = h->GetName();
   if(Scale)
@@ -629,7 +630,32 @@ void Plot_EventCount(TH2* h, bool Scale, double Scale_Val){
     bin++;
   }
 
-  if(!Scale){
+  if(Scale)
+    h->Scale(Scale_Val);
+  if(Zbi){
+    for(int i = 1; i <= h->GetNbinsX(); i++){
+      for(int j = 1; j <= h->GetNbinsY(); j++){
+        if(h->GetBinContent(i,j) > 0){
+          h->SetBinContent(i,j, FP.CalculateZbi(h->GetBinContent(i,j),h->GetBinContent(i,0),Zbi_unc));
+        }
+      }
+    }
+  }
+  if(SoB){
+    for(int i = 1; i <= h->GetNbinsX(); i++){
+      for(int j = 1; j <= h->GetNbinsY(); j++){
+        if(h->GetBinContent(i,j) > 0){
+          if(SoB_AllBKG){
+            h->SetBinContent(i,j, h->GetBinContent(i,j)/h->GetBinContent(i,h->GetNbinsY()));
+          }
+          else{
+            h->SetBinContent(i,j, h->GetBinContent(i,j)/h->GetBinContent(i,0));
+          }
+        }
+      }
+    }
+  }
+  if(!Scale && !Zbi && !SoB && !SoB_AllBKG){
     for(int i = 1; i <= h->GetNbinsX(); i++){
       for(int j = 1; j <= h->GetNbinsY(); j++){
         if(h->GetBinContent(i,j) > 0){
@@ -638,15 +664,14 @@ void Plot_EventCount(TH2* h, bool Scale, double Scale_Val){
       }
     }
   }
-  else
-    h->Scale(Scale_Val);
 
   can->SetLeftMargin(0.1);
   can->SetRightMargin(0.13);
   can->SetBottomMargin(0.13);
   can->SetGridx();
   can->SetGridy();
-  can->SetLogz();
+  if(!Zbi && !SoB)
+    can->SetLogz();
   can->Draw();
   can->cd();
   // note need to call this method again if opening the
@@ -673,7 +698,11 @@ void Plot_EventCount(TH2* h, bool Scale, double Scale_Val){
   h->GetZaxis()->SetLabelFont(42);
   h->GetZaxis()->SetLabelSize(0.025);
   if(Scale)
-    h->GetZaxis()->SetTitle(("N_{events} passing category / "+std::to_string(int(Scale_Val))+" fb^{-1}").c_str());
+    h->GetZaxis()->SetTitle(("N_{events} passing category scaled to "+std::to_string(int(Scale_Val))+" fb^{-1}").c_str());
+  else if(Zbi)
+    h->GetZaxis()->SetTitle(("Zbi for signal in category scaled to "+std::to_string(int(Scale_Val))+" fb^{-1}").c_str());
+  else if(SoB)
+    h->GetZaxis()->SetTitle(("#frac{N_{events}}{N_{TOT BKG}} for process in category scaled to "+std::to_string(int(Scale_Val))+" fb^{-1}").c_str());
   else
     h->GetZaxis()->SetTitle(("N_{events} passing category / N_{events} passing "+g_Label).c_str());
   h->GetZaxis()->SetRangeUser(0.9*h->GetMinimum(0.0),1.1*h->GetMaximum());
@@ -702,4 +731,68 @@ void Plot_EventCount(TH2* h, bool Scale, double Scale_Val){
   file->Close();
   delete h;
   delete can;
+}
+
+void SanitizeString(string& input){
+  static const std::unordered_map<char, std::string> replacements = {
+    // Whitespace
+    {' ', "_"},
+
+    // Arithmetic operators
+    {'+', "plus"},
+    {'-', "minus"},
+    {'*', "times"},
+    {'/', "div"},
+    {'%', "mod"},
+
+    // Comparison operators
+    {'<', "lt"},
+    {'>', "gt"},
+    {'=', "eq"},
+
+    // Logical operators
+    {'!', "not"},
+    {'&', "and"},
+    {'|', "or"},
+    {'^', "xor"},
+
+    // Grouping
+    {'(', "lp"},
+    {')', "rp"},
+    {'[', "lb"},
+    {']', "rb"},
+    {'{', "lc"},
+    {'}', "rc"},
+
+    // Quotes and punctuation
+    {'"', "dq"},
+    {'\'', "sq"},
+    {',', "comma"},
+    {'.', "p"},
+    {':', "colon"},
+    {';', "semi"},
+    {'?', "qmark"},
+    {'#', "hash"},
+    {'$', "dollar"},
+    {'@', "at"},
+    {'~', "tilde"},
+    {'`', "bquote"},
+    {'\\', "bslash"},
+
+    // Misc
+    {'\t', "_"},
+  };
+
+  std::string output;
+  for (char c : input) {
+    auto it = replacements.find(c);
+    if (it != replacements.end()) {
+      output += it->second;
+    } else if (std::isalnum(static_cast<unsigned char>(c)) || c == '_') {
+      output += c;
+    } else {
+      output += "_"; // catch-all replacement
+    }
+  }
+  return output;
 }
