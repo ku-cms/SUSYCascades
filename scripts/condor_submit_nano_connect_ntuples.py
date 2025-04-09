@@ -318,7 +318,7 @@ if __name__ == "__main__":
     NAME = listname.replace(".list",'')
     
     # create and organize output folders
-    TARGET  = RUN_DIR+"/"+NAME+"/"
+    TARGET = RUN_DIR+"/"+NAME+"/"
     if not COUNT:
         os.system("rm -rf "+TARGET)
         os.system("mkdir -p "+TARGET)
@@ -609,8 +609,8 @@ if __name__ == "__main__":
     if DRY_RUN or COUNT:
         print("No jobs were submitted.")
     else:
-        # os.system(f'nohup python3 python/CheckFiles.py -d {filetag}/ -o {OUT_DIR} -e > /dev/null 2>&1 &')
+        # os.system(f'nohup python3 python/CheckFiles.py -d {TARGET}/ -o {OUT_DIR} -e > /dev/null 2>&1 &')
         print(Fore.GREEN + "Congrats... your jobs were submitted!" + Fore.RESET)
         print('Run this after jobs have finished to check for failed jobs (and resubmit them):')
-        print(f'nohup python3 python/CheckFiles.py -d {filetag}/ -o {OUT_DIR} -e > CheckFiles_{filetag}.debug 2>&1 &')
+        print(f'nohup python3 python/CheckFiles.py -d {TARGET}/ -o {OUT_DIR} -e > CheckFiles_{filetag}.debug 2>&1 &')
 
