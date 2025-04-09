@@ -3552,7 +3552,7 @@ ParticleList AnalysisBase<NANOULBase>::GetElectrons(){
   int N = nElectron;
   for(int i = 0; i < N; i++){
     // baseline lepton definition
-    if(Electron_pt[i] < 5. || fabs(Electron_eta[i]) > 2.5)
+    if(Electron_pt[i] < 8. || fabs(Electron_eta[i]) > 2.5)
       continue;
     if(fabs(Electron_dxy[i]) >= 0.05 || fabs(Electron_dz[i]) >= 0.1 ||
        Electron_sip3d[i] >= 8)

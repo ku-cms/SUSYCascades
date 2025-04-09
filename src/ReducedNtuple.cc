@@ -670,7 +670,7 @@ void ReducedNtuple<Base>::FillOutputTree(TTree* tree, const Systematic& sys, boo
 
   ParticleList Electrons = AnalysisBase<Base>::GetElectrons();
   Electrons = Electrons.ParticleIDCut(kVeryLoose);
-  Electrons = Electrons.PtEtaCut(8.0);
+  Electrons = Electrons.PtEtaCut(5.0);
 
   ParticleList LowPtElectrons = AnalysisBase<Base>::GetLowPtElectrons();
   LowPtElectrons = LowPtElectrons.ParticleIDCut(kVeryLoose);
