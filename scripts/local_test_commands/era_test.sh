@@ -4,11 +4,11 @@
 make cmssw -j 8
 
 # Run if need to setup working directories
-#python3 scripts/condor_submit_nano_connect_ntuples.py -split 100 -list templists/Fall17_102X_local.list --verbose --dryrun
-#python3 scripts/condor_submit_nano_connect_ntuples.py -split 100 -list templists/Summer20UL17_106X_local.list --verbose --dryrun
-#python3 scripts/condor_submit_nano_connect_ntuples.py -split 100 -list templists/Summer22_130X_local.list --verbose --dryrun
-#python3 scripts/condor_submit_nano_connect_ntuples.py -split 100 -list templists/Summer23BPix_130X_local.list --verbose --dryrun
-#python3 scripts/condor_submit_nano_connect_ntuples.py -split 100 -list templists/Summer23BPix_130X_SMS_local.list --verbose --dryrun
+#python3 scripts/condor_submit_nano_connect_ntuples.py -split 100 -list samples/NANO/Lists/Additional_Lists/Fall17_102X_local.list --verbose --dryrun
+#python3 scripts/condor_submit_nano_connect_ntuples.py -split 100 -list samples/NANO/Lists/Additional_Lists/Summer20UL17_106X_local.list --verbose --dryrun
+#python3 scripts/condor_submit_nano_connect_ntuples.py -split 100 -list samples/NANO/Lists/Additional_Lists/Summer22_130X_local.list --verbose --dryrun
+#python3 scripts/condor_submit_nano_connect_ntuples.py -split 100 -list samples/NANO/Lists/Additional_Lists/Summer23BPix_130X_local.list --verbose --dryrun
+#python3 scripts/condor_submit_nano_connect_ntuples.py -split 100 -list samples/NANO/Lists/Additional_Lists/Summer23BPix_130X_SMS_local.list --verbose --dryrun
 
 # preUL
 #./MakeReducedNtuple_NANO.x -ifile=root://cmsxrootd.fnal.gov//store/mc/RunIIFall17NanoAODv7/TTJets_TuneCP5_13TeV-madgraphMLM-pythia8/NANOAODSIM/PU2017_12Apr2018_Nano02Apr2020_102X_mc2017_realistic_v8-v1/120000/F3599A49-3B70-F545-9132-CEFEA4E5650F.root -ofile=TTJets_TuneCP5_13TeV-madgraphMLM-pythia8_Fall17_102X.root -tree=Events -dataset=TTJets_TuneCP5_13TeV-madgraphMLM-pythia8 -filetag=Fall17_102X -eventcount=./Fall17_102X_local/config/EventCount.root -filtereff=./Fall17_102X_local/config/FilterEff.root -json=./Fall17_102X_local/config/GRL_JSON.txt -pu=./Fall17_102X_local/config/PU/ -btag=./Fall17_102X_local/config/BtagSF/ -lep=./Fall17_102X_local/config/LepSF/ -jme=./Fall17_102X_local/config/JME/ -metfile=./Fall17_102X_local/config/METTrigger/Parameters.csv -prefirefile=./Fall17_102X_local/config/Prefire/Prefire.root -xsjsonfile=./Fall17_102X_local/config/XS_jsonfile.json -split=1,25
