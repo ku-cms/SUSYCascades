@@ -794,5 +794,5 @@ void SanitizeString(string& input){
       output += "_"; // catch-all replacement
     }
   }
-  return output;
+  input = output;
 }

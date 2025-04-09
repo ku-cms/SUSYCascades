@@ -20,6 +20,7 @@ void Plot_Advanced(){
   //g_Label = "2 lepton SR";
   //g_Label = "2 lepton ttbar CR";
   g_Label = "No Cuts";
+  //g_Label = "ATLAS Cuts";
   //g_Label = "MET > 150";
   //g_Label = "TESTING";
   
@@ -323,7 +324,8 @@ void Plot_Advanced(){
           
           // apply trigger to data and FullSim events
           //if(!base->METORtrigger && !is_FastSim)
-          //  continue;
+          //if(!base->SingleElectrontrigger && !base->SingleMuontrigger && !is_FastSim) // ATLAS
+          //  continue
           	
           // get variables from root files using base class
           double MET = base->MET;
@@ -331,6 +333,8 @@ void Plot_Advanced(){
           double RISR = base->RISR;
           double PTISR = base->PTISR;
 
+          //ATLAS
+          //if(MET < 50.)
           //if(MET < 150.)
           //  continue;
 
@@ -370,10 +374,10 @@ void Plot_Advanced(){
           int NbjetISR = base->Nbjet_ISR;
 
           //if(NbjetISR + NbjetS != 2) continue; // CR
-          //if(NbjetISR + NbjetS > 1) continue; // SR
+          //if(NbjetISR + NbjetS > 1) continue; // SR & ATLAS
 
           //if(Nlep != 2) continue;
-          //if(NjetS != 0) continue; //SR
+          //if(NjetS != 0) continue; // SR
 
           double minDR = 1000;
           double minMLL = 1000;
@@ -458,6 +462,10 @@ void Plot_Advanced(){
           //if(nGL < 2) skip = true; // SR GG
           //if(nGL == 2) skip = true; // CR notGG
           //if(skip) continue; 
+          // ATLAS
+          //if(base->PT_lep->at(0) < 28.) continue;
+          //if(base->PT_lep->at(1) < 20.) continue;
+          //if(base->PT_lep->at(2) < 10.) continue;
           
           double weight = (base->weight != 0.) ? base->weight : 1.;
           if(!is_data && !is_signal)
