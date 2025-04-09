@@ -1,7 +1,7 @@
 import os, sys, time
 from glob import glob as glob
 from subprocess import Popen as pop
-import subprocess, psutil
+import subprocess, psutil, shutil
 
 # Example submission:
 #    nohup python3 scripts/DO_hadd.py -idir /ospool/cms-user/zflowers/NTUPLES/Processing/Summer23BPix_130X/ -odir /local-scratch/zflowers/NTUPLES/HADD/Summer23BPix_130X/ > HADD_logs/HADD_Summer23BPix_130X.debug 2>&1 &
@@ -155,6 +155,10 @@ def main():
                             with open(log_path, "a") as err_log:
                                 for line in filtered_lines:
                                     err_log.write(line)
+                    else: # clean up sub files
+                        for current_target_path in glob(f"{OUT_DIR}/{current_target}/"):
+                            if os.path.isdir(current_target_path):
+                                shutil.rmtree(current_target_path)
                     del_targets.append(current_target)
                     break  # Exit loop after finding a finished process
             for del_target in del_targets:
@@ -183,6 +187,10 @@ def main():
                         with open(log_path, "a") as err_log:
                             for line in filtered_lines:
                                 err_log.write(line)
+                else: # clean up sub files
+                    for current_target_path in glob(f"{OUT_DIR}/{target}/"):
+                        if os.path.isdir(current_target_path):
+                            shutil.rmtree(current_target_path)
                 del hadd_big_processes[target]  # Remove finished process
 
 
