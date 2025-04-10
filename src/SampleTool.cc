@@ -1586,15 +1586,15 @@ void SampleTool::InitProcMap(){
     
     Process QCD("QCD", kBkg);
     list.clear();
-    list += m_Path + "Summer23BPix_130X/QCD-4Jets_HT-1000to1200_TuneCP5_13p6TeV_madgraphMLM-pythia8_Summer23BPix_130X.root";
-    list += m_Path + "Summer23BPix_130X/QCD-4Jets_HT-100to200_TuneCP5_13p6TeV_madgraphMLM-pythia8_Summer23BPix_130X.root";
-    list += m_Path + "Summer23BPix_130X/QCD-4Jets_HT-1200to1500_TuneCP5_13p6TeV_madgraphMLM-pythia8_Summer23BPix_130X.root";
-    list += m_Path + "Summer23BPix_130X/QCD-4Jets_HT-1500to2000_TuneCP5_13p6TeV_madgraphMLM-pythia8_Summer23BPix_130X.root";
-    list += m_Path + "Summer23BPix_130X/QCD-4Jets_HT-2000_TuneCP5_13p6TeV_madgraphMLM-pythia8_Summer23BPix_130X.root";
+    //list += m_Path + "Summer23BPix_130X/QCD-4Jets_HT-100to200_TuneCP5_13p6TeV_madgraphMLM-pythia8_Summer23BPix_130X.root";
     list += m_Path + "Summer23BPix_130X/QCD-4Jets_HT-200to400_TuneCP5_13p6TeV_madgraphMLM-pythia8_Summer23BPix_130X.root";
     list += m_Path + "Summer23BPix_130X/QCD-4Jets_HT-400to600_TuneCP5_13p6TeV_madgraphMLM-pythia8_Summer23BPix_130X.root";
     list += m_Path + "Summer23BPix_130X/QCD-4Jets_HT-600to800_TuneCP5_13p6TeV_madgraphMLM-pythia8_Summer23BPix_130X.root";
     list += m_Path + "Summer23BPix_130X/QCD-4Jets_HT-800to1000_TuneCP5_13p6TeV_madgraphMLM-pythia8_Summer23BPix_130X.root";
+    list += m_Path + "Summer23BPix_130X/QCD-4Jets_HT-1000to1200_TuneCP5_13p6TeV_madgraphMLM-pythia8_Summer23BPix_130X.root";
+    list += m_Path + "Summer23BPix_130X/QCD-4Jets_HT-1200to1500_TuneCP5_13p6TeV_madgraphMLM-pythia8_Summer23BPix_130X.root";
+    list += m_Path + "Summer23BPix_130X/QCD-4Jets_HT-1500to2000_TuneCP5_13p6TeV_madgraphMLM-pythia8_Summer23BPix_130X.root";
+    list += m_Path + "Summer23BPix_130X/QCD-4Jets_HT-2000_TuneCP5_13p6TeV_madgraphMLM-pythia8_Summer23BPix_130X.root";
     m_Proc[m_iYear][QCD] = pair<vector<string>,string>(list, "KUAnalysis");
 
     Process Wjets("Wjets", kBkg);
