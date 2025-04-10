@@ -22,7 +22,7 @@
 FitReader::FitReader(const string& inputfile,
 		     const string& otherfile,
 		     const string& otherfold)
-  : m_File(inputfile.c_str(), "READ"),
+  : m_File(inputfile.empty() ? TFile() : TFile(inputfile.c_str(), "READ")),
     cms1(8001, 0.24705882352941178, 0.5647058823529412, 0.8549019607843137),  //blue
     cms2(8002, 1., 0.6627450980392157, 0.054901960784313725),                 // gold
     cms3(8003, 0.7411764705882353, 0.12156862745098039, 0.00392156862745098), //red
@@ -33,7 +33,6 @@ FitReader::FitReader(const string& inputfile,
     cms8(8008, 0.7254901960784313, 0.6745098039215687, 0.4392156862745098),   // tan
     cms9(8009, 0.44313725490196076, 0.4588235294117647, 0.5058823529411764),  // charcoal
     cms10(8010, 0.5725490196078431, 0.8549019607843137, 0.8666666666666667) { // light blue
-
   
   if(otherfile != ""){
     m_FilePtr = new TFile(otherfile.c_str(), "READ");
