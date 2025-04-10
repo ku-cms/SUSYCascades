@@ -591,7 +591,7 @@ void Plot_EventCount(TH2* h, bool Scale, double Scale_Val, bool Zbi, double Zbi_
   string title = h->GetName();
   if(Scale)
     h->Scale(Scale_Val);
-  TCanvas* can = (TCanvas*) new TCanvas(("can_"+title).c_str(),("can_"+title).c_str(),700.,600);
+  TCanvas* can = (TCanvas*) new TCanvas(("can_"+title).c_str(),("can_"+title).c_str(),900.,600.);
 
   int bin = 1;
   
@@ -677,6 +677,7 @@ void Plot_EventCount(TH2* h, bool Scale, double Scale_Val, bool Zbi, double Zbi_
   // note need to call this method again if opening the
   // canvas later on in the saved output root file
   gStyle->SetPaintTextFormat(".2g");
+  h->SetMarkerColor(kRed);
   h->Draw("COLZ TEXT");  // Draw the histogram with text
   h->SetMarkerSize(0.7);
   h->GetXaxis()->CenterTitle();

@@ -14,15 +14,13 @@ void Plot_Advanced(){
   ScaleFactorTool SF;
 
   output_root_file += "Advanced_";
+  //g_Label = "TESTING";
   //g_Label = "PreSelection";
-  //g_Label = "2L GG 0B inclS SR";
-  //g_Label = "2L notGG 0B inclS SR";
-  //g_Label = "2 lepton SR";
-  //g_Label = "2 lepton ttbar CR";
+  //g_Label = "RISR > 0.7";
+  //g_Label = "!Bronze & RISR > 0.7";
   g_Label = "No Cuts";
   //g_Label = "ATLAS Cuts";
   //g_Label = "MET > 150";
-  //g_Label = "TESTING";
   
   output_root_file += g_Label;
   SanitizeString(output_root_file);
@@ -318,14 +316,14 @@ void Plot_Advanced(){
 
           // Apply PreSelection
           
-          //if(do_FilterDilepton)
-          //  if(SF.DileptonEvent(base))
-          //    continue;
+          if(do_FilterDilepton)
+            if(SF.DileptonEvent(base))
+              continue;
           
           // apply trigger to data and FullSim events
-          //if(!base->METORtrigger && !is_FastSim)
+          //if(!base->METORtrigger && !is_FastSim) // PreSelection
           //if(!base->SingleElectrontrigger && !base->SingleMuontrigger && !is_FastSim) // ATLAS
-          //  continue
+          //  continue;
           	
           // get variables from root files using base class
           double MET = base->MET;
@@ -333,12 +331,11 @@ void Plot_Advanced(){
           double RISR = base->RISR;
           double PTISR = base->PTISR;
 
-          //ATLAS
-          //if(MET < 50.)
-          //if(MET < 150.)
+          //if(MET < 50.) // ATLAS
+          //if(MET < 150.) // PreSelection
           //  continue;
 
-          //if(PTISR < 200.)
+          //if(PTISR < 200.) // PreSelection
           //if(PTISR < 300.) // SR
 	  //  continue;
 
@@ -347,6 +344,7 @@ void Plot_Advanced(){
           double PTCM = base->PTCM;
           double x = fabs(dphiCMI);
           
+          // PreSelection
           //if(PTCM > 200.)
           //  continue;
           //if(PTCM > -500.*sqrt(std::max(0.,-2.777*x*x+1.388*x+0.8264))+575. &&
@@ -358,12 +356,12 @@ void Plot_Advanced(){
           // End of Cleaning cuts...
             
           double dphiMET_V = base->dphiMET_V;
-          //if(fabs(base->dphiMET_V) > acos(-1.)/2.)
-          //  continue;
+          if(fabs(base->dphiMET_V) > acos(-1.)/2.) // PreSelection
+            continue;
             
-          //if(RISR < 0.5 || RISR > 1.0)
+          //if(RISR < 0.5 || RISR > 1.0) // PreSelection
           //if(RISR < 0.4 || RISR > 0.7) // CR
-          //if(RISR < 0.9)
+          //if(RISR < 0.7 || RISR > 1.0)
           //  continue;
 
           // Get Physics Objects
@@ -455,17 +453,18 @@ void Plot_Advanced(){
 
           // cut on lepton quality
           bool skip = false;
-          int nGL = 0; // number of Gold leps
+          int nSL = 0; // number of selected leps
           for(int i = 0; i < list_leps.GetN(); i++){
-            if(list_leps[i].ID() == kGold) nGL++;
+            if(list_leps[i].ID() == kBronze) skip = true; // nSL++;
           }
-          //if(nGL < 2) skip = true; // SR GG
-          //if(nGL == 2) skip = true; // CR notGG
+          //if(nSL < 2) skip = true; // SR GG
+          //if(nSL == 2) skip = true; // CR notGG
           //if(skip) continue; 
           // ATLAS
           //if(base->PT_lep->at(0) < 28.) continue;
           //if(base->PT_lep->at(1) < 20.) continue;
-          //if(base->PT_lep->at(2) < 10.) continue;
+          //if(Nlep > 2)
+          //  if(base->PT_lep->at(2) < 10.) continue;
           
           double weight = (base->weight != 0.) ? base->weight : 1.;
           if(!is_data && !is_signal)
