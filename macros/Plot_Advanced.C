@@ -13,14 +13,15 @@ void Plot_Advanced(){
   
   ScaleFactorTool SF;
 
-  output_root_file += "Advanced_";
+  output_root_file += "Advanced_Cands_";
   //g_Label = "TESTING";
-  //g_Label = "PreSelection";
+  g_Label = "PreSelection";
   //g_Label = "RISR > 0.7";
   //g_Label = "!Bronze & RISR > 0.7";
-  g_Label = "No Cuts";
+  //g_Label = "No Cuts";
   //g_Label = "ATLAS Cuts";
   //g_Label = "MET > 150";
+  //g_Label = "Gold & RISR > 0.7 & 0B & gamma_{CM0} < 0.7 & NSJ = 0";
   
   output_root_file += g_Label;
   SanitizeString(output_root_file);
@@ -315,15 +316,16 @@ void Plot_Advanced(){
             cout << "      event " << e << " | " << Nentry << endl;
 
           // Apply PreSelection
+          if(base->Njet == 0) continue;
           
           if(do_FilterDilepton)
             if(SF.DileptonEvent(base))
               continue;
           
           // apply trigger to data and FullSim events
-          //if(!base->METORtrigger && !is_FastSim) // PreSelection
+          if(!base->METORtrigger && !is_FastSim) // PreSelection
           //if(!base->SingleElectrontrigger && !base->SingleMuontrigger && !is_FastSim) // ATLAS
-          //  continue;
+            continue;
           	
           // get variables from root files using base class
           double MET = base->MET;
@@ -331,13 +333,24 @@ void Plot_Advanced(){
           double RISR = base->RISR;
           double PTISR = base->PTISR;
 
-          //if(MET < 50.) // ATLAS
-          //if(MET < 150.) // PreSelection
-          //  continue;
+          double MSperpCM0 = base->MSperpCM0;
+          double MQperpCM0 = base->MQperpCM0;
+          double gammaPerpCM0 = base->gammaPerpCM0;
+          double MJ = base->MJ;
+          double ML = base->ML;
+          double MLa = base->MLa;
+          double MLb = base->MLb;
+          double MSCM0 = base->MSCM0;
+          double MQCM0 = base->MQCM0;
+          double gammaCM0 = base->gammaCM0;
 
-          //if(PTISR < 200.) // PreSelection
+          //if(MET < 50.) // ATLAS
+          if(MET < 150.) // PreSelection
+            continue;
+
+          if(PTISR < 200.) // PreSelection
           //if(PTISR < 300.) // SR
-	  //  continue;
+	    continue;
 
           // Cleaning cuts...
           double dphiCMI = base->dphiCMI;
@@ -345,23 +358,26 @@ void Plot_Advanced(){
           double x = fabs(dphiCMI);
           
           // PreSelection
-          //if(PTCM > 200.)
-          //  continue;
-          //if(PTCM > -500.*sqrt(std::max(0.,-2.777*x*x+1.388*x+0.8264))+575. &&
-          //   -2.777*x*x+1.388*x+0.8264 > 0.)
-          //  continue;
-          //if(PTCM > -500.*sqrt(std::max(0.,-1.5625*x*x+7.8125*x-8.766))+600. &&
-          //   -1.5625*x*x+7.8125*x-8.766 > 0.)
-          //  continue;
+          if(PTCM > 200.)
+            continue;
+          if(PTCM > -500.*sqrt(std::max(0.,-2.777*x*x+1.388*x+0.8264))+575. &&
+             -2.777*x*x+1.388*x+0.8264 > 0.)
+            continue;
+          if(PTCM > -500.*sqrt(std::max(0.,-1.5625*x*x+7.8125*x-8.766))+600. &&
+             -1.5625*x*x+7.8125*x-8.766 > 0.)
+            continue;
           // End of Cleaning cuts...
             
           double dphiMET_V = base->dphiMET_V;
           if(fabs(base->dphiMET_V) > acos(-1.)/2.) // PreSelection
             continue;
             
-          //if(RISR < 0.5 || RISR > 1.0) // PreSelection
+          if(RISR < 0.5 || RISR > 1.0) // PreSelection
           //if(RISR < 0.4 || RISR > 0.7) // CR
           //if(RISR < 0.7 || RISR > 1.0)
+            continue;
+
+          //if(gammaCM0 > 0.7)
           //  continue;
 
           // Get Physics Objects
@@ -455,7 +471,8 @@ void Plot_Advanced(){
           bool skip = false;
           int nSL = 0; // number of selected leps
           for(int i = 0; i < list_leps.GetN(); i++){
-            if(list_leps[i].ID() == kBronze) skip = true; // nSL++;
+            //if(list_leps[i].ID() == kBronze) skip = true; // nSL++;
+            if(list_leps[i].ID() != kGold) skip = true; // nSL++;
           }
           //if(nSL < 2) skip = true; // SR GG
           //if(nSL == 2) skip = true; // CR notGG
@@ -469,18 +486,6 @@ void Plot_Advanced(){
           double weight = (base->weight != 0.) ? base->weight : 1.;
           if(!is_data && !is_signal)
             weight *= double(BKG_SKIP);
-
-          // grab vars from ntuple
-          double MSperpCM0 = base->MSperpCM0;
-          double MQperpCM0 = base->MQperpCM0;
-          double gammaPerpCM0 = base->gammaPerpCM0;
-          double MJ = base->MJ;
-          double ML = base->ML;
-          double MLa = base->MLa;
-          double MLb = base->MLb;
-          double MSCM0 = base->MSCM0;
-          double MQCM0 = base->MQCM0;
-          double gammaCM0 = base->gammaCM0;
 
           // Fill hists, effs, etc.
           hist_MET->Fill(MET, weight);
@@ -549,12 +554,27 @@ void Plot_Advanced(){
 
           eff_METtrig->Fill(base->METtrigger, MET, weight);
 
+          // Leptonic Candidates
+          //std::vector<V_Cand> V_lep_cands;
+          //LepFlavor flav0 = list_a[0].Flavor();
+          //LepCharge charge0 = list_a[0].Charge();
+          //for(int i = 0; i < list_a.GetN(); i++){
+          //  ParticleList V_cand_Part;
+          //  ConstRestFrameList V_cand_RF;
+          //  for(int j = i+1; j < list_a.GetN(); j++){
+          //    if(list_a[i].Flavor() == list_a[j].Flavor() && list_a[i].Charge() != list_a[j].Charge()){
+
+          //    }
+          //  }
+          //}
+
           // Event Counting
           int EC_X = 0; // root hists have underflow in bin 0
           int EC_Y = vec_samples_index+1; // root hists have underflow in bin 0
           int Zbi_EC_Y = Zbi_samples_index+1;
           int cat_Nleps = list_leps.GetN();
           if (cat_Nleps > 4) cat_Nleps = 4; // ge4L is upper limit
+          //if (cat_Nleps > 5) cat_Nleps = 5; // ge5L is upper limit
           
           // Extract total lepton charge
           std::vector<LepFlavor> flavors;
@@ -596,7 +616,7 @@ void Plot_Advanced(){
             if(is_bkg) hist_EventCount->SetBinContent(EC_X,EC_bins,hist_EventCount->GetBinContent(EC_X,EC_bins)+weight);
             if(is_bkg) hist_Zbi->SetBinContent(EC_X,0,hist_Zbi->GetBinContent(EC_X,0)+weight); // store tot bkg in underflow
           }
-          else {
+          else {//if(cat_Nleps == 4){
             EC_X = 13;
             EC_X += num_e;
             hist_EventCount->SetBinContent(EC_X,EC_Y,hist_EventCount->GetBinContent(EC_X,EC_Y)+weight);
@@ -610,6 +630,13 @@ void Plot_Advanced(){
             if(is_bkg) hist_EventCount->SetBinContent(EC_X,EC_bins,hist_EventCount->GetBinContent(EC_X,EC_bins)+weight);
             if(is_bkg) hist_Zbi->SetBinContent(EC_X,0,hist_Zbi->GetBinContent(EC_X,0)+weight); // store tot bkg in underflow
           }
+          //else {
+          //  EC_X = 23;
+          //  hist_EventCount->SetBinContent(EC_X,EC_Y,hist_EventCount->GetBinContent(EC_X,EC_Y)+weight);
+          //  if(is_signal) hist_Zbi->SetBinContent(EC_X,Zbi_EC_Y,hist_Zbi->GetBinContent(EC_X,Zbi_EC_Y)+weight);
+          //  if(is_bkg) hist_EventCount->SetBinContent(EC_X,EC_bins,hist_EventCount->GetBinContent(EC_X,EC_bins)+weight);
+          //  if(is_bkg) hist_Zbi->SetBinContent(EC_X,0,hist_Zbi->GetBinContent(EC_X,0)+weight); // store tot bkg in underflow
+          //}
           hist_EventCount->SetBinContent(0,EC_Y,hist_EventCount->GetBinContent(0,EC_Y)+weight); // normalized to selection
           if(is_bkg) // total SM bkg
             hist_EventCount->SetBinContent(0,EC_bins,hist_EventCount->GetBinContent(0,EC_bins)+weight); // normalized to selection

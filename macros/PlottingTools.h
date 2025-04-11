@@ -573,7 +573,7 @@ void Plot_Ratio(TH1* h_num, TH1* h_den){
   l.SetTextFont(42);
   l.DrawLatex(0.135,0.943,"#bf{CMS} Simulation Preliminary");
 
-  string pdf_title = folder_name+"/"+g_PlotTitle+"_";
+  string pdf_title = folder_name+"/";
   pdf_title += can->GetTitle();
   gErrorIgnoreLevel = 1001;
   if(SavePDF)
@@ -629,6 +629,9 @@ void Plot_EventCount(TH2* h, bool Scale, double Scale_Val, bool Zbi, double Zbi_
     h->GetXaxis()->SetBinLabel(bin, ("4L " + label).c_str());
     bin++;
   }
+  
+  // --- 5L Label ---
+  // h->GetXaxis()->SetBinLabel(bin, "5L");
 
   if(Scale)
     h->Scale(Scale_Val);
@@ -714,7 +717,7 @@ void Plot_EventCount(TH2* h, bool Scale, double Scale_Val, bool Zbi, double Zbi_
   l.SetTextSize(0.035);
   l.SetTextFont(42);
   l.SetTextSize(0.04);
-  l.DrawLatex(0.75,0.943,g_Label.c_str());
+  l.DrawLatex(0.55,0.943,g_Label.c_str());
   l.SetTextFont(42);
   l.DrawLatex(0.11,0.943,"#bf{CMS} Simulation Preliminary");
 
