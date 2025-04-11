@@ -25,8 +25,8 @@
 #include <TGraphAsymmErrors.h>
 
 #include "SUSYNANOBase.hh"
-#include "V_Cand.hh"
 #include "CategoryTool.hh"
+#include "ParticleList.hh"
 
 #include "RestFrames/RestFrames.hh"
 

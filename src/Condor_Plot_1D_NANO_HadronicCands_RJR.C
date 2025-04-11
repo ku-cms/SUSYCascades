@@ -2236,7 +2236,6 @@ int main(int argc, char* argv[]) {
 
     // binary decay tree
     std::vector<V_Cand> V_had_cands;
-    std::vector<V_Cand> V_lep_cands;
     LAB_BDT.ClearEvent();
     vector<int>   jet_BDT_singlet; // jets next to DecayFrame in BDT
     vector<int>   jet_BDT_nonsinglet; // jets NOT next to DecayFrame in BDT
