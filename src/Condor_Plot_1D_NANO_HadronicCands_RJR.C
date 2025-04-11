@@ -26,7 +26,7 @@
 #include <TGraphAsymmErrors.h>
 
 #include "SUSYNANOBase.hh"
-#include "V_Cand.hh"
+#include "H_Cand.hh"
 #include "CategoryTool.hh"
 
 #include "RestFrames/RestFrames.hh"
@@ -49,11 +49,11 @@ template <typename V>
 bool inVec(const std::vector<V>& vect, const V& value){
   return std::find(vect.begin(), vect.end(), value) != vect.end();
 }
-std::vector<V_Cand> cand_list(const ParticleList& jets, const ParticleList& leps,
+std::vector<H_Cand> cand_list(const ParticleList& jets, const ParticleList& leps,
   const CombinatoricGroup& Comb, const SelfAssemblingRecoFrame& BDT, const VisibleRecoFrame& VIS, const RestFrame& CM,
   const std::vector<RFKey>& jetID, const std::vector<RFKey>& lepID);
-void cand_matching(std::vector<V_Cand>& cand_list);
-void cand_side(std::vector<V_Cand>& cand_list, const SelfAssemblingRecoFrame& BDT);
+void cand_matching(std::vector<H_Cand>& cand_list);
+void cand_side(std::vector<H_Cand>& cand_list, const SelfAssemblingRecoFrame& BDT);
 
 int main(int argc, char* argv[]) {
 
@@ -2235,7 +2235,7 @@ int main(int argc, char* argv[]) {
     MET.SetZ(0.);
 
     // binary decay tree
-    std::vector<V_Cand> V_had_cands;
+    std::vector<H_Cand> V_had_cands;
     LAB_BDT.ClearEvent();
     vector<int>   jet_BDT_singlet; // jets next to DecayFrame in BDT
     vector<int>   jet_BDT_nonsinglet; // jets NOT next to DecayFrame in BDT
@@ -2725,7 +2725,7 @@ int main(int argc, char* argv[]) {
       // end reco jets
       //-/-/-/-/-/-/-/-/-//-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-
   
-      std::vector<V_Cand> V_had_cands_combo; // pairwise combine all jet combinations
+      std::vector<H_Cand> V_had_cands_combo; // pairwise combine all jet combinations
   
       if(use_gen_jets){
         for(int i = 0; i < Ngen_jets; i++){
@@ -2739,7 +2739,7 @@ int main(int argc, char* argv[]) {
             V_cand_Part.push_back(gen_jets[j]); // 2-prong "sibling"
             V_cand_RF.Add(frame);
             V_cand_RF.Add(sibling);
-            V_had_cands_combo.push_back(V_Cand(V_cand_Part,V_cand_RF));
+            V_had_cands_combo.push_back(H_Cand(V_cand_Part,V_cand_RF));
           }
         }
       }
@@ -2755,7 +2755,7 @@ int main(int argc, char* argv[]) {
             V_cand_Part.push_back(jets[j]); // 2-prong "sibling"
             V_cand_RF.Add(frame);
             V_cand_RF.Add(sibling);
-            V_had_cands_combo.push_back(V_Cand(V_cand_Part,V_cand_RF));
+            V_had_cands_combo.push_back(H_Cand(V_cand_Part,V_cand_RF));
           }
         }
       }
@@ -2937,9 +2937,9 @@ int main(int argc, char* argv[]) {
       //if(KIN && (RISR < RISR_cut || PTISR < PTISR_cut || MET.Mag() < MET_cut)) continue;
         hist_RISR_PTISR_ISR_Sparticle->Fill(RISR, PTISR, hweight);
 
-        std::vector<V_Cand> V_had_cands_S_ISR_Sparticle;
-        std::vector<V_Cand> V_had_cands_Sa_ISR_Sparticle;
-        std::vector<V_Cand> V_had_cands_Sb_ISR_Sparticle;
+        std::vector<H_Cand> V_had_cands_S_ISR_Sparticle;
+        std::vector<H_Cand> V_had_cands_Sa_ISR_Sparticle;
+        std::vector<H_Cand> V_had_cands_Sb_ISR_Sparticle;
         if(HEM){
           if(S_leps){
             V_had_cands_Sa_ISR_Sparticle = cand_list(jets,leptons,COMB_J_ISR_Sparticle,BDT_Sa_ISR_Sparticle,J_Sa_ISR_Sparticle,CM_ISR_Sparticle,jetID_BDT_ISR_Sparticle,lepID_BDT_ISR_Sparticle);
@@ -2959,7 +2959,7 @@ int main(int argc, char* argv[]) {
           }
         } // not HEM
 
-        std::vector<V_Cand> V_had_cands_ISR_ISR_Sparticle;
+        std::vector<H_Cand> V_had_cands_ISR_ISR_Sparticle;
         if(S_leps)
           V_had_cands_ISR_ISR_Sparticle = cand_list(jets,leptons,COMB_J_ISR_Sparticle,BDT_ISR_ISR_Sparticle,V_ISR_ISR_Sparticle,CM_ISR_Sparticle,jetID_BDT_ISR_Sparticle,lepID_BDT_ISR_Sparticle);
         else
@@ -3521,12 +3521,12 @@ int main(int argc, char* argv[]) {
           if(COMB_J_ISR_BDT.GetFrame(jetID_ISR_BDT[i]) == Ja_ISR_BDT || COMB_J_ISR_BDT.GetFrame(jetID_ISR_BDT[i]) == Jb_ISR_BDT)
             Njet_S_ISR_BDT++;
 
-        std::vector<V_Cand> V_had_cands_ISR_BDT_Sa;
+        std::vector<H_Cand> V_had_cands_ISR_BDT_Sa;
         if(!use_gen_jets)
           V_had_cands_ISR_BDT_Sa = cand_list(jets,leptons,COMB_J_ISR_BDT,saVa_ISR_BDT,Ja_ISR_BDT,CM_ISR_BDT,jetID_ISR_BDT,lepID_ISR_BDT);
         else if(use_gen_jets)
           V_had_cands_ISR_BDT_Sa = cand_list(gen_jets,leptons,COMB_J_ISR_BDT,saVa_ISR_BDT,Ja_ISR_BDT,CM_ISR_BDT,jetID_ISR_BDT,lepID_ISR_BDT);
-        std::vector<V_Cand> V_had_cands_ISR_BDT_Sb;
+        std::vector<H_Cand> V_had_cands_ISR_BDT_Sb;
         if(!use_gen_jets)
           V_had_cands_ISR_BDT_Sb = cand_list(jets,leptons,COMB_J_ISR_BDT,saVb_ISR_BDT,Jb_ISR_BDT,CM_ISR_BDT,jetID_ISR_BDT,lepID_ISR_BDT);
         else if(use_gen_jets)
@@ -3653,12 +3653,12 @@ int main(int argc, char* argv[]) {
           if(COMB_J_ISR_BDT.GetFrame(jetID_ISR_BDT[i]) == Ja_ISR_BDT || COMB_J_ISR_BDT.GetFrame(jetID_ISR_BDT[i]) == Jb_ISR_BDT)
             Njet_S_ISR_BDT++;
 
-        std::vector<V_Cand> V_had_cands_BDT_ISR_lep_Sa;
+        std::vector<H_Cand> V_had_cands_BDT_ISR_lep_Sa;
         if(!use_gen_jets)
           V_had_cands_BDT_ISR_lep_Sa = cand_list(jets,leptons,COMB_J_BDT_ISR,saVa_BDT_ISR,Ja_BDT_ISR,CM_BDT_ISR,jetID_BDT_ISR,lepID_BDT_ISR);
         else if(use_gen_jets)
           V_had_cands_BDT_ISR_lep_Sa = cand_list(gen_jets,leptons,COMB_J_BDT_ISR,saVa_BDT_ISR,Ja_BDT_ISR,CM_BDT_ISR,jetID_BDT_ISR,lepID_BDT_ISR);
-        std::vector<V_Cand> V_had_cands_BDT_ISR_lep_Sb;
+        std::vector<H_Cand> V_had_cands_BDT_ISR_lep_Sb;
         if(!use_gen_jets)
           V_had_cands_BDT_ISR_lep_Sb = cand_list(jets,leptons,COMB_J_BDT_ISR,saVb_BDT_ISR,Jb_BDT_ISR,CM_BDT_ISR,jetID_BDT_ISR,lepID_BDT_ISR);
         else if(use_gen_jets)
@@ -3780,7 +3780,7 @@ int main(int argc, char* argv[]) {
       //if(KIN && (RISR < RISR_cut || PTISR < PTISR_cut || MET.Mag() < MET_cut)) continue;
         hist_RISR_PTISR_BDT_ISR_singlet->Fill(RISR, PTISR, hweight);
 
-        std::vector<V_Cand> V_had_cands_BDT_ISR_singlet;
+        std::vector<H_Cand> V_had_cands_BDT_ISR_singlet;
         hist_CandCount_BDT_ISR_singlet->SetBinContent(0,hist_CandCount_BDT_ISR_singlet->GetBinContent(0)+Nhadbosons);
 
         Njet_S_ISR_BDT = 0;
@@ -3805,7 +3805,7 @@ int main(int argc, char* argv[]) {
                         V_cand_Part.push_back(jets[k]);
                         V_cand_RF.Add(frame);
                         V_cand_RF.Add(aunt);
-                        V_Cand cand = V_Cand(V_cand_Part,V_cand_RF);
+                        H_Cand cand = H_Cand(V_cand_Part,V_cand_RF);
                         cand.SetSide(kAside);
                         if(use_lep_prong){
                           //if(BDT_CM.GetCosDecayAngle(cand.CandFrame()) > min_Cand_CosDecayAngle_CM && BDT_CM.GetCosDecayAngle(cand.CandFrame()) < max_Cand_CosDecayAngle_CM){
@@ -3827,7 +3827,7 @@ int main(int argc, char* argv[]) {
                   V_cand_Part.push_back(jets[j]); // 2-prong "sibling"
                   V_cand_RF.Add(frame);
                   V_cand_RF.Add(sibling);
-                  V_Cand cand = V_Cand(V_cand_Part,V_cand_RF);
+                  H_Cand cand = H_Cand(V_cand_Part,V_cand_RF);
                   cand.SetSide(kAside);
                   if(use_prong2){
                     //if(BDT_CM.GetCosDecayAngle(cand.CandFrame()) > min_Cand_CosDecayAngle_CM && BDT_CM.GetCosDecayAngle(cand.CandFrame()) < max_Cand_CosDecayAngle_CM){
@@ -3854,7 +3854,7 @@ int main(int argc, char* argv[]) {
                   V_cand_Part.push_back(jets[j]); // 2-prong "aunt"
                   V_cand_RF.Add(frame);
                   V_cand_RF.Add(aunt);
-                  V_Cand cand = V_Cand(V_cand_Part,V_cand_RF);
+                  H_Cand cand = H_Cand(V_cand_Part,V_cand_RF);
                   cand.SetSide(kAside);
                   if(use_aunt_prong){
                     //if(BDT_CM.GetCosDecayAngle(cand.CandFrame()) > min_Cand_CosDecayAngle_CM && BDT_CM.GetCosDecayAngle(cand.CandFrame()) < max_Cand_CosDecayAngle_CM){
@@ -3884,7 +3884,7 @@ int main(int argc, char* argv[]) {
                         V_cand_Part.push_back(jets[k]);
                         V_cand_RF.Add(frame);
                         V_cand_RF.Add(aunt);
-                        V_Cand cand = V_Cand(V_cand_Part,V_cand_RF);
+                        H_Cand cand = H_Cand(V_cand_Part,V_cand_RF);
                         cand.SetSide(kBside);
                         if(use_lep_prong){
                           //if(BDT_CM.GetCosDecayAngle(cand.CandFrame()) > min_Cand_CosDecayAngle_CM && BDT_CM.GetCosDecayAngle(cand.CandFrame()) < max_Cand_CosDecayAngle_CM){
@@ -3906,7 +3906,7 @@ int main(int argc, char* argv[]) {
                   V_cand_Part.push_back(jets[j]); // 2-prong "sibling"
                   V_cand_RF.Add(frame);
                   V_cand_RF.Add(sibling);
-                  V_Cand cand = V_Cand(V_cand_Part,V_cand_RF);
+                  H_Cand cand = H_Cand(V_cand_Part,V_cand_RF);
                   cand.SetSide(kBside);
                   if(use_prong2){
                     //if(BDT_CM.GetCosDecayAngle(cand.CandFrame()) > min_Cand_CosDecayAngle_CM && BDT_CM.GetCosDecayAngle(cand.CandFrame()) < max_Cand_CosDecayAngle_CM){
@@ -3933,7 +3933,7 @@ int main(int argc, char* argv[]) {
                   V_cand_Part.push_back(jets[j]); // 2-prong "aunt"
                   V_cand_RF.Add(frame);
                   V_cand_RF.Add(aunt);
-                  V_Cand cand = V_Cand(V_cand_Part,V_cand_RF);
+                  H_Cand cand = H_Cand(V_cand_Part,V_cand_RF);
                   cand.SetSide(kBside);
                   if(use_aunt_prong){
                     //if(BDT_CM.GetCosDecayAngle(cand.CandFrame()) > min_Cand_CosDecayAngle_CM && BDT_CM.GetCosDecayAngle(cand.CandFrame()) < max_Cand_CosDecayAngle_CM){
@@ -4250,11 +4250,11 @@ string double_to_string(double val){
   return str_val;
 }
 
-std::vector<V_Cand> cand_list(const ParticleList& jets, const ParticleList& leps,
+std::vector<H_Cand> cand_list(const ParticleList& jets, const ParticleList& leps,
   const CombinatoricGroup& Comb, const SelfAssemblingRecoFrame& BDT, const VisibleRecoFrame& VIS, const RestFrame& CM,
   const std::vector<RFKey>& jetID, const std::vector<RFKey>& lepID)
 {
-  std::vector<V_Cand> V_had_cands;
+  std::vector<H_Cand> V_had_cands;
   int Njets = jets.size();
   int Nleps = leps.size();
   for(int i = 0; i < Njets; i++){
@@ -4275,7 +4275,7 @@ std::vector<V_Cand> cand_list(const ParticleList& jets, const ParticleList& leps
                 V_cand_Part.push_back(jets[k]);
                 V_cand_RF.Add(frame);
                 V_cand_RF.Add(aunt);
-                V_Cand cand = V_Cand(V_cand_Part,V_cand_RF);
+                H_Cand cand = H_Cand(V_cand_Part,V_cand_RF);
                 if(use_lep_prong){
                   if(CM.GetCosDecayAngle(cand.CandFrame()) > min_Cand_CosDecayAngle_CM && CM.GetCosDecayAngle(cand.CandFrame()) < max_Cand_CosDecayAngle_CM){
                     cand.SetType(kLep);
@@ -4298,7 +4298,7 @@ std::vector<V_Cand> cand_list(const ParticleList& jets, const ParticleList& leps
           V_cand_Part.push_back(jets[j]); // 2-prong "sibling"
           V_cand_RF.Add(frame);
           V_cand_RF.Add(sibling);
-          V_Cand cand = V_Cand(V_cand_Part,V_cand_RF);
+          H_Cand cand = H_Cand(V_cand_Part,V_cand_RF);
           if(use_prong2){
             if(CM.GetCosDecayAngle(cand.CandFrame()) > min_Cand_CosDecayAngle_CM && CM.GetCosDecayAngle(cand.CandFrame()) < max_Cand_CosDecayAngle_CM){
               cand.SetType(kSib);
@@ -4325,7 +4325,7 @@ std::vector<V_Cand> cand_list(const ParticleList& jets, const ParticleList& leps
           V_cand_Part.push_back(jets[j]); // 2-prong "aunt"
           V_cand_RF.Add(frame);
           V_cand_RF.Add(aunt);
-          V_Cand cand = V_Cand(V_cand_Part,V_cand_RF);
+          H_Cand cand = H_Cand(V_cand_Part,V_cand_RF);
           if(use_aunt_prong){
             if(CM.GetCosDecayAngle(cand.CandFrame()) > min_Cand_CosDecayAngle_CM && CM.GetCosDecayAngle(cand.CandFrame()) < max_Cand_CosDecayAngle_CM){
               cand.SetType(kAunt);
@@ -4337,9 +4337,9 @@ std::vector<V_Cand> cand_list(const ParticleList& jets, const ParticleList& leps
     } // for(int j = i+1; j < Njets; j++)
   } // for(int i = 0; i < Njets; i++)
   return V_had_cands;
-} // std::vector<V_Cand> cand_list()
+} // std::vector<H_Cand> cand_list()
 
-void cand_matching(std::vector<V_Cand>& cand_list){ 
+void cand_matching(std::vector<H_Cand>& cand_list){ 
   int N_cands = cand_list.size();
     for(int i = 0; i < N_cands; i++){
       bool unmatched = true; // both jets are radiative
@@ -4372,9 +4372,9 @@ void cand_matching(std::vector<V_Cand>& cand_list){
         cand_list[i].SetMatch(kUnmatched);
       }
     } // for(int i = 0; i < N_V_had; i++)
-} // cand_matching(const std::vector<V_Cand>& cand_list)
+} // cand_matching(const std::vector<H_Cand>& cand_list)
 
-void cand_side(std::vector<V_Cand>& cand_list, const SelfAssemblingRecoFrame& BDT){
+void cand_side(std::vector<H_Cand>& cand_list, const SelfAssemblingRecoFrame& BDT){
   for(int i = 0; i < int(cand_list.size()); i++){
       const RestFrame& BDT_ChildA = BDT.GetChildFrame(0);
       const RestFrame& BDT_ChildB = BDT.GetChildFrame(1);
