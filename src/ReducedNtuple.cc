@@ -718,7 +718,7 @@ void ReducedNtuple<Base>::FillOutputTree(TTree* tree, const Systematic& sys, boo
   
   // not enough stuff
   // if(m_Nlep + m_Njet < 2 || m_Njet < 1)
-  if(m_Nlep < 2 || m_Njet < 1)
+  if(m_Nlep < 2)
     return;
 
   m_HEM_Veto = m_EventFlag_JetInHEM_Pt20;
@@ -733,6 +733,7 @@ void ReducedNtuple<Base>::FillOutputTree(TTree* tree, const Systematic& sys, boo
   // Sparticle pair-production trees analysis
 
   for(int t = 0; t < m_aTrees; t++){
+    if(m_Njet == 0) continue; // can't do ISR analysis without at least one jet
     // first tree is ISR Boosted tree
     // can add more trees if needed
     
