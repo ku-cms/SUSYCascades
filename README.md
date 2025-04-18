@@ -127,7 +127,7 @@ nohup python3 python/CheckFiles.py -d f{filetag}/ -o {OUT_DIR} -e > CheckFiles_{
 Recommended to run in background with nohup and direct output to a log file.
 For ~100 datasets can take up to 8 hours the first time if all checks are run.
 Use python3 python/CheckFiles.py to see breakdown of args.
--e is recommended because it is a) slow and b) can return false positives.
+-e is recommended because it is a) slow and b) can return false negatives.
 
 ### After NTUPLE jobs pass checks
 After ntuple jobs are finished, should use hadd to reduce number of files.
