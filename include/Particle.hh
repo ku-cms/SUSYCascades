@@ -122,5 +122,9 @@ private:
 
 bool sortbypt(const Particle& p1, const Particle& p2);
 
+template <typename V>
+inline bool inVec(const std::vector<V>& vect, const V& value){
+  return std::find(vect.begin(), vect.end(), value) != vect.end();
+}
 
 #endif

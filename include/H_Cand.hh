@@ -1,38 +1,38 @@
-#ifndef V_Cand_HH
-#define V_Cand_HH
+#ifndef H_Cand_HH
+#define H_Cand_HH
 
 #include "ParticleList.hh"
 #include "RestFrames/RestFrames.hh"
 using namespace RestFrames;
 
-enum V_CandMatch { kMatched, kW, kZ, kB, kUnmatched };
-enum V_CandSide { kAside, kBside };
-enum V_CandType { kSib, kAunt, kLep }; // kSib = 2prong, kAunt = Aunt and Niece pair, kLep = Aunt and Niece pair and sib is lep
+enum H_CandMatch { kMatched, kW, kZ, kB, kUnmatched };
+enum H_CandSide { kAside, kBside };
+enum H_CandType { kSib, kAunt, kLep }; // kSib = 2prong, kAunt = Aunt and Niece pair, kLep = Aunt and Niece pair and sib is lep
   
-class V_Cand {
+class H_Cand {
 private:
   std::pair<ParticleList,RestFrameList> m_pair;
   void init(ParticleList PL, ConstRestFrameList RL);
-  V_CandMatch m_Match;
-  V_CandSide m_Side;
-  V_CandType m_Type;
+  H_CandMatch m_Match;
+  H_CandSide m_Side;
+  H_CandType m_Type;
   TLorentzVector m_TLV;
 
 public:
-  V_Cand();
-  V_Cand(ParticleList PL, ConstRestFrameList RL);
-  V_Cand(ConstRestFrameList RL, ParticleList PL);
-  virtual ~V_Cand();
+  H_Cand();
+  H_Cand(ParticleList PL, ConstRestFrameList RL);
+  H_Cand(ConstRestFrameList RL, ParticleList PL);
+  virtual ~H_Cand();
 
   const ParticleList PL();
   const ConstRestFrameList RL();
 
-  V_CandMatch Match();
-  void SetMatch(V_CandMatch match);
-  V_CandSide Side();
-  void SetSide(V_CandSide side);
-  V_CandType Type();
-  void SetType(V_CandType type);
+  H_CandMatch Match();
+  void SetMatch(H_CandMatch match);
+  H_CandSide Side();
+  void SetSide(H_CandSide side);
+  H_CandType Type();
+  void SetType(H_CandType type);
 
   Particle Cand_Part(int index);
   
@@ -55,6 +55,7 @@ public:
   double ProngDeltaR();
   double ProngMassRatio(); // PMR
   double PMR();
+  void cand_matching(std::vector<H_Cand>& cand_list); 
 
   const RestFrame& CandFrame(); // candidate's frame
   bool IsProng(const RestFrame& frame);

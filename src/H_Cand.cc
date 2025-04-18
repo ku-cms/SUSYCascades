@@ -1,18 +1,18 @@
-#include "V_Cand.hh"
+#include "H_Cand.hh"
 
-V_Cand::V_Cand() {}
+H_Cand::H_Cand() {}
 
-V_Cand::V_Cand(ParticleList PL, ConstRestFrameList RL){
+H_Cand::H_Cand(ParticleList PL, ConstRestFrameList RL){
   init(PL,RL);
 }
 
-V_Cand::V_Cand(ConstRestFrameList RL, ParticleList PL){
+H_Cand::H_Cand(ConstRestFrameList RL, ParticleList PL){
   init(PL,RL);
 }
 
-V_Cand::~V_Cand() {}
+H_Cand::~H_Cand() {}
   
-void V_Cand::init(ParticleList PL, ConstRestFrameList RL){
+void H_Cand::init(ParticleList PL, ConstRestFrameList RL){
   if(PL.size() != RL.GetN()){
     std::cout << "Can't Make Candidate with different sized lists! \n ParticleList size: " << PL.size() << " \n RestFrameList size: " << RL.GetN() << std::endl;
     return;
@@ -26,83 +26,83 @@ void V_Cand::init(ParticleList PL, ConstRestFrameList RL){
   }
 }
 
-const ParticleList V_Cand::PL(){
+const ParticleList H_Cand::PL(){
   return m_pair.first;
 }
 
-const ConstRestFrameList V_Cand::RL(){
+const ConstRestFrameList H_Cand::RL(){
   return m_pair.second;
 }
 
-Particle V_Cand::Cand_Part(int index){
+Particle H_Cand::Cand_Part(int index){
   return PL()[index];
 }
 
-V_CandMatch V_Cand::Match(){
+H_CandMatch H_Cand::Match(){
   return m_Match;
 }
 
-void V_Cand::SetMatch(V_CandMatch match){
+void H_Cand::SetMatch(H_CandMatch match){
   m_Match = match;
 }
 
-V_CandSide V_Cand::Side(){
+H_CandSide H_Cand::Side(){
   return m_Side;
 }
 
-void V_Cand::SetSide(V_CandSide side){
+void H_Cand::SetSide(H_CandSide side){
   m_Side = side;
 }
 
-V_CandType V_Cand::Type(){
+H_CandType H_Cand::Type(){
   return m_Type;
 }
 
-void V_Cand::SetType(V_CandType type){
+void H_Cand::SetType(H_CandType type){
   m_Type = type;
 }
 
-Particle V_Cand::operator[](int index){
+Particle H_Cand::operator[](int index){
   return Cand_Part(index);
 }
 
-int V_Cand::size(){
+int H_Cand::size(){
   return PL().size();
 }
 
-int V_Cand::prongs(){
+int H_Cand::prongs(){
   return size();
 }
 
-double V_Cand::Pt(){
+double H_Cand::Pt(){
   return m_TLV.Pt();
 }
 
-double V_Cand::Eta(){
+double H_Cand::Eta(){
   return m_TLV.Eta();
 }
 
-double V_Cand::Phi(){
+double H_Cand::Phi(){
   return m_TLV.Phi();
 }
 
-double V_Cand::M(){
+double H_Cand::M(){
   return m_TLV.M();
 }
 
-double V_Cand::Mass(){
+double H_Cand::Mass(){
   return M();
 }
 
-double V_Cand::P(){
+double H_Cand::P(){
   return m_TLV.P();
 }
 
-double V_Cand::E(){
+double H_Cand::E(){
   return m_TLV.E();
 }
 
-double V_Cand::ProngDeltaPhi(){ 
+double H_Cand::ProngDeltaPhi(){ 
   if(prongs() < 1) return 0.;
   else if(prongs() == 1) return Phi();
   double maxDeltaPhi = PL()[0].DeltaPhi(PL()[1]);
@@ -115,7 +115,7 @@ double V_Cand::ProngDeltaPhi(){
   return maxDeltaPhi;
 }
 
-double V_Cand::ProngDeltaEta(){ 
+double H_Cand::ProngDeltaEta(){ 
   if(prongs() < 1) return 0.;
   else if(prongs() == 1) return Eta();
   double maxDeltaEta = PL()[0].Eta()-PL()[1].Eta();
@@ -128,7 +128,7 @@ double V_Cand::ProngDeltaEta(){
   return maxDeltaEta;
 }
 
-double V_Cand::ProngAbsDeltaEta(){ 
+double H_Cand::ProngAbsDeltaEta(){ 
   if(prongs() < 1) return 0.;
   else if(prongs() == 1) return Eta();
   double maxDeltaEta = fabs(PL()[0].Eta())-fabs(PL()[1].Eta());
@@ -141,7 +141,7 @@ double V_Cand::ProngAbsDeltaEta(){
   return maxDeltaEta;
 }
 
-double V_Cand::ProngDeltaR(){ 
+double H_Cand::ProngDeltaR(){ 
   if(prongs() < 2) return 0.;
   double maxDeltaR = PL()[0].DeltaR(PL()[1]);
   for(int i = 1; i < prongs(); i++){
@@ -152,18 +152,18 @@ double V_Cand::ProngDeltaR(){
   return maxDeltaR;
 }
 
-double V_Cand::ProngMassRatio(){ 
+double H_Cand::ProngMassRatio(){ 
   if(prongs() != 2) return -1.;
   if(PL()[1].M() < 1.e-5) return -1.;
   double prongMassRatio = PL()[0].M()/PL()[1].M();
   return prongMassRatio;
 }
 
-double V_Cand::PMR(){
+double H_Cand::PMR(){
   return ProngMassRatio();
 }
 
-const RestFrame& V_Cand::CandFrame(){
+const RestFrame& H_Cand::CandFrame(){
   const RestFrame& LAB = RL().Get(0).GetLabFrame();
   ConstRestFrameList children = LAB.GetListVisibleFrames();
   int minDepth = LAB.GetFrameDepth(RL().Get(0));
@@ -178,13 +178,47 @@ const RestFrame& V_Cand::CandFrame(){
   return RL().Get(minIndex).GetProductionFrame();
 }
 
-double V_Cand::CosDecayAngle(const RestFrame& Frame){
+double H_Cand::CosDecayAngle(const RestFrame& Frame){
   return CandFrame().GetCosDecayAngle(Frame);
 }
 
-bool V_Cand::IsProng(const RestFrame& frame){
+bool H_Cand::IsProng(const RestFrame& frame){
   for(int i = 0; i < prongs(); i++)
     if(frame == RL().Get(i)) return true;
   return false;
 }
 
+void H_Cand::cand_matching(std::vector<H_Cand>& cand_list){ 
+  int N_cands = cand_list.size();
+    for(int i = 0; i < N_cands; i++){
+      bool unmatched = true; // both jets are radiative
+      bool matched = false; // both jets come from same boson
+      for(int j = 0; j < int(cand_list[i].size()); j++){
+        for(int k = j+1; k < int(cand_list[i].size()); k++){
+          if((abs(cand_list[i][j].MomPDGID()) == 23 || abs(cand_list[i][j].MomPDGID()) == 24) && cand_list[i][j].GenMomIndex() == cand_list[i][k].GenMomIndex()){
+            cand_list[i].SetMatch(kMatched);
+            unmatched = false;
+            matched = true;
+            break;
+          }
+        }
+        if(!matched){
+          if(cand_list[i][j].MomPDGID() == 24){
+            cand_list[i].SetMatch(kW);
+            unmatched = false;
+          }
+          else if(cand_list[i][j].MomPDGID() == 23){
+            cand_list[i].SetMatch(kZ);
+            unmatched = false;
+          }
+          else if(cand_list[i][j].MomPDGID() == 6){
+            cand_list[i].SetMatch(kB);
+            unmatched = false;
+          }
+        } // if(!matched)
+      } // for(int j = 0; j < int(cand_list[i].size()); j++)
+      if(unmatched){
+        cand_list[i].SetMatch(kUnmatched);
+      }
+    } // for(int i = 0; i < N_V_had; i++)
+} // cand_matching(const std::vector<H_Cand>& cand_list)

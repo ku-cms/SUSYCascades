@@ -1,0 +1,134 @@
+#include "L_Cand.hh"
+
+L_Cand::L_Cand() {}
+
+L_Cand::L_Cand(ParticleList PL){
+  init(PL);
+}
+
+L_Cand::L_Cand(ParticleList PL, ConstRestFrameList RL){
+  init(PL,RL);
+}
+
+L_Cand::L_Cand(ConstRestFrameList RL, ParticleList PL){
+  init(PL,RL);
+}
+
+L_Cand::~L_Cand() {}
+  
+void L_Cand::init(ParticleList PL){
+  m_PL = PL;
+  m_TLV.SetPtEtaPhiM(0.,0.,0.,0.);
+  for(int i = 0; i < int(PL.size()); i++){
+    TLorentzVector dummy_TLV;
+    dummy_TLV.SetPtEtaPhiM(PL[i].Pt(),PL[i].Eta(),PL[i].Phi(),PL[i].M());
+    m_TLV += dummy_TLV;
+  }
+}
+
+void L_Cand::init(ParticleList PL, ConstRestFrameList RL){
+  if(PL.size() != RL.GetN()){
+    std::cout << "Can't Make Candidate with different sized lists! \n ParticleList size: " << PL.size() << " \n RestFrameList size: " << RL.GetN() << std::endl;
+    return;
+  }
+  m_pair = std::make_pair(PL,RL);
+  m_TLV.SetPtEtaPhiM(0.,0.,0.,0.);
+  for(int i = 0; i < int(PL.size()); i++){
+    TLorentzVector dummy_TLV;
+    dummy_TLV.SetPtEtaPhiM(PL[i].Pt(),PL[i].Eta(),PL[i].Phi(),PL[i].M());
+    m_TLV += dummy_TLV;
+  }
+}
+
+const ParticleList L_Cand::PL(){
+  return m_PL;
+}
+
+Particle L_Cand::Cand_Part(int index){
+  return PL()[index];
+}
+
+L_CandMatch L_Cand::Match(){
+  return m_Match;
+}
+
+void L_Cand::SetMatch(L_CandMatch match){
+  m_Match = match;
+}
+
+LepFlavor L_Cand::Flavor(){
+  return m_Flav;
+}
+
+void L_Cand::SetFlavor(LepFlavor flav){
+  m_Flav = flav;
+}
+
+Particle L_Cand::operator[](int index){
+  return Cand_Part(index);
+}
+
+double L_Cand::Pt(){
+  return m_TLV.Pt();
+}
+
+double L_Cand::Eta(){
+  return m_TLV.Eta();
+}
+
+double L_Cand::Phi(){
+  return m_TLV.Phi();
+}
+
+double L_Cand::M(){
+  return m_TLV.M();
+}
+
+double L_Cand::Mass(){
+  return M();
+}
+
+double L_Cand::P(){
+  return m_TLV.P();
+}
+
+double L_Cand::E(){
+  return m_TLV.E();
+}
+
+double L_Cand::ProngDeltaPhi(){ 
+  return PL()[0].DeltaPhi(PL()[1]);
+}
+
+double L_Cand::DeltaPhi(const TLorentzVector& v){
+  return m_TLV.DeltaPhi(v);
+}
+
+double L_Cand::DeltaPhi(const TVector3& v){
+  return m_TLV.Vect().DeltaPhi(v);
+}
+
+double L_Cand::ProngDeltaEta(){ 
+  return PL()[0].Eta()-PL()[1].Eta();
+}
+
+double L_Cand::ProngAbsDeltaEta(){ 
+  return fabs(PL()[0].Eta())-fabs(PL()[1].Eta());
+}
+
+double L_Cand::ProngDeltaR(){ 
+  return PL()[0].DeltaR(PL()[1]);
+}
+
+double L_Cand::ProngMassRatio(){ 
+  return PL()[0].M()/PL()[1].M();
+}
+
+double L_Cand::PMR(){
+  return ProngMassRatio();
+}
+
+double L_Cand::Beta(){ 
+  return m_TLV.P()/m_TLV.E();
+}
+

@@ -4252,8 +4252,8 @@ string double_to_string(double val){
 
 std::vector<H_Cand> cand_list(const ParticleList& jets, const ParticleList& leps,
   const CombinatoricGroup& Comb, const SelfAssemblingRecoFrame& BDT, const VisibleRecoFrame& VIS, const RestFrame& CM,
-  const std::vector<RFKey>& jetID, const std::vector<RFKey>& lepID)
-{
+  const std::vector<RFKey>& jetID, const std::vector<RFKey>& lepID){
+
   std::vector<H_Cand> V_had_cands;
   int Njets = jets.size();
   int Nleps = leps.size();
@@ -4339,41 +4339,6 @@ std::vector<H_Cand> cand_list(const ParticleList& jets, const ParticleList& leps
   return V_had_cands;
 } // std::vector<H_Cand> cand_list()
 
-void cand_matching(std::vector<H_Cand>& cand_list){ 
-  int N_cands = cand_list.size();
-    for(int i = 0; i < N_cands; i++){
-      bool unmatched = true; // both jets are radiative
-      bool matched = false; // both jets come from same boson
-      for(int j = 0; j < int(cand_list[i].size()); j++){
-        for(int k = j+1; k < int(cand_list[i].size()); k++){
-          if((abs(cand_list[i][j].MomPDGID()) == 23 || abs(cand_list[i][j].MomPDGID()) == 24) && cand_list[i][j].GenMomIndex() == cand_list[i][k].GenMomIndex()){
-            cand_list[i].SetMatch(kMatched);
-            unmatched = false;
-            matched = true;
-            break;
-          }
-        }
-        if(!matched){
-          if(cand_list[i][j].MomPDGID() == 24){
-            cand_list[i].SetMatch(kW);
-            unmatched = false;
-          }
-          else if(cand_list[i][j].MomPDGID() == 23){
-            cand_list[i].SetMatch(kZ);
-            unmatched = false;
-          }
-          else if(cand_list[i][j].MomPDGID() == 6){
-            cand_list[i].SetMatch(kB);
-            unmatched = false;
-          }
-        } // if(!matched)
-      } // for(int j = 0; j < int(cand_list[i].size()); j++)
-      if(unmatched){
-        cand_list[i].SetMatch(kUnmatched);
-      }
-    } // for(int i = 0; i < N_V_had; i++)
-} // cand_matching(const std::vector<H_Cand>& cand_list)
-
 void cand_side(std::vector<H_Cand>& cand_list, const SelfAssemblingRecoFrame& BDT){
   for(int i = 0; i < int(cand_list.size()); i++){
       const RestFrame& BDT_ChildA = BDT.GetChildFrame(0);
@@ -4387,5 +4352,4 @@ void cand_side(std::vector<H_Cand>& cand_list, const SelfAssemblingRecoFrame& BD
         if(cand_list[i].CandFrame() == BDT_ChildB_Children[r])
           cand_list[i].SetSide(kBside);
   }
-
 }

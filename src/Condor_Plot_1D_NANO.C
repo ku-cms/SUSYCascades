@@ -35,10 +35,6 @@ using namespace RestFrames;
 
 string load_file_from_list(string fileListName, int line_number);
 string double_to_string(double val);
-template <typename V>
-bool inVec(const std::vector<V>& vect, const V& value){
-  return std::find(vect.begin(), vect.end(), value) != vect.end();
-}
 
 int main(int argc, char* argv[]) {
 
@@ -197,7 +193,7 @@ int main(int argc, char* argv[]) {
   if(gen_lepton_cut) plot_folder += "_l";
   else plot_folder += "_XX";
 
-  // BDT ISR Sparticle Splitting #2
+  // S ISR RJR tree
   LabRecoFrame LAB("LAB","lab");
   DecayRecoFrame CM("CM","CM");
   DecayRecoFrame S("S","S");
