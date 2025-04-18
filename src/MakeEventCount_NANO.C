@@ -280,6 +280,7 @@ int main(int argc, char* argv[]) {
   for(int i = 0; i < Nfile; i++)
     NDAS += eventTool.EventsInDAS(filenames[i]);
   std::string DAS_datasetname = eventTool.Get_DASdatasetname(filenames[0]);
+  std::string DAS_filename = eventTool.Get_DASfilename(filenames[0]);
   if(NDAS == 0) return 1; // will try to resubmit job
   cout << "Added DAS info!" << endl;
 
@@ -292,6 +293,7 @@ int main(int argc, char* argv[]) {
   tout->Branch("filetag", &filetag);
   tout->Branch("dataset", &dataset);
   tout->Branch("DAS_datasetname", &DAS_datasetname);
+  tout->Branch("DAS_filename", &DAS_filename);
   tout->Branch("MP", &MP);
   tout->Branch("MC", &MC);
   tout->Branch("Code", &Code);
