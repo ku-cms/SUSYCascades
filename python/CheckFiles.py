@@ -315,11 +315,11 @@ def main():
     if directory is None:
         # quick strictly das check from root file (useful for final hadd test)
         event_count = EventCount()
-        for filename in os.listdir(directory):
-            full_path = os.path.join(directory, filename)
+        for filename in os.listdir(output):
+            full_path = os.path.join(output, filename)
             if filename.endswith(".root") and os.path.isfile(full_path):
                 totalEvents = event_count.countTotalEvents(full_path)
-                DAS_events = getEventsFromDASDatasetNames(full_path)
+                DAS_events = event_count.getEventsFromDASDatasetNames(full_path)
                 if totalEvents != DAS_events:
                     comp_percent = 100.*math.floor(totalEvents/DAS_events * 1000) / 1000
                     print(f'{full_path} failed the DAS check! ({comp_percent}%) Use other options to investigate')

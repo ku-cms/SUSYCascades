@@ -107,19 +107,18 @@ class EventCount:
         tree = file.Get("EventCount")
         dataset_dict = {}
         for entry in tree:
-            key = f"{entry.dataset}_{entry.filetag}"
-            das_name = entry.DAS_datasetname
+            key = f"{str(entry.dataset)}_{str(entry.filetag)}"
+            das_name = str(entry.DAS_datasetname)
             if key not in dataset_dict:
                 dataset_dict[key] = set()
             dataset_dict[key].add(das_name)
         # Convert sets to lists
-        dataset_dict = {k: list(v) for k, v in dataset_dict.items()}
-        return dataset_dict
+        return {k: sorted(v) for k, v in dataset_dict.items()}
 
     def getEventsFromDASDatasetNames(self, u_file):
         events = 0
         dataset_dict = self.getDASDatasetNames(u_file)
-        for key, das_list in dataset_mapping.items():
+        for key, das_list in dataset_dict.items():
             for das_name in das_list:
                 events += self.EventsInDASDataset(das_name)
         return events
