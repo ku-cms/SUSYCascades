@@ -4,6 +4,7 @@ void Plot_Advanced(){
 
   Long64_t start = gSystem->Now();
   RestFrames::SetStyle();
+  InitRJRtree();
 
   string NtuplePath = "/local-scratch/zflowers/NTUPLES/HADD/";
   //string NtuplePath = "root://cmseos.fnal.gov//store/user/lpcsusylep/NTUPLES_v2/";
@@ -30,6 +31,7 @@ void Plot_Advanced(){
   if(SavePDF){
     std::cout << "making dir for plots: " << folder_name << std::endl;
     gSystem->Exec(("mkdir -p "+folder_name).c_str());
+    gSystem->Exec(("cp macros/Plot_Advanced.C "+folder_name+"/").c_str());
   }
   std::cout << "Saving plots to: " << output_root_file << std::endl;
 
@@ -102,6 +104,24 @@ void Plot_Advanced(){
   hist_stacks.push_back(&hist_stack_ML);
   vector<TH1*> hist_stack_MJ;
   hist_stacks.push_back(&hist_stack_MJ);
+  vector<TH1*> hist_stack_CandML;
+  hist_stacks.push_back(&hist_stack_CandML);
+  vector<TH1*> hist_stack_CandBeta;
+  hist_stacks.push_back(&hist_stack_CandBeta);
+  vector<TH1*> hist_stack_CandDeltaPhiMET;
+  hist_stacks.push_back(&hist_stack_CandDeltaPhiMET);
+  vector<TH1*> hist_stack_MatchedCandML;
+  hist_stacks.push_back(&hist_stack_MatchedCandML);
+  vector<TH1*> hist_stack_MatchedCandBeta;
+  hist_stacks.push_back(&hist_stack_MatchedCandBeta);
+  vector<TH1*> hist_stack_MatchedCandDeltaPhiMET;
+  hist_stacks.push_back(&hist_stack_MatchedCandDeltaPhiMET);
+  vector<TH1*> hist_stack_UnmatchedCandML;
+  hist_stacks.push_back(&hist_stack_UnmatchedCandML);
+  vector<TH1*> hist_stack_UnmatchedCandBeta;
+  hist_stacks.push_back(&hist_stack_UnmatchedCandBeta);
+  vector<TH1*> hist_stack_UnmatchedCandDeltaPhiMET;
+  hist_stacks.push_back(&hist_stack_UnmatchedCandDeltaPhiMET);
 
   // hists for holding number of events
   const int EC_bins = vec_samples.size() + 1;
@@ -112,6 +132,10 @@ void Plot_Advanced(){
 
   int vec_samples_index = 0;
   int Zbi_samples_index = 0;
+
+  int tot_Nleps = 0;
+  int tot_L_cands = 0;
+
   for (auto p = vec_samples.begin(); p != vec_samples.end(); p++){
     hist_EventCount->GetYaxis()->SetBinLabel(vec_samples_index+1, FP.getTitle(p->first).c_str());
 
@@ -159,12 +183,42 @@ void Plot_Advanced(){
     TH1D* hist_gammaCM0 = new TH1D((title+"_gammaCM0").c_str(), (title+"_gammaCM0;#gamma_{CM0}").c_str(), g_NX/4, 0., 1.);
     hists1.push_back(hist_gammaCM0);
     hist_stack_gammaCM0.push_back(hist_gammaCM0);
-    TH1D* hist_ML = new TH1D((title+"_ML").c_str(), (title+"_ML;ML").c_str(), g_NX/4, 0., 150.);
+    TH1D* hist_ML = new TH1D((title+"_ML").c_str(), (title+"_ML;ML").c_str(), g_NX/2, 0., 150.);
     hists1.push_back(hist_ML);
     hist_stack_ML.push_back(hist_ML);
-    TH1D* hist_MJ = new TH1D((title+"_MJ").c_str(), (title+"_MJ;MJ").c_str(), g_NX/4, 0., 150.);
+    TH1D* hist_MJ = new TH1D((title+"_MJ").c_str(), (title+"_MJ;MJ").c_str(), g_NX/2, 0., 150.);
     hists1.push_back(hist_MJ);
     hist_stack_MJ.push_back(hist_MJ);
+
+    TH1D* hist_CandML = new TH1D((title+"_CandML").c_str(), (title+"_CandML;CandML").c_str(), g_NX/2, 0., 150.);
+    hists1.push_back(hist_CandML);
+    hist_stack_CandML.push_back(hist_CandML);
+    TH1D* hist_CandBeta = new TH1D((title+"_CandBeta").c_str(), (title+"_CandBeta;CandBeta").c_str(), g_NX/2, 0., 1.);
+    hists1.push_back(hist_CandBeta);
+    hist_stack_CandBeta.push_back(hist_CandBeta);
+    TH1D* hist_CandDeltaPhiMET = new TH1D((title+"_CandDeltaPhiMET").c_str(), (title+"_CandDeltaPhiMET;CandDeltaPhiMET").c_str(), g_NX/2, 0., 3.15);
+    hists1.push_back(hist_CandDeltaPhiMET);
+    hist_stack_CandDeltaPhiMET.push_back(hist_CandDeltaPhiMET);
+
+    TH1D* hist_MatchedCandML = new TH1D((title+"_MatchedCandML").c_str(), (title+"_MatchedCandML;MatchedCandML").c_str(), g_NX/2, 0., 150.);
+    hists1.push_back(hist_MatchedCandML);
+    hist_stack_MatchedCandML.push_back(hist_MatchedCandML);
+    TH1D* hist_MatchedCandBeta = new TH1D((title+"_MatchedCandBeta").c_str(), (title+"_MatchedCandBeta;MatchedCandBeta").c_str(), g_NX/2, 0., 1.);
+    hists1.push_back(hist_MatchedCandBeta);
+    hist_stack_MatchedCandBeta.push_back(hist_MatchedCandBeta);
+    TH1D* hist_MatchedCandDeltaPhiMET = new TH1D((title+"_MatchedCandDeltaPhiMET").c_str(), (title+"_MatchedCandDeltaPhiMET;MatchedCandDeltaPhiMET").c_str(), g_NX/2, 0., 3.15);
+    hists1.push_back(hist_MatchedCandDeltaPhiMET);
+    hist_stack_MatchedCandDeltaPhiMET.push_back(hist_MatchedCandDeltaPhiMET);
+
+    TH1D* hist_UnmatchedCandML = new TH1D((title+"_UnmatchedCandML").c_str(), (title+"_UnmatchedCandML;UnmatchedCandML").c_str(), g_NX/2, 0., 150.);
+    hists1.push_back(hist_UnmatchedCandML);
+    hist_stack_UnmatchedCandML.push_back(hist_UnmatchedCandML);
+    TH1D* hist_UnmatchedCandBeta = new TH1D((title+"_UnmatchedCandBeta").c_str(), (title+"_UnmatchedCandBeta;UnmatchedCandBeta").c_str(), g_NX/2, 0., 1.);
+    hists1.push_back(hist_UnmatchedCandBeta);
+    hist_stack_UnmatchedCandBeta.push_back(hist_UnmatchedCandBeta);
+    TH1D* hist_UnmatchedCandDeltaPhiMET = new TH1D((title+"_UnmatchedCandDeltaPhiMET").c_str(), (title+"_UnmatchedCandDeltaPhiMET;UnmatchedCandDeltaPhiMET").c_str(), g_NX/2, 0., 3.15);
+    hists1.push_back(hist_UnmatchedCandDeltaPhiMET);
+    hist_stack_UnmatchedCandDeltaPhiMET.push_back(hist_UnmatchedCandDeltaPhiMET);
 
     TH2D* hist_RISR_PTISR = new TH2D((title+"_RISR_PTISR").c_str(), (title+"_RISR_PTISR;R_{ISR};p_{T}^{ISR} [GeV]").c_str(), g_NX/2., 0., 1., g_NX/2., 0., 1000.);
     hists2.push_back(hist_RISR_PTISR);
@@ -261,6 +315,39 @@ void Plot_Advanced(){
     TH2D* hist_RISR_MLb = new TH2D((title+"_RISR_MLb").c_str(), (title+"_RISR_MLb;R_{ISR};MLb").c_str(), g_NX/2., 0.5, 1., g_NX/2., 0., 300.);
     hists2.push_back(hist_RISR_MLb);
 
+    TH2D* hist_RISR_CandML = new TH2D((title+"_RISR_CandML").c_str(), (title+"_RISR_CandML;R_{ISR};CandML").c_str(), g_NX/2., 0.5, 1., g_NX/2, 0., 150.);
+    hists2.push_back(hist_RISR_CandML);
+    TH2D* hist_RISR_CandBeta = new TH2D((title+"_RISR_CandBeta").c_str(), (title+"_RISR_CandBeta;R_{ISR};CandBeta").c_str(), g_NX/2., 0.5, 1., g_NX/2, 0., 1.);
+    hists2.push_back(hist_RISR_CandBeta);
+    TH2D* hist_RISR_CandDeltaPhiMET = new TH2D((title+"_RISR_CandDeltaPhiMET").c_str(), (title+"_RISR_CandDeltaPhiMET;R_{ISR};CandDeltaPhiMET").c_str(), g_NX/2., 0.5, 1., g_NX/2, 0., 3.15);
+    hists2.push_back(hist_RISR_CandDeltaPhiMET);
+    TH2D* hist_CandML_CandBeta = new TH2D((title+"_CandML_CandBeta").c_str(), (title+"_CandML_CandBeta;CandML;CandBeta").c_str(), g_NX/2., 0., 150., g_NX/2, 0., 1.);
+    hists2.push_back(hist_CandML_CandBeta);
+    TH2D* hist_CandML_CandDeltaPhiMET = new TH2D((title+"_CandML_CandDeltaPhiMET").c_str(), (title+"_CandML_CandDeltaPhiMET;CandML;CandDeltaPhiMET").c_str(), g_NX/2., 0., 150., g_NX/2, 0., 3.15);
+    hists2.push_back(hist_CandML_CandDeltaPhiMET);
+
+    TH2D* hist_RISR_MatchedCandML = new TH2D((title+"_RISR_MatchedCandML").c_str(), (title+"_RISR_MatchedCandML;R_{ISR};MatchedCandML").c_str(), g_NX/2., 0.5, 1., g_NX/2, 0., 150.);
+    hists2.push_back(hist_RISR_MatchedCandML);
+    TH2D* hist_RISR_MatchedCandBeta = new TH2D((title+"_RISR_MatchedCandBeta").c_str(), (title+"_RISR_MatchedCandBeta;R_{ISR};MatchedCandBeta").c_str(), g_NX/2., 0.5, 1., g_NX/2, 0., 1.);
+    hists2.push_back(hist_RISR_MatchedCandBeta);
+    TH2D* hist_RISR_MatchedCandDeltaPhiMET = new TH2D((title+"_RISR_MatchedCandDeltaPhiMET").c_str(), (title+"_RISR_MatchedCandDeltaPhiMET;R_{ISR};MatchedCandDeltaPhiMET").c_str(), g_NX/2., 0.5, 1., g_NX/2, 0., 3.15);
+    hists2.push_back(hist_RISR_MatchedCandDeltaPhiMET);
+    TH2D* hist_MatchedCandML_MatchedCandBeta = new TH2D((title+"_MatchedCandML_MatchedCandBeta").c_str(), (title+"_MatchedCandML_MatchedCandBeta;MatchedCandML;MatchedCandBeta").c_str(), g_NX/2., 0., 150., g_NX/2, 0., 1.);
+    hists2.push_back(hist_MatchedCandML_MatchedCandBeta);
+    TH2D* hist_MatchedCandML_MatchedCandDeltaPhiMET = new TH2D((title+"_MatchedCandML_MatchedCandDeltaPhiMET").c_str(), (title+"_MatchedCandML_MatchedCandDeltaPhiMET;MatchedCandML;MatchedCandDeltaPhiMET").c_str(), g_NX/2., 0., 150., g_NX/2, 0., 3.15);
+    hists2.push_back(hist_MatchedCandML_MatchedCandDeltaPhiMET);
+
+    TH2D* hist_RISR_UnmatchedCandML = new TH2D((title+"_RISR_UnmatchedCandML").c_str(), (title+"_RISR_UnmatchedCandML;R_{ISR};UnmatchedCandML").c_str(), g_NX/2., 0.5, 1., g_NX/2, 0., 150.);
+    hists2.push_back(hist_RISR_UnmatchedCandML);
+    TH2D* hist_RISR_UnmatchedCandBeta = new TH2D((title+"_RISR_UnmatchedCandBeta").c_str(), (title+"_RISR_UnmatchedCandBeta;R_{ISR};UnmatchedCandBeta").c_str(), g_NX/2., 0.5, 1., g_NX/2, 0., 1.);
+    hists2.push_back(hist_RISR_UnmatchedCandBeta);
+    TH2D* hist_RISR_UnmatchedCandDeltaPhiMET = new TH2D((title+"_RISR_UnmatchedCandDeltaPhiMET").c_str(), (title+"_RISR_UnmatchedCandDeltaPhiMET;R_{ISR};UnmatchedCandDeltaPhiMET").c_str(), g_NX/2., 0.5, 1., g_NX/2, 0., 3.15);
+    hists2.push_back(hist_RISR_UnmatchedCandDeltaPhiMET);
+    TH2D* hist_UnmatchedCandML_UnmatchedCandBeta = new TH2D((title+"_UnmatchedCandML_UnmatchedCandBeta").c_str(), (title+"_UnmatchedCandML_UnmatchedCandBeta;UnmatchedCandML;UnmatchedCandBeta").c_str(), g_NX/2., 0., 150., g_NX/2, 0., 1.);
+    hists2.push_back(hist_UnmatchedCandML_UnmatchedCandBeta);
+    TH2D* hist_UnmatchedCandML_UnmatchedCandDeltaPhiMET = new TH2D((title+"_UnmatchedCandML_UnmatchedCandDeltaPhiMET").c_str(), (title+"_UnmatchedCandML_UnmatchedCandDeltaPhiMET;UnmatchedCandML;UnmatchedCandDeltaPhiMET").c_str(), g_NX/2., 0., 150., g_NX/2, 0., 3.15);
+    hists2.push_back(hist_UnmatchedCandML_UnmatchedCandDeltaPhiMET);
+
     TEfficiency* eff_METtrig = new TEfficiency((title+"_eff_METtrig").c_str(), "Efficiency of MET trigger;Eff;MET [GeV]", g_NX, 0., 700.);
     effs.push_back(eff_METtrig);
 
@@ -314,8 +401,13 @@ void Plot_Advanced(){
           
           if((e/BKG_SKIP)%(std::max(1, int(Nentry/BKG_SKIP/10))) == 0)
             cout << "      event " << e << " | " << Nentry << endl;
+          
+          double weight = (base->weight != 0.) ? base->weight : 1.;
+          if(!is_data && !is_signal)
+            weight *= double(BKG_SKIP);
 
           // Apply PreSelection
+          int Njet    = base->Njet;
           if(base->Njet == 0) continue;
           
           if(do_FilterDilepton)
@@ -385,6 +477,10 @@ void Plot_Advanced(){
           int NjetS    = base->Njet_S;
           int NbjetS   = base->Nbjet_S;
           int NjetISR  = base->Njet_ISR;
+          int Njet_a   = base->Njet_a;
+          int Njet_b   = base->Njet_b;
+          int Nlep_a   = base->Nlep_a;
+          int Nlep_b   = base->Nlep_b;
           int NbjetISR = base->Nbjet_ISR;
 
           //if(NbjetISR + NbjetS != 2) continue; // CR
@@ -392,33 +488,6 @@ void Plot_Advanced(){
 
           //if(Nlep != 2) continue;
           //if(NjetS != 0) continue; // SR
-
-          double minDR = 1000;
-          double minMLL = 1000;
-          
-          int index_1, index_2;
-          for(int i = 0; i < Nlep-1; i++){
-            TLorentzVector lep_1;
-            lep_1.SetPtEtaPhiM( base->PT_lep->at(i),
-          		      base->Eta_lep->at(i),
-          		      base->Phi_lep->at(i),
-          		      std::max(0.,base->M_lep->at(i)) );
-
-            
-            for(int j = i+1; j < Nlep; j++){
-              TLorentzVector lep_2;
-              lep_2.SetPtEtaPhiM( base->PT_lep->at(j),
-          			base->Eta_lep->at(j),
-          			base->Phi_lep->at(j),
-          			std::max(0.,base->M_lep->at(j)) );
-
-              if(lep_1.DeltaR(lep_2) < minDR)
-                minDR = lep_1.DeltaR(lep_2);
-              if(lep_1.DeltaR(lep_2) < minMLL)
-                minMLL = (lep_1 + lep_2).M();
-              
-            }	  
-          }
           
           LepList list_a;
           LepList list_b;
@@ -426,7 +495,7 @@ void Plot_Advanced(){
           int index;
             
           // ID leps as gold, silver, or bronze
-          for(int i = 0; i < base->Nlep_a; i++){
+          for(int i = 0; i < Nlep_a; i++){
             index = (*base->index_lep_a)[i];
               
             int PDGID = base->PDGID_lep->at(index);
@@ -446,7 +515,7 @@ void Plot_Advanced(){
             list_a += Lep(flavor, charge, id, source);
             list_leps += Lep(flavor, charge, id, source);
           }
-          for(int i = 0; i < base->Nlep_b; i++){
+          for(int i = 0; i < Nlep_b; i++){
             index = (*base->index_lep_b)[i];
             
             int PDGID = base->PDGID_lep->at(index);
@@ -482,10 +551,6 @@ void Plot_Advanced(){
           //if(base->PT_lep->at(1) < 20.) continue;
           //if(Nlep > 2)
           //  if(base->PT_lep->at(2) < 10.) continue;
-          
-          double weight = (base->weight != 0.) ? base->weight : 1.;
-          if(!is_data && !is_signal)
-            weight *= double(BKG_SKIP);
 
           // Fill hists, effs, etc.
           hist_MET->Fill(MET, weight);
@@ -554,19 +619,156 @@ void Plot_Advanced(){
 
           eff_METtrig->Fill(base->METtrigger, MET, weight);
 
-          // Leptonic Candidates
-          //std::vector<V_Cand> V_lep_cands;
-          //LepFlavor flav0 = list_a[0].Flavor();
-          //LepCharge charge0 = list_a[0].Charge();
-          //for(int i = 0; i < list_a.GetN(); i++){
-          //  ParticleList V_cand_Part;
-          //  ConstRestFrameList V_cand_RF;
-          //  for(int j = i+1; j < list_a.GetN(); j++){
-          //    if(list_a[i].Flavor() == list_a[j].Flavor() && list_a[i].Charge() != list_a[j].Charge()){
 
-          //    }
-          //  }
-          //}
+          TVector3 TV3_MET;
+          TV3_MET.SetPtEtaPhi(MET, 0., base->MET_phi);
+          // Reconstruct RJR tree
+          if(Njet > 0){
+            LAB.ClearEvent();
+
+            TLorentzVector TLV_ISR;
+            for(int i = 0; i < NjetISR; i++){
+              index = (*base->index_jet_ISR)[i];
+              TLorentzVector p;
+              p.SetPtEtaPhiM( base->PT_jet->at(index),
+                                  base->Eta_jet->at(index),
+                                  base->Phi_jet->at(index),
+                                  std::max(0.,base->M_jet->at(index)) );
+              TLV_ISR += p;
+            }
+            ISR.SetLabFrameFourVector(TLV_ISR);
+
+            TLorentzVector TLV_Sa;
+            for(int i = 0; i < Njet_a; i++){
+              index = (*base->index_jet_a)[i];
+              TLorentzVector p;
+              p.SetPtEtaPhiM( base->PT_jet->at(index),
+                                  base->Eta_jet->at(index),
+                                  base->Phi_jet->at(index),
+                                  std::max(0.,base->M_jet->at(index)) );
+              TLV_Sa += p;
+            }
+            Ja.SetLabFrameFourVector(TLV_Sa);
+
+            TLorentzVector TLV_Sb;
+            for(int i = 0; i < Njet_b; i++){
+              index = (*base->index_jet_b)[i];
+              TLorentzVector p;
+              p.SetPtEtaPhiM( base->PT_jet->at(index),
+                                  base->Eta_jet->at(index),
+                                  base->Phi_jet->at(index),
+                                  std::max(0.,base->M_jet->at(index)) );
+              TLV_Sb += p;
+            }
+            Jb.SetLabFrameFourVector(TLV_Sb);
+
+            TLorentzVector TLV_La;
+            for(int i = 0; i < Nlep_a; i++){
+              index = (*base->index_lep_a)[i];
+              TLorentzVector p;
+              p.SetPtEtaPhiM( base->PT_lep->at(index),
+                                  base->Eta_lep->at(index),
+                                  base->Phi_lep->at(index),
+                                  std::max(0.,base->M_lep->at(index)) );
+              TLV_La += p;
+            }
+            La.SetLabFrameFourVector(TLV_La);
+
+            TLorentzVector TLV_Lb;
+            for(int i = 0; i < Nlep_b; i++){
+              index = (*base->index_lep_b)[i];
+              TLorentzVector p;
+              p.SetPtEtaPhiM( base->PT_lep->at(index),
+                                  base->Eta_lep->at(index),
+                                  base->Phi_lep->at(index),
+                                  std::max(0.,base->M_lep->at(index)) );
+              TLV_Lb += p;
+            }
+            Lb.SetLabFrameFourVector(TLV_Lb);
+
+            INV.SetLabFrameThreeVector(TV3_MET);
+            if(!LAB.AnalyzeEvent()) std::cout << "FAILED TO RECO RJR TREE!" << std::endl;
+
+            TVector3 vPISR = S.GetFourVector(CM).Vect();
+            TVector3 vPINV = (X1a.GetFourVector(CM)+X1b.GetFourVector(CM)).Vect();
+            double RECO_RISR = fabs(vPINV.Dot(vPISR.Unit())) / vPISR.Mag();
+            if(fabs(RECO_RISR - RISR) > 1.e-3 && !(Nlep == 2 && NjetS == 0)){
+              std::cout << "FAILED TO VALIDATE RECO RJR TREE! " << " RECO_RISR: " << RECO_RISR << " RISR: " << RISR << std::endl;
+              std::cout << "Njet_a: " << Njet_a << " Njet_b: " << Njet_b << " Nlep_a: " << Nlep_a << " Nlep_b: " << Nlep_b << " NjetISR: " << NjetISR << " MET: " << MET << std::endl;
+              std::cout << "vPISR.Mag(): " << vPISR.Mag() << " base PISR: " << base->PISR << std::endl;
+            }
+          } // END Reconstruct RJR tree
+
+          // Leptonic Candidates
+          tot_Nleps += Nlep;
+          std::vector<L_Cand> V_lep_cands;
+          for(int i = 0; i < Nlep-1; i++){
+            for(int j = i+1; j < Nlep; j++){
+              if(list_leps[i].Flavor() == list_leps[j].Flavor() && list_leps[i].Charge() != list_leps[j].Charge()){ // OSSF
+                if(inVec((*base->index_lep_a),i) == inVec((*base->index_lep_a),j)){ // same hemisphere
+                  Particle lep_1;
+                  lep_1.SetPtEtaPhiM( base->PT_lep->at(i),
+                                      base->Eta_lep->at(i),
+                                      base->Phi_lep->at(i),
+                                      std::max(0.,base->M_lep->at(i)) );
+                  Particle lep_2;
+                  lep_2.SetPtEtaPhiM( base->PT_lep->at(j),
+                    	              base->Eta_lep->at(j),
+                    	              base->Phi_lep->at(j),
+                    	              std::max(0.,base->M_lep->at(j)) );
+                  if((*base->Index_lep)[i] >= 0)
+                    lep_1.SetMomPDGID((*base->genMomPDGID_lep)[(*base->Index_lep)[i]]);
+                  else
+                    lep_1.SetMomPDGID(0);
+                  if((*base->Index_lep)[j] >= 0)
+                    lep_2.SetMomPDGID((*base->genMomPDGID_lep)[(*base->Index_lep)[j]]);
+                  else
+                    lep_2.SetMomPDGID(0);
+                  ParticleList cand_list_parts;
+                  cand_list_parts.push_back(lep_1);
+                  cand_list_parts.push_back(lep_2);
+                  L_Cand cand(cand_list_parts);
+                  cand.SetFlavor(list_leps[i].Flavor());
+                  V_lep_cands.push_back(cand);
+                }
+              }
+            }
+          }
+
+          cand_matching(V_lep_cands);
+          int N_V_lep_cands = V_lep_cands.size();
+          tot_L_cands += N_V_lep_cands;
+          for(int i = 0; i < N_V_lep_cands; i++){
+            hist_CandML->Fill(V_lep_cands[i].Mass(), weight);
+            hist_CandBeta->Fill(V_lep_cands[i].Beta(), weight);
+            hist_CandDeltaPhiMET->Fill(V_lep_cands[i].DeltaPhi(TV3_MET), weight);
+            hist_RISR_CandML->Fill(RISR, V_lep_cands[i].Mass(), weight);
+            hist_RISR_CandBeta->Fill(RISR, V_lep_cands[i].Beta(), weight);
+            hist_RISR_CandDeltaPhiMET->Fill(RISR, V_lep_cands[i].DeltaPhi(TV3_MET), weight);
+            hist_CandML_CandBeta->Fill(V_lep_cands[i].Mass(), V_lep_cands[i].Beta(), weight);
+            hist_CandML_CandDeltaPhiMET->Fill(V_lep_cands[i].Mass(), V_lep_cands[i].DeltaPhi(TV3_MET), weight);
+            if(V_lep_cands[i].Match() == kMatched){
+              hist_MatchedCandML->Fill(V_lep_cands[i].Mass(), weight);
+              hist_MatchedCandBeta->Fill(V_lep_cands[i].Beta(), weight);
+              hist_MatchedCandDeltaPhiMET->Fill(V_lep_cands[i].DeltaPhi(TV3_MET), weight);
+              hist_RISR_MatchedCandML->Fill(RISR, V_lep_cands[i].Mass(), weight);
+              hist_RISR_MatchedCandBeta->Fill(RISR, V_lep_cands[i].Beta(), weight);
+              hist_RISR_MatchedCandDeltaPhiMET->Fill(RISR, V_lep_cands[i].DeltaPhi(TV3_MET), weight);
+              hist_MatchedCandML_MatchedCandBeta->Fill(V_lep_cands[i].Mass(), V_lep_cands[i].Beta(), weight);
+              hist_MatchedCandML_MatchedCandDeltaPhiMET->Fill(V_lep_cands[i].Mass(), V_lep_cands[i].DeltaPhi(TV3_MET), weight);
+            }
+            else{
+              hist_UnmatchedCandML->Fill(V_lep_cands[i].Mass(), weight);
+              hist_UnmatchedCandBeta->Fill(V_lep_cands[i].Beta(), weight);
+              hist_UnmatchedCandDeltaPhiMET->Fill(V_lep_cands[i].DeltaPhi(TV3_MET), weight);
+              hist_RISR_UnmatchedCandML->Fill(RISR, V_lep_cands[i].Mass(), weight);
+              hist_RISR_UnmatchedCandBeta->Fill(RISR, V_lep_cands[i].Beta(), weight);
+              hist_RISR_UnmatchedCandDeltaPhiMET->Fill(RISR, V_lep_cands[i].DeltaPhi(TV3_MET), weight);
+              hist_UnmatchedCandML_UnmatchedCandBeta->Fill(V_lep_cands[i].Mass(), V_lep_cands[i].Beta(), weight);
+              hist_UnmatchedCandML_UnmatchedCandDeltaPhiMET->Fill(V_lep_cands[i].Mass(), V_lep_cands[i].DeltaPhi(TV3_MET), weight);
+            }
+          }
+          V_lep_cands.clear();
 
           // Event Counting
           int EC_X = 0; // root hists have underflow in bin 0
@@ -695,6 +897,8 @@ void Plot_Advanced(){
   Plot_EventCount(hist_EventCount, false, lumi, false, 0., false, false);
   Plot_EventCount((TH2*)hist_Zbi->Clone("EventCount_SoB"), true, lumi, false, 0., true, false);
   Plot_EventCount(hist_Zbi, true, lumi, true, 0.2, false, false);
+
+  std::cout << "Total leps: " << tot_Nleps << " total cands: " << tot_L_cands << std::endl;
 
   Long64_t end = gSystem->Now();
   std::cout << "Time to process " << (end-start)/1000.0 << " seconds" << std::endl;

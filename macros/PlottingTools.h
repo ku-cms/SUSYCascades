@@ -28,6 +28,7 @@
 #include "../include/ScaleFactorTool.hh"
 #include "../include/Leptonic.hh"
 #include "../include/FitPlotter.hh"
+#include "../include/L_Cand.hh"
 
 #include "RestFrames/RestFrames.hh"
 
@@ -51,6 +52,71 @@ bool SavePDF = true; // whether or not to save pdfs of plots
 string folder_name = "";
 
 FitPlotter FP("","","");
+
+void SanitizeString(string& input){
+  static const std::unordered_map<char, std::string> replacements = {
+    // Whitespace
+    {' ', "_"},
+
+    // Arithmetic operators
+    {'+', "plus"},
+    {'-', "minus"},
+    {'*', "times"},
+    {'/', "div"},
+    {'%', "mod"},
+
+    // Comparison operators
+    {'<', "lt"},
+    {'>', "gt"},
+    {'=', "eq"},
+
+    // Logical operators
+    {'!', "not"},
+    {'&', "and"},
+    {'|', "or"},
+    {'^', "xor"},
+
+    // Grouping
+    {'(', "lp"},
+    {')', "rp"},
+    {'[', "lb"},
+    {']', "rb"},
+    {'{', "lc"},
+    {'}', "rc"},
+
+    // Quotes and punctuation
+    {'"', "dq"},
+    {'\'', "sq"},
+    {',', "comma"},
+    {'.', "p"},
+    {':', "colon"},
+    {';', "semi"},
+    {'?', "qmark"},
+    {'#', "hash"},
+    {'$', "dollar"},
+    {'@', "at"},
+    {'~', "tilde"},
+    {'`', "bquote"},
+    {'\\', "bslash"},
+
+    // Misc
+    {'\t', "_"},
+  };
+
+  std::string output;
+  for (char c : input) {
+    auto it = replacements.find(c);
+    if (it != replacements.end()) {
+      output += it->second;
+    } else if (std::isalnum(static_cast<unsigned char>(c)) || c == '_') {
+      output += c;
+    } else {
+      output += "_"; // catch-all replacement
+    }
+  }
+  input = output;
+}
+
 
 // Function to sort histograms and reorder the map accordingly
 void SortHistogramsAndProcesses(std::vector<TH1*>& histograms, std::vector<std::pair<std::string, ProcessList>>& vec_samples){
@@ -724,7 +790,9 @@ void Plot_EventCount(TH2* h, bool Scale, double Scale_Val, bool Zbi, double Zbi_
   l.SetTextSize(0.045);
   l.SetTextFont(42);
 
-  string pdf_title = folder_name+"/"+g_Label+"_";
+  string label = g_Label;
+  SanitizeString(label);
+  string pdf_title = folder_name+"/"+label+"_";
   pdf_title += can->GetTitle();
   gErrorIgnoreLevel = 1001;
   if(SavePDF)
@@ -737,66 +805,51 @@ void Plot_EventCount(TH2* h, bool Scale, double Scale_Val, bool Zbi, double Zbi_
   delete can;
 }
 
-void SanitizeString(string& input){
-  static const std::unordered_map<char, std::string> replacements = {
-    // Whitespace
-    {' ', "_"},
+LabRecoFrame LAB("LAB","lab");
+DecayRecoFrame CM("CM","CM");
+DecayRecoFrame S("S","S");
+DecayRecoFrame X2a("X2a","X2a");
+DecayRecoFrame X2b("X2b","X2b");
+VisibleRecoFrame Ja("Ja","J_{a}");
+VisibleRecoFrame Jb("Jb","J_{b}");
+VisibleRecoFrame La("La","L_{a}");
+VisibleRecoFrame Lb("Lb","L_{b}");
+VisibleRecoFrame ISR("ISR","ISR");
+InvisibleRecoFrame X1a("X1a","X1a");
+InvisibleRecoFrame X1b("X1b","X1b");
+InvisibleGroup INV("INV","Invisible System");
+SetMassInvJigsaw InvM("InvM", "Set inv. system mass");
+SetRapidityInvJigsaw InvEta("InvEta", "Set inv. system rapidity");
+MinMassesSqInvJigsaw InvSplit("InvSplit", "INV -> I_{a} + I_{b}", 2);
 
-    // Arithmetic operators
-    {'+', "plus"},
-    {'-', "minus"},
-    {'*', "times"},
-    {'/', "div"},
-    {'%', "mod"},
+void InitRJRtree(){
 
-    // Comparison operators
-    {'<', "lt"},
-    {'>', "gt"},
-    {'=', "eq"},
+  LAB.SetChildFrame(CM);
+  CM.AddChildFrame(S);
+  CM.AddChildFrame(ISR);
+  S.AddChildFrame(X2a);
+  S.AddChildFrame(X2b);
+  X2a.AddChildFrame(Ja);
+  X2b.AddChildFrame(Jb);
+  X2a.AddChildFrame(La);
+  X2a.AddChildFrame(X1a);
+  X2b.AddChildFrame(Lb);
+  X2b.AddChildFrame(X1b);
 
-    // Logical operators
-    {'!', "not"},
-    {'&', "and"},
-    {'|', "or"},
-    {'^', "xor"},
+  LAB.InitializeTree();
 
-    // Grouping
-    {'(', "lp"},
-    {')', "rp"},
-    {'[', "lb"},
-    {']', "rb"},
-    {'{', "lc"},
-    {'}', "rc"},
+  INV.AddFrame(X1a);
+  INV.AddFrame(X1b);
+  INV.AddJigsaw(InvM);
+  INV.AddJigsaw(InvEta);
+  InvEta.AddVisibleFrames(S.GetListVisibleFrames());
+  
+  INV.AddJigsaw(InvSplit);
+  InvSplit.AddVisibleFrames(X2a.GetListVisibleFrames(), 0);
+  InvSplit.AddVisibleFrames(X2b.GetListVisibleFrames(), 1);
+  InvSplit.AddInvisibleFrame(X1a, 0);
+  InvSplit.AddInvisibleFrame(X1b, 1);
 
-    // Quotes and punctuation
-    {'"', "dq"},
-    {'\'', "sq"},
-    {',', "comma"},
-    {'.', "p"},
-    {':', "colon"},
-    {';', "semi"},
-    {'?', "qmark"},
-    {'#', "hash"},
-    {'$', "dollar"},
-    {'@', "at"},
-    {'~', "tilde"},
-    {'`', "bquote"},
-    {'\\', "bslash"},
+  LAB.InitializeAnalysis();
 
-    // Misc
-    {'\t', "_"},
-  };
-
-  std::string output;
-  for (char c : input) {
-    auto it = replacements.find(c);
-    if (it != replacements.end()) {
-      output += it->second;
-    } else if (std::isalnum(static_cast<unsigned char>(c)) || c == '_') {
-      output += c;
-    } else {
-      output += "_"; // catch-all replacement
-    }
-  }
-  input = output;
 }
