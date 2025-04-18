@@ -691,6 +691,7 @@ ParticleList AnalysisBase<Base>::GetGenElectrons(){
           while(abs(momID) == 11){
             if(momStatus == 23){
               lep.SetMomPDGID(PDGID);
+              lep.SetGenMomIndex(mom);
               lep.SetSourceID(GetLepSource(PDGID, PDGID, PDGID));
               break;
             }
@@ -701,6 +702,7 @@ ParticleList AnalysisBase<Base>::GetGenElectrons(){
             momStatus = this->GenPart_status[mom];
           }
           lep.SetMomPDGID(momID);
+          lep.SetGenMomIndex(mom);
           lep.SetSourceID(GetLepSource(PDGID, PDGID, momID));
         }
         lep.SetCharge( (PDGID > 0 ? -1 : 1) );
@@ -743,6 +745,7 @@ ParticleList AnalysisBase<Base>::GetGenMuons(){
           while(abs(momID) == 13){
             if(momStatus == 23){
               lep.SetMomPDGID(PDGID);
+              lep.SetGenMomIndex(mom);
               lep.SetSourceID(GetLepSource(PDGID, PDGID, PDGID));
               break;
             }
@@ -753,6 +756,7 @@ ParticleList AnalysisBase<Base>::GetGenMuons(){
             momStatus = this->GenPart_status[mom];
           }
           lep.SetMomPDGID(momID);
+          lep.SetGenMomIndex(mom);
           lep.SetSourceID(GetLepSource(PDGID, PDGID, momID));
         }
         lep.SetCharge( (PDGID > 0 ? -1 : 1) );
@@ -788,8 +792,10 @@ ParticleList AnalysisBase<Base>::GetGenNeutrinos(){
         Particle lep;
         lep.SetPDGID(PDGID);
         int mom = this->GenPart_genPartIdxMother[i];
-        if(mom >= 0 && mom < N)
+        if(mom >= 0 && mom < N){
           lep.SetMomPDGID(this->GenPart_pdgId[mom]);
+          lep.SetGenMomIndex(mom);
+        }
         lep.SetPtEtaPhiM(this->GenPart_pt[i], this->GenPart_eta[i],
           	       this->GenPart_phi[i], max(float(0.),this->GenPart_mass[i]));
         list.push_back(lep);
@@ -822,8 +828,10 @@ ParticleList AnalysisBase<Base>::GetGenBosons(){
         Particle p;
         p.SetPDGID(PDGID);
         int mom = this->GenPart_genPartIdxMother[i];
-        if(mom >= 0 && mom < N)
+        if(mom >= 0 && mom < N){
           p.SetMomPDGID(this->GenPart_pdgId[mom]);
+          p.SetGenMomIndex(mom);
+        }
         p.SetPtEtaPhiM(this->GenPart_pt[i], this->GenPart_eta[i],
           	     this->GenPart_phi[i], max(float(0.),this->GenPart_mass[i]));
         list.push_back(p);
@@ -856,8 +864,10 @@ ParticleList AnalysisBase<Base>::GetGenSparticles(){
         Particle p;
         p.SetPDGID(PDGID);
         int mom = this->GenPart_genPartIdxMother[i];
-        if(mom >= 0 && mom < N)
+        if(mom >= 0 && mom < N){
           p.SetMomPDGID(this->GenPart_pdgId[mom]);
+          p.SetGenMomIndex(mom);
+        }
         p.SetPtEtaPhiM(this->GenPart_pt[i], this->GenPart_eta[i],
           	     this->GenPart_phi[i], max(float(0.),this->GenPart_mass[i]));
         list.push_back(p);
@@ -4073,29 +4083,19 @@ ParticleList AnalysisBase<NANOULBase>::GetMuons(){
     lep.SetMiniIso(Muon_miniPFRelIso_all[i]);
 
     // FO baseline criteria
-    if(true){
-      lep.SetParticleID(kLoose);
+    lep.SetParticleID(kLoose);
 
-      // signal lep criteria
-      //if(lep.IP3D() < 0.01 && lep.SIP3D() < 2.){
-      if(true){
-	if(Muon_tightId[i])
-	  lep.SetParticleID(kTight);
-	else if(lep.Pt() < 0.){
-	  if(Muon_softId[i])
-	    lep.SetParticleID(kMedium);
-	} else {
-	  if(Muon_mediumId[i])
-	    lep.SetParticleID(kMedium);
-	}
-      }
-    }
-    if(lep.ParticleID() < kMedium || lep.MiniIso()*lep.Pt() >= 4. || lep.RelIso()*lep.Pt() >= 4.)
-            lep.SetLepQual(kBronze);
-          else if(lep.SIP3D() > 2.)
-            lep.SetLepQual(kSilver);
-          else
-            lep.SetLepQual(kGold);
+    // signal lep criteria
+    if(Muon_tightId[i])
+      lep.SetParticleID(kTight);
+    else if(Muon_mediumId[i])
+      lep.SetParticleID(kMedium);
+    if(lep.ParticleID() < kTight || lep.MiniIso()*lep.Pt() >= 4. || lep.RelIso()*lep.Pt() >= 4.)
+      lep.SetLepQual(kBronze);
+    else if(lep.SIP3D() > 2.)
+      lep.SetLepQual(kSilver);
+    else
+      lep.SetLepQual(kGold);
     list.push_back(lep);
   }
   return list;
@@ -5230,29 +5230,19 @@ ParticleList AnalysisBase<NANORun3>::GetMuons(){
     lep.SetMiniIso(Muon_miniPFRelIso_all[i]);
 
     // FO baseline criteria
-    if(true){
-      lep.SetParticleID(kLoose);
+    lep.SetParticleID(kLoose);
 
-      // signal lep criteria
-      //if(lep.IP3D() < 0.01 && lep.SIP3D() < 2.){
-      if(true){
-	if(Muon_tightId[i])
-	  lep.SetParticleID(kTight);
-	else if(lep.Pt() < 0.){
-	  if(Muon_softId[i])
-	    lep.SetParticleID(kMedium);
-	} else {
-	  if(Muon_mediumId[i])
-	    lep.SetParticleID(kMedium);
-	}
-      }
-    }
-    if(lep.ParticleID() < kMedium || lep.MiniIso()*lep.Pt() >= 4. || lep.RelIso()*lep.Pt() >= 4.)
-            lep.SetLepQual(kBronze);
-          else if(lep.SIP3D() > 2.)
-            lep.SetLepQual(kSilver);
-          else
-            lep.SetLepQual(kGold);
+    // signal lep criteria
+    if(Muon_tightId[i])
+      lep.SetParticleID(kTight);
+    else if(Muon_mediumId[i])
+      lep.SetParticleID(kMedium);
+    if(lep.ParticleID() < kTight || lep.MiniIso()*lep.Pt() >= 4. || lep.RelIso()*lep.Pt() >= 4.)
+      lep.SetLepQual(kBronze);
+    else if(lep.SIP3D() > 2.)
+      lep.SetLepQual(kSilver);
+    else
+      lep.SetLepQual(kGold);
     list.push_back(lep);
   }
   return list;

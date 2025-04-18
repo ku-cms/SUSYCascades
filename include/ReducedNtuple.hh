@@ -188,6 +188,7 @@ private:
   vector<int>    m_genMomPDGID_lep;
   vector<int>    m_genSourceID_lep;
   vector<int>    m_genIndex_lep;
+  vector<int>    m_genMomIndex_lep;
 
   int m_genNnu;
   vector<double> m_genPT_nu;
@@ -275,6 +276,16 @@ private:
   double m_dphiSI;
   double m_PTS;
   double m_PzS;
+
+  double m_EtaCM;
+  double m_PhiCM;
+  double m_MCM;
+  double m_EtaS;
+  double m_PhiS;
+  double m_LAB_Pt;
+  double m_LAB_Eta;
+  double m_LAB_Phi;
+  double m_LAB_M; 
 
   double m_EVa;
   double m_EVb;

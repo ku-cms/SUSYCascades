@@ -181,6 +181,15 @@ public :
    Double_t        EL_BoostT;
    Double_t        PTISR;
    Double_t        RISR;
+   Double_t        EtaCM;
+   Double_t        PhiCM;
+   Double_t        MCM;
+   Double_t        EtaS;
+   Double_t        PhiS;
+   Double_t        LAB_Pt;
+   Double_t        LAB_Eta;
+   Double_t        LAB_Phi;
+   Double_t        LAB_M;
    Double_t        MSperpCM0;
    Double_t        MaPerpCM0;
    Double_t        MbPerpCM0;
@@ -268,6 +277,7 @@ public :
    vector<int>     *genMomPDGID_lep;
    vector<int>     *genSourceID_lep;
    vector<int>     *genIndex_lep;
+   vector<int>     *genMomIndex_lep;
    Int_t           genNnu;
    vector<double>  *genPT_nu;
    vector<double>  *genEta_nu;
@@ -447,6 +457,15 @@ public :
    TBranch        *b_EL_BoostT;   //!
    TBranch        *b_PTISR;   //!
    TBranch        *b_RISR;   //!
+   TBranch        *b_EtaCM;   //!
+   TBranch        *b_PhiCM;   //!
+   TBranch        *b_MCM;   //!
+   TBranch        *b_EtaS;   //!
+   TBranch        *b_PhiS;   //!
+   TBranch        *b_LAB_Pt;   //!
+   TBranch        *b_LAB_Eta;   //!
+   TBranch        *b_LAB_Phi;   //!
+   TBranch        *b_LAB_M;   //!
    TBranch        *b_MSperpCM0;   //!
    TBranch        *b_MaPerpCM0;   //!
    TBranch        *b_MbPerpCM0;   //!
@@ -534,6 +553,7 @@ public :
    TBranch        *b_genMomPDGID_lep;   //!
    TBranch        *b_genSourceID_lep;   //!
    TBranch        *b_genIndex_lep;   //!
+   TBranch        *b_genMomIndex_lep;   //!
    TBranch        *b_genNnu;   //!
    TBranch        *b_genPT_nu;   //!
    TBranch        *b_genEta_nu;   //!
@@ -673,6 +693,7 @@ inline void ReducedBase_V2::Init(TTree *tree)
    genMomPDGID_lep = 0;
    genSourceID_lep = 0;
    genIndex_lep = 0;
+   genMomIndex_lep = 0;
    genPT_nu = 0;
    genEta_nu = 0;
    genPhi_nu = 0;
@@ -853,6 +874,15 @@ inline void ReducedBase_V2::Init(TTree *tree)
    fChain->SetBranchAddress("EL_BoostT", &EL_BoostT, &b_EL_BoostT);
    fChain->SetBranchAddress("PTISR", &PTISR, &b_PTISR);
    fChain->SetBranchAddress("RISR", &RISR, &b_RISR);
+   fChain->SetBranchAddress("EtaCM", &EtaCM, &b_EtaCM);
+   fChain->SetBranchAddress("PhiCM", &PhiCM, &b_PhiCM);
+   fChain->SetBranchAddress("MCM", &MCM, &b_MCM);
+   fChain->SetBranchAddress("EtaS", &EtaS, &b_EtaS);
+   fChain->SetBranchAddress("PhiS", &PhiS, &b_PhiS);
+   fChain->SetBranchAddress("LAB_Pt", &LAB_Pt, &b_LAB_Pt);
+   fChain->SetBranchAddress("LAB_Eta", &LAB_Eta, &b_LAB_Eta);
+   fChain->SetBranchAddress("LAB_Phi", &LAB_Phi, &b_LAB_Phi);
+   fChain->SetBranchAddress("LAB_M", &LAB_M, &b_LAB_M);
    fChain->SetBranchAddress("MSperpCM0", &MSperpCM0, &b_MSperpCM0);
    fChain->SetBranchAddress("MaPerpCM0", &MaPerpCM0, &b_MaPerpCM0);
    fChain->SetBranchAddress("MbPerpCM0", &MbPerpCM0, &b_MbPerpCM0);
@@ -940,6 +970,7 @@ inline void ReducedBase_V2::Init(TTree *tree)
    fChain->SetBranchAddress("genMomPDGID_lep", &genMomPDGID_lep, &b_genMomPDGID_lep);
    fChain->SetBranchAddress("genSourceID_lep", &genSourceID_lep, &b_genSourceID_lep);
    fChain->SetBranchAddress("genIndex_lep", &genIndex_lep, &b_genIndex_lep);
+   fChain->SetBranchAddress("genMomIndex_lep", &genMomIndex_lep, &b_genMomIndex_lep);
    fChain->SetBranchAddress("genNnu", &genNnu, &b_genNnu);
    fChain->SetBranchAddress("genPT_nu", &genPT_nu, &b_genPT_nu);
    fChain->SetBranchAddress("genEta_nu", &genEta_nu, &b_genEta_nu);
