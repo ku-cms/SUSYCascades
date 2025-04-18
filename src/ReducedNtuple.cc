@@ -374,6 +374,17 @@ TTree* ReducedNtuple<Base>::InitOutputTree(const string& sample, bool do_slim){
   tree->Branch("PTISR", &m_PTISR);
   tree->Branch("RISR", &m_RISR);
 
+  tree->Branch("EtaCM", &m_EtaCM);
+  tree->Branch("PhiCM", &m_PhiCM);
+  tree->Branch("MCM", &m_MCM);
+  tree->Branch("EtaS", &m_EtaS);
+  tree->Branch("PhiS", &m_PhiS);
+
+  tree->Branch("LAB_Pt", &m_LAB_Pt);
+  tree->Branch("LAB_Eta", &m_LAB_Eta);
+  tree->Branch("LAB_Phi", &m_LAB_Phi);
+  tree->Branch("LAB_M", &m_LAB_M);
+
   // New Observables for Run3/Cascades
   // analysis using ISR boosted tree
   tree->Branch("MSperpCM0", &m_MSperpCM0); 
@@ -480,6 +491,7 @@ TTree* ReducedNtuple<Base>::InitOutputTree(const string& sample, bool do_slim){
     tree->Branch("genMomPDGID_lep",   &m_genMomPDGID_lep);
     tree->Branch("genSourceID_lep",   &m_genSourceID_lep);
     tree->Branch("genIndex_lep",   &m_genIndex_lep);
+    tree->Branch("genMomIndex_lep",   &m_genMomIndex_lep);
     
     tree->Branch("genNnu", &m_genNnu);
     tree->Branch("genPT_nu",  &m_genPT_nu);
@@ -576,7 +588,6 @@ void ReducedNtuple<Base>::FillOutputTree(TTree* tree, const Systematic& sys, boo
 
   if(!good_PV)
     return;
-
 
   TVector3 ETMiss;
   ParticleList Jets_noID = AnalysisBase<Base>::GetJetsMET(ETMiss);
@@ -717,7 +728,6 @@ void ReducedNtuple<Base>::FillOutputTree(TTree* tree, const Systematic& sys, boo
   m_Nlep = Leptons.size();
   
   // not enough stuff
-  // if(m_Nlep + m_Njet < 2 || m_Njet < 1)
   if(m_Nlep < 2)
     return;
 
@@ -805,6 +815,9 @@ void ReducedNtuple<Base>::FillOutputTree(TTree* tree, const Systematic& sys, boo
       
       // Fill Observable Branches
       m_PTCM = CM[t]->GetFourVector().Pt();
+      m_EtaCM = CM[t]->GetFourVector().Eta();
+      m_PhiCM = CM[t]->GetFourVector().Phi();
+      m_MCM = CM[t]->GetFourVector().M();
       m_PzCM = CM[t]->GetFourVector().Pz();
       m_cosCM = CM[t]->GetCosDecayAngle();
       m_dphiCM = CM[t]->GetDeltaPhiDecayAngle();
@@ -816,7 +829,14 @@ void ReducedNtuple<Base>::FillOutputTree(TTree* tree, const Systematic& sys, boo
       m_dphiS = S[t]->GetDeltaPhiDecayAngle();
       m_dphiSI = S[t]->GetDeltaPhiBoostVisible();
       m_PTS = S[t]->GetFourVector().Pt();
+      m_EtaS = S[t]->GetFourVector().Eta();
+      m_PhiS = S[t]->GetFourVector().Phi();
       m_PzS = S[t]->GetFourVector().Pz();
+
+      m_LAB_Pt = LAB[t]->GetFourVector().Pt();
+      m_LAB_Eta = LAB[t]->GetFourVector().Eta();
+      m_LAB_Phi = LAB[t]->GetFourVector().Phi();
+      m_LAB_M = LAB[t]->GetFourVector().M();
       
       m_EVa = X2a[t]->GetListVisibleFrames().GetFourVector(*X2a[t]).E();
       m_EVb = X2b[t]->GetListVisibleFrames().GetFourVector(*X2b[t]).E();
@@ -933,7 +953,6 @@ void ReducedNtuple<Base>::FillOutputTree(TTree* tree, const Systematic& sys, boo
         TVector3 vPISR = S[t]->GetFourVector(*CM[t]).Vect();
         TVector3 vPINV = (X1a[t]->GetFourVector(*CM[t])+X1b[t]->GetFourVector(*CM[t])).Vect();
 
-        m_PISR = vPISR.Mag();
         m_MISR = ISR[t]->GetMass();
         m_RISR = fabs(vPINV.Dot(vPISR.Unit())) / vPISR.Mag();
 
@@ -1052,6 +1071,19 @@ void ReducedNtuple<Base>::FillOutputTree(TTree* tree, const Systematic& sys, boo
       m_gammaCM0 = 2*m_MQCM0/m_MSCM0;
       m_MVisACM0 = (vP_Ja_CM0 + vP_La_CM0).Mag();
       m_MVisBCM0 = (vP_Jb_CM0 + vP_Lb_CM0).Mag();
+
+      if(m_Nlep >= 2){ // leptonic boson candidates
+        //std::vector<L_Cand> V_lep_cands;
+        for(int i = 0; i < m_Nlep-1; i++){
+          for(int j = i+1; j < m_Nlep; j++){
+            if(Leptons[i].PDGID() == -1*Leptons[j].PDGID()){ // OSSF
+              if(inVec(m_index_lep_a,i) == inVec(m_index_lep_a,j)){ // same hemisphere
+                
+              }
+            }
+          }
+        }
+      } // End of leptonic boson candidates
     }
   } // End of RJR trees analysis
 
@@ -1303,6 +1335,7 @@ void ReducedNtuple<Base>::FillOutputTree(TTree* tree, const Systematic& sys, boo
     m_genMomPDGID_lep.clear();
     m_genSourceID_lep.clear();
     m_genIndex_lep.clear();
+    m_genMomIndex_lep.clear();
     for(int g = 0; g < m_genNlep; g++){
       m_genPT_lep.push_back(GenLeptons[g].Pt());
       m_genEta_lep.push_back(GenLeptons[g].Eta());
@@ -1313,6 +1346,7 @@ void ReducedNtuple<Base>::FillOutputTree(TTree* tree, const Systematic& sys, boo
       m_genMomPDGID_lep.push_back(GenLeptons[g].MomPDGID());
       m_genSourceID_lep.push_back(GenLeptons[g].SourceID());
       m_genIndex_lep.push_back(genmatch[g]);
+      m_genMomIndex_lep.push_back(GenLeptons[g].GenMomIndex());
     }
   
     // Fill gen neutrino branches

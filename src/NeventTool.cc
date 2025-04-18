@@ -289,6 +289,15 @@ std::string NeventTool::Get_DASdatasetname(const std::string& u_file)
  return std::string(das_output.Data());
 }
 
+std::string NeventTool::Get_DASfilename(const std::string& u_file)
+{
+ std::string filename = u_file;
+ size_t pos = filename.find("/store/");
+ if(pos != std::string::npos) filename = filename.substr(pos); // remove everything before root redirector for DAS query
+ TString das_output = gSystem->GetFromPipe(("dasgoclient -query=\"file="+filename+"\"").c_str());
+ return std::string(das_output.Data());
+}
+
 int NeventTool::EventsInDAS(const std::string& u_file)
 {
  int Events = 0;
