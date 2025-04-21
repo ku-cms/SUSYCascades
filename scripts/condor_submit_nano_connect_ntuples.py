@@ -64,13 +64,8 @@ def write_sh_single(srcfile,ifile,ofile,logfile,outfile,errfile,dataset,filetag,
     outfile = outfile.replace('_$(ItemIndex)_$(Step)','_0_0')
     errfile = errfile.replace('_$(ItemIndex)_$(Step)','_0_0')
     logfile = logfile.replace('_$(ItemIndex)_$(Step)','_0_0')
-    ifile = ifile.replace('_list','_0')
-    if DO_SMS == 1:
-        ifile = ifile.replace(pwd+'/'+filetag+'_SMS','./config')
-    elif DO_DATA == 1:
-        ifile = ifile.replace(pwd+'/'+filetag+'_Data','./config')
-    else:
-        ifile = ifile.replace(pwd+'/'+filetag,'./config')
+    list_name = os.path.basename(ifile).replace('_list', '_0')
+    ifile = os.path.join('./config/list', list_name)
 
     fsrc = open(srcfile,'w')
     fsrc.write('# Note: For only submitting 1 job! \n')
