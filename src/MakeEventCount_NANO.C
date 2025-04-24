@@ -286,6 +286,7 @@ int main(int argc, char* argv[]) {
 
   TFile* fout = new TFile(string(outputFileName).c_str(),"RECREATE");
   TTree* tout = (TTree*) new TTree("EventCount", "EventCount");
+  fout->SetCompressionLevel(0);
   
   tout->Branch("NDAS", &NDAS);
   tout->Branch("Nevent", &Nevent);
