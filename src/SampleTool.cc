@@ -432,8 +432,8 @@ void SampleTool::InitProcMap(){
   m_HEMLumi[0] = 21.077794578; //pre hem
   m_HEMLumi[1] = 59.832475339; // full lumi
 
-  m_Lumi[3] = 0.5*36.333380074;   // 2016 UL preAPV
-  m_Lumi[4] = 0.5*36.333380074;   // 2016 UL postAPV
+  m_Lumi[3] = 19.5;   // 2016 UL preAPV
+  m_Lumi[4] = 16.8;   // 2016 UL postAPV
   m_Lumi[5] = 41.479680529;   // 2017 UL
   m_Lumi[6] = 21.077794578 + 0.95*38.662770624;   // 2018 UL
   m_Lumi[7] = 7.9804;   // 2022 
@@ -1454,8 +1454,8 @@ void SampleTool::InitProcMap(){
     list += m_Path + "Summer23BPix_130X/TTWW_TuneCP5_13p6TeV_madgraph-madspin-pythia8_Summer23BPix_130X.root";
     list += m_Path + "Summer23BPix_130X/TTZ-ZtoQQ-1Jets_TuneCP5_13p6TeV_amcatnloFXFX-pythia8_Summer23BPix_130X.root";
     list += m_Path + "Summer23BPix_130X/TZQB-ZtoLL-TtoL-CPV_TuneCP5_13p6TeV_madgraph-pythia8_Summer23BPix_130X.root";
-    //list += m_Path + "Summer23BPix_130X/TTHto2B_M-125_TuneCP5_13p6TeV_powheg-pythia8_Summer23BPix_130X.root";
-    //list += m_Path + "Summer23BPix_130X/TTHtoNon2B_M-125_TuneCP5_13p6TeV_powheg-pythia8_Summer23BPix_130X.root";
+    list += m_Path + "Summer23BPix_130X/TTHto2B_M-125_TuneCP5_13p6TeV_powheg-pythia8_Summer23BPix_130X.root";
+    list += m_Path + "Summer23BPix_130X/TTHtoNon2B_M-125_TuneCP5_13p6TeV_powheg-pythia8_Summer23BPix_130X.root";
     m_Proc[m_iYear][ttbar] = pair<vector<string>,string>(list, "KUAnalysis");
 
     Process ST("ST", kBkg);
