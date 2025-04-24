@@ -661,43 +661,70 @@ void Plot_EventCount(TH2* h, bool Scale, double Scale_Val, bool Zbi, double Zbi_
 
   int bin = 1;
   
-  // --- 2L Labels: OSSF, SSSF, OSOF, SSOF ---
-  std::vector<std::string> twoL_labels = {"OSSF", "SSSF", "OSOF", "SSOF"};
-  for (const auto& label : twoL_labels) {
-    h->GetXaxis()->SetBinLabel(bin, ("2L " + label).c_str());
-    bin++;
+  // Set labels for cand counting hists
+  if(title.find("Cands") != std::string::npos){
+    // --- 2L Labels: SSOF, SSSF, OSOF, no Z*, Z* ---
+    std::vector<std::string> twoL_labels = {"SSOF", "SSSF", "OSOF", "no Z*", "Z*"};
+    for (const auto& label : twoL_labels) {
+      h->GetXaxis()->SetBinLabel(bin, ("2L " + label).c_str());
+      bin++;
+    }
+
+    // --- 3L Labels: uuu, euu, eeu, eee, no Z*, Z* ---
+    std::vector<std::string> sf_labels_3L = {"uuu", "euu", "eeu", "eee", "no Z*", "Z*", "2 Z*"};
+    for (const auto& label : sf_labels_3L) {
+      h->GetXaxis()->SetBinLabel(bin, ("3L " + label).c_str());
+      bin++;
+    }
+
+    // --- 4L Labels: uuuu, euuu, eeuu, eeeu, eeee, no Z*, Z*, N Z* ---
+    std::vector<std::string> sf_labels_4L = {"uuuu", "euuu", "eeuu", "eeeu", "eeee", "no Z*", "Z*", "2 Z*", "3 Z*", "4 Z*", "5 Z*"};
+    for (const auto& label : sf_labels_4L) {
+      h->GetXaxis()->SetBinLabel(bin, ("4L " + label).c_str());
+      bin++;
+    }
+
   }
   
-  // --- 3L Labels: uuu, euu, eeu, eee ---
-  std::vector<std::string> sf_labels_3L = {"uuu", "euu", "eeu", "eee"};
-  for (const auto& label : sf_labels_3L) {
-    h->GetXaxis()->SetBinLabel(bin, ("3L " + label).c_str());
-    bin++;
+  else{
+    // --- 2L Labels: SSOF, SSSF, OSOF, OSSF ---
+    std::vector<std::string> twoL_labels = {"SSOF", "SSSF", "OSOF", "OSSF"};
+    for (const auto& label : twoL_labels) {
+      h->GetXaxis()->SetBinLabel(bin, ("2L " + label).c_str());
+      bin++;
+    }
+
+    // --- 3L Labels: uuu, euu, eeu, eee ---
+    std::vector<std::string> sf_labels_3L = {"uuu", "euu", "eeu", "eee"};
+    for (const auto& label : sf_labels_3L) {
+      h->GetXaxis()->SetBinLabel(bin, ("3L " + label).c_str());
+      bin++;
+    }
+    
+    // --- 3L Charge Labels: Q0, Q1, Q2, Q3 ---
+    std::vector<std::string> charge_labels_3L = {"Q0", "Q1", "Q2", "Q3"};
+    for (const auto& label : charge_labels_3L) {
+      h->GetXaxis()->SetBinLabel(bin, ("3L " + label).c_str());
+      bin++;
+    }
+    
+    // --- 4L Labels: uuuu, euuu, eeuu, eeeu, eeee ---
+    std::vector<std::string> sf_labels_4L = {"uuuu", "euuu", "eeuu", "eeeu", "eeee"};
+    for (const auto& label : sf_labels_4L) {
+      h->GetXaxis()->SetBinLabel(bin, ("4L " + label).c_str());
+      bin++;
+    }
+    
+    // --- 4L Charge Labels: Q0, Q1, Q2, Q3, Q4 ---
+    std::vector<std::string> charge_labels_4L = {"Q0", "Q1", "Q2", "Q3", "Q4"};
+    for (const auto& label : charge_labels_4L) {
+      h->GetXaxis()->SetBinLabel(bin, ("4L " + label).c_str());
+      bin++;
+    }
+    
+    // --- 5L Label ---
+    // h->GetXaxis()->SetBinLabel(bin, "5L");
   }
-  
-  // --- 3L Charge Labels: Q0, Q1, Q2, Q3 ---
-  std::vector<std::string> charge_labels_3L = {"Q0", "Q1", "Q2", "Q3"};
-  for (const auto& label : charge_labels_3L) {
-    h->GetXaxis()->SetBinLabel(bin, ("3L " + label).c_str());
-    bin++;
-  }
-  
-  // --- 4L Labels: uuuu, euuu, eeuu, eeeu, eeee ---
-  std::vector<std::string> sf_labels_4L = {"uuuu", "euuu", "eeuu", "eeeu", "eeee"};
-  for (const auto& label : sf_labels_4L) {
-    h->GetXaxis()->SetBinLabel(bin, ("4L " + label).c_str());
-    bin++;
-  }
-  
-  // --- 4L Charge Labels: Q0, Q1, Q2, Q3, Q4 ---
-  std::vector<std::string> charge_labels_4L = {"Q0", "Q1", "Q2", "Q3", "Q4"};
-  for (const auto& label : charge_labels_4L) {
-    h->GetXaxis()->SetBinLabel(bin, ("4L " + label).c_str());
-    bin++;
-  }
-  
-  // --- 5L Label ---
-  // h->GetXaxis()->SetBinLabel(bin, "5L");
 
   if(Scale)
     h->Scale(Scale_Val);
@@ -745,7 +772,7 @@ void Plot_EventCount(TH2* h, bool Scale, double Scale_Val, bool Zbi, double Zbi_
   can->cd();
   // note need to call this method again if opening the
   // canvas later on in the saved output root file
-  gStyle->SetPaintTextFormat(".2g");
+  gStyle->SetPaintTextFormat(".3g");
   h->SetMarkerColor(kRed);
   h->Draw("COLZ TEXT");  // Draw the histogram with text
   h->SetMarkerSize(0.7);
@@ -849,6 +876,18 @@ void InitRJRtree(){
   InvSplit.AddVisibleFrames(X2b.GetListVisibleFrames(), 1);
   InvSplit.AddInvisibleFrame(X1a, 0);
   InvSplit.AddInvisibleFrame(X1b, 1);
+
+  LAB.InitializeAnalysis();
+
+}
+
+void InitRJRtree2(){ // simple tree
+
+  LAB.SetChildFrame(CM);
+  CM.AddChildFrame(La);
+  CM.AddChildFrame(Lb);
+
+  LAB.InitializeTree();
 
   LAB.InitializeAnalysis();
 

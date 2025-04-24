@@ -4,7 +4,8 @@ void Plot_Advanced(){
 
   Long64_t start = gSystem->Now();
   RestFrames::SetStyle();
-  InitRJRtree();
+  //InitRJRtree();
+  InitRJRtree2();
 
   string NtuplePath = "/local-scratch/zflowers/NTUPLES/HADD/";
   //string NtuplePath = "root://cmseos.fnal.gov//store/user/lpcsusylep/NTUPLES_v2/";
@@ -16,10 +17,11 @@ void Plot_Advanced(){
 
   output_root_file += "Advanced_Cands_";
   //g_Label = "TESTING";
-  g_Label = "PreSelection";
-  //g_Label = "RISR > 0.7";
-  //g_Label = "!Bronze & RISR > 0.7";
-  //g_Label = "No Cuts";
+  //g_Label = "PreSelection";
+  //g_Label = "Gold & RISR > 0.7";
+  //g_Label = "PreSelection & 3L Gold & Z* & 0B";
+  //g_Label = "PreSelection & 4 Gold #mu";
+  g_Label = "No Cuts";
   //g_Label = "ATLAS Cuts";
   //g_Label = "MET > 150";
   //g_Label = "Gold & RISR > 0.7 & 0B & gamma_{CM0} < 0.7 & NSJ = 0";
@@ -110,34 +112,42 @@ void Plot_Advanced(){
   hist_stacks.push_back(&hist_stack_CandBeta);
   vector<TH1*> hist_stack_CandDeltaPhiMET;
   hist_stacks.push_back(&hist_stack_CandDeltaPhiMET);
+  vector<TH1*> hist_stack_CandCosDecayAngle;
+  hist_stacks.push_back(&hist_stack_CandCosDecayAngle);
   vector<TH1*> hist_stack_MatchedCandML;
   hist_stacks.push_back(&hist_stack_MatchedCandML);
   vector<TH1*> hist_stack_MatchedCandBeta;
   hist_stacks.push_back(&hist_stack_MatchedCandBeta);
   vector<TH1*> hist_stack_MatchedCandDeltaPhiMET;
   hist_stacks.push_back(&hist_stack_MatchedCandDeltaPhiMET);
+  vector<TH1*> hist_stack_MatchedCandCosDecayAngle;
+  hist_stacks.push_back(&hist_stack_MatchedCandCosDecayAngle);
   vector<TH1*> hist_stack_UnmatchedCandML;
   hist_stacks.push_back(&hist_stack_UnmatchedCandML);
   vector<TH1*> hist_stack_UnmatchedCandBeta;
   hist_stacks.push_back(&hist_stack_UnmatchedCandBeta);
   vector<TH1*> hist_stack_UnmatchedCandDeltaPhiMET;
   hist_stacks.push_back(&hist_stack_UnmatchedCandDeltaPhiMET);
+  vector<TH1*> hist_stack_UnmatchedCandCosDecayAngle;
+  hist_stacks.push_back(&hist_stack_UnmatchedCandCosDecayAngle);
 
   // hists for holding number of events
   const int EC_bins = vec_samples.size() + 1;
   const int Zbi_bins = map_vsignals.size();
+  int vec_samples_index = 0;
+  int Zbi_samples_index = 0;
   TH2D* hist_EventCount = new TH2D("EventCount", "EventCount", 22, 0, 22, EC_bins, 0, EC_bins);
   hist_EventCount->GetYaxis()->SetBinLabel(EC_bins, "TOT BKG");
   TH2D* hist_Zbi = new TH2D("Zbi", "Zbi", 22, 0, 22, Zbi_bins, 0, Zbi_bins);
 
-  int vec_samples_index = 0;
-  int Zbi_samples_index = 0;
-
-  int tot_Nleps = 0;
-  int tot_L_cands = 0;
+  // Event Counting by cands
+  TH2D* hist_CandsEventCount = new TH2D("CandsEventCount", "CandsEventCount", 23, 0, 23, EC_bins, 0, EC_bins);
+  hist_CandsEventCount->GetYaxis()->SetBinLabel(EC_bins, "TOT BKG");
+  TH2D* hist_CandsZbi = new TH2D("CandsZbi", "CandsZbi", 23, 0, 23, Zbi_bins, 0, Zbi_bins);
 
   for (auto p = vec_samples.begin(); p != vec_samples.end(); p++){
     hist_EventCount->GetYaxis()->SetBinLabel(vec_samples_index+1, FP.getTitle(p->first).c_str());
+    hist_CandsEventCount->GetYaxis()->SetBinLabel(vec_samples_index+1, FP.getTitle(p->first).c_str());
 
     // vectors to hold 'generic' plotting objects
     vector<TH1*> hists1;
@@ -150,37 +160,37 @@ void Plot_Advanced(){
 
     // Declare hists here
     // push_back hists that you want to plot at the end (hists are filled regardless of whether or not you push_back)
-    TH1D* hist_MET = new TH1D((title+"_MET").c_str(), (title+"_MET;MET [GeV]").c_str(), g_NX/4, 100., 1000.);
+    TH1D* hist_MET = new TH1D((title+"_MET").c_str(), (title+"_MET;MET [GeV]").c_str(), g_NX/2, 100., 1000.);
     hists1.push_back(hist_MET);
     hist_stack_MET.push_back(hist_MET); // example pushing hist into vector for stack plot
-    TH1D* hist_RISR = new TH1D((title+"_RISR").c_str(), (title+"_RISR;R_{ISR}").c_str(), g_NX/4, 0., 1.);
+    TH1D* hist_RISR = new TH1D((title+"_RISR").c_str(), (title+"_RISR;R_{ISR}").c_str(), g_NX/2, 0., 1.);
     hists1.push_back(hist_RISR);
     hist_stack_RISR.push_back(hist_RISR);    
-    TH1D* hist_PTISR = new TH1D((title+"_PTISR").c_str(), (title+"_PTISR;p_{T}^{ISR} [GeV]").c_str(), g_NX/4, 0., 1000.);
+    TH1D* hist_PTISR = new TH1D((title+"_PTISR").c_str(), (title+"_PTISR;p_{T}^{ISR} [GeV]").c_str(), g_NX/2, 0., 1000.);
     hists1.push_back(hist_PTISR);
     hist_stack_PTISR.push_back(hist_PTISR);
-    TH1D* hist_gammaPerp = new TH1D((title+"_gammaPerp").c_str(), (title+"_gammaPerp;#gamma_{#perp}").c_str(), g_NX/4, 0., 1.);
+    TH1D* hist_gammaPerp = new TH1D((title+"_gammaPerp").c_str(), (title+"_gammaPerp;#gamma_{#perp}").c_str(), g_NX/2, 0., 1.);
     hists1.push_back(hist_gammaPerp);
     hist_stack_gammaPerp.push_back(hist_gammaPerp);
-    TH1D* hist_MQperp = new TH1D((title+"_MQperp").c_str(), (title+"_MQperp;M_{#perp}").c_str(), g_NX/4, 0., 150.);
+    TH1D* hist_MQperp = new TH1D((title+"_MQperp").c_str(), (title+"_MQperp;M_{#perp}").c_str(), g_NX/2, 0., 150.);
     hists1.push_back(hist_MQperp);
     hist_stack_MQperp.push_back(hist_MQperp);
-    TH1D* hist_MSperpCM0 = new TH1D((title+"_MSperpCM0").c_str(), (title+"_MSperpCM0;MS_{#perp CM0}").c_str(), g_NX/4, 0., 600.);
+    TH1D* hist_MSperpCM0 = new TH1D((title+"_MSperpCM0").c_str(), (title+"_MSperpCM0;MS_{#perp CM0}").c_str(), g_NX/2, 0., 600.);
     hists1.push_back(hist_MSperpCM0);
     hist_stack_MSperpCM0.push_back(hist_MSperpCM0);
-    TH1D* hist_MQperpCM0 = new TH1D((title+"_MQperpCM0").c_str(), (title+"_MQperpCM0;MQ_{#perp CM0}").c_str(), g_NX/4, 0., 200.);
+    TH1D* hist_MQperpCM0 = new TH1D((title+"_MQperpCM0").c_str(), (title+"_MQperpCM0;MQ_{#perp CM0}").c_str(), g_NX/2, 0., 200.);
     hists1.push_back(hist_MQperpCM0);
     hist_stack_MQperpCM0.push_back(hist_MQperpCM0);
-    TH1D* hist_gammaPerpCM0 = new TH1D((title+"_gammaPerpCM0").c_str(), (title+"_gammaPerpCM0;#gamma_{#perp CM0}").c_str(), g_NX/4, 0., 1.);
+    TH1D* hist_gammaPerpCM0 = new TH1D((title+"_gammaPerpCM0").c_str(), (title+"_gammaPerpCM0;#gamma_{#perp CM0}").c_str(), g_NX/2, 0., 1.);
     hists1.push_back(hist_gammaPerpCM0);
     hist_stack_gammaPerpCM0.push_back(hist_gammaPerpCM0);
-    TH1D* hist_MSCM0 = new TH1D((title+"_MSCM0").c_str(), (title+"_MSCM0;MS_{CM0}").c_str(), g_NX/4, 0., 600.);
+    TH1D* hist_MSCM0 = new TH1D((title+"_MSCM0").c_str(), (title+"_MSCM0;MS_{CM0}").c_str(), g_NX/2, 0., 600.);
     hists1.push_back(hist_MSCM0);
     hist_stack_MSCM0.push_back(hist_MSCM0);
-    TH1D* hist_MQCM0 = new TH1D((title+"_MQCM0").c_str(), (title+"_MQCM0;MQ_{CM0}").c_str(), g_NX/4, 0., 200.);
+    TH1D* hist_MQCM0 = new TH1D((title+"_MQCM0").c_str(), (title+"_MQCM0;MQ_{CM0}").c_str(), g_NX/2, 0., 200.);
     hists1.push_back(hist_MQCM0);
     hist_stack_MQCM0.push_back(hist_MQCM0);
-    TH1D* hist_gammaCM0 = new TH1D((title+"_gammaCM0").c_str(), (title+"_gammaCM0;#gamma_{CM0}").c_str(), g_NX/4, 0., 1.);
+    TH1D* hist_gammaCM0 = new TH1D((title+"_gammaCM0").c_str(), (title+"_gammaCM0;#gamma_{CM0}").c_str(), g_NX/2, 0., 1.);
     hists1.push_back(hist_gammaCM0);
     hist_stack_gammaCM0.push_back(hist_gammaCM0);
     TH1D* hist_ML = new TH1D((title+"_ML").c_str(), (title+"_ML;ML").c_str(), g_NX/2, 0., 150.);
@@ -199,6 +209,9 @@ void Plot_Advanced(){
     TH1D* hist_CandDeltaPhiMET = new TH1D((title+"_CandDeltaPhiMET").c_str(), (title+"_CandDeltaPhiMET;CandDeltaPhiMET").c_str(), g_NX/2, 0., 3.15);
     hists1.push_back(hist_CandDeltaPhiMET);
     hist_stack_CandDeltaPhiMET.push_back(hist_CandDeltaPhiMET);
+    TH1D* hist_CandCosDecayAngle = new TH1D((title+"_CandCosDecayAngle").c_str(), (title+"_CandCosDecayAngle;CandCosDecayAngle").c_str(), g_NX/2, -1., 1.);
+    hists1.push_back(hist_CandCosDecayAngle);
+    hist_stack_CandCosDecayAngle.push_back(hist_CandCosDecayAngle);
 
     TH1D* hist_MatchedCandML = new TH1D((title+"_MatchedCandML").c_str(), (title+"_MatchedCandML;MatchedCandML").c_str(), g_NX/2, 0., 150.);
     hists1.push_back(hist_MatchedCandML);
@@ -209,6 +222,9 @@ void Plot_Advanced(){
     TH1D* hist_MatchedCandDeltaPhiMET = new TH1D((title+"_MatchedCandDeltaPhiMET").c_str(), (title+"_MatchedCandDeltaPhiMET;MatchedCandDeltaPhiMET").c_str(), g_NX/2, 0., 3.15);
     hists1.push_back(hist_MatchedCandDeltaPhiMET);
     hist_stack_MatchedCandDeltaPhiMET.push_back(hist_MatchedCandDeltaPhiMET);
+    TH1D* hist_MatchedCandCosDecayAngle = new TH1D((title+"_MatchedCandCosDecayAngle").c_str(), (title+"_MatchedCandCosDecayAngle;MatchedCandCosDecayAngle").c_str(), g_NX/2, -1., 1.);
+    hists1.push_back(hist_MatchedCandCosDecayAngle);
+    hist_stack_MatchedCandCosDecayAngle.push_back(hist_MatchedCandCosDecayAngle);
 
     TH1D* hist_UnmatchedCandML = new TH1D((title+"_UnmatchedCandML").c_str(), (title+"_UnmatchedCandML;UnmatchedCandML").c_str(), g_NX/2, 0., 150.);
     hists1.push_back(hist_UnmatchedCandML);
@@ -219,6 +235,9 @@ void Plot_Advanced(){
     TH1D* hist_UnmatchedCandDeltaPhiMET = new TH1D((title+"_UnmatchedCandDeltaPhiMET").c_str(), (title+"_UnmatchedCandDeltaPhiMET;UnmatchedCandDeltaPhiMET").c_str(), g_NX/2, 0., 3.15);
     hists1.push_back(hist_UnmatchedCandDeltaPhiMET);
     hist_stack_UnmatchedCandDeltaPhiMET.push_back(hist_UnmatchedCandDeltaPhiMET);
+    TH1D* hist_UnmatchedCandCosDecayAngle = new TH1D((title+"_UnmatchedCandCosDecayAngle").c_str(), (title+"_UnmatchedCandCosDecayAngle;UnmatchedCandCosDecayAngle").c_str(), g_NX/2, -1., 1.);
+    hists1.push_back(hist_UnmatchedCandCosDecayAngle);
+    hist_stack_UnmatchedCandCosDecayAngle.push_back(hist_UnmatchedCandCosDecayAngle);
 
     TH2D* hist_RISR_PTISR = new TH2D((title+"_RISR_PTISR").c_str(), (title+"_RISR_PTISR;R_{ISR};p_{T}^{ISR} [GeV]").c_str(), g_NX/2., 0., 1., g_NX/2., 0., 1000.);
     hists2.push_back(hist_RISR_PTISR);
@@ -325,6 +344,8 @@ void Plot_Advanced(){
     hists2.push_back(hist_CandML_CandBeta);
     TH2D* hist_CandML_CandDeltaPhiMET = new TH2D((title+"_CandML_CandDeltaPhiMET").c_str(), (title+"_CandML_CandDeltaPhiMET;CandML;CandDeltaPhiMET").c_str(), g_NX/2., 0., 150., g_NX/2, 0., 3.15);
     hists2.push_back(hist_CandML_CandDeltaPhiMET);
+    TH2D* hist_CandML_CandCosDecayAngle = new TH2D((title+"_CandML_CandCosDecayAngle").c_str(), (title+"_CandML_CandCosDecayAngle;CandML;CandCosDecayAngle").c_str(), g_NX/2., 0., 150., g_NX/2, -1., 1.);
+    hists2.push_back(hist_CandML_CandCosDecayAngle);
 
     TH2D* hist_RISR_MatchedCandML = new TH2D((title+"_RISR_MatchedCandML").c_str(), (title+"_RISR_MatchedCandML;R_{ISR};MatchedCandML").c_str(), g_NX/2., 0.5, 1., g_NX/2, 0., 150.);
     hists2.push_back(hist_RISR_MatchedCandML);
@@ -336,6 +357,8 @@ void Plot_Advanced(){
     hists2.push_back(hist_MatchedCandML_MatchedCandBeta);
     TH2D* hist_MatchedCandML_MatchedCandDeltaPhiMET = new TH2D((title+"_MatchedCandML_MatchedCandDeltaPhiMET").c_str(), (title+"_MatchedCandML_MatchedCandDeltaPhiMET;MatchedCandML;MatchedCandDeltaPhiMET").c_str(), g_NX/2., 0., 150., g_NX/2, 0., 3.15);
     hists2.push_back(hist_MatchedCandML_MatchedCandDeltaPhiMET);
+    TH2D* hist_MatchedCandML_MatchedCandCosDecayAngle = new TH2D((title+"_MatchedCandML_MatchedCandCosDecayAngle").c_str(), (title+"_MatchedCandML_MatchedCandCosDecayAngle;MatchedCandML;MatchedCandCosDecayAngle").c_str(), g_NX/2., 0., 150., g_NX/2, -1., 1.);
+    hists2.push_back(hist_MatchedCandML_MatchedCandCosDecayAngle);
 
     TH2D* hist_RISR_UnmatchedCandML = new TH2D((title+"_RISR_UnmatchedCandML").c_str(), (title+"_RISR_UnmatchedCandML;R_{ISR};UnmatchedCandML").c_str(), g_NX/2., 0.5, 1., g_NX/2, 0., 150.);
     hists2.push_back(hist_RISR_UnmatchedCandML);
@@ -347,6 +370,8 @@ void Plot_Advanced(){
     hists2.push_back(hist_UnmatchedCandML_UnmatchedCandBeta);
     TH2D* hist_UnmatchedCandML_UnmatchedCandDeltaPhiMET = new TH2D((title+"_UnmatchedCandML_UnmatchedCandDeltaPhiMET").c_str(), (title+"_UnmatchedCandML_UnmatchedCandDeltaPhiMET;UnmatchedCandML;UnmatchedCandDeltaPhiMET").c_str(), g_NX/2., 0., 150., g_NX/2, 0., 3.15);
     hists2.push_back(hist_UnmatchedCandML_UnmatchedCandDeltaPhiMET);
+    TH2D* hist_UnmatchedCandML_UnmatchedCandCosDecayAngle = new TH2D((title+"_UnmatchedCandML_UnmatchedCandCosDecayAngle").c_str(), (title+"_UnmatchedCandML_UnmatchedCandCosDecayAngle;UnmatchedCandML;UnmatchedCandCosDecayAngle").c_str(), g_NX/2., 0., 150., g_NX/2, -1., 1.);
+    hists2.push_back(hist_UnmatchedCandML_UnmatchedCandCosDecayAngle);
 
     TEfficiency* eff_METtrig = new TEfficiency((title+"_eff_METtrig").c_str(), "Efficiency of MET trigger;Eff;MET [GeV]", g_NX, 0., 700.);
     effs.push_back(eff_METtrig);
@@ -415,9 +440,9 @@ void Plot_Advanced(){
               continue;
           
           // apply trigger to data and FullSim events
-          if(!base->METORtrigger && !is_FastSim) // PreSelection
+          //if(!base->METORtrigger && !is_FastSim) // PreSelection
           //if(!base->SingleElectrontrigger && !base->SingleMuontrigger && !is_FastSim) // ATLAS
-            continue;
+          //  continue;
           	
           // get variables from root files using base class
           double MET = base->MET;
@@ -437,12 +462,12 @@ void Plot_Advanced(){
           double gammaCM0 = base->gammaCM0;
 
           //if(MET < 50.) // ATLAS
-          if(MET < 150.) // PreSelection
-            continue;
+          //if(MET < 150.) // PreSelection
+          //  continue;
 
-          if(PTISR < 200.) // PreSelection
+          //if(PTISR < 200.) // PreSelection
           //if(PTISR < 300.) // SR
-	    continue;
+	  //  continue;
 
           // Cleaning cuts...
           double dphiCMI = base->dphiCMI;
@@ -450,24 +475,24 @@ void Plot_Advanced(){
           double x = fabs(dphiCMI);
           
           // PreSelection
-          if(PTCM > 200.)
-            continue;
-          if(PTCM > -500.*sqrt(std::max(0.,-2.777*x*x+1.388*x+0.8264))+575. &&
-             -2.777*x*x+1.388*x+0.8264 > 0.)
-            continue;
-          if(PTCM > -500.*sqrt(std::max(0.,-1.5625*x*x+7.8125*x-8.766))+600. &&
-             -1.5625*x*x+7.8125*x-8.766 > 0.)
-            continue;
+          //if(PTCM > 200.)
+          //  continue;
+          //if(PTCM > -500.*sqrt(std::max(0.,-2.777*x*x+1.388*x+0.8264))+575. &&
+          //   -2.777*x*x+1.388*x+0.8264 > 0.)
+          //  continue;
+          //if(PTCM > -500.*sqrt(std::max(0.,-1.5625*x*x+7.8125*x-8.766))+600. &&
+          //   -1.5625*x*x+7.8125*x-8.766 > 0.)
+          //  continue;
           // End of Cleaning cuts...
             
           double dphiMET_V = base->dphiMET_V;
-          if(fabs(base->dphiMET_V) > acos(-1.)/2.) // PreSelection
-            continue;
+          //if(fabs(base->dphiMET_V) > acos(-1.)/2.) // PreSelection
+          //  continue;
             
-          if(RISR < 0.5 || RISR > 1.0) // PreSelection
+          //if(RISR < 0.5 || RISR > 1.0) // PreSelection
           //if(RISR < 0.4 || RISR > 0.7) // CR
           //if(RISR < 0.7 || RISR > 1.0)
-            continue;
+          //  continue;
 
           //if(gammaCM0 > 0.7)
           //  continue;
@@ -486,8 +511,10 @@ void Plot_Advanced(){
           //if(NbjetISR + NbjetS != 2) continue; // CR
           //if(NbjetISR + NbjetS > 1) continue; // SR & ATLAS
 
-          //if(Nlep != 2) continue;
+          //if(Nlep != 3) continue;
           //if(NjetS != 0) continue; // SR
+
+          //if(base->Nmu < 4) continue;
           
           LepList list_a;
           LepList list_b;
@@ -540,8 +567,9 @@ void Plot_Advanced(){
           bool skip = false;
           int nSL = 0; // number of selected leps
           for(int i = 0; i < list_leps.GetN(); i++){
-            //if(list_leps[i].ID() == kBronze) skip = true; // nSL++;
-            if(list_leps[i].ID() != kGold) skip = true; // nSL++;
+            //if(list_leps[i].ID() != kBronze) skip = true; // nSL++; // 'Bronze'
+            //if(list_leps[i].ID() == kBronze) skip = true; // nSL++; // 'not Bronze'
+            if(list_leps[i].ID() != kGold) skip = true; // nSL++; // 'Gold'
           }
           //if(nSL < 2) skip = true; // SR GG
           //if(nSL == 2) skip = true; // CR notGG
@@ -551,6 +579,100 @@ void Plot_Advanced(){
           //if(base->PT_lep->at(1) < 20.) continue;
           //if(Nlep > 2)
           //  if(base->PT_lep->at(2) < 10.) continue;
+
+          TVector3 TV3_MET;
+          TV3_MET.SetPtEtaPhi(MET, 0., base->MET_phi);
+
+          // Leptonic Candidates
+          std::vector<L_Cand> V_lep_cands;
+          for(int i = 0; i < Nlep-1; i++){
+            for(int j = i+1; j < Nlep; j++){
+              if(list_leps[i].Flavor() == list_leps[j].Flavor() && list_leps[i].Charge() != list_leps[j].Charge()){ // OSSF
+                if(inVec((*base->index_lep_a),i) == inVec((*base->index_lep_a),j)){ // same hemisphere
+                  Particle lep_1;
+                  lep_1.SetPtEtaPhiM( base->PT_lep->at(i),
+                                      base->Eta_lep->at(i),
+                                      base->Phi_lep->at(i),
+                                      std::max(0.,base->M_lep->at(i)) );
+                  La.SetLabFrameFourVector(lep_1);
+                  Particle lep_2;
+                  lep_2.SetPtEtaPhiM( base->PT_lep->at(j),
+                    	              base->Eta_lep->at(j),
+                    	              base->Phi_lep->at(j),
+                    	              std::max(0.,base->M_lep->at(j)) );
+                  Lb.SetLabFrameFourVector(lep_2);
+                  if(!LAB.AnalyzeEvent()) std::cout << "FAILED TO RECO RJR TREE!" << std::endl;
+                  if((*base->Index_lep)[i] >= 0)
+                    lep_1.SetMomPDGID((*base->genMomPDGID_lep)[(*base->Index_lep)[i]]);
+                  else
+                    lep_1.SetMomPDGID(0);
+                  if((*base->Index_lep)[j] >= 0)
+                    lep_2.SetMomPDGID((*base->genMomPDGID_lep)[(*base->Index_lep)[j]]);
+                  else
+                    lep_2.SetMomPDGID(0);
+                  ParticleList cand_list_parts;
+                  cand_list_parts.push_back(lep_1);
+                  cand_list_parts.push_back(lep_2);
+                  ConstRestFrameList cand_list_frames;
+                  cand_list_frames.Add(La);
+                  cand_list_frames.Add(Lb);
+                  L_Cand cand(cand_list_parts);
+                  //L_Cand cand(cand_list_parts, cand_list_frames);
+                  cand.SetFlavor(list_leps[i].Flavor());
+                  V_lep_cands.push_back(cand);
+                }
+              }
+            }
+          }
+
+          cand_matching(V_lep_cands);
+          int N_V_lep_cands = V_lep_cands.size();
+          //if(N_V_lep_cands < 1) continue;
+
+          for(int i = 0; i < N_V_lep_cands; i++){
+            TLorentzVector TLV_LAB, TLV_CM, TLV_S;
+            TLV_LAB.SetPtEtaPhiM(base->LAB_Pt, base->LAB_Eta, base->LAB_Phi, base->LAB_M);
+            TLV_CM.SetPtEtaPhiM(base->PTCM, base->EtaCM, base->PhiCM, base->MCM);
+            TLV_S.SetPtEtaPhiM(base->PTS, base->EtaS, base->PhiS, base->MS);
+            TLorentzVector TLV_Cand = V_lep_cands[i].TLV();
+            TVector3 V1 = TLV_CM.Vect().Unit();
+            TVector3 V2 = TLV_Cand.Vect().Unit();
+            double CosDecayAngle = V1.Dot(V2);
+            hist_CandML->Fill(V_lep_cands[i].Mass(), weight);
+            hist_CandBeta->Fill(V_lep_cands[i].Beta(), weight);
+            hist_CandDeltaPhiMET->Fill(V_lep_cands[i].DeltaPhi(TV3_MET), weight);
+            hist_CandCosDecayAngle->Fill(CosDecayAngle, weight);
+            hist_RISR_CandML->Fill(RISR, V_lep_cands[i].Mass(), weight);
+            hist_RISR_CandBeta->Fill(RISR, V_lep_cands[i].Beta(), weight);
+            hist_RISR_CandDeltaPhiMET->Fill(RISR, V_lep_cands[i].DeltaPhi(TV3_MET), weight);
+            hist_CandML_CandBeta->Fill(V_lep_cands[i].Mass(), V_lep_cands[i].Beta(), weight);
+            hist_CandML_CandDeltaPhiMET->Fill(V_lep_cands[i].Mass(), V_lep_cands[i].DeltaPhi(TV3_MET), weight);
+            hist_CandML_CandCosDecayAngle->Fill(V_lep_cands[i].Mass(), CosDecayAngle, weight);
+            if(V_lep_cands[i].Match() == kMatched){
+              hist_MatchedCandML->Fill(V_lep_cands[i].Mass(), weight);
+              hist_MatchedCandBeta->Fill(V_lep_cands[i].Beta(), weight);
+              hist_MatchedCandDeltaPhiMET->Fill(V_lep_cands[i].DeltaPhi(TV3_MET), weight);
+              hist_MatchedCandCosDecayAngle->Fill(CosDecayAngle, weight);
+              hist_RISR_MatchedCandML->Fill(RISR, V_lep_cands[i].Mass(), weight);
+              hist_RISR_MatchedCandBeta->Fill(RISR, V_lep_cands[i].Beta(), weight);
+              hist_RISR_MatchedCandDeltaPhiMET->Fill(RISR, V_lep_cands[i].DeltaPhi(TV3_MET), weight);
+              hist_MatchedCandML_MatchedCandBeta->Fill(V_lep_cands[i].Mass(), V_lep_cands[i].Beta(), weight);
+              hist_MatchedCandML_MatchedCandDeltaPhiMET->Fill(V_lep_cands[i].Mass(), V_lep_cands[i].DeltaPhi(TV3_MET), weight);
+              hist_MatchedCandML_MatchedCandCosDecayAngle->Fill(V_lep_cands[i].Mass(), CosDecayAngle, weight);
+            }
+            else{
+              hist_UnmatchedCandML->Fill(V_lep_cands[i].Mass(), weight);
+              hist_UnmatchedCandBeta->Fill(V_lep_cands[i].Beta(), weight);
+              hist_UnmatchedCandDeltaPhiMET->Fill(V_lep_cands[i].DeltaPhi(TV3_MET), weight);
+              hist_UnmatchedCandCosDecayAngle->Fill(CosDecayAngle, weight);
+              hist_RISR_UnmatchedCandML->Fill(RISR, V_lep_cands[i].Mass(), weight);
+              hist_RISR_UnmatchedCandBeta->Fill(RISR, V_lep_cands[i].Beta(), weight);
+              hist_RISR_UnmatchedCandDeltaPhiMET->Fill(RISR, V_lep_cands[i].DeltaPhi(TV3_MET), weight);
+              hist_UnmatchedCandML_UnmatchedCandBeta->Fill(V_lep_cands[i].Mass(), V_lep_cands[i].Beta(), weight);
+              hist_UnmatchedCandML_UnmatchedCandDeltaPhiMET->Fill(V_lep_cands[i].Mass(), V_lep_cands[i].DeltaPhi(TV3_MET), weight);
+              hist_UnmatchedCandML_UnmatchedCandCosDecayAngle->Fill(V_lep_cands[i].Mass(), CosDecayAngle, weight);
+            }
+          }
 
           // Fill hists, effs, etc.
           hist_MET->Fill(MET, weight);
@@ -620,155 +742,6 @@ void Plot_Advanced(){
           eff_METtrig->Fill(base->METtrigger, MET, weight);
 
 
-          TVector3 TV3_MET;
-          TV3_MET.SetPtEtaPhi(MET, 0., base->MET_phi);
-          // Reconstruct RJR tree
-          if(Njet > 0){
-            LAB.ClearEvent();
-
-            TLorentzVector TLV_ISR;
-            for(int i = 0; i < NjetISR; i++){
-              index = (*base->index_jet_ISR)[i];
-              TLorentzVector p;
-              p.SetPtEtaPhiM( base->PT_jet->at(index),
-                                  base->Eta_jet->at(index),
-                                  base->Phi_jet->at(index),
-                                  std::max(0.,base->M_jet->at(index)) );
-              TLV_ISR += p;
-            }
-            ISR.SetLabFrameFourVector(TLV_ISR);
-
-            TLorentzVector TLV_Sa;
-            for(int i = 0; i < Njet_a; i++){
-              index = (*base->index_jet_a)[i];
-              TLorentzVector p;
-              p.SetPtEtaPhiM( base->PT_jet->at(index),
-                                  base->Eta_jet->at(index),
-                                  base->Phi_jet->at(index),
-                                  std::max(0.,base->M_jet->at(index)) );
-              TLV_Sa += p;
-            }
-            Ja.SetLabFrameFourVector(TLV_Sa);
-
-            TLorentzVector TLV_Sb;
-            for(int i = 0; i < Njet_b; i++){
-              index = (*base->index_jet_b)[i];
-              TLorentzVector p;
-              p.SetPtEtaPhiM( base->PT_jet->at(index),
-                                  base->Eta_jet->at(index),
-                                  base->Phi_jet->at(index),
-                                  std::max(0.,base->M_jet->at(index)) );
-              TLV_Sb += p;
-            }
-            Jb.SetLabFrameFourVector(TLV_Sb);
-
-            TLorentzVector TLV_La;
-            for(int i = 0; i < Nlep_a; i++){
-              index = (*base->index_lep_a)[i];
-              TLorentzVector p;
-              p.SetPtEtaPhiM( base->PT_lep->at(index),
-                                  base->Eta_lep->at(index),
-                                  base->Phi_lep->at(index),
-                                  std::max(0.,base->M_lep->at(index)) );
-              TLV_La += p;
-            }
-            La.SetLabFrameFourVector(TLV_La);
-
-            TLorentzVector TLV_Lb;
-            for(int i = 0; i < Nlep_b; i++){
-              index = (*base->index_lep_b)[i];
-              TLorentzVector p;
-              p.SetPtEtaPhiM( base->PT_lep->at(index),
-                                  base->Eta_lep->at(index),
-                                  base->Phi_lep->at(index),
-                                  std::max(0.,base->M_lep->at(index)) );
-              TLV_Lb += p;
-            }
-            Lb.SetLabFrameFourVector(TLV_Lb);
-
-            INV.SetLabFrameThreeVector(TV3_MET);
-            if(!LAB.AnalyzeEvent()) std::cout << "FAILED TO RECO RJR TREE!" << std::endl;
-
-            TVector3 vPISR = S.GetFourVector(CM).Vect();
-            TVector3 vPINV = (X1a.GetFourVector(CM)+X1b.GetFourVector(CM)).Vect();
-            double RECO_RISR = fabs(vPINV.Dot(vPISR.Unit())) / vPISR.Mag();
-            if(fabs(RECO_RISR - RISR) > 1.e-3 && !(Nlep == 2 && NjetS == 0)){
-              std::cout << "FAILED TO VALIDATE RECO RJR TREE! " << " RECO_RISR: " << RECO_RISR << " RISR: " << RISR << std::endl;
-              std::cout << "Njet_a: " << Njet_a << " Njet_b: " << Njet_b << " Nlep_a: " << Nlep_a << " Nlep_b: " << Nlep_b << " NjetISR: " << NjetISR << " MET: " << MET << std::endl;
-              std::cout << "vPISR.Mag(): " << vPISR.Mag() << " base PISR: " << base->PISR << std::endl;
-            }
-          } // END Reconstruct RJR tree
-
-          // Leptonic Candidates
-          tot_Nleps += Nlep;
-          std::vector<L_Cand> V_lep_cands;
-          for(int i = 0; i < Nlep-1; i++){
-            for(int j = i+1; j < Nlep; j++){
-              if(list_leps[i].Flavor() == list_leps[j].Flavor() && list_leps[i].Charge() != list_leps[j].Charge()){ // OSSF
-                if(inVec((*base->index_lep_a),i) == inVec((*base->index_lep_a),j)){ // same hemisphere
-                  Particle lep_1;
-                  lep_1.SetPtEtaPhiM( base->PT_lep->at(i),
-                                      base->Eta_lep->at(i),
-                                      base->Phi_lep->at(i),
-                                      std::max(0.,base->M_lep->at(i)) );
-                  Particle lep_2;
-                  lep_2.SetPtEtaPhiM( base->PT_lep->at(j),
-                    	              base->Eta_lep->at(j),
-                    	              base->Phi_lep->at(j),
-                    	              std::max(0.,base->M_lep->at(j)) );
-                  if((*base->Index_lep)[i] >= 0)
-                    lep_1.SetMomPDGID((*base->genMomPDGID_lep)[(*base->Index_lep)[i]]);
-                  else
-                    lep_1.SetMomPDGID(0);
-                  if((*base->Index_lep)[j] >= 0)
-                    lep_2.SetMomPDGID((*base->genMomPDGID_lep)[(*base->Index_lep)[j]]);
-                  else
-                    lep_2.SetMomPDGID(0);
-                  ParticleList cand_list_parts;
-                  cand_list_parts.push_back(lep_1);
-                  cand_list_parts.push_back(lep_2);
-                  L_Cand cand(cand_list_parts);
-                  cand.SetFlavor(list_leps[i].Flavor());
-                  V_lep_cands.push_back(cand);
-                }
-              }
-            }
-          }
-
-          cand_matching(V_lep_cands);
-          int N_V_lep_cands = V_lep_cands.size();
-          tot_L_cands += N_V_lep_cands;
-          for(int i = 0; i < N_V_lep_cands; i++){
-            hist_CandML->Fill(V_lep_cands[i].Mass(), weight);
-            hist_CandBeta->Fill(V_lep_cands[i].Beta(), weight);
-            hist_CandDeltaPhiMET->Fill(V_lep_cands[i].DeltaPhi(TV3_MET), weight);
-            hist_RISR_CandML->Fill(RISR, V_lep_cands[i].Mass(), weight);
-            hist_RISR_CandBeta->Fill(RISR, V_lep_cands[i].Beta(), weight);
-            hist_RISR_CandDeltaPhiMET->Fill(RISR, V_lep_cands[i].DeltaPhi(TV3_MET), weight);
-            hist_CandML_CandBeta->Fill(V_lep_cands[i].Mass(), V_lep_cands[i].Beta(), weight);
-            hist_CandML_CandDeltaPhiMET->Fill(V_lep_cands[i].Mass(), V_lep_cands[i].DeltaPhi(TV3_MET), weight);
-            if(V_lep_cands[i].Match() == kMatched){
-              hist_MatchedCandML->Fill(V_lep_cands[i].Mass(), weight);
-              hist_MatchedCandBeta->Fill(V_lep_cands[i].Beta(), weight);
-              hist_MatchedCandDeltaPhiMET->Fill(V_lep_cands[i].DeltaPhi(TV3_MET), weight);
-              hist_RISR_MatchedCandML->Fill(RISR, V_lep_cands[i].Mass(), weight);
-              hist_RISR_MatchedCandBeta->Fill(RISR, V_lep_cands[i].Beta(), weight);
-              hist_RISR_MatchedCandDeltaPhiMET->Fill(RISR, V_lep_cands[i].DeltaPhi(TV3_MET), weight);
-              hist_MatchedCandML_MatchedCandBeta->Fill(V_lep_cands[i].Mass(), V_lep_cands[i].Beta(), weight);
-              hist_MatchedCandML_MatchedCandDeltaPhiMET->Fill(V_lep_cands[i].Mass(), V_lep_cands[i].DeltaPhi(TV3_MET), weight);
-            }
-            else{
-              hist_UnmatchedCandML->Fill(V_lep_cands[i].Mass(), weight);
-              hist_UnmatchedCandBeta->Fill(V_lep_cands[i].Beta(), weight);
-              hist_UnmatchedCandDeltaPhiMET->Fill(V_lep_cands[i].DeltaPhi(TV3_MET), weight);
-              hist_RISR_UnmatchedCandML->Fill(RISR, V_lep_cands[i].Mass(), weight);
-              hist_RISR_UnmatchedCandBeta->Fill(RISR, V_lep_cands[i].Beta(), weight);
-              hist_RISR_UnmatchedCandDeltaPhiMET->Fill(RISR, V_lep_cands[i].DeltaPhi(TV3_MET), weight);
-              hist_UnmatchedCandML_UnmatchedCandBeta->Fill(V_lep_cands[i].Mass(), V_lep_cands[i].Beta(), weight);
-              hist_UnmatchedCandML_UnmatchedCandDeltaPhiMET->Fill(V_lep_cands[i].Mass(), V_lep_cands[i].DeltaPhi(TV3_MET), weight);
-            }
-          }
-          V_lep_cands.clear();
 
           // Event Counting
           int EC_X = 0; // root hists have underflow in bin 0
@@ -795,16 +768,41 @@ void Plot_Advanced(){
             bool same_flavor = (flavors[0] == flavors[1]);
             bool opposite_sign = (charges[0] != charges[1]);
 
-            if (same_flavor && opposite_sign)       EC_X = 1; //flavor_category = "OSSF";
+            if (!same_flavor && !opposite_sign)     EC_X = 1; //flavor_category = "SSOF";
             else if (same_flavor && !opposite_sign) EC_X = 2; //flavor_category = "SSSF";
             else if (!same_flavor && opposite_sign) EC_X = 3; //flavor_category = "OSOF";
-            else                                    EC_X = 4; //flavor_category = "SSOF";
+            else                                    EC_X = 4; //flavor_category = "OSSF";
             hist_EventCount->SetBinContent(EC_X,EC_Y,hist_EventCount->GetBinContent(EC_X,EC_Y)+weight);
             if(is_signal) hist_Zbi->SetBinContent(EC_X,Zbi_EC_Y,hist_Zbi->GetBinContent(EC_X,Zbi_EC_Y)+weight);
             if(is_bkg) hist_EventCount->SetBinContent(EC_X,EC_bins,hist_EventCount->GetBinContent(EC_X,EC_bins)+weight);
             if(is_bkg) hist_Zbi->SetBinContent(EC_X,0,hist_Zbi->GetBinContent(EC_X,0)+weight); // store tot bkg in underflow
+            if(EC_X < 4){
+              hist_CandsEventCount->SetBinContent(EC_X,EC_Y,hist_CandsEventCount->GetBinContent(EC_X,EC_Y)+weight);
+              if(is_signal) hist_CandsZbi->SetBinContent(EC_X,Zbi_EC_Y,hist_CandsZbi->GetBinContent(EC_X,Zbi_EC_Y)+weight);
+              if(is_bkg) hist_CandsEventCount->SetBinContent(EC_X,EC_bins,hist_CandsEventCount->GetBinContent(EC_X,EC_bins)+weight);
+              if(is_bkg) hist_CandsZbi->SetBinContent(EC_X,0,hist_CandsZbi->GetBinContent(EC_X,0)+weight); // store tot bkg in underflow
+            }
+            if (EC_X == 4){ // cand counting
+              EC_X += N_V_lep_cands;
+              hist_CandsEventCount->SetBinContent(EC_X,EC_Y,hist_CandsEventCount->GetBinContent(EC_X,EC_Y)+weight);
+              if(is_signal) hist_CandsZbi->SetBinContent(EC_X,Zbi_EC_Y,hist_CandsZbi->GetBinContent(EC_X,Zbi_EC_Y)+weight);
+              if(is_bkg) hist_CandsEventCount->SetBinContent(EC_X,EC_bins,hist_CandsEventCount->GetBinContent(EC_X,EC_bins)+weight);
+              if(is_bkg) hist_CandsZbi->SetBinContent(EC_X,0,hist_CandsZbi->GetBinContent(EC_X,0)+weight); // store tot bkg in underflow
+            }
           }
           else if(cat_Nleps == 3) {
+            EC_X = 6;
+            EC_X += num_e;
+            hist_CandsEventCount->SetBinContent(EC_X,EC_Y,hist_CandsEventCount->GetBinContent(EC_X,EC_Y)+weight);
+            if(is_signal) hist_CandsZbi->SetBinContent(EC_X,Zbi_EC_Y,hist_CandsZbi->GetBinContent(EC_X,Zbi_EC_Y)+weight);
+            if(is_bkg) hist_CandsEventCount->SetBinContent(EC_X,EC_bins,hist_CandsEventCount->GetBinContent(EC_X,EC_bins)+weight);
+            if(is_bkg) hist_CandsZbi->SetBinContent(EC_X,0,hist_CandsZbi->GetBinContent(EC_X,0)+weight); // store tot bkg in underflow
+            EC_X = 10;
+            EC_X += N_V_lep_cands;
+            hist_CandsEventCount->SetBinContent(EC_X,EC_Y,hist_CandsEventCount->GetBinContent(EC_X,EC_Y)+weight);
+            if(is_signal) hist_CandsZbi->SetBinContent(EC_X,Zbi_EC_Y,hist_CandsZbi->GetBinContent(EC_X,Zbi_EC_Y)+weight);
+            if(is_bkg) hist_CandsEventCount->SetBinContent(EC_X,EC_bins,hist_CandsEventCount->GetBinContent(EC_X,EC_bins)+weight);
+            if(is_bkg) hist_CandsZbi->SetBinContent(EC_X,0,hist_CandsZbi->GetBinContent(EC_X,0)+weight); // store tot bkg in underflow
             EC_X = 5;
             EC_X += num_e;
             hist_EventCount->SetBinContent(EC_X,EC_Y,hist_EventCount->GetBinContent(EC_X,EC_Y)+weight);
@@ -825,6 +823,18 @@ void Plot_Advanced(){
             if(is_signal) hist_Zbi->SetBinContent(EC_X,Zbi_EC_Y,hist_Zbi->GetBinContent(EC_X,Zbi_EC_Y)+weight);
             if(is_bkg) hist_EventCount->SetBinContent(EC_X,EC_bins,hist_EventCount->GetBinContent(EC_X,EC_bins)+weight);
             if(is_bkg) hist_Zbi->SetBinContent(EC_X,0,hist_Zbi->GetBinContent(EC_X,0)+weight); // store tot bkg in underflow
+            EC_X = 13;
+            EC_X += num_e;
+            hist_CandsEventCount->SetBinContent(EC_X,EC_Y,hist_CandsEventCount->GetBinContent(EC_X,EC_Y)+weight);
+            if(is_signal) hist_CandsZbi->SetBinContent(EC_X,Zbi_EC_Y,hist_CandsZbi->GetBinContent(EC_X,Zbi_EC_Y)+weight);
+            if(is_bkg) hist_CandsEventCount->SetBinContent(EC_X,EC_bins,hist_CandsEventCount->GetBinContent(EC_X,EC_bins)+weight);
+            if(is_bkg) hist_CandsZbi->SetBinContent(EC_X,0,hist_CandsZbi->GetBinContent(EC_X,0)+weight); // store tot bkg in underflow
+            EC_X = 19;
+            EC_X += N_V_lep_cands;
+            hist_CandsEventCount->SetBinContent(EC_X,EC_Y,hist_CandsEventCount->GetBinContent(EC_X,EC_Y)+weight);
+            if(is_signal) hist_CandsZbi->SetBinContent(EC_X,Zbi_EC_Y,hist_CandsZbi->GetBinContent(EC_X,Zbi_EC_Y)+weight);
+            if(is_bkg) hist_CandsEventCount->SetBinContent(EC_X,EC_bins,hist_CandsEventCount->GetBinContent(EC_X,EC_bins)+weight);
+            if(is_bkg) hist_CandsZbi->SetBinContent(EC_X,0,hist_CandsZbi->GetBinContent(EC_X,0)+weight); // store tot bkg in underflow
             EC_X = 18;
             EC_X += abs_charge;
             hist_EventCount->SetBinContent(EC_X,EC_Y,hist_EventCount->GetBinContent(EC_X,EC_Y)+weight);
@@ -840,8 +850,11 @@ void Plot_Advanced(){
           //  if(is_bkg) hist_Zbi->SetBinContent(EC_X,0,hist_Zbi->GetBinContent(EC_X,0)+weight); // store tot bkg in underflow
           //}
           hist_EventCount->SetBinContent(0,EC_Y,hist_EventCount->GetBinContent(0,EC_Y)+weight); // normalized to selection
-          if(is_bkg) // total SM bkg
+          hist_CandsEventCount->SetBinContent(0,EC_Y,hist_CandsEventCount->GetBinContent(0,EC_Y)+weight); // normalized to selection
+          if(is_bkg){ // total SM bkg
             hist_EventCount->SetBinContent(0,EC_bins,hist_EventCount->GetBinContent(0,EC_bins)+weight); // normalized to selection
+            hist_CandsEventCount->SetBinContent(0,EC_bins,hist_CandsEventCount->GetBinContent(0,EC_bins)+weight); // normalized to selection
+          }
 
         }
         delete base;
@@ -898,7 +911,11 @@ void Plot_Advanced(){
   Plot_EventCount((TH2*)hist_Zbi->Clone("EventCount_SoB"), true, lumi, false, 0., true, false);
   Plot_EventCount(hist_Zbi, true, lumi, true, 0.2, false, false);
 
-  std::cout << "Total leps: " << tot_Nleps << " total cands: " << tot_L_cands << std::endl;
+  Plot_EventCount((TH2*)hist_CandsEventCount->Clone("CandsEventCount_Scaled"), true, lumi, false, 0., false, false);
+  Plot_EventCount((TH2*)hist_CandsEventCount->Clone("CandsEventCount_SoBAllBKG"), true, lumi, false, 0., true, true);
+  Plot_EventCount(hist_CandsEventCount, false, lumi, false, 0., false, false);
+  Plot_EventCount((TH2*)hist_CandsZbi->Clone("CandsEventCount_SoB"), true, lumi, false, 0., true, false);
+  Plot_EventCount(hist_CandsZbi, true, lumi, true, 0.2, false, false);
 
   Long64_t end = gSystem->Now();
   std::cout << "Time to process " << (end-start)/1000.0 << " seconds" << std::endl;
