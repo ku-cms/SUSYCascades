@@ -31,6 +31,7 @@ void L_Cand::init(ParticleList PL, ConstRestFrameList RL){
     std::cout << "Can't Make Candidate with different sized lists! \n ParticleList size: " << PL.size() << " \n RestFrameList size: " << RL.GetN() << std::endl;
     return;
   }
+  m_PL = PL;
   m_pair = std::make_pair(PL,RL);
   m_TLV.SetPtEtaPhiM(0.,0.,0.,0.);
   for(int i = 0; i < int(PL.size()); i++){
@@ -42,6 +43,16 @@ void L_Cand::init(ParticleList PL, ConstRestFrameList RL){
 
 const ParticleList L_Cand::PL(){
   return m_PL;
+}
+
+const ConstRestFrameList L_Cand::RL(){
+  return m_pair.second;
+}
+
+TLorentzVector L_Cand::TLV(int index){
+  if(index < 0)
+    return m_TLV;
+  else return PL()[index];
 }
 
 Particle L_Cand::Cand_Part(int index){
@@ -132,3 +143,21 @@ double L_Cand::Beta(){
   return m_TLV.P()/m_TLV.E();
 }
 
+const RestFrame& L_Cand::CandFrame(){
+  const RestFrame& LAB = RL().Get(0).GetLabFrame();
+  ConstRestFrameList children = LAB.GetListVisibleFrames();
+  int minDepth = LAB.GetFrameDepth(RL().Get(0));
+  int minIndex = 0;
+  for(int i = 1; i < RL().GetN(); i++){
+    int newDepth = LAB.GetFrameDepth(RL().Get(i));
+    if(newDepth < minDepth){
+      minDepth = LAB.GetFrameDepth(RL().Get(i));
+      minIndex = i;
+    }
+  }
+  return RL().Get(minIndex).GetProductionFrame();
+}
+
+double L_Cand::CosDecayAngle(const RestFrame& Frame){
+  return CandFrame().GetCosDecayAngle(Frame);
+}

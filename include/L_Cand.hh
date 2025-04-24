@@ -37,6 +37,8 @@ class L_Cand {
     void SetFlavor(LepFlavor flav);
     LepID CandQual() const;
     void SetCandQual(LepID qual);
+    const RestFrame& CandFrame(); // candidate's frame
+    TLorentzVector TLV(int index = -1);
   
     Particle Cand_Part(int index);
     
@@ -58,6 +60,7 @@ class L_Cand {
     double ProngMassRatio(); // PMR
     double PMR();
     double Beta();
+    double CosDecayAngle(const RestFrame& Frame = RestFrame::Empty());
   
 };
 
