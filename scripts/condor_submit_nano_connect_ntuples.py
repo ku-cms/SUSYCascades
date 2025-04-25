@@ -6,9 +6,8 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'p
 from CondorJobCountMonitor import CondorJobCountMonitor
 
 # Example submission: 
-#  python3 scripts/condor_submit_nano_connect_ntuples.py -split 10 -list samples/NANO/Lists/Fall17_102X.list --sys --slim --csv 
+# nohup python3 scripts/condor_submit_nano_connect_ntuples.py -split 25 -list samples/NANO/Lists/Summer23BPix_130X.list --verbose --csv > submit_bkg.debug 2>&1 &
 #
-#  python3 scripts/condor_submit_nano_connect_ntuples.py -split 20 -list samples/NANO/Lists/Fall17_102X.list --sys --slim --verbose --csv && python3 scripts/condor_submit_nano_connect_ntuples.py -split 30 -list samples/NANO/Lists/Fall17_102X_SMS_FastSim_Quick.list --sys --slim --sms --fastsim --verbose --csv && python3 scripts/condor_submit_nano_connect_ntuples.py -split 10 -list samples/NANO/Lists/Fall17_102X_Data_MET.list --slim --data --verbose --csv 
 
 # ----------------------------------------------------------- #
 # Parameters
@@ -432,7 +431,7 @@ if __name__ == "__main__":
     input_info      = {}
 
     # tags need to follow the format of CAMPAIGN_CMSSWX and CMSSWX must be 5 chars for later DAS checks to work
-    knowntags = ["Autumn18_102X","Fall17_102X","Summer16_102X","Summer20UL16_102X","Summer20UL16APV_102X","Summer20UL17_102X","Summer20UL18_102X","Summer22_130X","Summer22EE_130X","Summer23_130X","Summer23BPix_130X"]
+    knowntags = ["Autumn18_102X","Fall17_102X","Summer16_102X","Summer20UL16_106X","Summer20UL16APV_106X","Summer20UL17_106X","Summer20UL18_106X","Summer22_130X","Summer22EE_130X","Summer23_130X","Summer23BPix_130X"]
     filetag = ''
     
     n_samples = 0
