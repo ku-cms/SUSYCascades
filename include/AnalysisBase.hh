@@ -134,6 +134,7 @@ protected:
   bool m_IsFastSim;
   
   virtual double GetEventWeight();
+  virtual double GetGenEventWeight();
   virtual double GetPUWeight(int updown = 0);
   virtual double GetPDFWeight(int updown = 0);
   virtual double GetMuFWeight(int updown = 0);

@@ -28,6 +28,7 @@ private:
   
   // common variables for output tree
   double m_weight;
+  double m_genweight;
   double m_PUweight;
   double m_PUweight_up;
   double m_PUweight_down;

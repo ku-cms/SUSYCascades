@@ -178,6 +178,7 @@ TTree* ReducedNtuple<Base>::InitOutputTree(const string& sample, bool do_slim){
   tree->Branch("treeSkipped", &m_treeSkipped);
   
   tree->Branch("weight", &m_weight);
+  tree->Branch("genweight", &m_genweight);
 
   tree->Branch("PUweight", &m_PUweight);
   tree->Branch("PUweight_up", &m_PUweight_up);
@@ -1090,6 +1091,7 @@ void ReducedNtuple<Base>::FillOutputTree(TTree* tree, const Systematic& sys, boo
   if(!AnalysisBase<Base>::IsData()){
     m_weight = AnalysisBase<Base>::GetEventWeight();
     //if(m_weight == 0.) cout << "Event Weight " << tree->GetName() << " " << m_weight << endl;
+    m_genweight = AnalysisBase<Base>::GetGenEventWeight();
     
     m_PUweight = AnalysisBase<Base>::GetPUWeight(0);
     m_PUweight_up = AnalysisBase<Base>::GetPUWeight(1);
@@ -1151,6 +1153,7 @@ void ReducedNtuple<Base>::FillOutputTree(TTree* tree, const Systematic& sys, boo
     m_genMET_phi = genETMiss.Phi();
   } else {
     m_weight = 1;
+    m_genweight = 1;
     m_PUweight = 1;
     m_PUweight_up = 1;
     m_PUweight_down = 1;
