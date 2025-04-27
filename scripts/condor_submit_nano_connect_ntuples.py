@@ -64,7 +64,7 @@ def write_sh_single(srcfile,ifile,ofile,logfile,outfile,errfile,dataset,filetag,
     errfile = errfile.replace('_$(ItemIndex)_$(Step)','_0_0')
     logfile = logfile.replace('_$(ItemIndex)_$(Step)','_0_0')
     list_name = os.path.basename(ifile).replace('_list', '_0')
-    ifile = os.path.join('./config/list', list_name)
+    ifile = os.path.join('./config/list', dataset+'_'+filetag, list_name)
 
     fsrc = open(srcfile,'w')
     fsrc.write('# Note: For only submitting 1 job! \n')
