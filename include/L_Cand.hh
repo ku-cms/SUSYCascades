@@ -41,8 +41,9 @@ class L_Cand {
     TLorentzVector TLV(int index = -1);
   
     Particle Cand_Part(int index);
-    
     Particle operator [] (int index);
+    Particle Cand_PartPlus();
+    Particle Cand_PartMinus();
   
     double Pt();
     double Eta();

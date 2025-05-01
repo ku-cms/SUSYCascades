@@ -79,6 +79,16 @@ Particle L_Cand::operator[](int index){
   return Cand_Part(index);
 }
 
+Particle L_Cand::Cand_PartPlus(){
+  if(Cand_Part(0).Charge() > 0) return Cand_Part(0);
+  else return Cand_Part(1);
+}
+
+Particle L_Cand::Cand_PartMinus(){
+  if(Cand_Part(0).Charge() < 0) return Cand_Part(0);
+  else return Cand_Part(1);
+}
+
 double L_Cand::Pt(){
   return m_TLV.Pt();
 }
