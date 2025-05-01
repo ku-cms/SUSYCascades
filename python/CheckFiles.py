@@ -344,8 +344,8 @@ def main():
         condor_monitor.wait_until_jobs_below()
         print("Running checker...")
         nJobs = checkJobs(directory,output,skipEC,skipDAS,skipMissing,skipSmall,skipErr,skipOut,skipZombie,resubmit,maxResub,filter_list)
-        if resubmit:
-            print(f"Resubmitted a total of {nJobs} job(s)!")
+        if resubmit and nJobs > 0:
+            print(f"Resubmitted a total of {nJobs} jobs!")
         print("Checker Complete!")
 
 if __name__ == "__main__":
