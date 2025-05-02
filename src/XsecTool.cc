@@ -467,6 +467,8 @@ std::map<std::string,double> XsecTool::InitMap_Xsec_BKG(){
   
   Label2Xsec["WJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8"] = 61526.7;
 
+  Label2Xsec["GluGluHto2Zto2L2Q_M-125_TuneCP5_13p6TeV_powheg-jhugenv7520-pythia8"] = 1.05372966;
+
   return Label2Xsec;
 }
 
