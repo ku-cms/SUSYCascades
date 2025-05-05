@@ -726,8 +726,6 @@ void Plot_EventCount(TH2* h, bool Scale, double Scale_Val, bool Zbi, double Zbi_
     // h->GetXaxis()->SetBinLabel(bin, "5L");
   }
 
-  if(Scale)
-    h->Scale(Scale_Val);
   if(Zbi){
     for(int i = 1; i <= h->GetNbinsX(); i++){
       for(int j = 1; j <= h->GetNbinsY(); j++){
@@ -829,6 +827,144 @@ void Plot_EventCount(TH2* h, bool Scale, double Scale_Val, bool Zbi, double Zbi_
   can->Write(0,TObject::kWriteDelete);
   file->Close();
   delete h;
+  delete can;
+}
+
+void Plot_CutFlow(vector<TH1*> vect_h, bool Scale, double Scale_Val, double signal_boost, std::vector<std::pair<std::string, ProcessList>> vec_samples){
+  TH1D* h_BKG = nullptr;
+  bool isBKG = false;
+  int Nsample = vec_samples.size();
+
+  SortHistogramsAndProcesses(vect_h, vec_samples);
+
+  int index = 0;
+  for (auto p = vec_samples.begin(); p != vec_samples.end(); p++){
+    if(p->second[0].Type() == kBkg){
+      if(!isBKG){
+        h_BKG = (TH1D*) vect_h[index]->Clone("TOT_BKG");
+        isBKG = true;
+      } else {
+        h_BKG->Add(vect_h[index]);
+      }
+    } // if(p->second[0].Type() == kBkg)
+    index++;
+  }
+  
+  double h_min, h_max;
+  GetMinMaxIntegral(vect_h, h_min, h_max);
+  if(h_min <= 0.) h_min = 1.e-1;
+  double fmax = -1.;
+  int imax = -1;
+  for(int i = 0; i < Nsample; i++){
+    if(vect_h[i]->GetMaximum() > fmax){
+      fmax = vect_h[i]->GetMaximum();
+      imax = i;
+    }
+  }
+
+  TCanvas* can = (TCanvas*) new TCanvas("can_CutFlow","can_CutFlow",1200,700);
+
+  double hlo = 0.09;
+  double hhi = 0.22;
+  double hbo = 0.15;
+  double hto = 0.07;
+  can->SetLeftMargin(hlo);
+  can->SetRightMargin(hhi);
+  can->SetBottomMargin(hbo);
+  can->SetTopMargin(hto);
+  can->SetGridx();
+  can->SetGridy();
+  can->SetLogy();
+  can->Draw();
+  can->cd();
+
+  vect_h[imax]->Draw("SAMES");
+  vect_h[imax]->GetXaxis()->CenterTitle();
+  vect_h[imax]->GetXaxis()->SetTitleFont(42);
+  vect_h[imax]->GetXaxis()->SetTitleSize(0.05);
+  vect_h[imax]->GetXaxis()->SetTitleOffset(1.0);
+  vect_h[imax]->GetXaxis()->SetLabelFont(42);
+  vect_h[imax]->GetXaxis()->SetLabelSize(0.04);
+  vect_h[imax]->GetXaxis()->SetTickSize(0.);
+  vect_h[imax]->GetYaxis()->CenterTitle();
+  vect_h[imax]->GetYaxis()->SetTitleFont(42);
+  vect_h[imax]->GetYaxis()->SetTitleSize(0.04);
+  vect_h[imax]->GetYaxis()->SetTitleOffset(0.9);
+  vect_h[imax]->GetYaxis()->SetLabelFont(42);
+  vect_h[imax]->GetYaxis()->SetLabelSize(0.035);
+  vect_h[imax]->GetYaxis()->SetRangeUser(0.9*h_min,1.1*h_max);
+
+  index = 0;
+  for (auto p = vec_samples.begin(); p != vec_samples.end(); p++){
+    if(vect_h[index]->GetEntries() == 0) {index++; continue;}
+    if(p->second[0].Type() == kBkg){
+      vect_h[index]->SetLineColor(FP.getColor(p->first));
+      vect_h[index]->SetMarkerColor(FP.getColor(p->first));
+      vect_h[index]->SetLineWidth(1.0);
+      vect_h[index]->SetFillColor(FP.getColor(p->first));
+      vect_h[index]->Draw("SAMES");
+    }
+    if(p->second[0].Type() == kSig){
+      vect_h[index]->SetLineWidth(1.0);
+      vect_h[index]->SetLineStyle(7.0);
+      vect_h[index]->SetLineColor(FP.getColor(p->first));
+      vect_h[index]->SetMarkerColor(FP.getColor(p->first));
+      vect_h[index]->Draw("SAMES");
+    }
+    index++;
+  }
+
+  if(isBKG){
+    h_BKG->SetLineWidth(1.0);
+    h_BKG->SetLineColor(kRed);
+    h_BKG->SetMarkerColor(kRed);
+    h_BKG->Draw("SAMES");
+  }
+  
+  TLegend* leg = new TLegend(1.-hhi+0.01, 1.- (vect_h.size()+1)*(1.-0.49)/9., 0.98, 1.-hto-0.005);
+  leg->SetTextFont(132);
+  leg->SetTextSize(0.042);
+  leg->SetFillColor(kWhite);
+  leg->SetLineColor(kWhite);
+  leg->SetShadowColor(kWhite);
+  if(isBKG) leg->AddEntry(h_BKG, "SM total");
+  index = 0;
+  for (auto p = vec_samples.begin(); p != vec_samples.end(); p++){
+    if(vect_h[index]->GetEntries() == 0) {index++; continue;}
+    if(p->second[0].Type() == kSig && signal_boost != 1.)
+      leg->AddEntry(vect_h[index],(FP.getTitle(p->first)+" * "+std::to_string(int(signal_boost))).c_str(),"LP");
+    else
+      leg->AddEntry(vect_h[index],FP.getTitle(p->first).c_str(),"LP");
+    index++;
+  }
+  leg->SetLineColor(kWhite);
+  leg->SetFillColor(kWhite);
+  leg->SetShadowColor(kWhite);
+  leg->Draw("SAME");
+
+  TLatex l;
+  l.SetNDC();
+  l.SetTextSize(0.04);
+  l.SetTextFont(42);
+  l.DrawLatex(0.1,0.943,"#bf{#it{CMS}} Internal 13 TeV Simulation");
+  l.SetTextSize(0.05);
+  l.SetTextFont(132);
+  l.SetTextSize(0.045);
+  l.SetTextFont(42);
+
+  string pdf_title = folder_name+"/"+g_PlotTitle+"_";
+  pdf_title += can->GetTitle();
+  gErrorIgnoreLevel = 1001;
+  if(SavePDF)
+    can->SaveAs((pdf_title+".pdf").c_str());
+  gErrorIgnoreLevel = 0;
+  TFile* file = new TFile(output_root_file.c_str(),"UPDATE");
+  can->Write(0,TObject::kWriteDelete);
+  file->Close();
+  for(int i = 0; i < Nsample; i++){
+    delete vect_h[i];
+  }
+  delete leg;
   delete can;
 }
 

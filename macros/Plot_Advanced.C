@@ -5,7 +5,6 @@ void Plot_Advanced(){
   Long64_t start = gSystem->Now();
   RestFrames::SetStyle();
   //InitRJRtree();
-  InitRJRtree2();
 
   string NtuplePath = "/local-scratch/zflowers/NTUPLES/HADD/";
   //string NtuplePath = "root://cmseos.fnal.gov//store/user/lpcsusylep/NTUPLES_v2/";
@@ -16,15 +15,17 @@ void Plot_Advanced(){
   ScaleFactorTool SF;
 
   output_root_file += "Advanced_Cands_";
+
+  bool CandSameHemi = true;
+  if(CandSameHemi) g_Label += "SameHemi_";
+
   //g_Label = "TESTING";
-  //g_Label = "PreSelection";
-  //g_Label = "Gold & RISR > 0.7";
-  //g_Label = "PreSelection & 3L Gold & Z* & 0B";
+  g_Label = "PreSelection";
+  //g_Label = "PreSelection & Gold";
   //g_Label = "PreSelection & 4 Gold #mu";
-  g_Label = "No Cuts";
+  //g_Label = "No Cuts";
   //g_Label = "ATLAS Cuts";
   //g_Label = "MET > 150";
-  //g_Label = "Gold & RISR > 0.7 & 0B & gamma_{CM0} < 0.7 & NSJ = 0";
   
   output_root_file += g_Label;
   SanitizeString(output_root_file);
@@ -114,6 +115,16 @@ void Plot_Advanced(){
   hist_stacks.push_back(&hist_stack_CandDeltaPhiMET);
   vector<TH1*> hist_stack_CandCosDecayAngle;
   hist_stacks.push_back(&hist_stack_CandCosDecayAngle);
+  vector<TH1*> hist_stack_RZPara;
+  hist_stacks.push_back(&hist_stack_RZPara);
+  vector<TH1*> hist_stack_RZPerp;
+  hist_stacks.push_back(&hist_stack_RZPerp);
+  vector<TH1*> hist_stack_RZAng;
+  hist_stacks.push_back(&hist_stack_RZAng);
+  vector<TH1*> hist_stack_PZPara;
+  hist_stacks.push_back(&hist_stack_PZPara);
+  vector<TH1*> hist_stack_PZPerp;
+  hist_stacks.push_back(&hist_stack_PZPerp);
   vector<TH1*> hist_stack_MatchedCandML;
   hist_stacks.push_back(&hist_stack_MatchedCandML);
   vector<TH1*> hist_stack_MatchedCandBeta;
@@ -145,18 +156,28 @@ void Plot_Advanced(){
   hist_CandsEventCount->GetYaxis()->SetBinLabel(EC_bins, "TOT BKG");
   TH2D* hist_CandsZbi = new TH2D("CandsZbi", "CandsZbi", 23, 0, 23, Zbi_bins, 0, Zbi_bins);
 
+  // Cut flows
+  vector<TH1*> vect_hist_cutflow;
+  const int CF_bins = 10;
+
   for (auto p = vec_samples.begin(); p != vec_samples.end(); p++){
     hist_EventCount->GetYaxis()->SetBinLabel(vec_samples_index+1, FP.getTitle(p->first).c_str());
     hist_CandsEventCount->GetYaxis()->SetBinLabel(vec_samples_index+1, FP.getTitle(p->first).c_str());
+
+    g_PlotTitle = p->first; 
+    int Nsample = p->second.GetN();
+    string title = p->first;
 
     // vectors to hold 'generic' plotting objects
     vector<TH1*> hists1;
     vector<TH2*> hists2;
     vector<TEfficiency*> effs;
 
-    g_PlotTitle = p->first; 
-    int Nsample = p->second.GetN();
-    string title = p->first;
+    // Cut flows
+    TH1D* hist_CutFlow = new TH1D((title+"_CutFlow").c_str(), (title+"_CutFlow").c_str(), CF_bins, 0, CF_bins);
+    vect_hist_cutflow.push_back(hist_CutFlow);
+    hists1.push_back(hist_CutFlow);
+    int CF_bin = 0;
 
     // Declare hists here
     // push_back hists that you want to plot at the end (hists are filled regardless of whether or not you push_back)
@@ -212,6 +233,21 @@ void Plot_Advanced(){
     TH1D* hist_CandCosDecayAngle = new TH1D((title+"_CandCosDecayAngle").c_str(), (title+"_CandCosDecayAngle;CandCosDecayAngle").c_str(), g_NX/2, -1., 1.);
     hists1.push_back(hist_CandCosDecayAngle);
     hist_stack_CandCosDecayAngle.push_back(hist_CandCosDecayAngle);
+    TH1D* hist_RZPara = new TH1D((title+"_RZPara").c_str(), (title+"_RZPara;RZPara").c_str(), g_NX/2, -1.5, 1.5);
+    hists1.push_back(hist_RZPara);
+    hist_stack_RZPara.push_back(hist_RZPara);
+    TH1D* hist_RZPerp = new TH1D((title+"_RZPerp").c_str(), (title+"_RZPerp;RZPerp").c_str(), g_NX/2, 0., 2.);
+    hists1.push_back(hist_RZPerp);
+    hist_stack_RZPerp.push_back(hist_RZPerp);
+    TH1D* hist_RZAng = new TH1D((title+"_RZAng").c_str(), (title+"_RZAng;RZAng").c_str(), g_NX/2, 0., 3.15);
+    hists1.push_back(hist_RZAng);
+    hist_stack_RZAng.push_back(hist_RZAng);
+    TH1D* hist_PZPara = new TH1D((title+"_PZPara").c_str(), (title+"_PZPara;PZPara").c_str(), g_NX/2, 0., 1000.);
+    hists1.push_back(hist_PZPara);
+    hist_stack_PZPara.push_back(hist_PZPara);
+    TH1D* hist_PZPerp = new TH1D((title+"_PZPerp").c_str(), (title+"_PZPerp;PZPerp").c_str(), g_NX/2, 0., 1000.);
+    hists1.push_back(hist_PZPerp);
+    hist_stack_PZPerp.push_back(hist_PZPerp);
 
     TH1D* hist_MatchedCandML = new TH1D((title+"_MatchedCandML").c_str(), (title+"_MatchedCandML;MatchedCandML").c_str(), g_NX/2, 0., 150.);
     hists1.push_back(hist_MatchedCandML);
@@ -346,6 +382,24 @@ void Plot_Advanced(){
     hists2.push_back(hist_CandML_CandDeltaPhiMET);
     TH2D* hist_CandML_CandCosDecayAngle = new TH2D((title+"_CandML_CandCosDecayAngle").c_str(), (title+"_CandML_CandCosDecayAngle;CandML;CandCosDecayAngle").c_str(), g_NX/2., 0., 150., g_NX/2, -1., 1.);
     hists2.push_back(hist_CandML_CandCosDecayAngle);
+    TH2D* hist_Beta_CandCosDecayAngle = new TH2D((title+"_Beta_CandCosDecayAngle").c_str(), (title+"_Beta_CandCosDecayAngle;Beta;CandCosDecayAngle").c_str(), g_NX/2., 0., 1., g_NX/2, -1., 1.);
+    hists2.push_back(hist_Beta_CandCosDecayAngle);
+    TH2D* hist_Beta_CandDeltaPhiMET = new TH2D((title+"_Beta_CandDeltaPhiMET").c_str(), (title+"_Beta_CandDeltaPhiMET;Beta;CandDeltaPhiMET").c_str(), g_NX/2., 0., 1., g_NX/2, 0., 3.15);
+    hists2.push_back(hist_Beta_CandDeltaPhiMET);
+    TH2D* hist_CandCosDecayAngle_CandDeltaPhiMET = new TH2D((title+"_CandCosDecayAngle_CandDeltaPhiMET").c_str(), (title+"_CandCosDecayAngle_CandDeltaPhiMET;CandCosDecayAngle;CandDeltaPhiMET").c_str(), g_NX/2., -1., 1., g_NX/2, 0., 3.15);
+    hists2.push_back(hist_CandCosDecayAngle_CandDeltaPhiMET);
+    TH2D* hist_CandML_RZPara = new TH2D((title+"_CandML_RZPara").c_str(), (title+"_CandML_RZPara;CandML;RZPara").c_str(), g_NX/2., 0., 150., g_NX/2, -1.5, 1.5);
+    hists2.push_back(hist_CandML_RZPara);
+    TH2D* hist_CandML_RZPerp = new TH2D((title+"_CandML_RZPerp").c_str(), (title+"_CandML_RZPerp;CandML;RZPerp").c_str(), g_NX/2., 0., 150., g_NX/2, 0., 2.);
+    hists2.push_back(hist_CandML_RZPerp);
+    TH2D* hist_CandML_RZAng = new TH2D((title+"_CandML_RZAng").c_str(), (title+"_CandML_RZAng;CandML;RZAng").c_str(), g_NX/2., 0., 150., g_NX/2, 0., 3.15);
+    hists2.push_back(hist_CandML_RZAng);
+    TH2D* hist_RZPara_RZPerp = new TH2D((title+"_RZPara_RZPerp").c_str(), (title+"_RZPara_RZPerp;RZPara;RZPerp").c_str(), g_NX/2., -1.5, 1.5, g_NX/2, 0., 2.);
+    hists2.push_back(hist_RZPara_RZPerp);
+    TH2D* hist_CandML_PZPara = new TH2D((title+"_CandML_PZPara").c_str(), (title+"_CandML_PZPara;CandML;PZPara").c_str(), g_NX/2., 0., 150., g_NX/2, 0., 1000.);
+    hists2.push_back(hist_CandML_PZPara);
+    TH2D* hist_CandML_PZPerp = new TH2D((title+"_CandML_PZPerp").c_str(), (title+"_CandML_PZPerp;CandML;PZPerp").c_str(), g_NX/2., 0., 150., g_NX/2, 0., 1000.);
+    hists2.push_back(hist_CandML_PZPerp);
 
     TH2D* hist_RISR_MatchedCandML = new TH2D((title+"_RISR_MatchedCandML").c_str(), (title+"_RISR_MatchedCandML;R_{ISR};MatchedCandML").c_str(), g_NX/2., 0.5, 1., g_NX/2, 0., 150.);
     hists2.push_back(hist_RISR_MatchedCandML);
@@ -431,24 +485,28 @@ void Plot_Advanced(){
           if(!is_data && !is_signal)
             weight *= double(BKG_SKIP);
 
+          // keep total in underflow no matter what cuts applied
+          CF_bin = 0;
+          hist_CutFlow->SetBinContent(CF_bin, hist_CutFlow->GetBinContent(CF_bin)+weight);
+          CF_bin++; hist_CutFlow->SetBinContent(CF_bin, hist_CutFlow->GetBinContent(CF_bin)+weight); 
+          hist_CutFlow->GetXaxis()->SetBinLabel(CF_bin, "NTUPLES (>= 2L)");
+
           // Apply PreSelection
-          int Njet    = base->Njet;
+          int Njet = base->Njet;
           if(base->Njet == 0) continue;
+          CF_bin++; hist_CutFlow->SetBinContent(CF_bin, hist_CutFlow->GetBinContent(CF_bin)+weight); 
+          hist_CutFlow->GetXaxis()->SetBinLabel(CF_bin, "Njet > 0");
           
-          if(do_FilterDilepton)
-            if(SF.DileptonEvent(base))
-              continue;
+          //if(do_FilterDilepton)
+          //  if(SF.DileptonEvent(base))
+          //    continue;
           
-          // apply trigger to data and FullSim events
-          //if(!base->METORtrigger && !is_FastSim) // PreSelection
-          //if(!base->SingleElectrontrigger && !base->SingleMuontrigger && !is_FastSim) // ATLAS
-          //  continue;
-          	
           // get variables from root files using base class
           double MET = base->MET;
           double Mperp = base->Mperp;
           double RISR = base->RISR;
           double PTISR = base->PTISR;
+          double PISR = base->PISR;
 
           double MSperpCM0 = base->MSperpCM0;
           double MQperpCM0 = base->MQperpCM0;
@@ -462,12 +520,30 @@ void Plot_Advanced(){
           double gammaCM0 = base->gammaCM0;
 
           //if(MET < 50.) // ATLAS
-          //if(MET < 150.) // PreSelection
-          //  continue;
+          if(MET < 150.) // PreSelection
+            continue;
+          CF_bin++; hist_CutFlow->SetBinContent(CF_bin, hist_CutFlow->GetBinContent(CF_bin)+weight); 
+          hist_CutFlow->GetXaxis()->SetBinLabel(CF_bin, "MET > 150");
+          
+          // apply trigger to data and FullSim events
+          if(!base->METORtrigger && !is_FastSim) // PreSelection
+          //if(!base->SingleElectrontrigger && !base->SingleMuontrigger && !is_FastSim) // ATLAS
+            continue;
+          CF_bin++; hist_CutFlow->SetBinContent(CF_bin, hist_CutFlow->GetBinContent(CF_bin)+weight); 
+          hist_CutFlow->GetXaxis()->SetBinLabel(CF_bin, "MET trigger");
 
-          //if(PTISR < 200.) // PreSelection
+          if(PTISR < 200.) // PreSelection
           //if(PTISR < 300.) // SR
-	  //  continue;
+	    continue;
+          CF_bin++; hist_CutFlow->SetBinContent(CF_bin, hist_CutFlow->GetBinContent(CF_bin)+weight); 
+          hist_CutFlow->GetXaxis()->SetBinLabel(CF_bin, "PTISR > 200");
+            
+          if(RISR < 0.5 || RISR > 1.0) // PreSelection
+          //if(RISR < 0.4 || RISR > 0.7) // CR
+          //if(RISR < 0.7 || RISR > 1.0)
+            continue;
+          CF_bin++; hist_CutFlow->SetBinContent(CF_bin, hist_CutFlow->GetBinContent(CF_bin)+weight); 
+          hist_CutFlow->GetXaxis()->SetBinLabel(CF_bin, "R_{ISR} > 0.5");
 
           // Cleaning cuts...
           double dphiCMI = base->dphiCMI;
@@ -475,27 +551,24 @@ void Plot_Advanced(){
           double x = fabs(dphiCMI);
           
           // PreSelection
-          //if(PTCM > 200.)
-          //  continue;
-          //if(PTCM > -500.*sqrt(std::max(0.,-2.777*x*x+1.388*x+0.8264))+575. &&
-          //   -2.777*x*x+1.388*x+0.8264 > 0.)
-          //  continue;
-          //if(PTCM > -500.*sqrt(std::max(0.,-1.5625*x*x+7.8125*x-8.766))+600. &&
-          //   -1.5625*x*x+7.8125*x-8.766 > 0.)
-          //  continue;
+          if(PTCM > 200.)
+            continue;
+          if(PTCM > -500.*sqrt(std::max(0.,-2.777*x*x+1.388*x+0.8264))+575. &&
+             -2.777*x*x+1.388*x+0.8264 > 0.)
+            continue;
+          if(PTCM > -500.*sqrt(std::max(0.,-1.5625*x*x+7.8125*x-8.766))+600. &&
+             -1.5625*x*x+7.8125*x-8.766 > 0.)
+            continue;
           // End of Cleaning cuts...
+          CF_bin++; hist_CutFlow->SetBinContent(CF_bin, hist_CutFlow->GetBinContent(CF_bin)+weight); 
+          hist_CutFlow->GetXaxis()->SetBinLabel(CF_bin, "Cleaning Cuts");
             
           double dphiMET_V = base->dphiMET_V;
-          //if(fabs(base->dphiMET_V) > acos(-1.)/2.) // PreSelection
-          //  continue;
-            
-          //if(RISR < 0.5 || RISR > 1.0) // PreSelection
-          //if(RISR < 0.4 || RISR > 0.7) // CR
-          //if(RISR < 0.7 || RISR > 1.0)
-          //  continue;
+          if(fabs(base->dphiMET_V) > acos(-1.)/2.) // PreSelection
+            continue;
+          CF_bin++; hist_CutFlow->SetBinContent(CF_bin, hist_CutFlow->GetBinContent(CF_bin)+weight); 
+          hist_CutFlow->GetXaxis()->SetBinLabel(CF_bin, "#Delta #phi(MET, V) < #frac{#pi}{2}");
 
-          //if(gammaCM0 > 0.7)
-          //  continue;
 
           // Get Physics Objects
           int Nlep     = base->Nlep;
@@ -510,12 +583,12 @@ void Plot_Advanced(){
 
           //if(NbjetISR + NbjetS != 2) continue; // CR
           //if(NbjetISR + NbjetS > 1) continue; // SR & ATLAS
+          //CF_bin++; hist_CutFlow->SetBinContent(CF_bin, hist_CutFlow->GetBinContent(CF_bin)+weight); 
+          //hist_CutFlow->GetXaxis()->SetBinLabel(CF_bin, "B-Veto");
 
           //if(Nlep != 3) continue;
           //if(NjetS != 0) continue; // SR
 
-          //if(base->Nmu < 4) continue;
-          
           LepList list_a;
           LepList list_b;
           LepList list_leps;  
@@ -565,15 +638,18 @@ void Plot_Advanced(){
 
           // cut on lepton quality
           bool skip = false;
-          int nSL = 0; // number of selected leps
+          int nBL = 0; // number of bronze leps
+          int nSL = 0; // number of silver leps
+          int nGL = 0; // number of gold leps
           for(int i = 0; i < list_leps.GetN(); i++){
-            //if(list_leps[i].ID() != kBronze) skip = true; // nSL++; // 'Bronze'
-            //if(list_leps[i].ID() == kBronze) skip = true; // nSL++; // 'not Bronze'
-            if(list_leps[i].ID() != kGold) skip = true; // nSL++; // 'Gold'
+            if(list_leps[i].ID() == kBronze) { nBL++; } // 'Bronze'
+            if(list_leps[i].ID() == kSilver) { nSL++; } // 'Silver'
+            if(list_leps[i].ID() == kGold) { nGL++; } // 'Gold'
           }
-          //if(nSL < 2) skip = true; // SR GG
-          //if(nSL == 2) skip = true; // CR notGG
-          //if(skip) continue; 
+          //if(nBL > 0) continue; // no bronze leps
+          //if(nSL > 0) continue; // no silver leps
+          //if(nGL > 0) continue; // no gold leps
+          //if(nSL > 3) continue; // no more than N silver leps
           // ATLAS
           //if(base->PT_lep->at(0) < 28.) continue;
           //if(base->PT_lep->at(1) < 20.) continue;
@@ -588,20 +664,17 @@ void Plot_Advanced(){
           for(int i = 0; i < Nlep-1; i++){
             for(int j = i+1; j < Nlep; j++){
               if(list_leps[i].Flavor() == list_leps[j].Flavor() && list_leps[i].Charge() != list_leps[j].Charge()){ // OSSF
-                if(inVec((*base->index_lep_a),i) == inVec((*base->index_lep_a),j)){ // same hemisphere
+                if(!CandSameHemi && ((NjetS == 0 && Nlep == 2) || (inVec((*base->index_lep_a),i) == inVec((*base->index_lep_a),j)))){ // same hemisphere
                   Particle lep_1;
                   lep_1.SetPtEtaPhiM( base->PT_lep->at(i),
                                       base->Eta_lep->at(i),
                                       base->Phi_lep->at(i),
                                       std::max(0.,base->M_lep->at(i)) );
-                  La.SetLabFrameFourVector(lep_1);
                   Particle lep_2;
                   lep_2.SetPtEtaPhiM( base->PT_lep->at(j),
                     	              base->Eta_lep->at(j),
                     	              base->Phi_lep->at(j),
                     	              std::max(0.,base->M_lep->at(j)) );
-                  Lb.SetLabFrameFourVector(lep_2);
-                  if(!LAB.AnalyzeEvent()) std::cout << "FAILED TO RECO RJR TREE!" << std::endl;
                   if((*base->Index_lep)[i] >= 0)
                     lep_1.SetMomPDGID((*base->genMomPDGID_lep)[(*base->Index_lep)[i]]);
                   else
@@ -629,25 +702,54 @@ void Plot_Advanced(){
           int N_V_lep_cands = V_lep_cands.size();
           //if(N_V_lep_cands < 1) continue;
 
+          TLorentzVector TLV_LAB, TLV_CM, TLV_S;
+          TLV_LAB.SetPtEtaPhiM(base->LAB_Pt, base->LAB_Eta, base->LAB_Phi, base->LAB_M);
+          TLV_CM.SetPtEtaPhiM(base->PTCM, base->EtaCM, base->PhiCM, base->MCM);
+          TLV_S.SetPtEtaPhiM(base->PTS, base->EtaS, base->PhiS, base->MS);
+          TVector3 beta_CM = TLV_CM.BoostVector();
+          TLorentzVector S_CM = TLV_S;
+          S_CM.Boost(-beta_CM); // S in CM frame
+
           for(int i = 0; i < N_V_lep_cands; i++){
-            TLorentzVector TLV_LAB, TLV_CM, TLV_S;
-            TLV_LAB.SetPtEtaPhiM(base->LAB_Pt, base->LAB_Eta, base->LAB_Phi, base->LAB_M);
-            TLV_CM.SetPtEtaPhiM(base->PTCM, base->EtaCM, base->PhiCM, base->MCM);
-            TLV_S.SetPtEtaPhiM(base->PTS, base->EtaS, base->PhiS, base->MS);
             TLorentzVector TLV_Cand = V_lep_cands[i].TLV();
-            TVector3 V1 = TLV_CM.Vect().Unit();
-            TVector3 V2 = TLV_Cand.Vect().Unit();
-            double CosDecayAngle = V1.Dot(V2);
+            TLorentzVector TLV_Cand_CM = TLV_Cand;
+            TLV_Cand_CM.Boost(-beta_CM);
+            TVector3 beta_Cand_CM = TLV_Cand_CM.BoostVector();
+            Particle part_Cand_Child = V_lep_cands[i].Cand_PartPlus();
+            TLorentzVector TLV_Cand_Child;
+            TLV_Cand_Child.SetPtEtaPhiM(part_Cand_Child.Pt(), part_Cand_Child.Eta(), part_Cand_Child.Phi(), part_Cand_Child.M());
+            TLV_Cand_Child.Boost(-beta_CM);
+            TLV_Cand_Child.Boost(-beta_Cand_CM);
+            double CosDecayAngle = TLV_Cand_Child.Vect().Unit().Dot(beta_Cand_CM.Unit());
+            double PZPara = TLV_Cand_CM.Vect().Dot(S_CM.Vect().Unit());
+            double PZPerp = TLV_Cand_CM.Vect().Cross(S_CM.Vect().Unit()).Mag();
+            double RZPara = PZPara/S_CM.Vect().Mag();
+            double RZPerp = PZPerp/S_CM.Vect().Mag();
+            double RZAng = atan(RZPara/RZPerp);
             hist_CandML->Fill(V_lep_cands[i].Mass(), weight);
             hist_CandBeta->Fill(V_lep_cands[i].Beta(), weight);
             hist_CandDeltaPhiMET->Fill(V_lep_cands[i].DeltaPhi(TV3_MET), weight);
             hist_CandCosDecayAngle->Fill(CosDecayAngle, weight);
+            hist_RZPara->Fill(RZPara, weight);
+            hist_RZPerp->Fill(RZPerp, weight);
             hist_RISR_CandML->Fill(RISR, V_lep_cands[i].Mass(), weight);
             hist_RISR_CandBeta->Fill(RISR, V_lep_cands[i].Beta(), weight);
             hist_RISR_CandDeltaPhiMET->Fill(RISR, V_lep_cands[i].DeltaPhi(TV3_MET), weight);
             hist_CandML_CandBeta->Fill(V_lep_cands[i].Mass(), V_lep_cands[i].Beta(), weight);
             hist_CandML_CandDeltaPhiMET->Fill(V_lep_cands[i].Mass(), V_lep_cands[i].DeltaPhi(TV3_MET), weight);
             hist_CandML_CandCosDecayAngle->Fill(V_lep_cands[i].Mass(), CosDecayAngle, weight);
+            hist_CandML_RZPara->Fill(V_lep_cands[i].Mass(), RZPara, weight);
+            hist_CandML_RZPerp->Fill(V_lep_cands[i].Mass(), RZPerp, weight);
+            hist_RZAng->Fill(RZAng, weight);
+            hist_PZPara->Fill(RZPara * S_CM.Vect().Mag(), weight);
+            hist_PZPerp->Fill(RZPerp * S_CM.Vect().Mag(), weight);
+            hist_Beta_CandCosDecayAngle->Fill(V_lep_cands[i].Beta(), CosDecayAngle, weight);
+            hist_Beta_CandDeltaPhiMET->Fill(V_lep_cands[i].Beta(), V_lep_cands[i].DeltaPhi(TV3_MET), weight);
+            hist_CandCosDecayAngle_CandDeltaPhiMET->Fill(CosDecayAngle, V_lep_cands[i].DeltaPhi(TV3_MET), weight);
+            hist_CandML_RZAng->Fill(V_lep_cands[i].Mass(), RZAng, weight);
+            hist_RZPara_RZPerp->Fill(RZPara, RZPerp, weight);
+            hist_CandML_PZPara->Fill(V_lep_cands[i].Mass(), PZPara, weight);
+            hist_CandML_PZPerp->Fill(V_lep_cands[i].Mass(), PZPerp, weight);
             if(V_lep_cands[i].Match() == kMatched){
               hist_MatchedCandML->Fill(V_lep_cands[i].Mass(), weight);
               hist_MatchedCandBeta->Fill(V_lep_cands[i].Beta(), weight);
@@ -916,6 +1018,8 @@ void Plot_Advanced(){
   Plot_EventCount(hist_CandsEventCount, false, lumi, false, 0., false, false);
   Plot_EventCount((TH2*)hist_CandsZbi->Clone("CandsEventCount_SoB"), true, lumi, false, 0., true, false);
   Plot_EventCount(hist_CandsZbi, true, lumi, true, 0.2, false, false);
+
+  Plot_CutFlow(vect_hist_cutflow, true, lumi, signal_boost, vec_samples);
 
   Long64_t end = gSystem->Now();
   std::cout << "Time to process " << (end-start)/1000.0 << " seconds" << std::endl;
