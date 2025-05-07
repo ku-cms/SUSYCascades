@@ -314,7 +314,7 @@ Lep& Lep::SetSource(LepSource source){
 }
 
 std::string Lep::IDLabel() const {
-  string ret = string(m_Flavor == LepFlavor::kElectron ? "el" : "mu");
+  string ret = string(m_Flavor == LepFlavor::kElec ? "el" : "mu");
   if(m_ID == kGold)
     ret += "G";
   if(m_ID == kSilver)
@@ -484,7 +484,7 @@ VS LepList::GetFakeLabels(int Nfake) const {
   for(int i = 0; i < m_N; i++){
     LepSource source = (*this)[i].Source();
     if(source > kTau){
-      label = ((*this)[i].Flavor() == LepFlavor::kElectron ? "elf" : "muf");
+      label = ((*this)[i].Flavor() == LepFlavor::kElec ? "elf" : "muf");
       if(source == kHFB || source == kHFC)
 	label += "0";
       else

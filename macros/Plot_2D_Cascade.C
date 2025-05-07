@@ -325,9 +325,9 @@ void Plot_2D_Cascade(){
 	    id = kGold;
 	  LepFlavor flavor;
 	  if(abs(PDGID) == 11)
-	    flavor = LepFlavor::kElectron;
+	    flavor = kElec;
 	  else
-	    flavor = LepFlavor::kMuon;
+	    flavor = kMuon;
 	  LepCharge charge = (base->Charge_lep->at(index) > 0 ? kPos : kNeg);
 	  LepSource source = LepSource(base->SourceID_lep->at(index));
 	    
@@ -349,9 +349,9 @@ void Plot_2D_Cascade(){
 	    id = kGold;
 	  LepFlavor flavor;
 	  if(abs(PDGID) == 11)
-	    flavor = LepFlavor::kElectron;
+	    flavor = kElec;
 	  else
-	    flavor = LepFlavor::kMuon;
+	    flavor = kMuon;
 	  LepCharge charge = (base->Charge_lep->at(index) > 0 ? kPos : kNeg);
 	  LepSource source = LepSource(base->SourceID_lep->at(index));
 	  

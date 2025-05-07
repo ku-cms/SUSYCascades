@@ -910,10 +910,10 @@ CategoryList CategoryTool::GetCategories_1L(bool maskSR) const {
   cout << "Creating 1L Categories" << endl;
 
   // define leptons
-  Lep elp(LepFlavor::kElectron, kPos);
-  Lep elm(LepFlavor::kElectron, kNeg);
-  Lep mup(LepFlavor::kMuon, kPos);
-  Lep mum(LepFlavor::kMuon, kNeg);
+  Lep elp(kElec, kPos);
+  Lep elm(kElec, kNeg);
+  Lep mup(kMuon, kPos);
+  Lep mum(kMuon, kNeg);
 
   ///////////////////////
   // separated by charge
@@ -1271,10 +1271,10 @@ CategoryList CategoryTool::GetCategories_2L(bool maskSR) const {
   cout << "Creating 2L Categories" << endl;
 
   // define leptons
-  Lep elp(LepFlavor::kElectron, kPos);
-  Lep elm(LepFlavor::kElectron, kNeg);
-  Lep mup(LepFlavor::kMuon, kPos);
-  Lep mum(LepFlavor::kMuon, kNeg);
+  Lep elp(kElec, kPos);
+  Lep elm(kElec, kNeg);
+  Lep mup(kMuon, kPos);
+  Lep mum(kMuon, kNeg);
 
   // 2 L, opposite hemisphere, charge separated
   Leptonic    L_OS_el_el(LepList().Add(elp), LepList().Add(elm), "OSel^el");
@@ -1776,10 +1776,10 @@ CategoryList CategoryTool::GetCategories_3L(bool maskSR) const {
   cout << "Creating 3L Categories" << endl;
 
   // define leptons
-  Lep elp(LepFlavor::kElectron, kPos);
-  Lep elm(LepFlavor::kElectron, kNeg);
-  Lep mup(LepFlavor::kMuon, kPos);
-  Lep mum(LepFlavor::kMuon, kNeg);
+  Lep elp(kElec, kPos);
+  Lep elm(kElec, kNeg);
+  Lep mup(kMuon, kPos);
+  Lep mum(kMuon, kNeg);
 
   ////////////////////
   // flavor inclusive 

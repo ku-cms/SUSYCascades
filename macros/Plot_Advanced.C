@@ -16,13 +16,12 @@ void Plot_Advanced(){
 
   output_root_file += "Advanced_Cands_";
 
-  bool CandSameHemi = true;
-  if(CandSameHemi) g_Label += "SameHemi_";
+  bool CandSameHemi = false;
+  if(CandSameHemi) output_root_file += "SameHemi_";
 
-  //g_Label = "TESTING";
-  g_Label = "PreSelection";
-  //g_Label = "PreSelection & Gold";
-  //g_Label = "PreSelection & 4 Gold #mu";
+  g_Label = "TESTING";
+  //g_Label = "PreSelection";
+  //g_Label = "PreSelection & !Gold";
   //g_Label = "No Cuts";
   //g_Label = "ATLAS Cuts";
   //g_Label = "MET > 150";
@@ -119,12 +118,19 @@ void Plot_Advanced(){
   hist_stacks.push_back(&hist_stack_RZPara);
   vector<TH1*> hist_stack_RZPerp;
   hist_stacks.push_back(&hist_stack_RZPerp);
-  vector<TH1*> hist_stack_RZAng;
-  hist_stacks.push_back(&hist_stack_RZAng);
+  vector<TH1*> hist_stack_PZAng;
+  hist_stacks.push_back(&hist_stack_PZAng);
   vector<TH1*> hist_stack_PZPara;
   hist_stacks.push_back(&hist_stack_PZPara);
   vector<TH1*> hist_stack_PZPerp;
   hist_stacks.push_back(&hist_stack_PZPerp);
+  vector<TH1*> hist_stack_RZParaLABMET;
+  hist_stacks.push_back(&hist_stack_RZParaLABMET);
+  vector<TH1*> hist_stack_RZPerpLABMET;
+  hist_stacks.push_back(&hist_stack_RZPerpLABMET);
+  vector<TH1*> hist_stack_PZAngLABMET;
+  hist_stacks.push_back(&hist_stack_PZAngLABMET);
+
   vector<TH1*> hist_stack_MatchedCandML;
   hist_stacks.push_back(&hist_stack_MatchedCandML);
   vector<TH1*> hist_stack_MatchedCandBeta;
@@ -233,21 +239,30 @@ void Plot_Advanced(){
     TH1D* hist_CandCosDecayAngle = new TH1D((title+"_CandCosDecayAngle").c_str(), (title+"_CandCosDecayAngle;CandCosDecayAngle").c_str(), g_NX/2, -1., 1.);
     hists1.push_back(hist_CandCosDecayAngle);
     hist_stack_CandCosDecayAngle.push_back(hist_CandCosDecayAngle);
-    TH1D* hist_RZPara = new TH1D((title+"_RZPara").c_str(), (title+"_RZPara;RZPara").c_str(), g_NX/2, -1.5, 1.5);
+    TH1D* hist_RZPara = new TH1D((title+"_RZPara").c_str(), (title+"_RZPara;RZPara").c_str(), g_NX/2, -1., 1.);
     hists1.push_back(hist_RZPara);
     hist_stack_RZPara.push_back(hist_RZPara);
-    TH1D* hist_RZPerp = new TH1D((title+"_RZPerp").c_str(), (title+"_RZPerp;RZPerp").c_str(), g_NX/2, 0., 2.);
+    TH1D* hist_RZPerp = new TH1D((title+"_RZPerp").c_str(), (title+"_RZPerp;RZPerp").c_str(), g_NX/2, 0., 1.5);
     hists1.push_back(hist_RZPerp);
     hist_stack_RZPerp.push_back(hist_RZPerp);
-    TH1D* hist_RZAng = new TH1D((title+"_RZAng").c_str(), (title+"_RZAng;RZAng").c_str(), g_NX/2, 0., 3.15);
-    hists1.push_back(hist_RZAng);
-    hist_stack_RZAng.push_back(hist_RZAng);
-    TH1D* hist_PZPara = new TH1D((title+"_PZPara").c_str(), (title+"_PZPara;PZPara").c_str(), g_NX/2, 0., 1000.);
+    TH1D* hist_PZAng = new TH1D((title+"_PZAng").c_str(), (title+"_PZAng;PZAng").c_str(), g_NX/2, -1.6, 1.6);
+    hists1.push_back(hist_PZAng);
+    hist_stack_PZAng.push_back(hist_PZAng);
+    TH1D* hist_PZPara = new TH1D((title+"_PZPara").c_str(), (title+"_PZPara;PZPara").c_str(), g_NX/2, 0., 600.);
     hists1.push_back(hist_PZPara);
     hist_stack_PZPara.push_back(hist_PZPara);
-    TH1D* hist_PZPerp = new TH1D((title+"_PZPerp").c_str(), (title+"_PZPerp;PZPerp").c_str(), g_NX/2, 0., 1000.);
+    TH1D* hist_PZPerp = new TH1D((title+"_PZPerp").c_str(), (title+"_PZPerp;PZPerp").c_str(), g_NX/2, 0., 600.);
     hists1.push_back(hist_PZPerp);
     hist_stack_PZPerp.push_back(hist_PZPerp);
+    TH1D* hist_RZParaLABMET = new TH1D((title+"_RZParaLABMET").c_str(), (title+"_RZParaLABMET;RZParaLABMET").c_str(), g_NX/2, -1.5, 1.5);
+    hists1.push_back(hist_RZParaLABMET);
+    hist_stack_RZParaLABMET.push_back(hist_RZParaLABMET);
+    TH1D* hist_RZPerpLABMET = new TH1D((title+"_RZPerpLABMET").c_str(), (title+"_RZPerpLABMET;RZPerpLABMET").c_str(), g_NX/2, 0., 1.5);
+    hists1.push_back(hist_RZPerpLABMET);
+    hist_stack_RZPerpLABMET.push_back(hist_RZPerpLABMET);
+    TH1D* hist_PZAngLABMET = new TH1D((title+"_PZAngLABMET").c_str(), (title+"_PZAngLABMET;PZAngLABMET").c_str(), g_NX/2, -1.6, 1.6);
+    hists1.push_back(hist_PZAngLABMET);
+    hist_stack_PZAngLABMET.push_back(hist_PZAngLABMET);
 
     TH1D* hist_MatchedCandML = new TH1D((title+"_MatchedCandML").c_str(), (title+"_MatchedCandML;MatchedCandML").c_str(), g_NX/2, 0., 150.);
     hists1.push_back(hist_MatchedCandML);
@@ -388,18 +403,31 @@ void Plot_Advanced(){
     hists2.push_back(hist_Beta_CandDeltaPhiMET);
     TH2D* hist_CandCosDecayAngle_CandDeltaPhiMET = new TH2D((title+"_CandCosDecayAngle_CandDeltaPhiMET").c_str(), (title+"_CandCosDecayAngle_CandDeltaPhiMET;CandCosDecayAngle;CandDeltaPhiMET").c_str(), g_NX/2., -1., 1., g_NX/2, 0., 3.15);
     hists2.push_back(hist_CandCosDecayAngle_CandDeltaPhiMET);
-    TH2D* hist_CandML_RZPara = new TH2D((title+"_CandML_RZPara").c_str(), (title+"_CandML_RZPara;CandML;RZPara").c_str(), g_NX/2., 0., 150., g_NX/2, -1.5, 1.5);
+    TH2D* hist_CandML_RZPara = new TH2D((title+"_CandML_RZPara").c_str(), (title+"_CandML_RZPara;CandML;RZPara").c_str(), g_NX/2., 0., 150., g_NX/2, -1., 1.);
     hists2.push_back(hist_CandML_RZPara);
-    TH2D* hist_CandML_RZPerp = new TH2D((title+"_CandML_RZPerp").c_str(), (title+"_CandML_RZPerp;CandML;RZPerp").c_str(), g_NX/2., 0., 150., g_NX/2, 0., 2.);
+    TH2D* hist_CandML_RZPerp = new TH2D((title+"_CandML_RZPerp").c_str(), (title+"_CandML_RZPerp;CandML;RZPerp").c_str(), g_NX/2., 0., 150., g_NX/2, 0., 1.5);
     hists2.push_back(hist_CandML_RZPerp);
-    TH2D* hist_CandML_RZAng = new TH2D((title+"_CandML_RZAng").c_str(), (title+"_CandML_RZAng;CandML;RZAng").c_str(), g_NX/2., 0., 150., g_NX/2, 0., 3.15);
-    hists2.push_back(hist_CandML_RZAng);
-    TH2D* hist_RZPara_RZPerp = new TH2D((title+"_RZPara_RZPerp").c_str(), (title+"_RZPara_RZPerp;RZPara;RZPerp").c_str(), g_NX/2., -1.5, 1.5, g_NX/2, 0., 2.);
+    TH2D* hist_CandML_PZAng = new TH2D((title+"_CandML_PZAng").c_str(), (title+"_CandML_PZAng;CandML;PZAng").c_str(), g_NX/2., 0., 150., g_NX/2, -1.6, 1.6);
+    hists2.push_back(hist_CandML_PZAng);
+    TH2D* hist_RZPara_RZPerp = new TH2D((title+"_RZPara_RZPerp").c_str(), (title+"_RZPara_RZPerp;RZPara;RZPerp").c_str(), g_NX/2., -1., 1., g_NX/2, 0., 1.5);
     hists2.push_back(hist_RZPara_RZPerp);
-    TH2D* hist_CandML_PZPara = new TH2D((title+"_CandML_PZPara").c_str(), (title+"_CandML_PZPara;CandML;PZPara").c_str(), g_NX/2., 0., 150., g_NX/2, 0., 1000.);
+    TH2D* hist_CandML_PZPara = new TH2D((title+"_CandML_PZPara").c_str(), (title+"_CandML_PZPara;CandML;PZPara").c_str(), g_NX/2., 0., 150., g_NX/2, 0., 600.);
     hists2.push_back(hist_CandML_PZPara);
-    TH2D* hist_CandML_PZPerp = new TH2D((title+"_CandML_PZPerp").c_str(), (title+"_CandML_PZPerp;CandML;PZPerp").c_str(), g_NX/2., 0., 150., g_NX/2, 0., 1000.);
+    TH2D* hist_CandML_PZPerp = new TH2D((title+"_CandML_PZPerp").c_str(), (title+"_CandML_PZPerp;CandML;PZPerp").c_str(), g_NX/2., 0., 150., g_NX/2, 0., 600.);
     hists2.push_back(hist_CandML_PZPerp);
+
+    TH2D* hist_CandML_RZParaLABMET = new TH2D((title+"_CandML_RZParaLABMET").c_str(), (title+"_CandML_RZParaLABMET;CandML;RZParaLABMET").c_str(), g_NX/2., 0., 150., g_NX/2, -1.5, 1.5);
+    hists2.push_back(hist_CandML_RZParaLABMET);
+    TH2D* hist_CandML_RZPerpLABMET = new TH2D((title+"_CandML_RZPerpLABMET").c_str(), (title+"_CandML_RZPerpLABMET;CandML;RZPerpLABMET").c_str(), g_NX/2., 0., 150., g_NX/2, 0., 2.);
+    hists2.push_back(hist_CandML_RZPerpLABMET);
+    TH2D* hist_CandML_PZAngLABMET = new TH2D((title+"_CandML_PZAngLABMET").c_str(), (title+"_CandML_PZAngLABMET;CandML;PZAngLABMET").c_str(), g_NX/2., 0., 150., g_NX/2, -1.6, 1.6);
+    hists2.push_back(hist_CandML_PZAngLABMET);
+    TH2D* hist_RZParaLABMET_RZPerpLABMET = new TH2D((title+"_RZParaLABMET_RZPerpLABMET").c_str(), (title+"_RZParaLABMET_RZPerpLABMET;RZParaLABMET;RZPerpLABMET").c_str(), g_NX/2., -1.5, 1.5, g_NX/2, 0., 2.);
+    hists2.push_back(hist_RZParaLABMET_RZPerpLABMET);
+    TH2D* hist_CandML_PZParaLABMET = new TH2D((title+"_CandML_PZParaLABMET").c_str(), (title+"_CandML_PZParaLABMET;CandML;PZParaLABMET").c_str(), g_NX/2., 0., 150., g_NX/2, 0., 600.);
+    hists2.push_back(hist_CandML_PZParaLABMET);
+    TH2D* hist_CandML_PZPerpLABMET = new TH2D((title+"_CandML_PZPerpLABMET").c_str(), (title+"_CandML_PZPerpLABMET;CandML;PZPerpLABMET").c_str(), g_NX/2., 0., 150., g_NX/2, 0., 600.);
+    hists2.push_back(hist_CandML_PZPerpLABMET);
 
     TH2D* hist_RISR_MatchedCandML = new TH2D((title+"_RISR_MatchedCandML").c_str(), (title+"_RISR_MatchedCandML;R_{ISR};MatchedCandML").c_str(), g_NX/2., 0.5, 1., g_NX/2, 0., 150.);
     hists2.push_back(hist_RISR_MatchedCandML);
@@ -606,9 +634,9 @@ void Plot_Advanced(){
             if(qual == 1) id = kSilver;
             LepFlavor flavor;
             if(abs(PDGID) == 11)
-              flavor = LepFlavor::kElectron;
+              flavor = kElec;
             else
-              flavor = LepFlavor::kMuon;
+              flavor = kMuon;
             LepCharge charge = (base->Charge_lep->at(index) > 0 ? kPos : kNeg);
             LepSource source = LepSource(base->SourceID_lep->at(index));
               
@@ -626,9 +654,9 @@ void Plot_Advanced(){
             if(qual == 1) id = kSilver;
             LepFlavor flavor;
             if(abs(PDGID) == 11)
-              flavor = LepFlavor::kElectron;
+              flavor = kElec;
             else
-              flavor = LepFlavor::kMuon;
+              flavor = kMuon;
             LepCharge charge = (base->Charge_lep->at(index) > 0 ? kPos : kNeg);
             LepSource source = LepSource(base->SourceID_lep->at(index));
             
@@ -656,44 +684,43 @@ void Plot_Advanced(){
           //if(Nlep > 2)
           //  if(base->PT_lep->at(2) < 10.) continue;
 
-          TVector3 TV3_MET;
-          TV3_MET.SetPtEtaPhi(MET, 0., base->MET_phi);
-
           // Leptonic Candidates
           std::vector<L_Cand> V_lep_cands;
           for(int i = 0; i < Nlep-1; i++){
             for(int j = i+1; j < Nlep; j++){
               if(list_leps[i].Flavor() == list_leps[j].Flavor() && list_leps[i].Charge() != list_leps[j].Charge()){ // OSSF
-                if(!CandSameHemi && ((NjetS == 0 && Nlep == 2) || (inVec((*base->index_lep_a),i) == inVec((*base->index_lep_a),j)))){ // same hemisphere
-                  Particle lep_1;
-                  lep_1.SetPtEtaPhiM( base->PT_lep->at(i),
-                                      base->Eta_lep->at(i),
-                                      base->Phi_lep->at(i),
-                                      std::max(0.,base->M_lep->at(i)) );
-                  Particle lep_2;
-                  lep_2.SetPtEtaPhiM( base->PT_lep->at(j),
-                    	              base->Eta_lep->at(j),
-                    	              base->Phi_lep->at(j),
-                    	              std::max(0.,base->M_lep->at(j)) );
-                  if((*base->Index_lep)[i] >= 0)
-                    lep_1.SetMomPDGID((*base->genMomPDGID_lep)[(*base->Index_lep)[i]]);
-                  else
-                    lep_1.SetMomPDGID(0);
-                  if((*base->Index_lep)[j] >= 0)
-                    lep_2.SetMomPDGID((*base->genMomPDGID_lep)[(*base->Index_lep)[j]]);
-                  else
-                    lep_2.SetMomPDGID(0);
-                  ParticleList cand_list_parts;
-                  cand_list_parts.push_back(lep_1);
-                  cand_list_parts.push_back(lep_2);
-                  ConstRestFrameList cand_list_frames;
-                  cand_list_frames.Add(La);
-                  cand_list_frames.Add(Lb);
-                  L_Cand cand(cand_list_parts);
-                  //L_Cand cand(cand_list_parts, cand_list_frames);
-                  cand.SetFlavor(list_leps[i].Flavor());
-                  V_lep_cands.push_back(cand);
+std::cout << "i flav: " << list_leps[i].Flavor() << " j flav: " << list_leps[j].Flavor() << " i char: " << list_leps[i].Charge() << " j char: " << list_leps[j].Charge() << std::endl;
+                if(CandSameHemi && !(Nlep == 2 && Njet == 0)){ // same hemisphere
+                  bool i_a = inVec((*base->index_lep_a),i);
+                  bool j_a = inVec((*base->index_lep_a),j);
+                  if(i_a != j_a) continue;
                 }
+                Particle lep_1;
+                lep_1.SetPtEtaPhiM( base->PT_lep->at(i),
+                                    base->Eta_lep->at(i),
+                                    base->Phi_lep->at(i),
+                                    std::max(0.,base->M_lep->at(i)) );
+                Particle lep_2;
+                lep_2.SetPtEtaPhiM( base->PT_lep->at(j),
+                  	              base->Eta_lep->at(j),
+                  	              base->Phi_lep->at(j),
+                  	              std::max(0.,base->M_lep->at(j)) );
+                if((*base->Index_lep)[i] >= 0)
+                  lep_1.SetMomPDGID((*base->genMomPDGID_lep)[(*base->Index_lep)[i]]);
+                else
+                  lep_1.SetMomPDGID(0);
+                if((*base->Index_lep)[j] >= 0)
+                  lep_2.SetMomPDGID((*base->genMomPDGID_lep)[(*base->Index_lep)[j]]);
+                else
+                  lep_2.SetMomPDGID(0);
+                ParticleList cand_list_parts;
+                cand_list_parts.push_back(lep_1);
+                cand_list_parts.push_back(lep_2);
+                L_Cand cand(cand_list_parts);
+                //if(cand.M() < 1.5) continue; 
+                //L_Cand cand(cand_list_parts, cand_list_frames);
+                cand.SetFlavor(list_leps[i].Flavor());
+                V_lep_cands.push_back(cand);
               }
             }
           }
@@ -702,6 +729,8 @@ void Plot_Advanced(){
           int N_V_lep_cands = V_lep_cands.size();
           //if(N_V_lep_cands < 1) continue;
 
+          TVector3 TV3_MET;
+          TV3_MET.SetPtEtaPhi(MET, 0., base->MET_phi);
           TLorentzVector TLV_LAB, TLV_CM, TLV_S;
           TLV_LAB.SetPtEtaPhiM(base->LAB_Pt, base->LAB_Eta, base->LAB_Phi, base->LAB_M);
           TLV_CM.SetPtEtaPhiM(base->PTCM, base->EtaCM, base->PhiCM, base->MCM);
@@ -712,6 +741,7 @@ void Plot_Advanced(){
 
           for(int i = 0; i < N_V_lep_cands; i++){
             TLorentzVector TLV_Cand = V_lep_cands[i].TLV();
+            double CandML = TLV_Cand.M();
             TLorentzVector TLV_Cand_CM = TLV_Cand;
             TLV_Cand_CM.Boost(-beta_CM);
             TVector3 beta_Cand_CM = TLV_Cand_CM.BoostVector();
@@ -725,54 +755,69 @@ void Plot_Advanced(){
             double PZPerp = TLV_Cand_CM.Vect().Cross(S_CM.Vect().Unit()).Mag();
             double RZPara = PZPara/S_CM.Vect().Mag();
             double RZPerp = PZPerp/S_CM.Vect().Mag();
-            double RZAng = atan(RZPara/RZPerp);
-            hist_CandML->Fill(V_lep_cands[i].Mass(), weight);
+            double PZAng = atan(PZPara/PZPerp);
+            TVector3 TV3_Cand = TLV_Cand.Vect();
+            TVector3 TV3_Cand_Transverse = TV3_Cand;
+            TV3_Cand_Transverse.SetZ(0.);
+            double PZParaLABMET = TV3_Cand_Transverse.Dot(TV3_MET.Unit());
+            double PZPerpLABMET = TV3_Cand_Transverse.Cross(TV3_MET.Unit()).Mag();
+            double RZParaLABMET = PZParaLABMET/MET;
+            double RZPerpLABMET = PZPerpLABMET/MET;
+            double PZAngLABMET = atan(PZParaLABMET/PZPerpLABMET);
+            hist_CandML->Fill(CandML, weight);
             hist_CandBeta->Fill(V_lep_cands[i].Beta(), weight);
             hist_CandDeltaPhiMET->Fill(V_lep_cands[i].DeltaPhi(TV3_MET), weight);
             hist_CandCosDecayAngle->Fill(CosDecayAngle, weight);
             hist_RZPara->Fill(RZPara, weight);
             hist_RZPerp->Fill(RZPerp, weight);
-            hist_RISR_CandML->Fill(RISR, V_lep_cands[i].Mass(), weight);
+            hist_RISR_CandML->Fill(RISR, CandML, weight);
             hist_RISR_CandBeta->Fill(RISR, V_lep_cands[i].Beta(), weight);
             hist_RISR_CandDeltaPhiMET->Fill(RISR, V_lep_cands[i].DeltaPhi(TV3_MET), weight);
-            hist_CandML_CandBeta->Fill(V_lep_cands[i].Mass(), V_lep_cands[i].Beta(), weight);
-            hist_CandML_CandDeltaPhiMET->Fill(V_lep_cands[i].Mass(), V_lep_cands[i].DeltaPhi(TV3_MET), weight);
-            hist_CandML_CandCosDecayAngle->Fill(V_lep_cands[i].Mass(), CosDecayAngle, weight);
-            hist_CandML_RZPara->Fill(V_lep_cands[i].Mass(), RZPara, weight);
-            hist_CandML_RZPerp->Fill(V_lep_cands[i].Mass(), RZPerp, weight);
-            hist_RZAng->Fill(RZAng, weight);
-            hist_PZPara->Fill(RZPara * S_CM.Vect().Mag(), weight);
-            hist_PZPerp->Fill(RZPerp * S_CM.Vect().Mag(), weight);
+            hist_CandML_CandBeta->Fill(CandML, V_lep_cands[i].Beta(), weight);
+            hist_CandML_CandDeltaPhiMET->Fill(CandML, V_lep_cands[i].DeltaPhi(TV3_MET), weight);
+            hist_CandML_CandCosDecayAngle->Fill(CandML, CosDecayAngle, weight);
             hist_Beta_CandCosDecayAngle->Fill(V_lep_cands[i].Beta(), CosDecayAngle, weight);
             hist_Beta_CandDeltaPhiMET->Fill(V_lep_cands[i].Beta(), V_lep_cands[i].DeltaPhi(TV3_MET), weight);
             hist_CandCosDecayAngle_CandDeltaPhiMET->Fill(CosDecayAngle, V_lep_cands[i].DeltaPhi(TV3_MET), weight);
-            hist_CandML_RZAng->Fill(V_lep_cands[i].Mass(), RZAng, weight);
+            hist_CandML_RZPara->Fill(CandML, RZPara, weight);
+            hist_CandML_RZPerp->Fill(CandML, RZPerp, weight);
+            hist_PZAng->Fill(PZAng, weight);
+            hist_PZPara->Fill(RZPara, weight);
+            hist_PZPerp->Fill(RZPerp, weight);
+            hist_CandML_PZAng->Fill(CandML, PZAng, weight);
             hist_RZPara_RZPerp->Fill(RZPara, RZPerp, weight);
-            hist_CandML_PZPara->Fill(V_lep_cands[i].Mass(), PZPara, weight);
-            hist_CandML_PZPerp->Fill(V_lep_cands[i].Mass(), PZPerp, weight);
+            hist_CandML_PZPara->Fill(CandML, PZPara, weight);
+            hist_CandML_PZPerp->Fill(CandML, PZPerp, weight);
+            hist_CandML_RZParaLABMET->Fill(CandML, RZParaLABMET, weight);
+            hist_CandML_RZPerpLABMET->Fill(CandML, RZPerpLABMET, weight);
+            hist_PZAngLABMET->Fill(PZAngLABMET, weight);
+            hist_CandML_PZAngLABMET->Fill(CandML, PZAngLABMET, weight);
+            hist_RZParaLABMET_RZPerpLABMET->Fill(RZParaLABMET, RZPerpLABMET, weight);
+            hist_CandML_PZParaLABMET->Fill(CandML, PZParaLABMET, weight);
+            hist_CandML_PZPerpLABMET->Fill(CandML, PZPerpLABMET, weight);
             if(V_lep_cands[i].Match() == kMatched){
-              hist_MatchedCandML->Fill(V_lep_cands[i].Mass(), weight);
+              hist_MatchedCandML->Fill(CandML, weight);
               hist_MatchedCandBeta->Fill(V_lep_cands[i].Beta(), weight);
               hist_MatchedCandDeltaPhiMET->Fill(V_lep_cands[i].DeltaPhi(TV3_MET), weight);
               hist_MatchedCandCosDecayAngle->Fill(CosDecayAngle, weight);
-              hist_RISR_MatchedCandML->Fill(RISR, V_lep_cands[i].Mass(), weight);
+              hist_RISR_MatchedCandML->Fill(RISR, CandML, weight);
               hist_RISR_MatchedCandBeta->Fill(RISR, V_lep_cands[i].Beta(), weight);
               hist_RISR_MatchedCandDeltaPhiMET->Fill(RISR, V_lep_cands[i].DeltaPhi(TV3_MET), weight);
-              hist_MatchedCandML_MatchedCandBeta->Fill(V_lep_cands[i].Mass(), V_lep_cands[i].Beta(), weight);
-              hist_MatchedCandML_MatchedCandDeltaPhiMET->Fill(V_lep_cands[i].Mass(), V_lep_cands[i].DeltaPhi(TV3_MET), weight);
-              hist_MatchedCandML_MatchedCandCosDecayAngle->Fill(V_lep_cands[i].Mass(), CosDecayAngle, weight);
+              hist_MatchedCandML_MatchedCandBeta->Fill(CandML, V_lep_cands[i].Beta(), weight);
+              hist_MatchedCandML_MatchedCandDeltaPhiMET->Fill(CandML, V_lep_cands[i].DeltaPhi(TV3_MET), weight);
+              hist_MatchedCandML_MatchedCandCosDecayAngle->Fill(CandML, CosDecayAngle, weight);
             }
             else{
-              hist_UnmatchedCandML->Fill(V_lep_cands[i].Mass(), weight);
+              hist_UnmatchedCandML->Fill(CandML, weight);
               hist_UnmatchedCandBeta->Fill(V_lep_cands[i].Beta(), weight);
               hist_UnmatchedCandDeltaPhiMET->Fill(V_lep_cands[i].DeltaPhi(TV3_MET), weight);
               hist_UnmatchedCandCosDecayAngle->Fill(CosDecayAngle, weight);
-              hist_RISR_UnmatchedCandML->Fill(RISR, V_lep_cands[i].Mass(), weight);
+              hist_RISR_UnmatchedCandML->Fill(RISR, CandML, weight);
               hist_RISR_UnmatchedCandBeta->Fill(RISR, V_lep_cands[i].Beta(), weight);
               hist_RISR_UnmatchedCandDeltaPhiMET->Fill(RISR, V_lep_cands[i].DeltaPhi(TV3_MET), weight);
-              hist_UnmatchedCandML_UnmatchedCandBeta->Fill(V_lep_cands[i].Mass(), V_lep_cands[i].Beta(), weight);
-              hist_UnmatchedCandML_UnmatchedCandDeltaPhiMET->Fill(V_lep_cands[i].Mass(), V_lep_cands[i].DeltaPhi(TV3_MET), weight);
-              hist_UnmatchedCandML_UnmatchedCandCosDecayAngle->Fill(V_lep_cands[i].Mass(), CosDecayAngle, weight);
+              hist_UnmatchedCandML_UnmatchedCandBeta->Fill(CandML, V_lep_cands[i].Beta(), weight);
+              hist_UnmatchedCandML_UnmatchedCandDeltaPhiMET->Fill(CandML, V_lep_cands[i].DeltaPhi(TV3_MET), weight);
+              hist_UnmatchedCandML_UnmatchedCandCosDecayAngle->Fill(CandML, CosDecayAngle, weight);
             }
           }
 
@@ -863,7 +908,7 @@ void Plot_Advanced(){
             total_charge += (charges.back() == LepCharge::kPos) ? 1 : -1;
           }
           std::sort(flavors.begin(), flavors.end());
-          int num_e = std::count(flavors.begin(), flavors.end(), LepFlavor::kElectron);
+          int num_e = std::count(flavors.begin(), flavors.end(), kElec);
           int abs_charge = abs(total_charge);
           
           if (cat_Nleps == 2) {

@@ -201,7 +201,7 @@ void Plot_Yield_BRIL(){
 	    id = kGold;
 	  LepFlavor flavor;
 	  if(abs(PDGID) == 11)
-	    flavor = (LepFlavor)kElectron;
+	    flavor = (LepFlavor)kElec;
 	  else
 	    flavor = (LepFlavor)kMuon;
 	  LepCharge charge = (base->Charge_lep->at(index) > 0 ? kPos : kNeg);
@@ -226,7 +226,7 @@ void Plot_Yield_BRIL(){
 	    id = kGold;
 	  LepFlavor flavor;
 	  if(abs(PDGID) == 11)
-	    flavor = (LepFlavor)kElectron;
+	    flavor = (LepFlavor)kElec;
 	  else
 	    flavor = (LepFlavor)kMuon;
 	  LepCharge charge = (base->Charge_lep->at(index) > 0 ? kPos : kNeg);

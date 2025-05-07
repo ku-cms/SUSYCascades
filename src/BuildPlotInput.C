@@ -488,7 +488,7 @@ int event_count = 0;
 	    id = kGold;
 	  LepFlavor flavor;
 	  if(abs(PDGID) == 11){
-	    flavor = kElectron;
+	    flavor = kElec;
 	    Nel += 1;
 	  } else {
 	    flavor = kMuon;
@@ -516,7 +516,7 @@ int event_count = 0;
 	    id = kGold;
 	  LepFlavor flavor;
 	  if(abs(PDGID) == 11){
-	    flavor = kElectron;
+	    flavor = kElec;
 	    Nel += 1;
 	  } else {
 	    flavor = kMuon;

@@ -280,9 +280,9 @@ void Plot_Simple(){
             if(qual == 1) id = kSilver;
             LepFlavor flavor;
             if(abs(PDGID) == 11)
-              flavor = LepFlavor::kElectron;
+              flavor = kElec;
             else
-              flavor = LepFlavor::kMuon;
+              flavor = kMuon;
             LepCharge charge = (base->Charge_lep->at(index) > 0 ? kPos : kNeg);
             LepSource source = LepSource(base->SourceID_lep->at(index));
               
@@ -300,9 +300,9 @@ void Plot_Simple(){
             if(qual == 1) id = kSilver;
             LepFlavor flavor;
             if(abs(PDGID) == 11)
-              flavor = LepFlavor::kElectron;
+              flavor = kElec;
             else
-              flavor = LepFlavor::kMuon;
+              flavor = kMuon;
             LepCharge charge = (base->Charge_lep->at(index) > 0 ? kPos : kNeg);
             LepSource source = LepSource(base->SourceID_lep->at(index));
             
@@ -353,7 +353,7 @@ void Plot_Simple(){
             total_charge += (charges.back() == LepCharge::kPos) ? 1 : -1;
           }
           std::sort(flavors.begin(), flavors.end());
-          int num_e = std::count(flavors.begin(), flavors.end(), LepFlavor::kElectron);
+          int num_e = std::count(flavors.begin(), flavors.end(), kElec);
           int abs_charge = abs(total_charge);
           
           if (cat_Nleps == 2) {
