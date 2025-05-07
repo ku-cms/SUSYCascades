@@ -24,7 +24,7 @@ void Plot_Simple(){
   if(SavePDF){
     std::cout << "making dir for plots: " << folder_name << std::endl;
     gSystem->Exec(("mkdir -p "+folder_name).c_str());
-    gSystem->Exec(("cp macros/Plot_Advanced.C "+folder_name+"/").c_str());
+    gSystem->Exec(("cp macros/Plot_Simple.C "+folder_name+"/").c_str());
   }
   std::cout << "Saving plots to: " << output_root_file << std::endl;
 
