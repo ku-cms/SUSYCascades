@@ -20,6 +20,7 @@ class L_Cand {
     LepFlavor m_Flav;
     ParticleList m_PL;
     const ConstRestFrameList m_RL;
+    bool m_hemi;
   
   public:
     L_Cand();
@@ -39,6 +40,8 @@ class L_Cand {
     void SetCandQual(LepID qual);
     const RestFrame& CandFrame(); // candidate's frame
     TLorentzVector TLV(int index = -1);
+    void SetSameHemi(bool hemi);
+    bool IsSameHemi();
   
     Particle Cand_Part(int index);
     Particle operator [] (int index);
@@ -61,7 +64,8 @@ class L_Cand {
     double ProngMassRatio(); // PMR
     double PMR();
     double Beta();
-    double CosDecayAngle(const RestFrame& Frame = RestFrame::Empty());
+    double CosDecayAngleRF(const RestFrame& Frame = RestFrame::Empty());
+    double CosDecayAngle();
   
 };
 

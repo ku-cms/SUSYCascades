@@ -17,6 +17,7 @@ L_Cand::L_Cand(ConstRestFrameList RL, ParticleList PL){
 L_Cand::~L_Cand() {}
   
 void L_Cand::init(ParticleList PL){
+  m_hemi = false;
   m_PL = PL;
   m_TLV.SetPtEtaPhiM(0.,0.,0.,0.);
   for(int i = 0; i < int(PL.size()); i++){
@@ -31,14 +32,8 @@ void L_Cand::init(ParticleList PL, ConstRestFrameList RL){
     std::cout << "Can't Make Candidate with different sized lists! \n ParticleList size: " << PL.size() << " \n RestFrameList size: " << RL.GetN() << std::endl;
     return;
   }
-  m_PL = PL;
+  init(PL);
   m_pair = std::make_pair(PL,RL);
-  m_TLV.SetPtEtaPhiM(0.,0.,0.,0.);
-  for(int i = 0; i < int(PL.size()); i++){
-    TLorentzVector dummy_TLV;
-    dummy_TLV.SetPtEtaPhiM(PL[i].Pt(),PL[i].Eta(),PL[i].Phi(),PL[i].M());
-    m_TLV += dummy_TLV;
-  }
 }
 
 const ParticleList L_Cand::PL(){
@@ -73,6 +68,14 @@ LepFlavor L_Cand::Flavor(){
 
 void L_Cand::SetFlavor(LepFlavor flav){
   m_Flav = flav;
+}
+
+void L_Cand::SetSameHemi(bool hemi){
+  m_hemi = hemi;
+}
+
+bool L_Cand::IsSameHemi(){
+  return m_hemi;
 }
 
 Particle L_Cand::operator[](int index){
@@ -168,6 +171,15 @@ const RestFrame& L_Cand::CandFrame(){
   return RL().Get(minIndex).GetProductionFrame();
 }
 
-double L_Cand::CosDecayAngle(const RestFrame& Frame){
+double L_Cand::CosDecayAngleRF(const RestFrame& Frame){
   return CandFrame().GetCosDecayAngle(Frame);
+}
+
+double L_Cand::CosDecayAngle(){
+  TVector3 boost = m_TLV.BoostVector();
+  Particle part_Cand_Child = Cand_PartPlus();
+  TLorentzVector TLV_Cand_Child;
+  TLV_Cand_Child.SetPtEtaPhiM(part_Cand_Child.Pt(), part_Cand_Child.Eta(), part_Cand_Child.Phi(), part_Cand_Child.M());
+  TLV_Cand_Child.Boost(-boost);
+  return TLV_Cand_Child.Vect().Unit().Dot(boost.Unit());
 }
