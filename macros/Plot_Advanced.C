@@ -6,7 +6,8 @@ void Plot_Advanced(){
   RestFrames::SetStyle();
   //InitRJRtree();
 
-  string NtuplePath = "/local-scratch/zflowers/NTUPLES/HADD/";
+  string NtuplePath = "/local-scratch/zflowers/NTUPLES/HADD/"; // v1
+  //string NtuplePath = "/local-scratch/zflowers/NTUPLES/old_HADD_Ele8GeV/"; // v0
   //string NtuplePath = "root://cmseos.fnal.gov//store/user/lpcsusylep/NTUPLES_v2/";
 
   // 10 is Summer23BPix
@@ -14,14 +15,20 @@ void Plot_Advanced(){
   
   ScaleFactorTool SF;
 
-  output_root_file += "Advanced_Cands_";
+  output_root_file += "Advanced_NTUPLES_v1_Cands_";
+
+  const double CandMinMass = 2.;
+  const double CandMaxMass = 30.;
+  output_root_file += "CandMinMass"+std::to_string(int(CandMinMass))+"GeV_";
+  output_root_file += "CandMaxMass"+std::to_string(int(CandMaxMass))+"GeV_";
 
   bool CandSameHemi = false;
   if(CandSameHemi) output_root_file += "SameHemi_";
 
-  g_Label = "TESTING";
+  //g_Label = "TESTING";
   //g_Label = "PreSelection";
-  //g_Label = "PreSelection & !Gold";
+  g_Label = "PreSelection CandCosCM<0.8 LowMass";
+  //g_Label = "PreSelection & B-Veto & 0S J";
   //g_Label = "No Cuts";
   //g_Label = "ATLAS Cuts";
   //g_Label = "MET > 150";
@@ -110,10 +117,14 @@ void Plot_Advanced(){
   hist_stacks.push_back(&hist_stack_CandML);
   vector<TH1*> hist_stack_CandBeta;
   hist_stacks.push_back(&hist_stack_CandBeta);
+  vector<TH1*> hist_stack_CandBetaCM;
+  hist_stacks.push_back(&hist_stack_CandBetaCM);
   vector<TH1*> hist_stack_CandDeltaPhiMET;
   hist_stacks.push_back(&hist_stack_CandDeltaPhiMET);
   vector<TH1*> hist_stack_CandCosDecayAngle;
   hist_stacks.push_back(&hist_stack_CandCosDecayAngle);
+  vector<TH1*> hist_stack_CandCosDecayAngleCM;
+  hist_stacks.push_back(&hist_stack_CandCosDecayAngleCM);
   vector<TH1*> hist_stack_RZPara;
   hist_stacks.push_back(&hist_stack_RZPara);
   vector<TH1*> hist_stack_RZPerp;
@@ -130,23 +141,39 @@ void Plot_Advanced(){
   hist_stacks.push_back(&hist_stack_RZPerpLABMET);
   vector<TH1*> hist_stack_PZAngLABMET;
   hist_stacks.push_back(&hist_stack_PZAngLABMET);
+  vector<TH1*> hist_stack_MRZPara;
+  hist_stacks.push_back(&hist_stack_MRZPara);
+  vector<TH1*> hist_stack_MRZPerp;
+  hist_stacks.push_back(&hist_stack_MRZPerp);
+  vector<TH1*> hist_stack_MRZParaLABMET;
+  hist_stacks.push_back(&hist_stack_MRZParaLABMET);
+  vector<TH1*> hist_stack_MRZPerpLABMET;
+  hist_stacks.push_back(&hist_stack_MRZPerpLABMET);
 
   vector<TH1*> hist_stack_MatchedCandML;
   hist_stacks.push_back(&hist_stack_MatchedCandML);
   vector<TH1*> hist_stack_MatchedCandBeta;
   hist_stacks.push_back(&hist_stack_MatchedCandBeta);
+  vector<TH1*> hist_stack_MatchedCandBetaCM;
+  hist_stacks.push_back(&hist_stack_MatchedCandBetaCM);
   vector<TH1*> hist_stack_MatchedCandDeltaPhiMET;
   hist_stacks.push_back(&hist_stack_MatchedCandDeltaPhiMET);
   vector<TH1*> hist_stack_MatchedCandCosDecayAngle;
   hist_stacks.push_back(&hist_stack_MatchedCandCosDecayAngle);
+  vector<TH1*> hist_stack_MatchedCandCosDecayAngleCM;
+  hist_stacks.push_back(&hist_stack_MatchedCandCosDecayAngleCM);
   vector<TH1*> hist_stack_UnmatchedCandML;
   hist_stacks.push_back(&hist_stack_UnmatchedCandML);
   vector<TH1*> hist_stack_UnmatchedCandBeta;
   hist_stacks.push_back(&hist_stack_UnmatchedCandBeta);
+  vector<TH1*> hist_stack_UnmatchedCandBetaCM;
+  hist_stacks.push_back(&hist_stack_UnmatchedCandBetaCM);
   vector<TH1*> hist_stack_UnmatchedCandDeltaPhiMET;
   hist_stacks.push_back(&hist_stack_UnmatchedCandDeltaPhiMET);
   vector<TH1*> hist_stack_UnmatchedCandCosDecayAngle;
   hist_stacks.push_back(&hist_stack_UnmatchedCandCosDecayAngle);
+  vector<TH1*> hist_stack_UnmatchedCandCosDecayAngleCM;
+  hist_stacks.push_back(&hist_stack_UnmatchedCandCosDecayAngleCM);
 
   // hists for holding number of events
   const int EC_bins = vec_samples.size() + 1;
@@ -158,9 +185,9 @@ void Plot_Advanced(){
   TH2D* hist_Zbi = new TH2D("Zbi", "Zbi", 22, 0, 22, Zbi_bins, 0, Zbi_bins);
 
   // Event Counting by cands
-  TH2D* hist_CandsEventCount = new TH2D("CandsEventCount", "CandsEventCount", 23, 0, 23, EC_bins, 0, EC_bins);
+  TH2D* hist_CandsEventCount = new TH2D("CandsEventCount", "CandsEventCount", 14, 0, 14, EC_bins, 0, EC_bins);
   hist_CandsEventCount->GetYaxis()->SetBinLabel(EC_bins, "TOT BKG");
-  TH2D* hist_CandsZbi = new TH2D("CandsZbi", "CandsZbi", 23, 0, 23, Zbi_bins, 0, Zbi_bins);
+  TH2D* hist_CandsZbi = new TH2D("CandsZbi", "CandsZbi", 14, 0, 14, Zbi_bins, 0, Zbi_bins);
 
   // Cut flows
   vector<TH1*> vect_hist_cutflow;
@@ -199,7 +226,7 @@ void Plot_Advanced(){
     TH1D* hist_gammaPerp = new TH1D((title+"_gammaPerp").c_str(), (title+"_gammaPerp;#gamma_{#perp}").c_str(), g_NX/2, 0., 1.);
     hists1.push_back(hist_gammaPerp);
     hist_stack_gammaPerp.push_back(hist_gammaPerp);
-    TH1D* hist_MQperp = new TH1D((title+"_MQperp").c_str(), (title+"_MQperp;M_{#perp}").c_str(), g_NX/2, 0., 150.);
+    TH1D* hist_MQperp = new TH1D((title+"_MQperp").c_str(), (title+"_MQperp;M_{#perp}").c_str(), g_NX/2, 0., 175.);
     hists1.push_back(hist_MQperp);
     hist_stack_MQperp.push_back(hist_MQperp);
     TH1D* hist_MSperpCM0 = new TH1D((title+"_MSperpCM0").c_str(), (title+"_MSperpCM0;MS_{#perp CM0}").c_str(), g_NX/2, 0., 600.);
@@ -220,25 +247,31 @@ void Plot_Advanced(){
     TH1D* hist_gammaCM0 = new TH1D((title+"_gammaCM0").c_str(), (title+"_gammaCM0;#gamma_{CM0}").c_str(), g_NX/2, 0., 1.);
     hists1.push_back(hist_gammaCM0);
     hist_stack_gammaCM0.push_back(hist_gammaCM0);
-    TH1D* hist_ML = new TH1D((title+"_ML").c_str(), (title+"_ML;ML").c_str(), g_NX/2, 0., 150.);
+    TH1D* hist_ML = new TH1D((title+"_ML").c_str(), (title+"_ML;ML").c_str(), g_NX/2, 0., 175.);
     hists1.push_back(hist_ML);
     hist_stack_ML.push_back(hist_ML);
-    TH1D* hist_MJ = new TH1D((title+"_MJ").c_str(), (title+"_MJ;MJ").c_str(), g_NX/2, 0., 150.);
+    TH1D* hist_MJ = new TH1D((title+"_MJ").c_str(), (title+"_MJ;MJ").c_str(), g_NX/2, 0., 175.);
     hists1.push_back(hist_MJ);
     hist_stack_MJ.push_back(hist_MJ);
 
-    TH1D* hist_CandML = new TH1D((title+"_CandML").c_str(), (title+"_CandML;CandML").c_str(), g_NX/2, 0., 150.);
+    TH1D* hist_CandML = new TH1D((title+"_CandML").c_str(), (title+"_CandML;CandML").c_str(), g_NX/2, CandMinMass, CandMaxMass);
     hists1.push_back(hist_CandML);
     hist_stack_CandML.push_back(hist_CandML);
-    TH1D* hist_CandBeta = new TH1D((title+"_CandBeta").c_str(), (title+"_CandBeta;CandBeta").c_str(), g_NX/2, 0., 1.);
+    TH1D* hist_CandBeta = new TH1D((title+"_CandBeta").c_str(), (title+"_CandBeta;#beta").c_str(), g_NX/2, 0., 1.);
     hists1.push_back(hist_CandBeta);
     hist_stack_CandBeta.push_back(hist_CandBeta);
-    TH1D* hist_CandDeltaPhiMET = new TH1D((title+"_CandDeltaPhiMET").c_str(), (title+"_CandDeltaPhiMET;CandDeltaPhiMET").c_str(), g_NX/2, 0., 3.15);
+    TH1D* hist_CandBetaCM = new TH1D((title+"_CandBetaCM").c_str(), (title+"_CandBetaCM;#beta^{CM}").c_str(), g_NX/2, 0., 1.);
+    hists1.push_back(hist_CandBetaCM);
+    hist_stack_CandBetaCM.push_back(hist_CandBetaCM);
+    TH1D* hist_CandDeltaPhiMET = new TH1D((title+"_CandDeltaPhiMET").c_str(), (title+"_CandDeltaPhiMET;#Delta #phi(#vec{#slash{E}_{T}},Z* cand)").c_str(), g_NX/2, 0., 3.15);
     hists1.push_back(hist_CandDeltaPhiMET);
     hist_stack_CandDeltaPhiMET.push_back(hist_CandDeltaPhiMET);
-    TH1D* hist_CandCosDecayAngle = new TH1D((title+"_CandCosDecayAngle").c_str(), (title+"_CandCosDecayAngle;CandCosDecayAngle").c_str(), g_NX/2, -1., 1.);
+    TH1D* hist_CandCosDecayAngle = new TH1D((title+"_CandCosDecayAngle").c_str(), (title+"_CandCosDecayAngle;Z* candidate cos#theta").c_str(), g_NX/2, 0., 1.);
     hists1.push_back(hist_CandCosDecayAngle);
     hist_stack_CandCosDecayAngle.push_back(hist_CandCosDecayAngle);
+    TH1D* hist_CandCosDecayAngleCM = new TH1D((title+"_CandCosDecayAngleCM").c_str(), (title+"_CandCosDecayAngleCM;Z* candidate cos#theta CM").c_str(), g_NX/2, 0., 1.);
+    hists1.push_back(hist_CandCosDecayAngleCM);
+    hist_stack_CandCosDecayAngleCM.push_back(hist_CandCosDecayAngleCM);
     TH1D* hist_RZPara = new TH1D((title+"_RZPara").c_str(), (title+"_RZPara;RZPara").c_str(), g_NX/2, -1., 1.);
     hists1.push_back(hist_RZPara);
     hist_stack_RZPara.push_back(hist_RZPara);
@@ -264,31 +297,56 @@ void Plot_Advanced(){
     hists1.push_back(hist_PZAngLABMET);
     hist_stack_PZAngLABMET.push_back(hist_PZAngLABMET);
 
-    TH1D* hist_MatchedCandML = new TH1D((title+"_MatchedCandML").c_str(), (title+"_MatchedCandML;MatchedCandML").c_str(), g_NX/2, 0., 150.);
+    TH1D* hist_MRZPara = new TH1D((title+"_MRZPara").c_str(), (title+"_MRZPara;M/RZPara").c_str(), g_NX/2, 0., 500.);
+    hists1.push_back(hist_MRZPara);
+    hist_stack_MRZPara.push_back(hist_MRZPara);
+    TH1D* hist_MRZPerp = new TH1D((title+"_MRZPerp").c_str(), (title+"_MRZPerp;M/RZPerp").c_str(), g_NX/2, 0., 500.);
+    hists1.push_back(hist_MRZPerp);
+    hist_stack_MRZPerp.push_back(hist_MRZPerp);
+    TH1D* hist_MRZParaLABMET = new TH1D((title+"_MRZParaLABMET").c_str(), (title+"_MRZParaLABMET;M/RZParaLABMET").c_str(), g_NX/2, 0., 500.);
+    hists1.push_back(hist_MRZParaLABMET);
+    hist_stack_MRZParaLABMET.push_back(hist_MRZParaLABMET);
+    TH1D* hist_MRZPerpLABMET = new TH1D((title+"_MRZPerpLABMET").c_str(), (title+"_MRZPerpLABMET;M/RZPerpLABMET").c_str(), g_NX/2, 0., 500.);
+    hists1.push_back(hist_MRZPerpLABMET);
+    hist_stack_MRZPerpLABMET.push_back(hist_MRZPerpLABMET);
+
+    TH1D* hist_MatchedCandML = new TH1D((title+"_MatchedCandML").c_str(), (title+"_MatchedCandML;Matched Z* candidate M [GeV]").c_str(), g_NX/2, CandMinMass, CandMaxMass);
     hists1.push_back(hist_MatchedCandML);
     hist_stack_MatchedCandML.push_back(hist_MatchedCandML);
-    TH1D* hist_MatchedCandBeta = new TH1D((title+"_MatchedCandBeta").c_str(), (title+"_MatchedCandBeta;MatchedCandBeta").c_str(), g_NX/2, 0., 1.);
+    TH1D* hist_MatchedCandBeta = new TH1D((title+"_MatchedCandBeta").c_str(), (title+"_MatchedCandBeta;Matched Z* candidate #beta").c_str(), g_NX/2, 0., 1.);
     hists1.push_back(hist_MatchedCandBeta);
     hist_stack_MatchedCandBeta.push_back(hist_MatchedCandBeta);
-    TH1D* hist_MatchedCandDeltaPhiMET = new TH1D((title+"_MatchedCandDeltaPhiMET").c_str(), (title+"_MatchedCandDeltaPhiMET;MatchedCandDeltaPhiMET").c_str(), g_NX/2, 0., 3.15);
+    TH1D* hist_MatchedCandBetaCM = new TH1D((title+"_MatchedCandBetaCM").c_str(), (title+"_MatchedCandBetaCM;Matched Z* candidate #beta^{CM}").c_str(), g_NX/2, 0., 1.);
+    hists1.push_back(hist_MatchedCandBetaCM);
+    hist_stack_MatchedCandBetaCM.push_back(hist_MatchedCandBetaCM);
+    TH1D* hist_MatchedCandDeltaPhiMET = new TH1D((title+"_MatchedCandDeltaPhiMET").c_str(), (title+"_MatchedCandDeltaPhiMET;Matched #Delta #phi(#vec{#slash{E}_{T}},Z* cand)").c_str(), g_NX/2, 0., 3.15);
     hists1.push_back(hist_MatchedCandDeltaPhiMET);
     hist_stack_MatchedCandDeltaPhiMET.push_back(hist_MatchedCandDeltaPhiMET);
-    TH1D* hist_MatchedCandCosDecayAngle = new TH1D((title+"_MatchedCandCosDecayAngle").c_str(), (title+"_MatchedCandCosDecayAngle;MatchedCandCosDecayAngle").c_str(), g_NX/2, -1., 1.);
+    TH1D* hist_MatchedCandCosDecayAngle = new TH1D((title+"_MatchedCandCosDecayAngle").c_str(), (title+"_MatchedCandCosDecayAngle;Matched cos#theta_{Z}").c_str(), g_NX/2, 0., 1.);
     hists1.push_back(hist_MatchedCandCosDecayAngle);
     hist_stack_MatchedCandCosDecayAngle.push_back(hist_MatchedCandCosDecayAngle);
+    TH1D* hist_MatchedCandCosDecayAngleCM = new TH1D((title+"_MatchedCandCosDecayAngleCM").c_str(), (title+"_MatchedCandCosDecayAngleCM;Matched cos#theta_{Z} CM").c_str(), g_NX/2, 0., 1.);
+    hists1.push_back(hist_MatchedCandCosDecayAngleCM);
+    hist_stack_MatchedCandCosDecayAngleCM.push_back(hist_MatchedCandCosDecayAngleCM);
 
-    TH1D* hist_UnmatchedCandML = new TH1D((title+"_UnmatchedCandML").c_str(), (title+"_UnmatchedCandML;UnmatchedCandML").c_str(), g_NX/2, 0., 150.);
+    TH1D* hist_UnmatchedCandML = new TH1D((title+"_UnmatchedCandML").c_str(), (title+"_UnmatchedCandML;Unmatched Z* candidate M [GeV]").c_str(), g_NX/2, CandMinMass, CandMaxMass);
     hists1.push_back(hist_UnmatchedCandML);
     hist_stack_UnmatchedCandML.push_back(hist_UnmatchedCandML);
-    TH1D* hist_UnmatchedCandBeta = new TH1D((title+"_UnmatchedCandBeta").c_str(), (title+"_UnmatchedCandBeta;UnmatchedCandBeta").c_str(), g_NX/2, 0., 1.);
+    TH1D* hist_UnmatchedCandBeta = new TH1D((title+"_UnmatchedCandBeta").c_str(), (title+"_UnmatchedCandBeta;Unmatched Z* candidate #beta").c_str(), g_NX/2, 0., 1.);
     hists1.push_back(hist_UnmatchedCandBeta);
     hist_stack_UnmatchedCandBeta.push_back(hist_UnmatchedCandBeta);
-    TH1D* hist_UnmatchedCandDeltaPhiMET = new TH1D((title+"_UnmatchedCandDeltaPhiMET").c_str(), (title+"_UnmatchedCandDeltaPhiMET;UnmatchedCandDeltaPhiMET").c_str(), g_NX/2, 0., 3.15);
+    TH1D* hist_UnmatchedCandBetaCM = new TH1D((title+"_UnmatchedCandBetaCM").c_str(), (title+"_UnmatchedCandBetaCM;Unmatched Z* candidate #beta^{CM}").c_str(), g_NX/2, 0., 1.);
+    hists1.push_back(hist_UnmatchedCandBetaCM);
+    hist_stack_UnmatchedCandBetaCM.push_back(hist_UnmatchedCandBetaCM);
+    TH1D* hist_UnmatchedCandDeltaPhiMET = new TH1D((title+"_UnmatchedCandDeltaPhiMET").c_str(), (title+"_UnmatchedCandDeltaPhiMET;Unmatched #Delta #phi(#vec{#slash{E}_{T}},Z* cand)").c_str(), g_NX/2, 0., 3.15);
     hists1.push_back(hist_UnmatchedCandDeltaPhiMET);
     hist_stack_UnmatchedCandDeltaPhiMET.push_back(hist_UnmatchedCandDeltaPhiMET);
-    TH1D* hist_UnmatchedCandCosDecayAngle = new TH1D((title+"_UnmatchedCandCosDecayAngle").c_str(), (title+"_UnmatchedCandCosDecayAngle;UnmatchedCandCosDecayAngle").c_str(), g_NX/2, -1., 1.);
+    TH1D* hist_UnmatchedCandCosDecayAngle = new TH1D((title+"_UnmatchedCandCosDecayAngle").c_str(), (title+"_UnmatchedCandCosDecayAngle;Unmatched Z* candidate cos#theta").c_str(), g_NX/2, 0., 1.);
     hists1.push_back(hist_UnmatchedCandCosDecayAngle);
     hist_stack_UnmatchedCandCosDecayAngle.push_back(hist_UnmatchedCandCosDecayAngle);
+    TH1D* hist_UnmatchedCandCosDecayAngleCM = new TH1D((title+"_UnmatchedCandCosDecayAngleCM").c_str(), (title+"_UnmatchedCandCosDecayAngleCM;Unmatched Z* candidate cos#theta CM").c_str(), g_NX/2, 0., 1.);
+    hists1.push_back(hist_UnmatchedCandCosDecayAngleCM);
+    hist_stack_UnmatchedCandCosDecayAngleCM.push_back(hist_UnmatchedCandCosDecayAngleCM);
 
     TH2D* hist_RISR_PTISR = new TH2D((title+"_RISR_PTISR").c_str(), (title+"_RISR_PTISR;R_{ISR};p_{T}^{ISR} [GeV]").c_str(), g_NX/2., 0., 1., g_NX/2., 0., 1000.);
     hists2.push_back(hist_RISR_PTISR);
@@ -298,18 +356,18 @@ void Plot_Advanced(){
     hists2.push_back(hist_dphiCMI_PTCM);
     TH2D* hist_dphiMETV_PTISR = new TH2D((title+"_dphiMETV_PTISR").c_str(), (title+"_dphiMETV_PTISR;#Delta #phi_{(I,V)};p_{T}^{ISR}").c_str(), g_NX/2., 0., 3.15, g_NX/2., 200., 800.);
     hists2.push_back(hist_dphiMETV_PTISR);
-    TH2D* hist_gammaPerp_RISR = new TH2D((title+"_gammaPerp_RISR").c_str(), (title+"_gammaPerp_RISR;#gamma_{#perp};RISR").c_str(), g_NX/2., 0., 1., g_NX/2., 0.5, 1.);
+    TH2D* hist_gammaPerp_RISR = new TH2D((title+"_gammaPerp_RISR").c_str(), (title+"_gammaPerp_RISR;#gamma_{#perp};R_{ISR}").c_str(), g_NX/2., 0., 1., g_NX/2., 0.5, 1.);
     hists2.push_back(hist_gammaPerp_RISR);
-    TH2D* hist_RISR_mllLEAD = new TH2D((title+"_RISR_mllLEAD").c_str(), (title+"_RISR_mllLEAD;R_{ISR};m_{ll}LEAD").c_str(), g_NX/2., 0.5, 1., g_NX/2., 0., 150.);
+    TH2D* hist_RISR_mllLEAD = new TH2D((title+"_RISR_mllLEAD").c_str(), (title+"_RISR_mllLEAD;R_{ISR};m_{ll}LEAD").c_str(), g_NX/2., 0.5, 1., g_NX/2., 0., 175.);
     hists2.push_back(hist_RISR_mllLEAD);
-    TH2D* hist_RISR_mL = new TH2D((title+"_RISR_mL").c_str(), (title+"_RISR_mL;R_{ISR};mL").c_str(), g_NX/2., 0.5, 1., g_NX/2., 0., 150.); // mass of leptonic system
+    TH2D* hist_RISR_mL = new TH2D((title+"_RISR_mL").c_str(), (title+"_RISR_mL;R_{ISR};mL").c_str(), g_NX/2., 0.5, 1., g_NX/2., 0., 175.); // mass of leptonic system
     hists2.push_back(hist_RISR_mL);
 
-    TH2D* hist_MSperpCM0_RISR = new TH2D((title+"_MSperpCM0_RISR").c_str(), (title+"_MSperpCM0_RISR;MS_{#perp CM0};RISR").c_str(), g_NX/2., 0., 500., g_NX/2., 0.5, 1.);
+    TH2D* hist_MSperpCM0_RISR = new TH2D((title+"_MSperpCM0_RISR").c_str(), (title+"_MSperpCM0_RISR;MS_{#perp CM0};R_{ISR}").c_str(), g_NX/2., 0., 500., g_NX/2., 0.5, 1.);
     hists2.push_back(hist_MSperpCM0_RISR);
-    TH2D* hist_MQperpCM0_RISR = new TH2D((title+"_MQperpCM0_RISR").c_str(), (title+"_MQperpCM0_RISR;MQ_{#perp CM0};RISR").c_str(), g_NX/2., 0., 300., g_NX/2., 0.5, 1.); // quad sum of Ma and Mb / sqrt(2)
+    TH2D* hist_MQperpCM0_RISR = new TH2D((title+"_MQperpCM0_RISR").c_str(), (title+"_MQperpCM0_RISR;MQ_{#perp CM0};R_{ISR}").c_str(), g_NX/2., 0., 300., g_NX/2., 0.5, 1.); // quad sum of Ma and Mb / sqrt(2)
     hists2.push_back(hist_MQperpCM0_RISR);
-    TH2D* hist_gammaPerpCM0_RISR = new TH2D((title+"_gammaPerpCM0_RISR").c_str(), (title+"_gammaPerpCM0_RISR;#gamma_{#perp CM0};RISR").c_str(), g_NX/2., 0., 1., g_NX/2., 0.5, 1.);
+    TH2D* hist_gammaPerpCM0_RISR = new TH2D((title+"_gammaPerpCM0_RISR").c_str(), (title+"_gammaPerpCM0_RISR;#gamma_{#perp CM0};R_{ISR}").c_str(), g_NX/2., 0., 1., g_NX/2., 0.5, 1.);
     hists2.push_back(hist_gammaPerpCM0_RISR);
 
     TH2D* hist_MSperpCM0_gammaPerpCM0 = new TH2D((title+"_MSperpCM0_gammaPerpCM0").c_str(), (title+"_MSperpCM0_gammaPerpCM0;MS_{#perp CM0};#gamma_{#perp CM0}").c_str(), g_NX/2., 0., 500., g_NX/2., 0., 1.);
@@ -385,77 +443,286 @@ void Plot_Advanced(){
     TH2D* hist_RISR_MLb = new TH2D((title+"_RISR_MLb").c_str(), (title+"_RISR_MLb;R_{ISR};MLb").c_str(), g_NX/2., 0.5, 1., g_NX/2., 0., 300.);
     hists2.push_back(hist_RISR_MLb);
 
-    TH2D* hist_RISR_CandML = new TH2D((title+"_RISR_CandML").c_str(), (title+"_RISR_CandML;R_{ISR};CandML").c_str(), g_NX/2., 0.5, 1., g_NX/2, 0., 150.);
+    TH2D* hist_RISR_CandML = new TH2D((title+"_RISR_CandML").c_str(), (title+"_RISR_CandML;R_{ISR};Z* candidate M [GeV]").c_str(), g_NX/2., 0.5, 1., g_NX/2, CandMinMass, CandMaxMass);
     hists2.push_back(hist_RISR_CandML);
-    TH2D* hist_RISR_CandBeta = new TH2D((title+"_RISR_CandBeta").c_str(), (title+"_RISR_CandBeta;R_{ISR};CandBeta").c_str(), g_NX/2., 0.5, 1., g_NX/2, 0., 1.);
+    TH2D* hist_RISR_CandBeta = new TH2D((title+"_RISR_CandBeta").c_str(), (title+"_RISR_CandBeta;R_{ISR};Z* candidate #beta").c_str(), g_NX/2., 0.5, 1., g_NX/2, 0., 1.);
     hists2.push_back(hist_RISR_CandBeta);
-    TH2D* hist_RISR_CandDeltaPhiMET = new TH2D((title+"_RISR_CandDeltaPhiMET").c_str(), (title+"_RISR_CandDeltaPhiMET;R_{ISR};CandDeltaPhiMET").c_str(), g_NX/2., 0.5, 1., g_NX/2, 0., 3.15);
+    TH2D* hist_RISR_CandBetaCM = new TH2D((title+"_RISR_CandBetaCM").c_str(), (title+"_RISR_CandBetaCM;R_{ISR};Z* candidate #beta^{CM}").c_str(), g_NX/2., 0.5, 1., g_NX/2, 0., 1.);
+    hists2.push_back(hist_RISR_CandBetaCM);
+    TH2D* hist_RISR_CandDeltaPhiMET = new TH2D((title+"_RISR_CandDeltaPhiMET").c_str(), (title+"_RISR_CandDeltaPhiMET;R_{ISR};#Delta #phi(#vec{#slash{E}_{T}},Z* cand)").c_str(), g_NX/2., 0.5, 1., g_NX/2, 0., 3.15);
     hists2.push_back(hist_RISR_CandDeltaPhiMET);
-    TH2D* hist_CandML_CandBeta = new TH2D((title+"_CandML_CandBeta").c_str(), (title+"_CandML_CandBeta;CandML;CandBeta").c_str(), g_NX/2., 0., 150., g_NX/2, 0., 1.);
+    TH2D* hist_CandML_CandBeta = new TH2D((title+"_CandML_CandBeta").c_str(), (title+"_CandML_CandBeta;Z* candidate M [GeV];Z* candidate #beta").c_str(), g_NX/2., CandMinMass, CandMaxMass, g_NX/2, 0., 1.);
     hists2.push_back(hist_CandML_CandBeta);
-    TH2D* hist_CandML_CandDeltaPhiMET = new TH2D((title+"_CandML_CandDeltaPhiMET").c_str(), (title+"_CandML_CandDeltaPhiMET;CandML;CandDeltaPhiMET").c_str(), g_NX/2., 0., 150., g_NX/2, 0., 3.15);
+    TH2D* hist_CandML_CandBetaCM = new TH2D((title+"_CandML_CandBetaCM").c_str(), (title+"_CandML_CandBetaCM;Z* candidate M [GeV];Z* candidate #beta^{CM}").c_str(), g_NX/2., CandMinMass, CandMaxMass, g_NX/2, 0., 1.);
+    hists2.push_back(hist_CandML_CandBetaCM);
+    TH2D* hist_CandML_CandDeltaPhiMET = new TH2D((title+"_CandML_CandDeltaPhiMET").c_str(), (title+"_CandML_CandDeltaPhiMET;Z* candidate M [GeV];#Delta #phi(#vec{#slash{E}_{T}},Z* cand)").c_str(), g_NX/2., CandMinMass, CandMaxMass, g_NX/2, 0., 3.15);
     hists2.push_back(hist_CandML_CandDeltaPhiMET);
-    TH2D* hist_CandML_CandCosDecayAngle = new TH2D((title+"_CandML_CandCosDecayAngle").c_str(), (title+"_CandML_CandCosDecayAngle;CandML;CandCosDecayAngle").c_str(), g_NX/2., 0., 150., g_NX/2, -1., 1.);
+    TH2D* hist_CandML_CandCosDecayAngle = new TH2D((title+"_CandML_CandCosDecayAngle").c_str(), (title+"_CandML_CandCosDecayAngle;Z* candidate M [GeV];Z* candidate cos#theta").c_str(), g_NX/2., CandMinMass, CandMaxMass, g_NX/2, 0., 1.);
     hists2.push_back(hist_CandML_CandCosDecayAngle);
-    TH2D* hist_Beta_CandCosDecayAngle = new TH2D((title+"_Beta_CandCosDecayAngle").c_str(), (title+"_Beta_CandCosDecayAngle;Beta;CandCosDecayAngle").c_str(), g_NX/2., 0., 1., g_NX/2, -1., 1.);
+    TH2D* hist_Beta_CandCosDecayAngle = new TH2D((title+"_Beta_CandCosDecayAngle").c_str(), (title+"_Beta_CandCosDecayAngle;Z* candidate #beta;Z* candidate cos#theta").c_str(), g_NX/2., 0., 1., g_NX/2, 0., 1.);
     hists2.push_back(hist_Beta_CandCosDecayAngle);
-    TH2D* hist_Beta_CandDeltaPhiMET = new TH2D((title+"_Beta_CandDeltaPhiMET").c_str(), (title+"_Beta_CandDeltaPhiMET;Beta;CandDeltaPhiMET").c_str(), g_NX/2., 0., 1., g_NX/2, 0., 3.15);
-    hists2.push_back(hist_Beta_CandDeltaPhiMET);
-    TH2D* hist_CandCosDecayAngle_CandDeltaPhiMET = new TH2D((title+"_CandCosDecayAngle_CandDeltaPhiMET").c_str(), (title+"_CandCosDecayAngle_CandDeltaPhiMET;CandCosDecayAngle;CandDeltaPhiMET").c_str(), g_NX/2., -1., 1., g_NX/2, 0., 3.15);
+    TH2D* hist_BetaCM_CandCosDecayAngle = new TH2D((title+"_BetaCM_CandCosDecayAngle").c_str(), (title+"_BetaCM_CandCosDecayAngle;Z* candidate #beta^{CM};Z* candidate cos#theta").c_str(), g_NX/2., 0., 1., g_NX/2, 0., 1.);
+    hists2.push_back(hist_BetaCM_CandCosDecayAngle);
+    TH2D* hist_CandCosDecayAngle_CandDeltaPhiMET = new TH2D((title+"_CandCosDecayAngle_CandDeltaPhiMET").c_str(), (title+"_CandCosDecayAngle_CandDeltaPhiMET;Z* candidate cos#theta;#Delta #phi(#vec{#slash{E}_{T}},Z* cand)").c_str(), g_NX/2., 0., 1., g_NX/2, 0., 3.15);
     hists2.push_back(hist_CandCosDecayAngle_CandDeltaPhiMET);
-    TH2D* hist_CandML_RZPara = new TH2D((title+"_CandML_RZPara").c_str(), (title+"_CandML_RZPara;CandML;RZPara").c_str(), g_NX/2., 0., 150., g_NX/2, -1., 1.);
+    TH2D* hist_CandML_CandCosDecayAngleCM = new TH2D((title+"_CandML_CandCosDecayAngleCM").c_str(), (title+"_CandML_CandCosDecayAngleCM;Z* candidate M [GeV];Z* candidate cos#theta CM").c_str(), g_NX/2., CandMinMass, CandMaxMass, g_NX/2, 0., 1.);
+    hists2.push_back(hist_CandML_CandCosDecayAngleCM);
+    TH2D* hist_Beta_CandCosDecayAngleCM = new TH2D((title+"_Beta_CandCosDecayAngleCM").c_str(), (title+"_Beta_CandCosDecayAngleCM;Z* candidate #beta;Z* candidate cos#theta CM").c_str(), g_NX/2., 0., 1., g_NX/2, 0., 1.);
+    hists2.push_back(hist_Beta_CandCosDecayAngleCM);
+    TH2D* hist_BetaCM_CandCosDecayAngleCM = new TH2D((title+"_BetaCM_CandCosDecayAngleCM").c_str(), (title+"_BetaCM_CandCosDecayAngleCM;Z* candidate #beta^{CM};Z* candidate cos#theta CM").c_str(), g_NX/2., 0., 1., g_NX/2, 0., 1.);
+    hists2.push_back(hist_BetaCM_CandCosDecayAngleCM);
+    TH2D* hist_CandCosDecayAngleCM_CandDeltaPhiMET = new TH2D((title+"_CandCosDecayAngleCM_CandDeltaPhiMET").c_str(), (title+"_CandCosDecayAngleCM_CandDeltaPhiMET;Z* candidate cos#theta CM;#Delta #phi(#vec{#slash{E}_{T}},Z* cand)").c_str(), g_NX/2., 0., 1., g_NX/2, 0., 3.15);
+    hists2.push_back(hist_CandCosDecayAngleCM_CandDeltaPhiMET);
+    TH2D* hist_Beta_CandDeltaPhiMET = new TH2D((title+"_Beta_CandDeltaPhiMET").c_str(), (title+"_Beta_CandDeltaPhiMET;Z* candidate #beta;#Delta #phi(#vec{#slash{E}_{T}},Z* cand)").c_str(), g_NX/2., 0., 1., g_NX/2, 0., 3.15);
+    hists2.push_back(hist_Beta_CandDeltaPhiMET);
+    TH2D* hist_BetaCM_CandDeltaPhiMET = new TH2D((title+"_BetaCM_CandDeltaPhiMET").c_str(), (title+"_BetaCM_CandDeltaPhiMET;Z* candidate #beta^{CM};#Delta #phi(#vec{#slash{E}_{T}},Z* cand)").c_str(), g_NX/2., 0., 1., g_NX/2, 0., 3.15);
+    hists2.push_back(hist_BetaCM_CandDeltaPhiMET);
+    TH2D* hist_CandML_RZPara = new TH2D((title+"_CandML_RZPara").c_str(), (title+"_CandML_RZPara;Z* candidate M [GeV];RZPara").c_str(), g_NX/2., CandMinMass, CandMaxMass, g_NX/2, -0.5, 0.5);
     hists2.push_back(hist_CandML_RZPara);
-    TH2D* hist_CandML_RZPerp = new TH2D((title+"_CandML_RZPerp").c_str(), (title+"_CandML_RZPerp;CandML;RZPerp").c_str(), g_NX/2., 0., 150., g_NX/2, 0., 1.5);
+    TH2D* hist_CandML_RZPerp = new TH2D((title+"_CandML_RZPerp").c_str(), (title+"_CandML_RZPerp;Z* candidate M [GeV];RZPerp").c_str(), g_NX/2., CandMinMass, CandMaxMass, g_NX/2, 0., 0.5);
     hists2.push_back(hist_CandML_RZPerp);
-    TH2D* hist_CandML_PZAng = new TH2D((title+"_CandML_PZAng").c_str(), (title+"_CandML_PZAng;CandML;PZAng").c_str(), g_NX/2., 0., 150., g_NX/2, -1.6, 1.6);
-    hists2.push_back(hist_CandML_PZAng);
-    TH2D* hist_RZPara_RZPerp = new TH2D((title+"_RZPara_RZPerp").c_str(), (title+"_RZPara_RZPerp;RZPara;RZPerp").c_str(), g_NX/2., -1., 1., g_NX/2, 0., 1.5);
+    TH2D* hist_RZPara_RZPerp = new TH2D((title+"_RZPara_RZPerp").c_str(), (title+"_RZPara_RZPerp;RZPara;RZPerp").c_str(), g_NX/2., -0.5, 0.5, g_NX/2, 0., 0.5);
     hists2.push_back(hist_RZPara_RZPerp);
-    TH2D* hist_CandML_PZPara = new TH2D((title+"_CandML_PZPara").c_str(), (title+"_CandML_PZPara;CandML;PZPara").c_str(), g_NX/2., 0., 150., g_NX/2, 0., 600.);
+    TH2D* hist_CandML_PZAng = new TH2D((title+"_CandML_PZAng").c_str(), (title+"_CandML_PZAng;Z* candidate M [GeV];PZAng").c_str(), g_NX/2., CandMinMass, CandMaxMass, g_NX/2, -1.6, 1.6);
+    hists2.push_back(hist_CandML_PZAng);
+    TH2D* hist_CandML_PZPara = new TH2D((title+"_CandML_PZPara").c_str(), (title+"_CandML_PZPara;Z* candidate M [GeV];PZPara").c_str(), g_NX/2., CandMinMass, CandMaxMass, g_NX/2, 0., 500.);
     hists2.push_back(hist_CandML_PZPara);
-    TH2D* hist_CandML_PZPerp = new TH2D((title+"_CandML_PZPerp").c_str(), (title+"_CandML_PZPerp;CandML;PZPerp").c_str(), g_NX/2., 0., 150., g_NX/2, 0., 600.);
+    TH2D* hist_CandML_PZPerp = new TH2D((title+"_CandML_PZPerp").c_str(), (title+"_CandML_PZPerp;Z* candidate M [GeV];PZPerp").c_str(), g_NX/2., CandMinMass, CandMaxMass, g_NX/2, 0., 500.);
     hists2.push_back(hist_CandML_PZPerp);
 
-    TH2D* hist_CandML_RZParaLABMET = new TH2D((title+"_CandML_RZParaLABMET").c_str(), (title+"_CandML_RZParaLABMET;CandML;RZParaLABMET").c_str(), g_NX/2., 0., 150., g_NX/2, -1.5, 1.5);
+    TH2D* hist_CandML_RZParaLABMET = new TH2D((title+"_CandML_RZParaLABMET").c_str(), (title+"_CandML_RZParaLABMET;Z* candidate M [GeV];RZParaLABMET").c_str(), g_NX/2., CandMinMass, CandMaxMass, g_NX/2, -0.5, 0.5);
     hists2.push_back(hist_CandML_RZParaLABMET);
-    TH2D* hist_CandML_RZPerpLABMET = new TH2D((title+"_CandML_RZPerpLABMET").c_str(), (title+"_CandML_RZPerpLABMET;CandML;RZPerpLABMET").c_str(), g_NX/2., 0., 150., g_NX/2, 0., 2.);
+    TH2D* hist_CandML_RZPerpLABMET = new TH2D((title+"_CandML_RZPerpLABMET").c_str(), (title+"_CandML_RZPerpLABMET;Z* candidate M [GeV];RZPerpLABMET").c_str(), g_NX/2., CandMinMass, CandMaxMass, g_NX/2, 0., 0.5);
     hists2.push_back(hist_CandML_RZPerpLABMET);
-    TH2D* hist_CandML_PZAngLABMET = new TH2D((title+"_CandML_PZAngLABMET").c_str(), (title+"_CandML_PZAngLABMET;CandML;PZAngLABMET").c_str(), g_NX/2., 0., 150., g_NX/2, -1.6, 1.6);
+    TH2D* hist_CandML_PZAngLABMET = new TH2D((title+"_CandML_PZAngLABMET").c_str(), (title+"_CandML_PZAngLABMET;Z* candidate M [GeV];PZAngLABMET").c_str(), g_NX/2., CandMinMass, CandMaxMass, g_NX/2, -1.6, 1.6);
     hists2.push_back(hist_CandML_PZAngLABMET);
-    TH2D* hist_RZParaLABMET_RZPerpLABMET = new TH2D((title+"_RZParaLABMET_RZPerpLABMET").c_str(), (title+"_RZParaLABMET_RZPerpLABMET;RZParaLABMET;RZPerpLABMET").c_str(), g_NX/2., -1.5, 1.5, g_NX/2, 0., 2.);
+    TH2D* hist_RZParaLABMET_RZPerpLABMET = new TH2D((title+"_RZParaLABMET_RZPerpLABMET").c_str(), (title+"_RZParaLABMET_RZPerpLABMET;RZParaLABMET;RZPerpLABMET").c_str(), g_NX/2., -0.5, 0.5, g_NX/2, 0., 0.5);
     hists2.push_back(hist_RZParaLABMET_RZPerpLABMET);
-    TH2D* hist_CandML_PZParaLABMET = new TH2D((title+"_CandML_PZParaLABMET").c_str(), (title+"_CandML_PZParaLABMET;CandML;PZParaLABMET").c_str(), g_NX/2., 0., 150., g_NX/2, 0., 600.);
+    TH2D* hist_CandML_PZParaLABMET = new TH2D((title+"_CandML_PZParaLABMET").c_str(), (title+"_CandML_PZParaLABMET;Z* candidate M [GeV];PZParaLABMET").c_str(), g_NX/2., CandMinMass, CandMaxMass, g_NX/2, 0., 400.);
     hists2.push_back(hist_CandML_PZParaLABMET);
-    TH2D* hist_CandML_PZPerpLABMET = new TH2D((title+"_CandML_PZPerpLABMET").c_str(), (title+"_CandML_PZPerpLABMET;CandML;PZPerpLABMET").c_str(), g_NX/2., 0., 150., g_NX/2, 0., 600.);
+    TH2D* hist_CandML_PZPerpLABMET = new TH2D((title+"_CandML_PZPerpLABMET").c_str(), (title+"_CandML_PZPerpLABMET;Z* candidate M [GeV];PZPerpLABMET").c_str(), g_NX/2., CandMinMass, CandMaxMass, g_NX/2, 0., 300.);
     hists2.push_back(hist_CandML_PZPerpLABMET);
 
-    TH2D* hist_RISR_MatchedCandML = new TH2D((title+"_RISR_MatchedCandML").c_str(), (title+"_RISR_MatchedCandML;R_{ISR};MatchedCandML").c_str(), g_NX/2., 0.5, 1., g_NX/2, 0., 150.);
+    TH2D* hist_RZPara_RZParaLABMET = new TH2D((title+"_RZPara_RZParaLABMET").c_str(), (title+"_RZPara_RZParaLABMET;RZPara;RZParaLABMET").c_str(), g_NX/2., -0.75, 0.75, g_NX/2., -0.75, 0.75);
+    hists2.push_back(hist_RZPara_RZParaLABMET);
+    TH2D* hist_RZPerp_RZPerpLABMET = new TH2D((title+"_RZPerp_RZPerpLABMET").c_str(), (title+"_RZPerp_RZPerpLABMET;RZPerp;RZPerpLABMET").c_str(), g_NX/2., 0., 0.75, g_NX/2., 0., 0.75);
+    hists2.push_back(hist_RZPerp_RZPerpLABMET);
+    TH2D* hist_PZPara_PZParaLABMET = new TH2D((title+"_PZPara_PZParaLABMET").c_str(), (title+"_PZPara_PZParaLABMET;PZPara;PZParaLABMET").c_str(), g_NX/2., 0., 400., g_NX/2., 0., 400.);
+    hists2.push_back(hist_PZPara_PZParaLABMET);
+    TH2D* hist_PZPerp_PZPerpLABMET = new TH2D((title+"_PZPerp_PZPerpLABMET").c_str(), (title+"_PZPerp_PZPerpLABMET;PZPerp;PZPerpLABMET").c_str(), g_NX/2., 0., 400., g_NX/2., 0., 400.);
+    hists2.push_back(hist_PZPerp_PZPerpLABMET);
+
+    TH2D* hist_CandML_BetaZPara = new TH2D((title+"_CandML_BetaZPara").c_str(), (title+"_CandML_BetaZPara;Z* candidate M [GeV];PZPara/E^{CM}").c_str(), g_NX/2., CandMinMass, CandMaxMass, g_NX/2, -1., 1.);
+    hists2.push_back(hist_CandML_BetaZPara);
+    TH2D* hist_CandML_BetaZPerp = new TH2D((title+"_CandML_BetaZPerp").c_str(), (title+"_CandML_BetaZPerp;Z* candidate M [GeV];PZPerp/E^{CM}").c_str(), g_NX/2., CandMinMass, CandMaxMass, g_NX/2, 0., 1.);
+    hists2.push_back(hist_CandML_BetaZPerp);
+    TH2D* hist_CandCosDecayAngle_BetaZPara = new TH2D((title+"_CandCosDecayAngle_BetaZPara").c_str(), (title+"_CandCosDecayAngle_BetaZPara;Z* cos#theta;PZPara/E^{CM}").c_str(), g_NX/2., 0., 1., g_NX/2, -1., 1.);
+    hists2.push_back(hist_CandCosDecayAngle_BetaZPara);
+    TH2D* hist_CandCosDecayAngle_BetaZPerp = new TH2D((title+"_CandCosDecayAngle_BetaZPerp").c_str(), (title+"_CandCosDecayAngle_BetaZPerp;Z* cos#theta;PZPerp/E^{CM}").c_str(), g_NX/2., 0., 1., g_NX/2, 0., 1.);
+    hists2.push_back(hist_CandCosDecayAngle_BetaZPerp);
+    TH2D* hist_CandCosDecayAngleCM_BetaZPara = new TH2D((title+"_CandCosDecayAngleCM_BetaZPara").c_str(), (title+"_CandCosDecayAngleCM_BetaZPara;Z* cos#theta CM;PZPara/E^{CM}").c_str(), g_NX/2., 0., 1., g_NX/2, -1., 1.);
+    hists2.push_back(hist_CandCosDecayAngleCM_BetaZPara);
+    TH2D* hist_CandCosDecayAngleCM_BetaZPerp = new TH2D((title+"_CandCosDecayAngleCM_BetaZPerp").c_str(), (title+"_CandCosDecayAngleCM_BetaZPerp;Z* cos#theta CM;PZPerp/E^{CM}").c_str(), g_NX/2., 0., 1., g_NX/2, 0., 1.);
+    hists2.push_back(hist_CandCosDecayAngleCM_BetaZPerp);
+
+    TH2D* hist_CandML_MRZPara = new TH2D((title+"_CandML_MRZPara").c_str(), (title+"_CandML_MRZPara;Z* candidate M [GeV];M/RZPara").c_str(), g_NX/2., CandMinMass, CandMaxMass, g_NX/2, 0., 500.);
+    hists2.push_back(hist_CandML_MRZPara);
+    TH2D* hist_CandML_MRZPerp = new TH2D((title+"_CandML_MRZPerp").c_str(), (title+"_CandML_MRZPerp;Z* candidate M [GeV];M/RZPerp").c_str(), g_NX/2., CandMinMass, CandMaxMass, g_NX/2, 0., 500.);
+    hists2.push_back(hist_CandML_MRZPerp);
+    TH2D* hist_CandML_MRZParaLABMET = new TH2D((title+"_CandML_MRZParaLABMET").c_str(), (title+"_CandML_MRZParaLABMET;Z* candidate M [GeV];M/RZParaLABMET").c_str(), g_NX/2., CandMinMass, CandMaxMass, g_NX/2, 0., 500.);
+    hists2.push_back(hist_CandML_MRZParaLABMET);
+    TH2D* hist_CandML_MRZPerpLABMET = new TH2D((title+"_CandML_MRZPerpLABMET").c_str(), (title+"_CandML_MRZPerpLABMET;Z* candidate M [GeV];M/RZPerpLABMET").c_str(), g_NX/2., CandMinMass, CandMaxMass, g_NX/2, 0., 500.);
+    hists2.push_back(hist_CandML_MRZPerpLABMET);
+
+    TH2D* hist_CandCosDecayAngle_MPZPara = new TH2D((title+"_CandCosDecayAngle_MPZPara").c_str(), (title+"_CandCosDecayAngle_MPZPara;Z* cos#theta;PZPara/M").c_str(), g_NX/2., 0., 1., g_NX/2, 0., 2.);
+    hists2.push_back(hist_CandCosDecayAngle_MPZPara);
+    TH2D* hist_CandCosDecayAngle_MPZPerp = new TH2D((title+"_CandCosDecayAngle_MPZPerp").c_str(), (title+"_CandCosDecayAngle_MPZPerp;Z* cos#theta;PZPerp/M").c_str(), g_NX/2., 0., 1., g_NX/2, 0., 2.);
+    hists2.push_back(hist_CandCosDecayAngle_MPZPerp);
+    TH2D* hist_CandCosDecayAngle_MPZParaLABMET = new TH2D((title+"_CandCosDecayAngle_MPZParaLABMET").c_str(), (title+"_CandCosDecayAngle_MPZParaLABMET;Z* cos#theta;PZParaLABMET/M_{T}").c_str(), g_NX/2., 0., 1., g_NX/2, 0., 2.);
+    hists2.push_back(hist_CandCosDecayAngle_MPZParaLABMET);
+    TH2D* hist_CandCosDecayAngle_MPZPerpLABMET = new TH2D((title+"_CandCosDecayAngle_MPZPerpLABMET").c_str(), (title+"_CandCosDecayAngle_MPZPerpLABMET;Z* cos#theta;PZPerpLABMET/M_{T}").c_str(), g_NX/2., 0., 1., g_NX/2, 0., 2.);
+    hists2.push_back(hist_CandCosDecayAngle_MPZPerpLABMET);
+
+    TH2D* hist_CandCosDecayAngleCM_MPZPara = new TH2D((title+"_CandCosDecayAngleCM_MPZPara").c_str(), (title+"_CandCosDecayAngleCM_MPZPara;Z* cos#theta CM;PZPara/M").c_str(), g_NX/2., 0., 1., g_NX/2, 0., 2.);
+    hists2.push_back(hist_CandCosDecayAngleCM_MPZPara);
+    TH2D* hist_CandCosDecayAngleCM_MPZPerp = new TH2D((title+"_CandCosDecayAngleCM_MPZPerp").c_str(), (title+"_CandCosDecayAngleCM_MPZPerp;Z* cos#theta CM;PZPerp/M").c_str(), g_NX/2., 0., 1., g_NX/2, 0., 2.);
+    hists2.push_back(hist_CandCosDecayAngleCM_MPZPerp);
+    TH2D* hist_CandCosDecayAngleCM_MPZParaLABMET = new TH2D((title+"_CandCosDecayAngleCM_MPZParaLABMET").c_str(), (title+"_CandCosDecayAngleCM_MPZParaLABMET;Z* cos#theta CM;PZParaLABMET/M_{T}").c_str(), g_NX/2., 0., 1., g_NX/2, 0., 2.);
+    hists2.push_back(hist_CandCosDecayAngleCM_MPZParaLABMET);
+    TH2D* hist_CandCosDecayAngleCM_MPZPerpLABMET = new TH2D((title+"_CandCosDecayAngleCM_MPZPerpLABMET").c_str(), (title+"_CandCosDecayAngleCM_MPZPerpLABMET;Z* cos#theta CM;PZPerpLABMET/M_{T}").c_str(), g_NX/2., 0., 1., g_NX/2, 0., 2.);
+    hists2.push_back(hist_CandCosDecayAngleCM_MPZPerpLABMET);
+
+    TH2D* hist_Beta_MPZPara = new TH2D((title+"_Beta_MPZPara").c_str(), (title+"_Beta_MPZPara;Z* #beta;PZPara/M").c_str(), g_NX/2., 0., 1., g_NX/2, 0., 2.);
+    hists2.push_back(hist_Beta_MPZPara);
+    TH2D* hist_Beta_MPZPerp = new TH2D((title+"_Beta_MPZPerp").c_str(), (title+"_Beta_MPZPerp;Z* #beta;PZPerp/M").c_str(), g_NX/2., 0., 1., g_NX/2, 0., 2.);
+    hists2.push_back(hist_Beta_MPZPerp);
+    TH2D* hist_Beta_MPZParaLABMET = new TH2D((title+"_Beta_MPZParaLABMET").c_str(), (title+"_Beta_MPZParaLABMET;Z* #beta;PZParaLABMET/M_{T}").c_str(), g_NX/2., 0., 1., g_NX/2, 0., 2.);
+    hists2.push_back(hist_Beta_MPZParaLABMET);
+    TH2D* hist_Beta_MPZPerpLABMET = new TH2D((title+"_Beta_MPZPerpLABMET").c_str(), (title+"_Beta_MPZPerpLABMET;Z* #beta;PZPerpLABMET/M_{T}").c_str(), g_NX/2., 0., 1., g_NX/2, 0., 2.);
+    hists2.push_back(hist_Beta_MPZPerpLABMET);
+
+    TH2D* hist_BetaCM_MPZPara = new TH2D((title+"_BetaCM_MPZPara").c_str(), (title+"_BetaCM_MPZPara;Z* #beta^{CM};PZPara/M").c_str(), g_NX/2., 0., 1., g_NX/2, 0., 2.);
+    hists2.push_back(hist_BetaCM_MPZPara);
+    TH2D* hist_BetaCM_MPZPerp = new TH2D((title+"_BetaCM_MPZPerp").c_str(), (title+"_BetaCM_MPZPerp;Z* #beta^{CM};PZPerp/M").c_str(), g_NX/2., 0., 1., g_NX/2, 0., 2.);
+    hists2.push_back(hist_BetaCM_MPZPerp);
+    TH2D* hist_BetaCM_MPZParaLABMET = new TH2D((title+"_BetaCM_MPZParaLABMET").c_str(), (title+"_BetaCM_MPZParaLABMET;Z* #beta^{CM};PZParaLABMET/M_{T}").c_str(), g_NX/2., 0., 1., g_NX/2, 0., 2.);
+    hists2.push_back(hist_BetaCM_MPZParaLABMET);
+    TH2D* hist_BetaCM_MPZPerpLABMET = new TH2D((title+"_BetaCM_MPZPerpLABMET").c_str(), (title+"_BetaCM_MPZPerpLABMET;Z* #beta^{CM};PZPerpLABMET/M_{T}").c_str(), g_NX/2., 0., 1., g_NX/2, 0., 2.);
+    hists2.push_back(hist_BetaCM_MPZPerpLABMET);
+
+    TH2D* hist_PZAng_MPZPara = new TH2D((title+"_PZAng_MPZPara").c_str(), (title+"_PZAng_MPZPara;PZAng;PZPara/M").c_str(), g_NX/2., -1.6, 1.6, g_NX/2, 0., 2.);
+    hists2.push_back(hist_PZAng_MPZPara);
+    TH2D* hist_PZAng_MPZPerp = new TH2D((title+"_PZAng_MPZPerp").c_str(), (title+"_PZAng_MPZPerp;PZAng;PZPerp/M").c_str(), g_NX/2., -1.6, 1.6, g_NX/2, 0., 2.);
+    hists2.push_back(hist_PZAng_MPZPerp);
+    TH2D* hist_PZAng_MPZParaLABMET = new TH2D((title+"_PZAng_MPZParaLABMET").c_str(), (title+"_PZAng_MPZParaLABMET;PZAng;PZParaLABMET/M_{T}").c_str(), g_NX/2., -1.6, 1.6, g_NX/2, 0., 2.);
+    hists2.push_back(hist_PZAng_MPZParaLABMET);
+    TH2D* hist_PZAng_MPZPerpLABMET = new TH2D((title+"_PZAng_MPZPerpLABMET").c_str(), (title+"_PZAng_MPZPerpLABMET;PZAng;PZPerpLABMET/M_{T}").c_str(), g_NX/2., -1.6, 1.6, g_NX/2, 0., 2.);
+    hists2.push_back(hist_PZAng_MPZPerpLABMET);
+
+    TH2D* hist_PZPara_CandECM = new TH2D((title+"_PZPara_CandECM").c_str(), (title+"_PZPara_CandECM;PZPara;Z* candidate E^{CM} [GeV]").c_str(), g_NX/2., 0., 400., g_NX/2., 0., 400.);
+    hists2.push_back(hist_PZPara_CandECM);
+    TH2D* hist_PZPerp_CandECM = new TH2D((title+"_PZPerp_CandECM").c_str(), (title+"_PZPerp_CandECM;PZPerp;Z* candidate E^{CM} [GeV]").c_str(), g_NX/2., 0., 400., g_NX/2., 0., 400.);
+    hists2.push_back(hist_PZPerp_CandECM);
+
+    TH2D* hist_CandCosDecayAngle_RZPara = new TH2D((title+"_CandCosDecayAngle_RZPara").c_str(), (title+"_CandCosDecayAngle_RZPara;Z* candidate cos#theta;RZPara").c_str(), g_NX/2., 0., 1., g_NX/2, -0.5, 0.5);
+    hists2.push_back(hist_CandCosDecayAngle_RZPara);
+    TH2D* hist_CandCosDecayAngle_RZPerp = new TH2D((title+"_CandCosDecayAngle_RZPerp").c_str(), (title+"_CandCosDecayAngle_RZPerp;Z* candidate cos#theta;RZPerp").c_str(), g_NX/2., 0., 1., g_NX/2, 0., 0.5);
+    hists2.push_back(hist_CandCosDecayAngle_RZPerp);
+    TH2D* hist_CandCosDecayAngle_PZAng = new TH2D((title+"_CandCosDecayAngle_PZAng").c_str(), (title+"_CandCosDecayAngle_PZAng;Z* candidate cos#theta;PZAng").c_str(), g_NX/2., 0., 1., g_NX/2, -1.6, 1.6);
+    hists2.push_back(hist_CandCosDecayAngle_PZAng);
+    TH2D* hist_CandCosDecayAngle_PZPara = new TH2D((title+"_CandCosDecayAngle_PZPara").c_str(), (title+"_CandCosDecayAngle_PZPara;Z* candidate cos#theta;PZPara").c_str(), g_NX/2., 0., 1., g_NX/2, 0., 400.);
+    hists2.push_back(hist_CandCosDecayAngle_PZPara);
+    TH2D* hist_CandCosDecayAngle_PZPerp = new TH2D((title+"_CandCosDecayAngle_PZPerp").c_str(), (title+"_CandCosDecayAngle_PZPerp;Z* candidate cos#theta;PZPerp").c_str(), g_NX/2., 0., 1., g_NX/2, 0., 400.);
+    hists2.push_back(hist_CandCosDecayAngle_PZPerp);
+
+    TH2D* hist_CandCosDecayAngle_RZParaLABMET = new TH2D((title+"_CandCosDecayAngle_RZParaLABMET").c_str(), (title+"_CandCosDecayAngle_RZParaLABMET;Z* candidate cos#theta;RZParaLABMET").c_str(), g_NX/2., 0., 1., g_NX/2, -0.5, 0.5);
+    hists2.push_back(hist_CandCosDecayAngle_RZParaLABMET);
+    TH2D* hist_CandCosDecayAngle_RZPerpLABMET = new TH2D((title+"_CandCosDecayAngle_RZPerpLABMET").c_str(), (title+"_CandCosDecayAngle_RZPerpLABMET;Z* candidate cos#theta;RZPerpLABMET").c_str(), g_NX/2., 0., 1., g_NX/2, 0., 0.5);
+    hists2.push_back(hist_CandCosDecayAngle_RZPerpLABMET);
+    TH2D* hist_CandCosDecayAngle_PZAngLABMET = new TH2D((title+"_CandCosDecayAngle_PZAngLABMET").c_str(), (title+"_CandCosDecayAngle_PZAngLABMET;Z* candidate cos#theta;PZAngLABMET").c_str(), g_NX/2., 0., 1., g_NX/2, -1.6, 1.6);
+    hists2.push_back(hist_CandCosDecayAngle_PZAngLABMET);
+    TH2D* hist_CandCosDecayAngle_PZParaLABMET = new TH2D((title+"_CandCosDecayAngle_PZParaLABMET").c_str(), (title+"_CandCosDecayAngle_PZParaLABMET;Z* candidate cos#theta;PZParaLABMET").c_str(), g_NX/2., 0., 1., g_NX/2, 0., 400.);
+    hists2.push_back(hist_CandCosDecayAngle_PZParaLABMET);
+    TH2D* hist_CandCosDecayAngle_PZPerpLABMET = new TH2D((title+"_CandCosDecayAngle_PZPerpLABMET").c_str(), (title+"_CandCosDecayAngle_PZPerpLABMET;Z* candidate cos#theta;PZPerpLABMET").c_str(), g_NX/2., 0., 1., g_NX/2, 0., 400.);
+    hists2.push_back(hist_CandCosDecayAngle_PZPerpLABMET);
+
+    TH2D* hist_CandCosDecayAngleCM_RZPara = new TH2D((title+"_CandCosDecayAngleCM_RZPara").c_str(), (title+"_CandCosDecayAngleCM_RZPara;Z* candidate cos#theta CM;RZPara").c_str(), g_NX/2., 0., 1., g_NX/2, -0.5, 0.5);
+    hists2.push_back(hist_CandCosDecayAngleCM_RZPara);
+    TH2D* hist_CandCosDecayAngleCM_RZPerp = new TH2D((title+"_CandCosDecayAngleCM_RZPerp").c_str(), (title+"_CandCosDecayAngleCM_RZPerp;Z* candidate cos#theta CM;RZPerp").c_str(), g_NX/2., 0., 1., g_NX/2, 0., 0.5);
+    hists2.push_back(hist_CandCosDecayAngleCM_RZPerp);
+    TH2D* hist_CandCosDecayAngleCM_PZAng = new TH2D((title+"_CandCosDecayAngleCM_PZAng").c_str(), (title+"_CandCosDecayAngleCM_PZAng;Z* candidate cos#theta CM;PZAng").c_str(), g_NX/2., 0., 1., g_NX/2, -1.6, 1.6);
+    hists2.push_back(hist_CandCosDecayAngleCM_PZAng);
+    TH2D* hist_CandCosDecayAngleCM_PZPara = new TH2D((title+"_CandCosDecayAngleCM_PZPara").c_str(), (title+"_CandCosDecayAngleCM_PZPara;Z* candidate cos#theta CM;PZPara").c_str(), g_NX/2., 0., 1., g_NX/2, 0., 400.);
+    hists2.push_back(hist_CandCosDecayAngleCM_PZPara);
+    TH2D* hist_CandCosDecayAngleCM_PZPerp = new TH2D((title+"_CandCosDecayAngleCM_PZPerp").c_str(), (title+"_CandCosDecayAngleCM_PZPerp;Z* candidate cos#theta CM;PZPerp").c_str(), g_NX/2., 0., 1., g_NX/2, 0., 400.);
+    hists2.push_back(hist_CandCosDecayAngleCM_PZPerp);
+
+    TH2D* hist_CandCosDecayAngleCM_RZParaLABMET = new TH2D((title+"_CandCosDecayAngleCM_RZParaLABMET").c_str(), (title+"_CandCosDecayAngleCM_RZParaLABMET;Z* candidate cos#theta CM;RZParaLABMET").c_str(), g_NX/2., 0., 1., g_NX/2, -0.5, 0.5);
+    hists2.push_back(hist_CandCosDecayAngleCM_RZParaLABMET);
+    TH2D* hist_CandCosDecayAngleCM_RZPerpLABMET = new TH2D((title+"_CandCosDecayAngleCM_RZPerpLABMET").c_str(), (title+"_CandCosDecayAngleCM_RZPerpLABMET;Z* candidate cos#theta CM;RZPerpLABMET").c_str(), g_NX/2., 0., 1., g_NX/2, 0., 0.5);
+    hists2.push_back(hist_CandCosDecayAngleCM_RZPerpLABMET);
+    TH2D* hist_CandCosDecayAngleCM_PZAngLABMET = new TH2D((title+"_CandCosDecayAngleCM_PZAngLABMET").c_str(), (title+"_CandCosDecayAngleCM_PZAngLABMET;Z* candidate cos#theta CM;PZAngLABMET").c_str(), g_NX/2., 0., 1., g_NX/2, -1.6, 1.6);
+    hists2.push_back(hist_CandCosDecayAngleCM_PZAngLABMET);
+    TH2D* hist_CandCosDecayAngleCM_PZParaLABMET = new TH2D((title+"_CandCosDecayAngleCM_PZParaLABMET").c_str(), (title+"_CandCosDecayAngleCM_PZParaLABMET;Z* candidate cos#theta CM;PZParaLABMET").c_str(), g_NX/2., 0., 1., g_NX/2, 0., 400.);
+    hists2.push_back(hist_CandCosDecayAngleCM_PZParaLABMET);
+    TH2D* hist_CandCosDecayAngleCM_PZPerpLABMET = new TH2D((title+"_CandCosDecayAngleCM_PZPerpLABMET").c_str(), (title+"_CandCosDecayAngleCM_PZPerpLABMET;Z* candidate cos#theta CM;PZPerpLABMET").c_str(), g_NX/2., 0., 1., g_NX/2, 0., 400.);
+    hists2.push_back(hist_CandCosDecayAngleCM_PZPerpLABMET);
+
+    TH2D* hist_CandCosDecayAngle_CandCosDecayAngleCM = new TH2D((title+"_CandCosDecayAngle_CandCosDecayAngleCM").c_str(), (title+"_CandCosDecayAngle_CandCosDecayAngleCM;Z* candidate cos#theta;Z* candidate cos#theta CM").c_str(), g_NX/2., 0., 1., g_NX/2., 0., 1.);
+    hists2.push_back(hist_CandCosDecayAngle_CandCosDecayAngleCM);
+    TH2D* hist_CandBeta_CandBetaCM = new TH2D((title+"_CandBeta_CandBetaCM").c_str(), (title+"_CandBeta_CandBetaCM;Z* candidate #beta;Z* candidate #beta^{CM}").c_str(), g_NX/2., 0., 1., g_NX/2., 0., 1.);
+    hists2.push_back(hist_CandBeta_CandBetaCM);
+
+    TH2D* hist_Beta_RZPara = new TH2D((title+"_Beta_RZPara").c_str(), (title+"_Beta_RZPara;Z* candidate #beta;RZPara").c_str(), g_NX/2., 0., 1., g_NX/2, -0.5, 0.5);
+    hists2.push_back(hist_Beta_RZPara);
+    TH2D* hist_Beta_RZPerp = new TH2D((title+"_Beta_RZPerp").c_str(), (title+"_Beta_RZPerp;Z* candidate #beta;RZPerp").c_str(), g_NX/2., 0., 1., g_NX/2, 0., 0.5);
+    hists2.push_back(hist_Beta_RZPerp);
+    TH2D* hist_Beta_PZAng = new TH2D((title+"_Beta_PZAng").c_str(), (title+"_Beta_PZAng;Z* candidate #beta;PZAng").c_str(), g_NX/2., 0., 1., g_NX/2, -1.6, 1.6);
+    hists2.push_back(hist_Beta_PZAng);
+    TH2D* hist_Beta_PZPara = new TH2D((title+"_Beta_PZPara").c_str(), (title+"_Beta_PZPara;Z* candidate #beta;PZPara").c_str(), g_NX/2., 0., 1., g_NX/2, 0., 400.);
+    hists2.push_back(hist_Beta_PZPara);
+    TH2D* hist_Beta_PZPerp = new TH2D((title+"_Beta_PZPerp").c_str(), (title+"_Beta_PZPerp;Z* candidate #beta;PZPerp").c_str(), g_NX/2., 0., 1., g_NX/2, 0., 400.);
+    hists2.push_back(hist_Beta_PZPerp);
+
+    TH2D* hist_Beta_RZParaLABMET = new TH2D((title+"_Beta_RZParaLABMET").c_str(), (title+"_Beta_RZParaLABMET;Z* candidate #beta;RZParaLABMET").c_str(), g_NX/2., 0., 1., g_NX/2, -0.5, 0.5);
+    hists2.push_back(hist_Beta_RZParaLABMET);
+    TH2D* hist_Beta_RZPerpLABMET = new TH2D((title+"_Beta_RZPerpLABMET").c_str(), (title+"_Beta_RZPerpLABMET;Z* candidate #beta;RZPerpLABMET").c_str(), g_NX/2., 0., 1., g_NX/2, 0., 0.5);
+    hists2.push_back(hist_Beta_RZPerpLABMET);
+    TH2D* hist_Beta_PZAngLABMET = new TH2D((title+"_Beta_PZAngLABMET").c_str(), (title+"_Beta_PZAngLABMET;Z* candidate #beta;PZAngLABMET").c_str(), g_NX/2., 0., 1., g_NX/2, -1.6, 1.6);
+    hists2.push_back(hist_Beta_PZAngLABMET);
+    TH2D* hist_Beta_PZParaLABMET = new TH2D((title+"_Beta_PZParaLABMET").c_str(), (title+"_Beta_PZParaLABMET;Z* candidate #beta;PZParaLABMET").c_str(), g_NX/2., 0., 1., g_NX/2, 0., 400.);
+    hists2.push_back(hist_Beta_PZParaLABMET);
+    TH2D* hist_Beta_PZPerpLABMET = new TH2D((title+"_Beta_PZPerpLABMET").c_str(), (title+"_Beta_PZPerpLABMET;Z* candidate #beta;PZPerpLABMET").c_str(), g_NX/2., 0., 1., g_NX/2, 0., 400.);
+    hists2.push_back(hist_Beta_PZPerpLABMET);
+
+    TH2D* hist_BetaCM_RZPara = new TH2D((title+"_BetaCM_RZPara").c_str(), (title+"_BetaCM_RZPara;Z* candidate #beta^{CM};RZPara").c_str(), g_NX/2., 0., 1., g_NX/2, -0.5, 0.5);
+    hists2.push_back(hist_BetaCM_RZPara);
+    TH2D* hist_BetaCM_RZPerp = new TH2D((title+"_BetaCM_RZPerp").c_str(), (title+"_BetaCM_RZPerp;Z* candidate #beta^{CM};RZPerp").c_str(), g_NX/2., 0., 1., g_NX/2, 0., 0.5);
+    hists2.push_back(hist_BetaCM_RZPerp);
+    TH2D* hist_BetaCM_PZAng = new TH2D((title+"_BetaCM_PZAng").c_str(), (title+"_BetaCM_PZAng;Z* candidate #beta^{CM};PZAng").c_str(), g_NX/2., 0., 1., g_NX/2, -1.6, 1.6);
+    hists2.push_back(hist_BetaCM_PZAng);
+    TH2D* hist_BetaCM_PZPara = new TH2D((title+"_BetaCM_PZPara").c_str(), (title+"_BetaCM_PZPara;Z* candidate #beta^{CM};PZPara").c_str(), g_NX/2., 0., 1., g_NX/2, 0., 400.);
+    hists2.push_back(hist_BetaCM_PZPara);
+    TH2D* hist_BetaCM_PZPerp = new TH2D((title+"_BetaCM_PZPerp").c_str(), (title+"_BetaCM_PZPerp;Z* candidate #beta^{CM};PZPerp").c_str(), g_NX/2., 0., 1., g_NX/2, 0., 400.);
+    hists2.push_back(hist_BetaCM_PZPerp);
+
+    TH2D* hist_BetaCM_RZParaLABMET = new TH2D((title+"_BetaCM_RZParaLABMET").c_str(), (title+"_BetaCM_RZParaLABMET;Z* candidate #beta^{CM};RZParaLABMET").c_str(), g_NX/2., 0., 1., g_NX/2, -0.5, 0.5);
+    hists2.push_back(hist_BetaCM_RZParaLABMET);
+    TH2D* hist_BetaCM_RZPerpLABMET = new TH2D((title+"_BetaCM_RZPerpLABMET").c_str(), (title+"_BetaCM_RZPerpLABMET;Z* candidate #beta^{CM};RZPerpLABMET").c_str(), g_NX/2., 0., 1., g_NX/2, 0., 0.5);
+    hists2.push_back(hist_BetaCM_RZPerpLABMET);
+    TH2D* hist_BetaCM_PZAngLABMET = new TH2D((title+"_BetaCM_PZAngLABMET").c_str(), (title+"_BetaCM_PZAngLABMET;Z* candidate #beta^{CM};PZAngLABMET").c_str(), g_NX/2., 0., 1., g_NX/2, -1.6, 1.6);
+    hists2.push_back(hist_BetaCM_PZAngLABMET);
+    TH2D* hist_BetaCM_PZParaLABMET = new TH2D((title+"_BetaCM_PZParaLABMET").c_str(), (title+"_BetaCM_PZParaLABMET;Z* candidate #beta^{CM};PZParaLABMET").c_str(), g_NX/2., 0., 1., g_NX/2, 0., 400.);
+    hists2.push_back(hist_BetaCM_PZParaLABMET);
+    TH2D* hist_BetaCM_PZPerpLABMET = new TH2D((title+"_BetaCM_PZPerpLABMET").c_str(), (title+"_BetaCM_PZPerpLABMET;Z* candidate #beta^{CM};PZPerpLABMET").c_str(), g_NX/2., 0., 1., g_NX/2, 0., 400.);
+    hists2.push_back(hist_BetaCM_PZPerpLABMET);
+
+    TH2D* hist_RISR_MatchedCandML = new TH2D((title+"_RISR_MatchedCandML").c_str(), (title+"_RISR_MatchedCandML;R_{ISR};Matched Z* candidate M [GeV]").c_str(), g_NX/2., 0.5, 1., g_NX/2, CandMinMass, CandMaxMass);
     hists2.push_back(hist_RISR_MatchedCandML);
-    TH2D* hist_RISR_MatchedCandBeta = new TH2D((title+"_RISR_MatchedCandBeta").c_str(), (title+"_RISR_MatchedCandBeta;R_{ISR};MatchedCandBeta").c_str(), g_NX/2., 0.5, 1., g_NX/2, 0., 1.);
+    TH2D* hist_RISR_MatchedCandBeta = new TH2D((title+"_RISR_MatchedCandBeta").c_str(), (title+"_RISR_MatchedCandBeta;R_{ISR};Matched #beta").c_str(), g_NX/2., 0.5, 1., g_NX/2, 0., 1.);
     hists2.push_back(hist_RISR_MatchedCandBeta);
+    TH2D* hist_RISR_MatchedCandBetaCM = new TH2D((title+"_RISR_MatchedCandBetaCM").c_str(), (title+"_RISR_MatchedCandBetaCM;R_{ISR};Matched #beta^{CM}").c_str(), g_NX/2., 0.5, 1., g_NX/2, 0., 1.);
+    hists2.push_back(hist_RISR_MatchedCandBetaCM);
     TH2D* hist_RISR_MatchedCandDeltaPhiMET = new TH2D((title+"_RISR_MatchedCandDeltaPhiMET").c_str(), (title+"_RISR_MatchedCandDeltaPhiMET;R_{ISR};MatchedCandDeltaPhiMET").c_str(), g_NX/2., 0.5, 1., g_NX/2, 0., 3.15);
     hists2.push_back(hist_RISR_MatchedCandDeltaPhiMET);
-    TH2D* hist_MatchedCandML_MatchedCandBeta = new TH2D((title+"_MatchedCandML_MatchedCandBeta").c_str(), (title+"_MatchedCandML_MatchedCandBeta;MatchedCandML;MatchedCandBeta").c_str(), g_NX/2., 0., 150., g_NX/2, 0., 1.);
+    TH2D* hist_MatchedCandML_MatchedCandBeta = new TH2D((title+"_MatchedCandML_MatchedCandBeta").c_str(), (title+"_MatchedCandML_MatchedCandBeta;MatchedCandML;Matched #beta").c_str(), g_NX/2., CandMinMass, CandMaxMass, g_NX/2, 0., 1.);
     hists2.push_back(hist_MatchedCandML_MatchedCandBeta);
-    TH2D* hist_MatchedCandML_MatchedCandDeltaPhiMET = new TH2D((title+"_MatchedCandML_MatchedCandDeltaPhiMET").c_str(), (title+"_MatchedCandML_MatchedCandDeltaPhiMET;MatchedCandML;MatchedCandDeltaPhiMET").c_str(), g_NX/2., 0., 150., g_NX/2, 0., 3.15);
+    TH2D* hist_MatchedCandML_MatchedCandBetaCM = new TH2D((title+"_MatchedCandML_MatchedCandBetaCM").c_str(), (title+"_MatchedCandML_MatchedCandBetaCM;MatchedCandML;Matched #beta^{CM}").c_str(), g_NX/2., CandMinMass, CandMaxMass, g_NX/2, 0., 1.);
+    hists2.push_back(hist_MatchedCandML_MatchedCandBetaCM);
+    TH2D* hist_MatchedCandML_MatchedCandDeltaPhiMET = new TH2D((title+"_MatchedCandML_MatchedCandDeltaPhiMET").c_str(), (title+"_MatchedCandML_MatchedCandDeltaPhiMET;MatchedCandML;MatchedCandDeltaPhiMET").c_str(), g_NX/2., CandMinMass, CandMaxMass, g_NX/2, 0., 3.15);
     hists2.push_back(hist_MatchedCandML_MatchedCandDeltaPhiMET);
-    TH2D* hist_MatchedCandML_MatchedCandCosDecayAngle = new TH2D((title+"_MatchedCandML_MatchedCandCosDecayAngle").c_str(), (title+"_MatchedCandML_MatchedCandCosDecayAngle;MatchedCandML;MatchedCandCosDecayAngle").c_str(), g_NX/2., 0., 150., g_NX/2, -1., 1.);
+    TH2D* hist_MatchedCandML_MatchedCandCosDecayAngle = new TH2D((title+"_MatchedCandML_MatchedCandCosDecayAngle").c_str(), (title+"_MatchedCandML_MatchedCandCosDecayAngle;MatchedCandML;MatchedCandCosDecayAngle").c_str(), g_NX/2., CandMinMass, CandMaxMass, g_NX/2, 0., 1.);
     hists2.push_back(hist_MatchedCandML_MatchedCandCosDecayAngle);
+    TH2D* hist_MatchedCandML_MatchedCandCosDecayAngleCM = new TH2D((title+"_MatchedCandML_MatchedCandCosDecayAngleCM").c_str(), (title+"_MatchedCandML_MatchedCandCosDecayAngleCM;MatchedCandML;MatchedCandCosDecayAngleCM").c_str(), g_NX/2., CandMinMass, CandMaxMass, g_NX/2, 0., 1.);
+    hists2.push_back(hist_MatchedCandML_MatchedCandCosDecayAngleCM);
 
-    TH2D* hist_RISR_UnmatchedCandML = new TH2D((title+"_RISR_UnmatchedCandML").c_str(), (title+"_RISR_UnmatchedCandML;R_{ISR};UnmatchedCandML").c_str(), g_NX/2., 0.5, 1., g_NX/2, 0., 150.);
+    TH2D* hist_RISR_UnmatchedCandML = new TH2D((title+"_RISR_UnmatchedCandML").c_str(), (title+"_RISR_UnmatchedCandML;R_{ISR};UnmatchedCandML").c_str(), g_NX/2., 0.5, 1., g_NX/2, CandMinMass, CandMaxMass);
     hists2.push_back(hist_RISR_UnmatchedCandML);
-    TH2D* hist_RISR_UnmatchedCandBeta = new TH2D((title+"_RISR_UnmatchedCandBeta").c_str(), (title+"_RISR_UnmatchedCandBeta;R_{ISR};UnmatchedCandBeta").c_str(), g_NX/2., 0.5, 1., g_NX/2, 0., 1.);
+    TH2D* hist_RISR_UnmatchedCandBeta = new TH2D((title+"_RISR_UnmatchedCandBeta").c_str(), (title+"_RISR_UnmatchedCandBeta;R_{ISR};Unmatched #beta").c_str(), g_NX/2., 0.5, 1., g_NX/2, 0., 1.);
     hists2.push_back(hist_RISR_UnmatchedCandBeta);
+    TH2D* hist_UnmatchedCandML_UnmatchedCandBeta = new TH2D((title+"_UnmatchedCandML_UnmatchedCandBeta").c_str(), (title+"_UnmatchedCandML_UnmatchedCandBeta;UnmatchedCandML;UnmatchedCandBeta").c_str(), g_NX/2., CandMinMass, CandMaxMass, g_NX/2, 0., 1.);
+    hists2.push_back(hist_UnmatchedCandML_UnmatchedCandBeta);
+    TH2D* hist_RISR_UnmatchedCandBetaCM = new TH2D((title+"_RISR_UnmatchedCandBetaCM").c_str(), (title+"_RISR_UnmatchedCandBetaCM;R_{ISR};Unmatched #beta^{CM}").c_str(), g_NX/2., 0.5, 1., g_NX/2, 0., 1.);
+    hists2.push_back(hist_RISR_UnmatchedCandBetaCM);
+    TH2D* hist_UnmatchedCandML_UnmatchedCandBetaCM = new TH2D((title+"_UnmatchedCandML_UnmatchedCandBetaCM").c_str(), (title+"_UnmatchedCandML_UnmatchedCandBetaCM;UnmatchedCandML;UnmatchedCandBetaCM").c_str(), g_NX/2., CandMinMass, CandMaxMass, g_NX/2, 0., 1.);
+    hists2.push_back(hist_UnmatchedCandML_UnmatchedCandBetaCM);
     TH2D* hist_RISR_UnmatchedCandDeltaPhiMET = new TH2D((title+"_RISR_UnmatchedCandDeltaPhiMET").c_str(), (title+"_RISR_UnmatchedCandDeltaPhiMET;R_{ISR};UnmatchedCandDeltaPhiMET").c_str(), g_NX/2., 0.5, 1., g_NX/2, 0., 3.15);
     hists2.push_back(hist_RISR_UnmatchedCandDeltaPhiMET);
-    TH2D* hist_UnmatchedCandML_UnmatchedCandBeta = new TH2D((title+"_UnmatchedCandML_UnmatchedCandBeta").c_str(), (title+"_UnmatchedCandML_UnmatchedCandBeta;UnmatchedCandML;UnmatchedCandBeta").c_str(), g_NX/2., 0., 150., g_NX/2, 0., 1.);
-    hists2.push_back(hist_UnmatchedCandML_UnmatchedCandBeta);
-    TH2D* hist_UnmatchedCandML_UnmatchedCandDeltaPhiMET = new TH2D((title+"_UnmatchedCandML_UnmatchedCandDeltaPhiMET").c_str(), (title+"_UnmatchedCandML_UnmatchedCandDeltaPhiMET;UnmatchedCandML;UnmatchedCandDeltaPhiMET").c_str(), g_NX/2., 0., 150., g_NX/2, 0., 3.15);
+    TH2D* hist_UnmatchedCandML_UnmatchedCandDeltaPhiMET = new TH2D((title+"_UnmatchedCandML_UnmatchedCandDeltaPhiMET").c_str(), (title+"_UnmatchedCandML_UnmatchedCandDeltaPhiMET;UnmatchedCandML;UnmatchedCandDeltaPhiMET").c_str(), g_NX/2., CandMinMass, CandMaxMass, g_NX/2, 0., 3.15);
     hists2.push_back(hist_UnmatchedCandML_UnmatchedCandDeltaPhiMET);
-    TH2D* hist_UnmatchedCandML_UnmatchedCandCosDecayAngle = new TH2D((title+"_UnmatchedCandML_UnmatchedCandCosDecayAngle").c_str(), (title+"_UnmatchedCandML_UnmatchedCandCosDecayAngle;UnmatchedCandML;UnmatchedCandCosDecayAngle").c_str(), g_NX/2., 0., 150., g_NX/2, -1., 1.);
+    TH2D* hist_UnmatchedCandML_UnmatchedCandCosDecayAngle = new TH2D((title+"_UnmatchedCandML_UnmatchedCandCosDecayAngle").c_str(), (title+"_UnmatchedCandML_UnmatchedCandCosDecayAngle;UnmatchedCandML;UnmatchedCandCosDecayAngle").c_str(), g_NX/2., CandMinMass, CandMaxMass, g_NX/2, 0., 1.);
     hists2.push_back(hist_UnmatchedCandML_UnmatchedCandCosDecayAngle);
+    TH2D* hist_UnmatchedCandML_UnmatchedCandCosDecayAngleCM = new TH2D((title+"_UnmatchedCandML_UnmatchedCandCosDecayAngleCM").c_str(), (title+"_UnmatchedCandML_UnmatchedCandCosDecayAngleCM;UnmatchedCandML;UnmatchedCandCosDecayAngleCM").c_str(), g_NX/2., CandMinMass, CandMaxMass, g_NX/2, 0., 1.);
+    hists2.push_back(hist_UnmatchedCandML_UnmatchedCandCosDecayAngleCM);
 
-    TEfficiency* eff_METtrig = new TEfficiency((title+"_eff_METtrig").c_str(), "Efficiency of MET trigger;Eff;MET [GeV]", g_NX, 0., 700.);
+    TH2D* hist_DecayAngleDiff_PzCM = new TH2D((title+"_DecayAngleDiff_PzCM").c_str(), (title+"_DecayAngleDiff_PzCM;|cos#theta CM| - |cos#theta|;PzCM").c_str(), g_NX/2., -1., 1., g_NX/2, 0., 500.);
+    hists2.push_back(hist_DecayAngleDiff_PzCM);
+    TH2D* hist_BetaDiff_PzCM = new TH2D((title+"_BetaDiff_PzCM").c_str(), (title+"_BetaDiff_PzCM;#beta CM - #beta;PzCM").c_str(), g_NX/2., -1., 1., g_NX/2, 0., 500.);
+    hists2.push_back(hist_BetaDiff_PzCM);
+    TH2D* hist_DecayAngleDiff_BetaDiff = new TH2D((title+"_DecayAngleDiff_BetaDiff").c_str(), (title+"_DecayAngleDiff_BetaDiff;|cos#theta CM| - |cos#theta|;#beta CM - #beta").c_str(), g_NX/2., -1., 1., g_NX/2, -1., 1.);
+    hists2.push_back(hist_DecayAngleDiff_BetaDiff);
+
+    TEfficiency* eff_METtrig = new TEfficiency((title+"_eff_METtrig").c_str(), "Efficiency of MET trigger;Eff;MET [GeV]", g_NX, 0., 500.);
     effs.push_back(eff_METtrig);
 
     bool is_data = false;
@@ -595,8 +862,7 @@ void Plot_Advanced(){
           if(fabs(base->dphiMET_V) > acos(-1.)/2.) // PreSelection
             continue;
           CF_bin++; hist_CutFlow->SetBinContent(CF_bin, hist_CutFlow->GetBinContent(CF_bin)+weight); 
-          hist_CutFlow->GetXaxis()->SetBinLabel(CF_bin, "#Delta #phi(MET, V) < #frac{#pi}{2}");
-
+          hist_CutFlow->GetXaxis()->SetBinLabel(CF_bin, "#Delta#phi(MET, V) < #frac{#pi}{2}");
 
           // Get Physics Objects
           int Nlep     = base->Nlep;
@@ -610,12 +876,14 @@ void Plot_Advanced(){
           int NbjetISR = base->Nbjet_ISR;
 
           //if(NbjetISR + NbjetS != 2) continue; // CR
-          //if(NbjetISR + NbjetS > 1) continue; // SR & ATLAS
+          //if(NbjetISR + NbjetS > 1) continue; // SR & ATLAS 'B-Veto'
           //CF_bin++; hist_CutFlow->SetBinContent(CF_bin, hist_CutFlow->GetBinContent(CF_bin)+weight); 
           //hist_CutFlow->GetXaxis()->SetBinLabel(CF_bin, "B-Veto");
 
-          //if(Nlep != 3) continue;
+          //if(Nlep != 2) continue;
           //if(NjetS != 0) continue; // SR
+          //CF_bin++; hist_CutFlow->SetBinContent(CF_bin, hist_CutFlow->GetBinContent(CF_bin)+weight); 
+          //hist_CutFlow->GetXaxis()->SetBinLabel(CF_bin, "0S J");
 
           LepList list_a;
           LepList list_b;
@@ -683,18 +951,23 @@ void Plot_Advanced(){
           //if(base->PT_lep->at(1) < 20.) continue;
           //if(Nlep > 2)
           //  if(base->PT_lep->at(2) < 10.) continue;
+          
+          TVector3 TV3_MET;
+          TV3_MET.SetPtEtaPhi(MET, 0., base->MET_phi);
+          TLorentzVector TLV_LAB, TLV_CM, TLV_S;
+          TLV_LAB.SetPtEtaPhiM(base->LAB_Pt, base->LAB_Eta, base->LAB_Phi, base->LAB_M);
+          TLV_CM.SetPtEtaPhiM(base->PTCM, base->EtaCM, base->PhiCM, base->MCM);
+          TLV_S.SetPtEtaPhiM(base->PTS, base->EtaS, base->PhiS, base->MS);
+          double PzCM = base->PzCM;
+          TVector3 beta_CM = TLV_CM.BoostVector();
+          TLorentzVector S_CM = TLV_S;
+          S_CM.Boost(-beta_CM); // S in CM frame
 
           // Leptonic Candidates
           std::vector<L_Cand> V_lep_cands;
           for(int i = 0; i < Nlep-1; i++){
             for(int j = i+1; j < Nlep; j++){
               if(list_leps[i].Flavor() == list_leps[j].Flavor() && list_leps[i].Charge() != list_leps[j].Charge()){ // OSSF
-std::cout << "i flav: " << list_leps[i].Flavor() << " j flav: " << list_leps[j].Flavor() << " i char: " << list_leps[i].Charge() << " j char: " << list_leps[j].Charge() << std::endl;
-                if(CandSameHemi && !(Nlep == 2 && Njet == 0)){ // same hemisphere
-                  bool i_a = inVec((*base->index_lep_a),i);
-                  bool j_a = inVec((*base->index_lep_a),j);
-                  if(i_a != j_a) continue;
-                }
                 Particle lep_1;
                 lep_1.SetPtEtaPhiM( base->PT_lep->at(i),
                                     base->Eta_lep->at(i),
@@ -713,71 +986,113 @@ std::cout << "i flav: " << list_leps[i].Flavor() << " j flav: " << list_leps[j].
                   lep_2.SetMomPDGID((*base->genMomPDGID_lep)[(*base->Index_lep)[j]]);
                 else
                   lep_2.SetMomPDGID(0);
+                lep_1.SetCharge((base->Charge_lep->at(i) > 0 ? 1 : -1));
+                lep_2.SetCharge((base->Charge_lep->at(j) > 0 ? 1 : -1));
                 ParticleList cand_list_parts;
                 cand_list_parts.push_back(lep_1);
                 cand_list_parts.push_back(lep_2);
                 L_Cand cand(cand_list_parts);
-                //if(cand.M() < 1.5) continue; 
-                //L_Cand cand(cand_list_parts, cand_list_frames);
+                if(cand.M() < CandMinMass || cand.M() > CandMaxMass) continue; 
+
+                TLorentzVector TLV_Cand = cand.TLV();
+                TLorentzVector TLV_Cand_CM = TLV_Cand;
+                TLV_Cand_CM.Boost(-beta_CM);
+                TVector3 beta_Cand_CM = TLV_Cand_CM.BoostVector();
+                Particle part_Cand_Child = cand.Cand_PartPlus();
+                TLorentzVector TLV_Cand_Child;
+                TLV_Cand_Child.SetPtEtaPhiM(part_Cand_Child.Pt(), part_Cand_Child.Eta(), part_Cand_Child.Phi(), part_Cand_Child.M());
+                TLorentzVector TLV_Cand_Child_CM = TLV_Cand_Child;
+                TLV_Cand_Child_CM.Boost(-beta_CM);
+                TLV_Cand_Child_CM.Boost(-beta_Cand_CM);
+                double CosDecayAngleCM = fabs(TLV_Cand_Child_CM.Vect().Unit().Dot(beta_Cand_CM.Unit())); // 'original' using CM
+                if(CosDecayAngleCM > 0.8) continue;
+                double PZPara = TLV_Cand_CM.Vect().Dot(S_CM.Vect().Unit());
+                double PZPerp = TLV_Cand_CM.Vect().Cross(S_CM.Vect().Unit()).Mag();
+                double PZAng = atan(PZPara/PZPerp);
+                double MPZPara = fabs(PZPara/cand.M());
+
                 cand.SetFlavor(list_leps[i].Flavor());
+                bool i_a = inVec((*base->index_lep_a),i);
+                bool j_a = inVec((*base->index_lep_a),j);
+                if(i_a == j_a || (Nlep == 2 && NjetS == 0)){
+                  cand.SetSameHemi(true);
+                }
+                else cand.SetSameHemi(false);
+                if(CandSameHemi && !cand.IsSameHemi()) continue;
                 V_lep_cands.push_back(cand);
               }
             }
           }
 
-          cand_matching(V_lep_cands);
           int N_V_lep_cands = V_lep_cands.size();
+          cand_matching(V_lep_cands);
           //if(N_V_lep_cands < 1) continue;
-
-          TVector3 TV3_MET;
-          TV3_MET.SetPtEtaPhi(MET, 0., base->MET_phi);
-          TLorentzVector TLV_LAB, TLV_CM, TLV_S;
-          TLV_LAB.SetPtEtaPhiM(base->LAB_Pt, base->LAB_Eta, base->LAB_Phi, base->LAB_M);
-          TLV_CM.SetPtEtaPhiM(base->PTCM, base->EtaCM, base->PhiCM, base->MCM);
-          TLV_S.SetPtEtaPhiM(base->PTS, base->EtaS, base->PhiS, base->MS);
-          TVector3 beta_CM = TLV_CM.BoostVector();
-          TLorentzVector S_CM = TLV_S;
-          S_CM.Boost(-beta_CM); // S in CM frame
 
           for(int i = 0; i < N_V_lep_cands; i++){
             TLorentzVector TLV_Cand = V_lep_cands[i].TLV();
-            double CandML = TLV_Cand.M();
             TLorentzVector TLV_Cand_CM = TLV_Cand;
             TLV_Cand_CM.Boost(-beta_CM);
             TVector3 beta_Cand_CM = TLV_Cand_CM.BoostVector();
             Particle part_Cand_Child = V_lep_cands[i].Cand_PartPlus();
             TLorentzVector TLV_Cand_Child;
             TLV_Cand_Child.SetPtEtaPhiM(part_Cand_Child.Pt(), part_Cand_Child.Eta(), part_Cand_Child.Phi(), part_Cand_Child.M());
-            TLV_Cand_Child.Boost(-beta_CM);
-            TLV_Cand_Child.Boost(-beta_Cand_CM);
-            double CosDecayAngle = TLV_Cand_Child.Vect().Unit().Dot(beta_Cand_CM.Unit());
+            TLorentzVector TLV_Cand_Child_CM = TLV_Cand_Child;
+            TLV_Cand_Child_CM.Boost(-beta_CM);
+            TLV_Cand_Child_CM.Boost(-beta_Cand_CM);
+            double CosDecayAngleCM = fabs(TLV_Cand_Child_CM.Vect().Unit().Dot(beta_Cand_CM.Unit())); // 'original' using CM
+            double CosDecayAngle = fabs(V_lep_cands[i].CosDecayAngle()); // decay angle without using CM
+            double CandML = TLV_Cand.M();
+            double Beta = V_lep_cands[i].Beta();
+            double BetaCM = TLV_Cand_CM.P()/TLV_Cand_CM.E();
+            double CandECM = TLV_Cand_CM.E();
             double PZPara = TLV_Cand_CM.Vect().Dot(S_CM.Vect().Unit());
             double PZPerp = TLV_Cand_CM.Vect().Cross(S_CM.Vect().Unit()).Mag();
             double RZPara = PZPara/S_CM.Vect().Mag();
             double RZPerp = PZPerp/S_CM.Vect().Mag();
             double PZAng = atan(PZPara/PZPerp);
-            TVector3 TV3_Cand = TLV_Cand.Vect();
-            TVector3 TV3_Cand_Transverse = TV3_Cand;
-            TV3_Cand_Transverse.SetZ(0.);
+            TLorentzVector TLV_Cand_Transverse = TLV_Cand;
+            TLV_Cand_Transverse.SetZ(0.);
+            TVector3 TV3_Cand_Transverse = TLV_Cand_Transverse.Vect();
             double PZParaLABMET = TV3_Cand_Transverse.Dot(TV3_MET.Unit());
             double PZPerpLABMET = TV3_Cand_Transverse.Cross(TV3_MET.Unit()).Mag();
             double RZParaLABMET = PZParaLABMET/MET;
             double RZPerpLABMET = PZPerpLABMET/MET;
             double PZAngLABMET = atan(PZParaLABMET/PZPerpLABMET);
+            double MRZPara = fabs(CandML/RZPara);
+            double MRZPerp = fabs(CandML/RZPerp);
+            double MRZParaLABMET = fabs(CandML/RZParaLABMET);
+            double MRZPerpLABMET = fabs(CandML/RZPerpLABMET);
+            double MPZPara = fabs(PZPara/CandML);
+            double MPZPerp = fabs(PZPerp/CandML);
+            double MPZParaLABMET = fabs(PZParaLABMET/TLV_Cand_Transverse.Mag());
+            double MPZPerpLABMET = fabs(PZPerpLABMET/TLV_Cand_Transverse.Mag());
+            double BetaZPara = PZPara/CandECM;
+            double BetaZPerp = PZPerp/CandECM;
             hist_CandML->Fill(CandML, weight);
-            hist_CandBeta->Fill(V_lep_cands[i].Beta(), weight);
+            hist_CandBeta->Fill(Beta, weight);
+            hist_CandBetaCM->Fill(BetaCM, weight);
+            hist_CandBeta_CandBetaCM->Fill(Beta, BetaCM, weight);
             hist_CandDeltaPhiMET->Fill(V_lep_cands[i].DeltaPhi(TV3_MET), weight);
             hist_CandCosDecayAngle->Fill(CosDecayAngle, weight);
+            hist_CandCosDecayAngleCM->Fill(CosDecayAngleCM, weight);
             hist_RZPara->Fill(RZPara, weight);
             hist_RZPerp->Fill(RZPerp, weight);
             hist_RISR_CandML->Fill(RISR, CandML, weight);
-            hist_RISR_CandBeta->Fill(RISR, V_lep_cands[i].Beta(), weight);
+            hist_RISR_CandBeta->Fill(RISR, Beta, weight);
+            hist_CandML_CandBeta->Fill(CandML, Beta, weight);
+            hist_Beta_CandCosDecayAngleCM->Fill(Beta, CosDecayAngleCM, weight);
+            hist_Beta_CandCosDecayAngle->Fill(Beta, CosDecayAngle, weight);
+            hist_Beta_CandDeltaPhiMET->Fill(Beta, V_lep_cands[i].DeltaPhi(TV3_MET), weight);
+            hist_RISR_CandBetaCM->Fill(RISR, BetaCM, weight);
+            hist_CandML_CandBetaCM->Fill(CandML, BetaCM, weight);
+            hist_BetaCM_CandCosDecayAngleCM->Fill(BetaCM, CosDecayAngleCM, weight);
+            hist_BetaCM_CandCosDecayAngle->Fill(BetaCM, CosDecayAngle, weight);
+            hist_BetaCM_CandDeltaPhiMET->Fill(BetaCM, V_lep_cands[i].DeltaPhi(TV3_MET), weight);
             hist_RISR_CandDeltaPhiMET->Fill(RISR, V_lep_cands[i].DeltaPhi(TV3_MET), weight);
-            hist_CandML_CandBeta->Fill(CandML, V_lep_cands[i].Beta(), weight);
             hist_CandML_CandDeltaPhiMET->Fill(CandML, V_lep_cands[i].DeltaPhi(TV3_MET), weight);
+            hist_CandML_CandCosDecayAngleCM->Fill(CandML, CosDecayAngleCM, weight);
+            hist_CandCosDecayAngleCM_CandDeltaPhiMET->Fill(CosDecayAngleCM, V_lep_cands[i].DeltaPhi(TV3_MET), weight);
             hist_CandML_CandCosDecayAngle->Fill(CandML, CosDecayAngle, weight);
-            hist_Beta_CandCosDecayAngle->Fill(V_lep_cands[i].Beta(), CosDecayAngle, weight);
-            hist_Beta_CandDeltaPhiMET->Fill(V_lep_cands[i].Beta(), V_lep_cands[i].DeltaPhi(TV3_MET), weight);
             hist_CandCosDecayAngle_CandDeltaPhiMET->Fill(CosDecayAngle, V_lep_cands[i].DeltaPhi(TV3_MET), weight);
             hist_CandML_RZPara->Fill(CandML, RZPara, weight);
             hist_CandML_RZPerp->Fill(CandML, RZPerp, weight);
@@ -795,29 +1110,123 @@ std::cout << "i flav: " << list_leps[i].Flavor() << " j flav: " << list_leps[j].
             hist_RZParaLABMET_RZPerpLABMET->Fill(RZParaLABMET, RZPerpLABMET, weight);
             hist_CandML_PZParaLABMET->Fill(CandML, PZParaLABMET, weight);
             hist_CandML_PZPerpLABMET->Fill(CandML, PZPerpLABMET, weight);
+            hist_CandCosDecayAngle_RZPara->Fill(CosDecayAngle, RZPara, weight);
+            hist_CandCosDecayAngle_RZPerp->Fill(CosDecayAngle, RZPerp, weight); 
+            hist_CandCosDecayAngle_PZAng->Fill(CosDecayAngle, PZAng, weight); 
+            hist_CandCosDecayAngle_PZPara->Fill(CosDecayAngle, PZPara, weight); 
+            hist_CandCosDecayAngle_PZPerp->Fill(CosDecayAngle, PZPara, weight); 
+            hist_CandCosDecayAngle_RZParaLABMET->Fill(CosDecayAngle, RZParaLABMET, weight); 
+            hist_CandCosDecayAngle_RZPerpLABMET->Fill(CosDecayAngle, RZPerpLABMET, weight); 
+            hist_CandCosDecayAngle_PZAngLABMET->Fill(CosDecayAngle, PZAngLABMET, weight); 
+            hist_CandCosDecayAngle_PZParaLABMET->Fill(CosDecayAngle, PZParaLABMET, weight); 
+            hist_CandCosDecayAngle_PZPerpLABMET->Fill(CosDecayAngle, PZPerpLABMET, weight); 
+            hist_CandCosDecayAngleCM_RZPara->Fill(CosDecayAngleCM, RZPara, weight);
+            hist_CandCosDecayAngleCM_RZPerp->Fill(CosDecayAngleCM, RZPerp, weight); 
+            hist_CandCosDecayAngleCM_PZAng->Fill(CosDecayAngleCM, PZAng, weight); 
+            hist_CandCosDecayAngleCM_PZPara->Fill(CosDecayAngleCM, PZPara, weight); 
+            hist_CandCosDecayAngleCM_PZPerp->Fill(CosDecayAngleCM, PZPara, weight); 
+            hist_CandCosDecayAngleCM_RZParaLABMET->Fill(CosDecayAngleCM, RZParaLABMET, weight); 
+            hist_CandCosDecayAngleCM_RZPerpLABMET->Fill(CosDecayAngleCM, RZPerpLABMET, weight); 
+            hist_CandCosDecayAngleCM_PZAngLABMET->Fill(CosDecayAngleCM, PZAngLABMET, weight); 
+            hist_CandCosDecayAngleCM_PZParaLABMET->Fill(CosDecayAngleCM, PZParaLABMET, weight); 
+            hist_CandCosDecayAngleCM_PZPerpLABMET->Fill(CosDecayAngleCM, PZPerpLABMET, weight); 
+            hist_Beta_RZPara->Fill(Beta, RZPara, weight); 
+            hist_Beta_RZPerp->Fill(Beta, RZPerp, weight); 
+            hist_Beta_PZAng->Fill(Beta, PZAng, weight); 
+            hist_Beta_PZPara->Fill(Beta, PZPara, weight); 
+            hist_Beta_PZPerp->Fill(Beta, PZPerp, weight); 
+            hist_Beta_RZParaLABMET->Fill(Beta, RZParaLABMET, weight); 
+            hist_Beta_RZPerpLABMET->Fill(Beta, RZPerpLABMET, weight); 
+            hist_Beta_PZAngLABMET->Fill(Beta, PZAngLABMET, weight); 
+            hist_Beta_PZParaLABMET->Fill(Beta, PZParaLABMET, weight); 
+            hist_Beta_PZPerpLABMET->Fill(Beta, PZPerpLABMET, weight); 
+            hist_BetaCM_RZPara->Fill(BetaCM, RZPara, weight); 
+            hist_BetaCM_RZPerp->Fill(BetaCM, RZPerp, weight); 
+            hist_BetaCM_PZAng->Fill(BetaCM, PZAng, weight); 
+            hist_BetaCM_PZPara->Fill(BetaCM, PZPara, weight); 
+            hist_BetaCM_PZPerp->Fill(BetaCM, PZPerp, weight); 
+            hist_BetaCM_RZParaLABMET->Fill(BetaCM, RZParaLABMET, weight); 
+            hist_BetaCM_RZPerpLABMET->Fill(BetaCM, RZPerpLABMET, weight); 
+            hist_BetaCM_PZAngLABMET->Fill(BetaCM, PZAngLABMET, weight); 
+            hist_BetaCM_PZParaLABMET->Fill(BetaCM, PZParaLABMET, weight); 
+            hist_BetaCM_PZPerpLABMET->Fill(BetaCM, PZPerpLABMET, weight); 
+            hist_RZPara_RZParaLABMET->Fill(RZPara, RZParaLABMET, weight);
+            hist_RZPerp_RZPerpLABMET->Fill(RZPerp, RZPerpLABMET, weight);
+            hist_PZPara_PZParaLABMET->Fill(PZPara, PZParaLABMET, weight);
+            hist_PZPerp_PZPerpLABMET->Fill(PZPerp, PZPerpLABMET, weight);
+            hist_PZPara_CandECM->Fill(PZPara, CandECM, weight);
+            hist_PZPerp_CandECM->Fill(PZPerp, CandECM, weight);
+            hist_MRZPara->Fill(MRZPara, weight);
+            hist_MRZPerp->Fill(MRZPerp, weight);
+            hist_MRZParaLABMET->Fill(MRZParaLABMET, weight);
+            hist_MRZPerpLABMET->Fill(MRZPerpLABMET, weight);
+            hist_CandML_MRZPara->Fill(CandML, MRZPara, weight);
+            hist_CandML_MRZPerp->Fill(CandML, MRZPerp, weight);
+            hist_CandML_MRZParaLABMET->Fill(CandML, MRZParaLABMET, weight);
+            hist_CandML_MRZPerpLABMET->Fill(CandML, MRZPerpLABMET, weight);
+            hist_CandCosDecayAngle_MPZPara->Fill(CosDecayAngle, MPZPara, weight);
+            hist_CandCosDecayAngle_MPZPerp->Fill(CosDecayAngle, MPZPerp, weight);
+            hist_CandCosDecayAngle_MPZParaLABMET->Fill(CosDecayAngle, MPZParaLABMET, weight);
+            hist_CandCosDecayAngle_MPZPerpLABMET->Fill(CosDecayAngle, MPZPerpLABMET, weight);
+            hist_CandCosDecayAngleCM_MPZPara->Fill(CosDecayAngleCM, MPZPara, weight);
+            hist_CandCosDecayAngleCM_MPZPerp->Fill(CosDecayAngleCM, MPZPerp, weight);
+            hist_CandCosDecayAngleCM_MPZParaLABMET->Fill(CosDecayAngleCM, MPZParaLABMET, weight);
+            hist_CandCosDecayAngleCM_MPZPerpLABMET->Fill(CosDecayAngleCM, MPZPerpLABMET, weight);
+            hist_Beta_MPZPara->Fill(Beta, MPZPara, weight);
+            hist_Beta_MPZPerp->Fill(Beta, MPZPerp, weight);
+            hist_Beta_MPZParaLABMET->Fill(Beta, MPZParaLABMET, weight);
+            hist_Beta_MPZPerpLABMET->Fill(Beta, MPZPerpLABMET, weight);
+            hist_BetaCM_MPZPara->Fill(BetaCM, MPZPara, weight);
+            hist_BetaCM_MPZPerp->Fill(BetaCM, MPZPerp, weight);
+            hist_BetaCM_MPZParaLABMET->Fill(BetaCM, MPZParaLABMET, weight);
+            hist_BetaCM_MPZPerpLABMET->Fill(BetaCM, MPZPerpLABMET, weight);
+            hist_PZAng_MPZPara->Fill(PZAng, MPZPara, weight);
+            hist_PZAng_MPZPerp->Fill(PZAng, MPZPerp, weight);
+            hist_PZAng_MPZParaLABMET->Fill(PZAng, MPZParaLABMET, weight);
+            hist_PZAng_MPZPerpLABMET->Fill(PZAng, MPZPerpLABMET, weight);
+            hist_CandCosDecayAngle_CandCosDecayAngleCM->Fill(CosDecayAngle, CosDecayAngleCM, weight);
+            hist_CandML_BetaZPara->Fill(CandML, BetaZPara, weight);
+            hist_CandML_BetaZPerp->Fill(CandML, BetaZPerp, weight);
+            hist_CandCosDecayAngle_BetaZPara->Fill(CosDecayAngle, BetaZPara, weight);
+            hist_CandCosDecayAngle_BetaZPerp->Fill(CosDecayAngle, BetaZPerp, weight);
+            hist_CandCosDecayAngleCM_BetaZPara->Fill(CosDecayAngleCM, BetaZPara, weight);
+            hist_CandCosDecayAngleCM_BetaZPerp->Fill(CosDecayAngleCM, BetaZPerp, weight);
+            hist_DecayAngleDiff_PzCM->Fill(CosDecayAngleCM - CosDecayAngle, PzCM, weight);
+            hist_BetaDiff_PzCM->Fill(BetaCM - Beta, PzCM, weight);
+            hist_DecayAngleDiff_BetaDiff->Fill(CosDecayAngleCM - CosDecayAngle, BetaCM - Beta, weight);
             if(V_lep_cands[i].Match() == kMatched){
               hist_MatchedCandML->Fill(CandML, weight);
-              hist_MatchedCandBeta->Fill(V_lep_cands[i].Beta(), weight);
+              hist_MatchedCandBeta->Fill(Beta, weight);
+              hist_MatchedCandBetaCM->Fill(BetaCM, weight);
               hist_MatchedCandDeltaPhiMET->Fill(V_lep_cands[i].DeltaPhi(TV3_MET), weight);
               hist_MatchedCandCosDecayAngle->Fill(CosDecayAngle, weight);
+              hist_MatchedCandCosDecayAngleCM->Fill(CosDecayAngleCM, weight);
               hist_RISR_MatchedCandML->Fill(RISR, CandML, weight);
-              hist_RISR_MatchedCandBeta->Fill(RISR, V_lep_cands[i].Beta(), weight);
+              hist_RISR_MatchedCandBeta->Fill(RISR, Beta, weight);
+              hist_MatchedCandML_MatchedCandBeta->Fill(CandML, Beta, weight);
+              hist_RISR_MatchedCandBetaCM->Fill(RISR, BetaCM, weight);
+              hist_MatchedCandML_MatchedCandBetaCM->Fill(CandML, BetaCM, weight);
               hist_RISR_MatchedCandDeltaPhiMET->Fill(RISR, V_lep_cands[i].DeltaPhi(TV3_MET), weight);
-              hist_MatchedCandML_MatchedCandBeta->Fill(CandML, V_lep_cands[i].Beta(), weight);
               hist_MatchedCandML_MatchedCandDeltaPhiMET->Fill(CandML, V_lep_cands[i].DeltaPhi(TV3_MET), weight);
               hist_MatchedCandML_MatchedCandCosDecayAngle->Fill(CandML, CosDecayAngle, weight);
+              hist_MatchedCandML_MatchedCandCosDecayAngleCM->Fill(CandML, CosDecayAngleCM, weight);
             }
             else{
               hist_UnmatchedCandML->Fill(CandML, weight);
-              hist_UnmatchedCandBeta->Fill(V_lep_cands[i].Beta(), weight);
+              hist_UnmatchedCandBeta->Fill(Beta, weight);
+              hist_UnmatchedCandBetaCM->Fill(BetaCM, weight);
               hist_UnmatchedCandDeltaPhiMET->Fill(V_lep_cands[i].DeltaPhi(TV3_MET), weight);
               hist_UnmatchedCandCosDecayAngle->Fill(CosDecayAngle, weight);
+              hist_UnmatchedCandCosDecayAngleCM->Fill(CosDecayAngleCM, weight);
               hist_RISR_UnmatchedCandML->Fill(RISR, CandML, weight);
-              hist_RISR_UnmatchedCandBeta->Fill(RISR, V_lep_cands[i].Beta(), weight);
+              hist_RISR_UnmatchedCandBeta->Fill(RISR, Beta, weight);
+              hist_UnmatchedCandML_UnmatchedCandBeta->Fill(CandML, Beta, weight);
+              hist_RISR_UnmatchedCandBetaCM->Fill(RISR, BetaCM, weight);
+              hist_UnmatchedCandML_UnmatchedCandBetaCM->Fill(CandML, BetaCM, weight);
               hist_RISR_UnmatchedCandDeltaPhiMET->Fill(RISR, V_lep_cands[i].DeltaPhi(TV3_MET), weight);
-              hist_UnmatchedCandML_UnmatchedCandBeta->Fill(CandML, V_lep_cands[i].Beta(), weight);
               hist_UnmatchedCandML_UnmatchedCandDeltaPhiMET->Fill(CandML, V_lep_cands[i].DeltaPhi(TV3_MET), weight);
               hist_UnmatchedCandML_UnmatchedCandCosDecayAngle->Fill(CandML, CosDecayAngle, weight);
+              hist_UnmatchedCandML_UnmatchedCandCosDecayAngleCM->Fill(CandML, CosDecayAngleCM, weight);
             }
           }
 
@@ -923,28 +1332,18 @@ std::cout << "i flav: " << list_leps[i].Flavor() << " j flav: " << list_leps[j].
             if(is_signal) hist_Zbi->SetBinContent(EC_X,Zbi_EC_Y,hist_Zbi->GetBinContent(EC_X,Zbi_EC_Y)+weight);
             if(is_bkg) hist_EventCount->SetBinContent(EC_X,EC_bins,hist_EventCount->GetBinContent(EC_X,EC_bins)+weight);
             if(is_bkg) hist_Zbi->SetBinContent(EC_X,0,hist_Zbi->GetBinContent(EC_X,0)+weight); // store tot bkg in underflow
-            if(EC_X < 4){
-              hist_CandsEventCount->SetBinContent(EC_X,EC_Y,hist_CandsEventCount->GetBinContent(EC_X,EC_Y)+weight);
-              if(is_signal) hist_CandsZbi->SetBinContent(EC_X,Zbi_EC_Y,hist_CandsZbi->GetBinContent(EC_X,Zbi_EC_Y)+weight);
-              if(is_bkg) hist_CandsEventCount->SetBinContent(EC_X,EC_bins,hist_CandsEventCount->GetBinContent(EC_X,EC_bins)+weight);
-              if(is_bkg) hist_CandsZbi->SetBinContent(EC_X,0,hist_CandsZbi->GetBinContent(EC_X,0)+weight); // store tot bkg in underflow
-            }
-            if (EC_X == 4){ // cand counting
-              EC_X += N_V_lep_cands;
-              hist_CandsEventCount->SetBinContent(EC_X,EC_Y,hist_CandsEventCount->GetBinContent(EC_X,EC_Y)+weight);
-              if(is_signal) hist_CandsZbi->SetBinContent(EC_X,Zbi_EC_Y,hist_CandsZbi->GetBinContent(EC_X,Zbi_EC_Y)+weight);
-              if(is_bkg) hist_CandsEventCount->SetBinContent(EC_X,EC_bins,hist_CandsEventCount->GetBinContent(EC_X,EC_bins)+weight);
-              if(is_bkg) hist_CandsZbi->SetBinContent(EC_X,0,hist_CandsZbi->GetBinContent(EC_X,0)+weight); // store tot bkg in underflow
-            }
-          }
-          else if(cat_Nleps == 3) {
-            EC_X = 6;
-            EC_X += num_e;
             hist_CandsEventCount->SetBinContent(EC_X,EC_Y,hist_CandsEventCount->GetBinContent(EC_X,EC_Y)+weight);
             if(is_signal) hist_CandsZbi->SetBinContent(EC_X,Zbi_EC_Y,hist_CandsZbi->GetBinContent(EC_X,Zbi_EC_Y)+weight);
             if(is_bkg) hist_CandsEventCount->SetBinContent(EC_X,EC_bins,hist_CandsEventCount->GetBinContent(EC_X,EC_bins)+weight);
             if(is_bkg) hist_CandsZbi->SetBinContent(EC_X,0,hist_CandsZbi->GetBinContent(EC_X,0)+weight); // store tot bkg in underflow
-            EC_X = 10;
+            if(N_V_lep_cands > 0) EC_X = 5;
+            hist_CandsEventCount->SetBinContent(EC_X,EC_Y,hist_CandsEventCount->GetBinContent(EC_X,EC_Y)+weight);
+            if(is_signal) hist_CandsZbi->SetBinContent(EC_X,Zbi_EC_Y,hist_CandsZbi->GetBinContent(EC_X,Zbi_EC_Y)+weight);
+            if(is_bkg) hist_CandsEventCount->SetBinContent(EC_X,EC_bins,hist_CandsEventCount->GetBinContent(EC_X,EC_bins)+weight);
+            if(is_bkg) hist_CandsZbi->SetBinContent(EC_X,0,hist_CandsZbi->GetBinContent(EC_X,0)+weight); // store tot bkg in underflow
+          }
+          else if(cat_Nleps == 3) {
+            EC_X = 6;
             EC_X += N_V_lep_cands;
             hist_CandsEventCount->SetBinContent(EC_X,EC_Y,hist_CandsEventCount->GetBinContent(EC_X,EC_Y)+weight);
             if(is_signal) hist_CandsZbi->SetBinContent(EC_X,Zbi_EC_Y,hist_CandsZbi->GetBinContent(EC_X,Zbi_EC_Y)+weight);
@@ -970,24 +1369,18 @@ std::cout << "i flav: " << list_leps[i].Flavor() << " j flav: " << list_leps[j].
             if(is_signal) hist_Zbi->SetBinContent(EC_X,Zbi_EC_Y,hist_Zbi->GetBinContent(EC_X,Zbi_EC_Y)+weight);
             if(is_bkg) hist_EventCount->SetBinContent(EC_X,EC_bins,hist_EventCount->GetBinContent(EC_X,EC_bins)+weight);
             if(is_bkg) hist_Zbi->SetBinContent(EC_X,0,hist_Zbi->GetBinContent(EC_X,0)+weight); // store tot bkg in underflow
-            EC_X = 13;
-            EC_X += num_e;
-            hist_CandsEventCount->SetBinContent(EC_X,EC_Y,hist_CandsEventCount->GetBinContent(EC_X,EC_Y)+weight);
-            if(is_signal) hist_CandsZbi->SetBinContent(EC_X,Zbi_EC_Y,hist_CandsZbi->GetBinContent(EC_X,Zbi_EC_Y)+weight);
-            if(is_bkg) hist_CandsEventCount->SetBinContent(EC_X,EC_bins,hist_CandsEventCount->GetBinContent(EC_X,EC_bins)+weight);
-            if(is_bkg) hist_CandsZbi->SetBinContent(EC_X,0,hist_CandsZbi->GetBinContent(EC_X,0)+weight); // store tot bkg in underflow
-            EC_X = 19;
-            EC_X += N_V_lep_cands;
-            hist_CandsEventCount->SetBinContent(EC_X,EC_Y,hist_CandsEventCount->GetBinContent(EC_X,EC_Y)+weight);
-            if(is_signal) hist_CandsZbi->SetBinContent(EC_X,Zbi_EC_Y,hist_CandsZbi->GetBinContent(EC_X,Zbi_EC_Y)+weight);
-            if(is_bkg) hist_CandsEventCount->SetBinContent(EC_X,EC_bins,hist_CandsEventCount->GetBinContent(EC_X,EC_bins)+weight);
-            if(is_bkg) hist_CandsZbi->SetBinContent(EC_X,0,hist_CandsZbi->GetBinContent(EC_X,0)+weight); // store tot bkg in underflow
             EC_X = 18;
             EC_X += abs_charge;
             hist_EventCount->SetBinContent(EC_X,EC_Y,hist_EventCount->GetBinContent(EC_X,EC_Y)+weight);
             if(is_signal) hist_Zbi->SetBinContent(EC_X,Zbi_EC_Y,hist_Zbi->GetBinContent(EC_X,Zbi_EC_Y)+weight);
             if(is_bkg) hist_EventCount->SetBinContent(EC_X,EC_bins,hist_EventCount->GetBinContent(EC_X,EC_bins)+weight);
             if(is_bkg) hist_Zbi->SetBinContent(EC_X,0,hist_Zbi->GetBinContent(EC_X,0)+weight); // store tot bkg in underflow
+            EC_X = 9;
+            EC_X += N_V_lep_cands;
+            hist_CandsEventCount->SetBinContent(EC_X,EC_Y,hist_CandsEventCount->GetBinContent(EC_X,EC_Y)+weight);
+            if(is_signal) hist_CandsZbi->SetBinContent(EC_X,Zbi_EC_Y,hist_CandsZbi->GetBinContent(EC_X,Zbi_EC_Y)+weight);
+            if(is_bkg) hist_CandsEventCount->SetBinContent(EC_X,EC_bins,hist_CandsEventCount->GetBinContent(EC_X,EC_bins)+weight);
+            if(is_bkg) hist_CandsZbi->SetBinContent(EC_X,0,hist_CandsZbi->GetBinContent(EC_X,0)+weight); // store tot bkg in underflow
           }
           //else {
           //  EC_X = 23;

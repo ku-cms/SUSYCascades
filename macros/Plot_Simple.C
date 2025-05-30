@@ -5,8 +5,8 @@ void Plot_Simple(){
   Long64_t start = gSystem->Now();
   RestFrames::SetStyle();
 
-  //string NtuplePath = "root://cmseos.fnal.gov//store/user/lpcsusylep/NTUPLES_Cascades_v0/";
-  string NtuplePath = "/local-scratch/zflowers/NTUPLES/HADD/";
+  string NtuplePath = "root://cmseos.fnal.gov//store/user/lpcsusylep/NTUPLES_Cascades_v1/";
+  //string NtuplePath = "/local-scratch/zflowers/NTUPLES/HADD/";
 
   // 10 is Summer23BPix
   SampleTool ST(NtuplePath, 10);
@@ -115,7 +115,7 @@ void Plot_Simple(){
     TH2D* hist_RISR_PTISR = new TH2D((title+"_RISR_PTISR").c_str(), (title+"_RISR_PTISR;R_{ISR};p_{T}^{ISR} [GeV]").c_str(), g_NX/2., 0., 1., g_NX/2., 0., 1000.);
     hists2.push_back(hist_RISR_PTISR);
 
-    TEfficiency* eff_METtrig = new TEfficiency((title+"_eff_METtrig").c_str(), "Efficiency of MET trigger;Eff;MET [GeV]", g_NX, 0., 700.);
+    TEfficiency* eff_METtrig = new TEfficiency((title+"_eff_METtrig").c_str(), "Efficiency of MET trigger;Eff;MET [GeV]", g_NX, 0., 500.);
     effs.push_back(eff_METtrig);
 
     bool is_data = false;

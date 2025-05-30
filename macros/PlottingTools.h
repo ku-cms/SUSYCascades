@@ -560,14 +560,14 @@ void Plot_Hist(TH2* h, bool Scale, double Scale_Val, double signal_boost, bool I
   h->GetZaxis()->SetLabelFont(42);
   h->GetZaxis()->SetLabelSize(0.05);
   h->GetZaxis()->SetTitle(("N_{events} / "+std::to_string(int(Scale_Val))+" fb^{-1}").c_str());
-  h->GetZaxis()->SetRangeUser(0.9*h->GetMinimum(0.0),1.1*h->GetMaximum());
+  //h->GetZaxis()->SetRangeUser(0.9*h->GetMinimum(0.0),1.1*h->GetMaximum());
 
   TLatex l;
   l.SetTextFont(42);
   l.SetNDC();
   l.SetTextSize(0.035);
   l.SetTextFont(42);
-  l.DrawLatex(0.57,0.943,g_PlotTitle.c_str());
+  l.DrawLatex(0.65,0.943,g_PlotTitle.c_str());
   l.SetTextSize(0.04);
   l.SetTextFont(42);
   l.DrawLatex(0.01,0.943,"#bf{CMS} Simulation Preliminary");
@@ -664,21 +664,21 @@ void Plot_EventCount(TH2* h, bool Scale, double Scale_Val, bool Zbi, double Zbi_
   // Set labels for cand counting hists
   if(title.find("Cands") != std::string::npos){
     // --- 2L Labels: SSOF, SSSF, OSOF, no Z*, Z* ---
-    std::vector<std::string> twoL_labels = {"SSOF", "SSSF", "OSOF", "no Z*", "Z*"};
+    std::vector<std::string> twoL_labels = {"SSOF", "SSSF", "OSOF", "OSSF", "Z*"};
     for (const auto& label : twoL_labels) {
       h->GetXaxis()->SetBinLabel(bin, ("2L " + label).c_str());
       bin++;
     }
 
     // --- 3L Labels: uuu, euu, eeu, eee, no Z*, Z* ---
-    std::vector<std::string> sf_labels_3L = {"uuu", "euu", "eeu", "eee", "no Z*", "Z*", "2 Z*"};
+    std::vector<std::string> sf_labels_3L = {"no Z*", "Z*", "2 Z*"};
     for (const auto& label : sf_labels_3L) {
       h->GetXaxis()->SetBinLabel(bin, ("3L " + label).c_str());
       bin++;
     }
 
     // --- 4L Labels: uuuu, euuu, eeuu, eeeu, eeee, no Z*, Z*, N Z* ---
-    std::vector<std::string> sf_labels_4L = {"uuuu", "euuu", "eeuu", "eeeu", "eeee", "no Z*", "Z*", "2 Z*", "3 Z*", "4 Z*", "5 Z*"};
+    std::vector<std::string> sf_labels_4L = {"no Z*", "Z*", "2 Z*", "3 Z*", "4 Z*", "5 Z*"};
     for (const auto& label : sf_labels_4L) {
       h->GetXaxis()->SetBinLabel(bin, ("4L " + label).c_str());
       bin++;
