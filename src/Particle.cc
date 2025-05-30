@@ -109,6 +109,14 @@ void Particle::SetIsLowPt(bool is_low_pt) {
   m_IsLowPt = is_low_pt;
 }
 
+int Particle::TightCharge() const {
+  return m_TightCharge;
+}
+
+void Particle::SetTightCharge(int tightCharge) {
+  m_TightCharge = tightCharge;
+}
+
 double Particle::RelIso() const {
   return m_RelIso;
 }

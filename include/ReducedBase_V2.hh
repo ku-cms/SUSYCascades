@@ -121,6 +121,7 @@ public :
    vector<int>     *SourceID_lep;
    vector<int>     *LepQual_lep;
    vector<int>     *IsLowPt_lep;
+   vector<int>     *TightCharge_lep;
    vector<int>     *Index_lep;
    vector<double>  *RelIso_lep;
    vector<double>  *MiniIso_lep;
@@ -398,6 +399,7 @@ public :
    TBranch        *b_SourceID_lep;   //!
    TBranch        *b_LepQual_lep;   //!
    TBranch        *b_IsLowPt_lep;   //!
+   TBranch        *b_TightCharge_lep;   //!
    TBranch        *b_Index_lep;   //!
    TBranch        *b_RelIso_lep;   //!
    TBranch        *b_MiniIso_lep;   //!
@@ -651,6 +653,7 @@ inline void ReducedBase_V2::Init(TTree *tree)
    SourceID_lep = 0;
    LepQual_lep = 0;
    IsLowPt_lep = 0;
+   TightCharge_lep = 0;
    Index_lep = 0;
    RelIso_lep = 0;
    MiniIso_lep = 0;
@@ -816,6 +819,7 @@ inline void ReducedBase_V2::Init(TTree *tree)
    fChain->SetBranchAddress("SourceID_lep", &SourceID_lep, &b_SourceID_lep);
    fChain->SetBranchAddress("LepQual_lep", &LepQual_lep, &b_LepQual_lep);
    fChain->SetBranchAddress("IsLowPt_lep", &IsLowPt_lep, &b_IsLowPt_lep);
+   fChain->SetBranchAddress("TightCharge_lep", &TightCharge_lep, &b_TightCharge_lep);
    fChain->SetBranchAddress("Index_lep", &Index_lep, &b_Index_lep);
    fChain->SetBranchAddress("RelIso_lep", &RelIso_lep, &b_RelIso_lep);
    fChain->SetBranchAddress("MiniIso_lep", &MiniIso_lep, &b_MiniIso_lep);

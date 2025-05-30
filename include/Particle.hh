@@ -79,6 +79,9 @@ public:
   bool IsLowPt() const;
   void SetIsLowPt(bool is_low_pt);
 
+  int TightCharge() const;
+  void SetTightCharge(int tightCharge);
+
   Particle Merge(const Particle&) const;
   
   operator ParticleList() const;
@@ -100,6 +103,7 @@ private:
   // lepton stuff
   LepID m_LepQual;
   bool m_IsLowPt;
+  int m_TightCharge;
   
   double m_RelIso;
   double m_MiniIso;

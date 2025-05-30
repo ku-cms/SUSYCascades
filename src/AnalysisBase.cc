@@ -2147,6 +2147,7 @@ ParticleList AnalysisBase<SUSYNANOBase>::GetElectrons(){
     lep.SetIP3D(Electron_ip3d[i]);
     lep.SetSIP3D(Electron_sip3d[i]);
     lep.SetIsLowPt(false);
+    lep.SetTightCharge(Electron_tightCharge[i]);
 
     lep.SetRelIso(Electron_pfRelIso03_all[i]);
     lep.SetMiniIso(Electron_miniPFRelIso_all[i]);
@@ -2549,6 +2550,7 @@ ParticleList AnalysisBase<SUSYNANOBase>::GetMuons(){
     lep.SetIP3D(Muon_ip3d[i]);
     lep.SetSIP3D(Muon_sip3d[i]);
     lep.SetIsLowPt(false);
+    lep.SetTightCharge(Muon_tightCharge[i]);
 
     lep.SetRelIso(Muon_pfRelIso03_all[i]);
     lep.SetMiniIso(Muon_miniPFRelIso_all[i]);
@@ -3593,6 +3595,7 @@ ParticleList AnalysisBase<NANOULBase>::GetElectrons(){
     lep.SetIP3D(Electron_ip3d[i]);
     lep.SetSIP3D(Electron_sip3d[i]);
     lep.SetIsLowPt(false);
+    lep.SetTightCharge(Electron_tightCharge[i]);
 
     lep.SetRelIso(Electron_pfRelIso03_all[i]);
     lep.SetMiniIso(Electron_miniPFRelIso_all[i]);
@@ -4013,6 +4016,7 @@ ParticleList AnalysisBase<NANOULBase>::GetLowPtElectrons(){
     lep.SetIP3D(IP_3D);
     lep.SetSIP3D(SIP_3D);
     lep.SetIsLowPt(true);
+    lep.SetTightCharge(0);
 
     lep.SetRelIso(LowPtElectron_miniPFRelIso_all[i]);
     lep.SetMiniIso(LowPtElectron_miniPFRelIso_all[i]);
@@ -4088,6 +4092,7 @@ ParticleList AnalysisBase<NANOULBase>::GetMuons(){
     lep.SetIP3D(Muon_ip3d[i]);
     lep.SetSIP3D(Muon_sip3d[i]);
     lep.SetIsLowPt(false);
+    lep.SetTightCharge(Muon_tightCharge[i]);
 
     lep.SetRelIso(Muon_pfRelIso03_all[i]);
     lep.SetMiniIso(Muon_miniPFRelIso_all[i]);
@@ -5089,6 +5094,7 @@ ParticleList AnalysisBase<NANORun3>::GetElectrons(){
     lep.SetIP3D(Electron_ip3d[i]);
     lep.SetSIP3D(Electron_sip3d[i]);
     lep.SetIsLowPt(false);
+    lep.SetTightCharge(Electron_tightCharge[i]);
     lep.SetParticleID(kVeryLoose); // need to set to something
 
     lep.SetRelIso(Electron_pfRelIso03_all[i]);
@@ -5160,6 +5166,7 @@ ParticleList AnalysisBase<NANORun3>::GetLowPtElectrons(){
     lep.SetIP3D(IP_3D);
     lep.SetSIP3D(SIP_3D);
     lep.SetIsLowPt(true);
+    lep.SetTightCharge(0);
 
     lep.SetRelIso(LowPtElectron_miniPFRelIso_all[i]);
     lep.SetMiniIso(LowPtElectron_miniPFRelIso_all[i]);
@@ -5235,6 +5242,7 @@ ParticleList AnalysisBase<NANORun3>::GetMuons(){
     lep.SetIP3D(Muon_ip3d[i]);
     lep.SetSIP3D(Muon_sip3d[i]);
     lep.SetIsLowPt(false);
+    lep.SetTightCharge(Muon_tightCharge[i]);
 
     lep.SetRelIso(Muon_pfRelIso03_all[i]);
     lep.SetMiniIso(Muon_miniPFRelIso_all[i]);
