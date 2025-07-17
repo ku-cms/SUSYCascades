@@ -109,6 +109,7 @@ class EventCount:
         for entry in tree:
             key = f"{str(entry.dataset)}_{str(entry.filetag)}"
             das_name = str(entry.DAS_datasetname)
+            if das_name == "PrivateMC": continue
             if key not in dataset_dict:
                 dataset_dict[key] = set()
             dataset_dict[key].add(das_name)
