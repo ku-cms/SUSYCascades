@@ -300,6 +300,75 @@ public :
    vector<double>  *genM_susy;
    vector<int>     *genPDGID_susy;
    vector<int>     *genMomPDGID_susy;
+   Double_t        MT2;
+   Double_t        RISR_LEP;
+   Double_t        PTISR_LEP;
+   Double_t        MS_LEP;
+   Double_t        MSV_LEP;
+   Double_t        MQ_LEP;
+   Double_t        gamma_LEP;
+   Double_t        MPa_LEP;
+   Double_t        MPb_LEP;
+   Double_t        MVa_LEP;
+   Double_t        MVb_LEP;
+   Double_t        PTS_CM_LEP;
+   Double_t        MS_S0_LEP;
+   Double_t        MV_S0_LEP;
+   Double_t        MQ_S0_LEP;
+   Double_t        gamma_S0_LEP;
+   Double_t        MPTilde_LEP;
+   Double_t        MSTilde_LEP;
+   Double_t        gammaTilde_LEP;
+   Double_t        CosDecayAngle_Pa_LEP;
+   Double_t        CosDecayAngle_Pb_LEP;
+   Double_t        CosDecayAngle_S_LEP;
+   Double_t        RZPara_LEP;
+   Double_t        MINV_LEP;
+   Int_t           cascades_tree;
+   Int_t           cascades_prod;
+   Int_t           cascades_SlepSneu_1stDecay;
+   Int_t           cascades_SlepSneu_2ndDecay;
+   Int_t           cascades_N2_1stDecay;
+   Int_t           cascades_N2_2ndDecay;
+   Int_t           MSlepL;
+   Int_t           MSneu;
+   Int_t           MN2;
+   Int_t           MC1;
+   Int_t           MN1;
+   Int_t           MP;
+   Int_t           NSparticleW;
+   Int_t           NSparticleZ;
+   Int_t           NSparticlePhoton;
+   vector<int>     *LSPParents;
+   Int_t           Npartons;
+   Double_t        XSec;
+   Double_t        Nweight;
+   Double_t        Nevent;
+   Double_t        Mperp_JET;
+   Double_t        gammaT_JET;
+   Double_t        RISR_JET;
+   Double_t        PTISR_JET;
+   Double_t        MS_JET;
+   Double_t        MSV_JET;
+   Double_t        MQ_JET;
+   Double_t        gamma_JET;
+   Double_t        MPa_JET;
+   Double_t        MPb_JET;
+   Double_t        MVa_JET;
+   Double_t        MVb_JET;
+   Double_t        PTS_CM_JET;
+   Double_t        MS_S0_JET;
+   Double_t        MV_S0_JET;
+   Double_t        MQ_S0_JET;
+   Double_t        gamma_S0_JET;
+   Double_t        MPTilde_JET;
+   Double_t        MSTilde_JET;
+   Double_t        gammaTilde_JET;
+   Double_t        CosDecayAngle_Pa_JET;
+   Double_t        CosDecayAngle_Pb_JET;
+   Double_t        CosDecayAngle_S_JET;
+   Double_t        RZPara_JET;
+   Double_t        MINV_JET;
 
    // List of branches
    TBranch        *b_event_skipped;   //!
@@ -578,6 +647,75 @@ public :
    TBranch        *b_genM_susy;   //!
    TBranch        *b_genPDGID_susy;   //!
    TBranch        *b_genMomPDGID_susy;   //!
+   TBranch        *b_MT2;   //!
+   TBranch        *b_RISR_LEP;   //!
+   TBranch        *b_PTISR_LEP;   //!
+   TBranch        *b_MS_LEP;   //!
+   TBranch        *b_MSV_LEP;   //!
+   TBranch        *b_MQ_LEP;   //!
+   TBranch        *b_gamma_LEP;   //!
+   TBranch        *b_MPa_LEP;   //!
+   TBranch        *b_MPb_LEP;   //!
+   TBranch        *b_MVa_LEP;   //!
+   TBranch        *b_MVb_LEP;   //!
+   TBranch        *b_PTS_CM_LEP;   //!
+   TBranch        *b_MS_S0_LEP;   //!
+   TBranch        *b_MV_S0_LEP;   //!
+   TBranch        *b_MQ_S0_LEP;   //!
+   TBranch        *b_gamma_S0_LEP;   //!
+   TBranch        *b_MPTilde_LEP;   //!
+   TBranch        *b_MSTilde_LEP;   //!
+   TBranch        *b_gammaTilde_LEP;   //!
+   TBranch        *b_CosDecayAngle_Pa_LEP;   //!
+   TBranch        *b_CosDecayAngle_Pb_LEP;   //!
+   TBranch        *b_CosDecayAngle_S_LEP;   //!
+   TBranch        *b_RZPara_LEP;   //!
+   TBranch        *b_MINV_LEP;   //!
+   TBranch        *b_MP;   //!
+   TBranch        *b_Mperp_JET;   //!
+   TBranch        *b_gammaT_JET;   //!
+   TBranch        *b_RISR_JET;   //!
+   TBranch        *b_PTISR_JET;   //!
+   TBranch        *b_MS_JET;   //!
+   TBranch        *b_MSV_JET;   //!
+   TBranch        *b_MQ_JET;   //!
+   TBranch        *b_gamma_JET;   //!
+   TBranch        *b_MPa_JET;   //!
+   TBranch        *b_MPb_JET;   //!
+   TBranch        *b_MVa_JET;   //!
+   TBranch        *b_MVb_JET;   //!
+   TBranch        *b_PTS_CM_JET;   //!
+   TBranch        *b_MS_S0_JET;   //!
+   TBranch        *b_MV_S0_JET;   //!
+   TBranch        *b_MQ_S0_JET;   //!
+   TBranch        *b_gamma_S0_JET;   //!
+   TBranch        *b_MPTilde_JET;   //!
+   TBranch        *b_MSTilde_JET;   //!
+   TBranch        *b_gammaTilde_JET;   //!
+   TBranch        *b_CosDecayAngle_Pa_JET;   //!
+   TBranch        *b_CosDecayAngle_Pb_JET;   //!
+   TBranch        *b_CosDecayAngle_S_JET;   //!
+   TBranch        *b_RZPara_JET;   //!
+   TBranch        *b_MINV_JET;   //!
+   TBranch        *b_cascades_tree;   //!
+   TBranch        *b_cascades_prod;   //!
+   TBranch        *b_cascades_SlepSneu_1stDecay;   //!
+   TBranch        *b_cascades_SlepSneu_2ndDecay;   //!
+   TBranch        *b_cascades_N2_1stDecay;   //!
+   TBranch        *b_cascades_N2_2ndDecay;   //!
+   TBranch        *b_MSlepL;   //!
+   TBranch        *b_MSneu;   //!
+   TBranch        *b_MN2;   //!
+   TBranch        *b_MC1;   //!
+   TBranch        *b_MN1;   //!
+   TBranch        *b_NSparticleW;   //!
+   TBranch        *b_NSparticleZ;   //!
+   TBranch        *b_NSparticlePhoton;   //!
+   TBranch        *b_LSPParents;   //!
+   TBranch        *b_Npartons;   //!
+   TBranch        *b_XSec;   //!
+   TBranch        *b_Nweight;   //!
+   TBranch        *b_Nevent;   //!
 
    ReducedBase_V2(TTree *tree=0);
    virtual ~ReducedBase_V2();
@@ -998,6 +1136,76 @@ inline void ReducedBase_V2::Init(TTree *tree)
    fChain->SetBranchAddress("genM_susy", &genM_susy, &b_genM_susy);
    fChain->SetBranchAddress("genPDGID_susy", &genPDGID_susy, &b_genPDGID_susy);
    fChain->SetBranchAddress("genMomPDGID_susy", &genMomPDGID_susy, &b_genMomPDGID_susy);
+   fChain->SetBranchAddress("cascades_tree", &cascades_tree, &b_cascades_tree);
+   fChain->SetBranchAddress("cascades_prod", &cascades_prod, &b_cascades_prod);
+   fChain->SetBranchAddress("cascades_SlepSneu_1stDecay", &cascades_SlepSneu_1stDecay, &b_cascades_SlepSneu_1stDecay);
+   fChain->SetBranchAddress("cascades_SlepSneu_2ndDecay", &cascades_SlepSneu_2ndDecay, &b_cascades_SlepSneu_2ndDecay);
+   fChain->SetBranchAddress("cascades_N2_1stDecay", &cascades_N2_1stDecay, &b_cascades_N2_1stDecay);
+   fChain->SetBranchAddress("cascades_N2_2ndDecay", &cascades_N2_2ndDecay, &b_cascades_N2_2ndDecay);
+   fChain->SetBranchAddress("MSlepL", &MSlepL, &b_MSlepL);
+   fChain->SetBranchAddress("MSneu", &MSneu, &b_MSneu);
+   fChain->SetBranchAddress("MN2", &MN2, &b_MN2);
+   fChain->SetBranchAddress("MC1", &MC1, &b_MC1);
+   fChain->SetBranchAddress("MN1", &MN1, &b_MN1);
+   fChain->SetBranchAddress("NSparticleW", &NSparticleW, &b_NSparticleW);
+   fChain->SetBranchAddress("NSparticleZ", &NSparticleZ, &b_NSparticleZ);
+   fChain->SetBranchAddress("NSparticlePhoton", &NSparticlePhoton, &b_NSparticlePhoton);
+   fChain->SetBranchAddress("LSPParents", &LSPParents, &b_LSPParents);
+   fChain->SetBranchAddress("Npartons", &Npartons, &b_Npartons);
+   fChain->SetBranchAddress("genweight", &genweight, &b_genweight);
+   fChain->SetBranchAddress("XSec", &XSec, &b_XSec);
+   fChain->SetBranchAddress("Nweight", &Nweight, &b_Nweight);
+   fChain->SetBranchAddress("Nevent", &Nevent, &b_Nevent);
+   fChain->SetBranchAddress("MT2", &MT2, &b_MT2);
+   fChain->SetBranchAddress("RISR_LEP", &RISR_LEP, &b_RISR_LEP);
+   fChain->SetBranchAddress("PTISR_LEP", &PTISR_LEP, &b_PTISR_LEP);
+   fChain->SetBranchAddress("MS_LEP", &MS_LEP, &b_MS_LEP);
+   fChain->SetBranchAddress("MSV_LEP", &MSV_LEP, &b_MSV_LEP);
+   fChain->SetBranchAddress("MQ_LEP", &MQ_LEP, &b_MQ_LEP);
+   fChain->SetBranchAddress("gamma_LEP", &gamma_LEP, &b_gamma_LEP);
+   fChain->SetBranchAddress("MPa_LEP", &MPa_LEP, &b_MPa_LEP);
+   fChain->SetBranchAddress("MPb_LEP", &MPb_LEP, &b_MPb_LEP);
+   fChain->SetBranchAddress("MVa_LEP", &MVa_LEP, &b_MVa_LEP);
+   fChain->SetBranchAddress("MVb_LEP", &MVb_LEP, &b_MVb_LEP);
+   fChain->SetBranchAddress("PTS_CM_LEP", &PTS_CM_LEP, &b_PTS_CM_LEP);
+   fChain->SetBranchAddress("MS_S0_LEP", &MS_S0_LEP, &b_MS_S0_LEP);
+   fChain->SetBranchAddress("MV_S0_LEP", &MV_S0_LEP, &b_MV_S0_LEP);
+   fChain->SetBranchAddress("MQ_S0_LEP", &MQ_S0_LEP, &b_MQ_S0_LEP);
+   fChain->SetBranchAddress("gamma_S0_LEP", &gamma_S0_LEP, &b_gamma_S0_LEP);
+   fChain->SetBranchAddress("MPTilde_LEP", &MPTilde_LEP, &b_MPTilde_LEP);
+   fChain->SetBranchAddress("MSTilde_LEP", &MSTilde_LEP, &b_MSTilde_LEP);
+   fChain->SetBranchAddress("gammaTilde_LEP", &gammaTilde_LEP, &b_gammaTilde_LEP);
+   fChain->SetBranchAddress("CosDecayAngle_Pa_LEP", &CosDecayAngle_Pa_LEP, &b_CosDecayAngle_Pa_LEP);
+   fChain->SetBranchAddress("CosDecayAngle_Pb_LEP", &CosDecayAngle_Pb_LEP, &b_CosDecayAngle_Pb_LEP);
+   fChain->SetBranchAddress("CosDecayAngle_S_LEP", &CosDecayAngle_S_LEP, &b_CosDecayAngle_S_LEP);
+   fChain->SetBranchAddress("RZPara_LEP", &RZPara_LEP, &b_RZPara_LEP);
+   fChain->SetBranchAddress("MINV_LEP", &MINV_LEP, &b_MINV_LEP);
+   fChain->SetBranchAddress("MP", &MP, &b_MP);
+   fChain->SetBranchAddress("Mperp_JET", &Mperp_JET, &b_Mperp_JET);
+   fChain->SetBranchAddress("gammaT_JET", &gammaT_JET, &b_gammaT_JET);
+   fChain->SetBranchAddress("RISR_JET", &RISR_JET, &b_RISR_JET);
+   fChain->SetBranchAddress("PTISR_JET", &PTISR_JET, &b_PTISR_JET);
+   fChain->SetBranchAddress("MS_JET", &MS_JET, &b_MS_JET);
+   fChain->SetBranchAddress("MSV_JET", &MSV_JET, &b_MSV_JET);
+   fChain->SetBranchAddress("MQ_JET", &MQ_JET, &b_MQ_JET);
+   fChain->SetBranchAddress("gamma_JET", &gamma_JET, &b_gamma_JET);
+   fChain->SetBranchAddress("MPa_JET", &MPa_JET, &b_MPa_JET);
+   fChain->SetBranchAddress("MPb_JET", &MPb_JET, &b_MPb_JET);
+   fChain->SetBranchAddress("MVa_JET", &MVa_JET, &b_MVa_JET);
+   fChain->SetBranchAddress("MVb_JET", &MVb_JET, &b_MVb_JET);
+   fChain->SetBranchAddress("PTS_CM_JET", &PTS_CM_JET, &b_PTS_CM_JET);
+   fChain->SetBranchAddress("MS_S0_JET", &MS_S0_JET, &b_MS_S0_JET);
+   fChain->SetBranchAddress("MV_S0_JET", &MV_S0_JET, &b_MV_S0_JET);
+   fChain->SetBranchAddress("MQ_S0_JET", &MQ_S0_JET, &b_MQ_S0_JET);
+   fChain->SetBranchAddress("gamma_S0_JET", &gamma_S0_JET, &b_gamma_S0_JET);
+   fChain->SetBranchAddress("MPTilde_JET", &MPTilde_JET, &b_MPTilde_JET);
+   fChain->SetBranchAddress("MSTilde_JET", &MSTilde_JET, &b_MSTilde_JET);
+   fChain->SetBranchAddress("gammaTilde_JET", &gammaTilde_JET, &b_gammaTilde_JET);
+   fChain->SetBranchAddress("CosDecayAngle_Pa_JET", &CosDecayAngle_Pa_JET, &b_CosDecayAngle_Pa_JET);
+   fChain->SetBranchAddress("CosDecayAngle_Pb_JET", &CosDecayAngle_Pb_JET, &b_CosDecayAngle_Pb_JET);
+   fChain->SetBranchAddress("CosDecayAngle_S_JET", &CosDecayAngle_S_JET, &b_CosDecayAngle_S_JET);
+   fChain->SetBranchAddress("RZPara_JET", &RZPara_JET, &b_RZPara_JET);
+   fChain->SetBranchAddress("MINV_JET", &MINV_JET, &b_MINV_JET);
    Notify();
 }
 
