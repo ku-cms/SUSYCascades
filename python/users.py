@@ -1,4 +1,4 @@
-import subprocess
+import subprocess, os
 from collections import Counter
 
 def count_jobs_by_status(status):
@@ -22,9 +22,16 @@ print_job_summary("Total Number Of Jobs By User", all_jobs)
 idle_jobs = count_jobs_by_status("idle")
 print_job_summary("Total Number Of Idle Jobs By User", idle_jobs)
 
-running_jobs = count_jobs_by_status("run")
-print_job_summary("Total Number Of Running Jobs By User", running_jobs)
-
 held_jobs = count_jobs_by_status("held")
 print_job_summary("Total Number Of Held Jobs By User", held_jobs)
 
+running_jobs = count_jobs_by_status("run")
+print_job_summary("Total Number Of Running Jobs By User", running_jobs)
+
+user = os.environ['USER']
+user_running_jobs = running_jobs.get(user, 0)
+total_running_jobs = sum(running_jobs.values())
+
+if total_running_jobs > 0:
+    percent = round((user_running_jobs / total_running_jobs) * 100., 2)
+    print(f"{user} owns {percent}% of running jobs")
