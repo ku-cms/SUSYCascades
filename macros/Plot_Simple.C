@@ -5,8 +5,7 @@ void Plot_Simple(){
   Long64_t start = gSystem->Now();
   RestFrames::SetStyle();
 
-  string NtuplePath = "root://cmseos.fnal.gov//store/user/lpcsusylep/NTUPLES_Cascades_v1/";
-  //string NtuplePath = "/local-scratch/zflowers/NTUPLES/HADD/";
+  string NtuplePath = "root://cmseos.fnal.gov//store/user/lpcsusylep/NTUPLES_Cascades_v2/";
 
   // 10 is Summer23BPix
   SampleTool ST(NtuplePath, 10);
@@ -22,9 +21,9 @@ void Plot_Simple(){
   folder_name = output_root_file;
   output_root_file += ".root";
   if(SavePDF){
-    std::cout << "making dir for plots: " << folder_name << std::endl;
-    gSystem->Exec(("mkdir -p "+folder_name).c_str());
-    gSystem->Exec(("cp macros/Plot_Simple.C "+folder_name+"/").c_str());
+    std::cout << "making dir for plots: plot_outputs/" << folder_name << std::endl;
+    gSystem->Exec(("mkdir -p plot_outputs/"+folder_name).c_str());
+    gSystem->Exec(("cp macros/Plot_Simple.C plot_outputs/"+folder_name+"/").c_str());
   }
   std::cout << "Saving plots to: " << output_root_file << std::endl;
 
@@ -108,7 +107,7 @@ void Plot_Simple(){
 
     // Declare hists here
     // push_back hists that you want to plot at the end (hists are filled regardless of whether or not you push_back)
-    TH1D* hist_MET = new TH1D((title+"_MET").c_str(), (title+"_MET;MET [GeV]").c_str(), g_NX/2, 100., 1000.);
+    TH1D* hist_MET = new TH1D((title+"_MET").c_str(), (title+"_MET;MET [GeV]").c_str(), g_NX/2, 0., 1000.);
     hists1.push_back(hist_MET);
     hist_stack_MET.push_back(hist_MET); // example pushing hist into vector for stack plot
 
