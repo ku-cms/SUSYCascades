@@ -64,6 +64,10 @@ def write_sh(srcfile,ifile,ofile,logfile,outfile,errfile,dataset,filetag):
     fsrc.write('-tree='+TREE+" ")
     if DO_SMS == 1:
         fsrc.write('--sms ')
+    if DO_CASCADES == 1:
+        fsrc.write('--cascades ')
+    if DO_PRIVATEMC == 1:
+        fsrc.write('--privateMC ')
     fsrc.write('-dataset='+dataset+" ")
     fsrc.write('-filetag='+filetag+" ")
 
@@ -132,6 +136,10 @@ def write_sh_single(srcfile,ifile,ofile,logfile,outfile,errfile,dataset,filetag)
         fsrc.write('--sms ')
     if DO_DATA == 1:
         fsrc.write('--data ')
+    if DO_CASCADES == 1:
+        fsrc.write('--cascades ')
+    if DO_PRIVATEMC == 1:
+        fsrc.write('--privateMC ')
     fsrc.write('-dataset='+dataset+" ")
     fsrc.write('-filetag='+filetag+" ")
     fsrc.write('\n')
@@ -180,10 +188,12 @@ if __name__ == "__main__":
         print (f"Usage: {sys.argv(0)} [-q queue] [-tree treename] [-list listfile.list] [--sms] [--connect]")
         sys.exit(1)
 
-    argv_pos = 1
-    DO_SMS = 0
-    DO_DATA = 0
-    DRY_RUN     = 0
+    argv_pos     = 1
+    DO_SMS       = 0
+    DO_DATA      = 0
+    DRY_RUN      = 0
+    DO_CASCADES  = 0
+    DO_PRIVATEMC = 0
   
     if '-q' in sys.argv:
         p = sys.argv.index('-q')
@@ -200,6 +210,15 @@ if __name__ == "__main__":
     if '--sms' in sys.argv:
         DO_SMS = 1
         argv_pos += 1
+    if '--cascades' in sys.argv:
+        DO_CASCADES = 1
+        argv_pos += 1
+    if '--private' in sys.argv:
+        DO_PRIVATEMC = 1
+        argv_pos += 1
+    if '--privateMC' in sys.argv:
+        DO_PRIVATEMC = 1
+        argv_pos += 1
     if '--connect' in sys.argv:
         CONNECT = True
         argv_pos += 1
@@ -212,6 +231,12 @@ if __name__ == "__main__":
 
     if DO_SMS:
         print ("Processing as SMS")
+
+    if DO_CASCADES:
+        print ("Processing as Cascades")
+
+    if DO_PRIVATEMC:
+        print ("Processing as Private MC")
 
     # input sample list
     listfile = LIST

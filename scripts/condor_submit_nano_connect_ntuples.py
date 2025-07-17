@@ -13,21 +13,23 @@ from CondorJobCountMonitor import CondorJobCountMonitor
 # Parameters
 # ----------------------------------------------------------- #
 # current working directory
-pwd         = os.environ['PWD']
-RUN_DIR     = pwd
-jobEXE      = "execute_script.sh"
-EXE         = "MakeReducedNtuple_NANO.x"
-RESTFRAMES  = './scripts/setup_RestFrames_connect.sh'
-#CMSSW_SETUP = './scripts/cmssw_setup_connect.sh'
-CMSSW_SETUP = './scripts/cmssw_setup_connect_el9.sh'
-TREE        = "Events"
-USER        = os.environ['USER']
-OUT_BASE    = "/ospool/cms-user/"+USER+"/NTUPLES/Processing"
-#OUT_BASE    = "/uscms/home/"+USER+"/nobackup/NTUPLES/Processing"
-LIST        = "default.list"
-QUEUE       = ""
-SPLIT       = 1
-THRESHOLD   = 80000
+pwd          = os.environ['PWD']
+RUN_DIR      = pwd
+jobEXE       = "execute_script.sh"
+EXE          = "MakeReducedNtuple_NANO.x"
+RESTFRAMES   = './scripts/setup_RestFrames_connect.sh'
+#CMSSW_SETUP  = './scripts/cmssw_setup_connect.sh'
+CMSSW_SETUP  = './scripts/cmssw_setup_connect_el9.sh'
+TREE         = "Events"
+USER         = os.environ['USER']
+OUT_BASE     = "/ospool/cms-user/"+USER+"/NTUPLES/Processing"
+#OUT_BASE     = "/uscms/home/"+USER+"/nobackup/NTUPLES/Processing"
+LIST         = "default.list"
+QUEUE        = ""
+SPLIT        = 100
+THRESHOLD    = 85000
+MAX_JOBS_SUB = 15000 # Max jobs/submission (Connect max is 20000)
+MIN_JOBS_SUB = 5000 # Min jobs/submission
 # ----------------------------------------------------------- #
 
 def new_listfile(rootlist, listfile):
@@ -88,6 +90,10 @@ def write_sh_single(srcfile,ifile,ofile,logfile,outfile,errfile,dataset,filetag,
         fsrc.write('--fastsim ')
     if SLIM == 1:
         fsrc.write('--slim ')
+    if DO_CASCADES == 1:
+        fsrc.write('--cascades ')
+    if DO_PRIVATEMC == 1:
+        fsrc.write('--privateMC ')
     fsrc.write('-dataset='+dataset+" ")
     fsrc.write('-filetag='+filetag+" ")
     fsrc.write('-eventcount='+EVTCNT+" ")
@@ -161,6 +167,10 @@ def write_sh(srcfile,ifile,ofile,logfile,outfile,errfile,dataset,filetag,n,NAME)
         fsrc.write('--fastsim ')
     if SLIM == 1:
         fsrc.write('--slim ')
+    if DO_CASCADES == 1:
+        fsrc.write('--cascades ')
+    if DO_PRIVATEMC == 1:
+        fsrc.write('--privateMC ')
     fsrc.write('-dataset='+dataset+" ")
     fsrc.write('-filetag='+filetag+" ")
     fsrc.write('-eventcount='+EVTCNT+" ")
@@ -223,17 +233,19 @@ if __name__ == "__main__":
         sys.exit(1)
 
 
-    argv_pos    = 1
-    DO_SMS      = 0
-    DO_DATA     = 0
-    USE_URL     = 0
-    DRY_RUN     = 0
-    COUNT       = 0
-    VERBOSE     = 0
-    CSV         = 0
-    SYS         = 0
-    FASTSIM     = 0
-    SLIM        = 0
+    argv_pos     = 1
+    DO_SMS       = 0
+    DO_CASCADES  = 0
+    DO_PRIVATEMC = 0
+    DO_DATA      = 0
+    USE_URL      = 0
+    DRY_RUN      = 0
+    COUNT        = 0
+    VERBOSE      = 0
+    CSV          = 0
+    SYS          = 0
+    FASTSIM      = 0
+    SLIM         = 0
   
     if '-q' in sys.argv:
         p = sys.argv.index('-q')
@@ -253,6 +265,15 @@ if __name__ == "__main__":
         argv_pos += 2
     if '--sms' in sys.argv:
         DO_SMS = 1
+        argv_pos += 1
+    if '--cascades' in sys.argv:
+        DO_CASCADES = 1
+        argv_pos += 1
+    if '--private' in sys.argv:
+        DO_PRIVATEMC = 1
+        argv_pos += 1
+    if '--privateMC' in sys.argv:
+        DO_PRIVATEMC = 1
         argv_pos += 1
     if '--data' in sys.argv:
         DO_DATA = 1
@@ -282,6 +303,10 @@ if __name__ == "__main__":
         
     if SPLIT <= 1:
         SPLIT = 1
+
+    if MAX_JOBS_SUB < MIN_JOBS_SUB:
+        MIN_JOBS_SUB = 1000
+        MAX_JOBS_SUB = 10000
     
     print (" --- Preparing condor submission to create ntuples.")
     if DO_DATA:
@@ -289,6 +314,12 @@ if __name__ == "__main__":
 
     if DO_SMS:
         print (" --- Processing SMS")
+
+    if DO_CASCADES:
+        print (" --- Processing Cascades")
+
+    if DO_PRIVATEMC:
+        print (" --- Processing PrivateMC")
     
     if SYS:
         print (" --- Processing SYS")
@@ -302,7 +333,7 @@ if __name__ == "__main__":
     if COUNT:
         print (" --- Only Counting (No Processing)")
 
-    condor_monitor = CondorJobCountMonitor(threshold=THRESHOLD,verbose=VERBOSE)
+    condor_monitor = CondorJobCountMonitor(threshold=THRESHOLD,verbose=False)
 
     # input sample list
     listfile = LIST
@@ -326,7 +357,7 @@ if __name__ == "__main__":
         os.system("mkdir -p "+logdir)
         os.system("mkdir -p "+outdir)
         os.system("mkdir -p "+errdir)
-    os.system("mkdir -p "+srcdir)
+        os.system("mkdir -p "+srcdir)
 
     # make config directory
     config = TARGET+"config/"
@@ -435,6 +466,8 @@ if __name__ == "__main__":
     filetag = ''
     
     n_samples = 0
+    total_jobs  = 0
+    dataset_split = {}
     with open(listfile,'r') as mylist:
         inputlist = mylist.readlines()
 
@@ -469,9 +502,21 @@ if __name__ == "__main__":
                     afile = afile.strip('\n\r')
                     rootlist.append(afile);
             
-            n_root_files        = len(rootlist)
-            n_jobs              = SPLIT * n_root_files
+            n_root_files = len(rootlist)
+            n_jobs       = SPLIT * n_root_files
             total_root_files    += n_root_files
+            dataset_split[dataset+"_"+filetag] = SPLIT
+            while (n_jobs > MAX_JOBS_SUB or n_jobs < MIN_JOBS_SUB):
+                if dataset_split[dataset + "_" + filetag] > 250: # avoid too large of split
+                    break
+                if n_jobs > MAX_JOBS_SUB and dataset_split[dataset + "_" + filetag] > 1:
+                    dataset_split[dataset + "_" + filetag] -= 1
+                elif n_jobs < MIN_JOBS_SUB:
+                    dataset_split[dataset + "_" + filetag] += 1
+                else:
+                    break
+                n_jobs = dataset_split[dataset + "_" + filetag] * n_root_files
+            total_jobs += n_jobs
             
             input_info[dataset+'_'+filetag] = {}
             clean_inputlist.append(dataset+'_'+filetag)
@@ -496,7 +541,7 @@ if __name__ == "__main__":
             p = datasetlist.index(tagtuple[0])
             datasetlist[p][2].extend(rootlist)
 
-    if VERBOSE:
+    if VERBOSE and not COUNT:
         print("Created area for output root files")
 
     for (dataset,filetag,rootlist) in datasetlist:
@@ -522,10 +567,10 @@ if __name__ == "__main__":
             errfile = os.path.join(errdir, dataset+'_'+filetag, file_name.split('/')[-1])
 
             script_name = srcdir+'_'.join([dataset, filetag])+'.submit'
-            write_sh(script_name, overlist_name, file_name+'.root', logfile, outfile, errfile, dataset, filetag, SPLIT, NAME)
-            write_sh_single(script_name, overlist_name, file_name+'.root', logfile, outfile, errfile, dataset, filetag, SPLIT, NAME)
+            write_sh(script_name, overlist_name, file_name+'.root', logfile, outfile, errfile, dataset, filetag, dataset_split[dataset+"_"+filetag], NAME)
+            write_sh_single(script_name, overlist_name, file_name+'.root', logfile, outfile, errfile, dataset, filetag, dataset_split[dataset+"_"+filetag], NAME)
     
-    if VERBOSE:
+    if VERBOSE and not COUNT:
         print("Created area for log files")
 
     if not COUNT:
@@ -540,7 +585,6 @@ if __name__ == "__main__":
     submit_dir  = srcdir        
     submit_list = [os.path.join(submit_dir, f) for f in os.listdir(submit_dir) if (os.path.isfile(os.path.join(submit_dir, f)) and ('.submit' in f) and ('_single' not in f))]
     #n_samples   = len(submit_list)
-    total_jobs  = SPLIT * total_root_files
 
     # Prep csv file
     if CSV:
@@ -575,7 +619,7 @@ if __name__ == "__main__":
         for f in clean_inputlist:
             n_root_files    = input_info[f]["n_root_files"] 
             n_jobs          = input_info[f]["n_jobs"] 
-            n_jobs = SPLIT * n_root_files
+            n_jobs = dataset_split[f.split("/")[-1]] * n_root_files
             print(f"sample: {f}")
             print(f" - number of root files  = {n_root_files}")
             print(f" - number of jobs        = {n_jobs}")
@@ -595,7 +639,6 @@ if __name__ == "__main__":
     print (f"working directory:       {TARGET}")
     print (f"output directory:        {OUT_DIR}")
     print (f"number of samples:       {n_samples}")
-    print (f"split:                   {SPLIT}")
     print (f"total input root files:  {total_root_files}")
     print (f"total condor jobs:       {total_jobs}")
     print ("----------------------------")
