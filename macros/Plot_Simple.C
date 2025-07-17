@@ -107,11 +107,11 @@ void Plot_Simple(){
 
     // Declare hists here
     // push_back hists that you want to plot at the end (hists are filled regardless of whether or not you push_back)
-    TH1D* hist_MET = new TH1D((title+"_MET").c_str(), (title+"_MET;MET [GeV]").c_str(), g_NX/2, 0., 1000.);
+    TH1D* hist_MET = new TH1D((title+"_MET").c_str(), (title+"_MET;MET [GeV]").c_str(), g_NX, 0., 1000.);
     hists1.push_back(hist_MET);
     hist_stack_MET.push_back(hist_MET); // example pushing hist into vector for stack plot
 
-    TH2D* hist_RISR_PTISR = new TH2D((title+"_RISR_PTISR").c_str(), (title+"_RISR_PTISR;R_{ISR};p_{T}^{ISR} [GeV]").c_str(), g_NX/2., 0., 1., g_NX/2., 0., 1000.);
+    TH2D* hist_RISR_PTISR = new TH2D((title+"_RISR_PTISR").c_str(), (title+"_RISR_PTISR;R_{ISR};p_{T}^{ISR} [GeV]").c_str(), g_NX, 0., 1., g_NX, 0., 1000.);
     hists2.push_back(hist_RISR_PTISR);
 
     TEfficiency* eff_METtrig = new TEfficiency((title+"_eff_METtrig").c_str(), "Efficiency of MET trigger;Eff;MET [GeV]", g_NX, 0., 500.);
