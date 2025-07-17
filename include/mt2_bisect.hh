@@ -30,7 +30,7 @@ class mt2
       void   set_mn(double mn);
       double get_mt2();
       void   print();
-      int    nevt;
+      int    nevt = 0;
    private:  
 
       bool   solved;
@@ -65,7 +65,7 @@ class mt2
 
 }//end namespace mt2_bisect
 
-double Calc_MT2(TLorentzVector p1, TLorentzVector p2, TVector3 met){
+inline double Calc_MT2(TLorentzVector p1, TLorentzVector p2, TVector3 met){
   double pa[3];
   double pb[3];
   double pmiss[3];
@@ -299,7 +299,7 @@ inline void mt2::mt2_massless()
       if(foundhigh==0) 
       {
        
-	cout<<"Deltasq_high not found at event " << nevt <<endl;
+	//cout<<"Deltasq_high not found at event " << nevt <<endl;
         
        
          mt2_b = (double)sqrt(Deltasq_low+mnsq);
@@ -518,7 +518,7 @@ inline void mt2::mt2_bisect()
       foundhigh = find_high(Deltasq_high);
       if(foundhigh == 0) 
       {
- 	 cout << "Deltasq_high not found at event " << nevt << endl;
+ 	 //cout << "Deltasq_high not found at event " << nevt << endl;
          mt2_b = sqrt( Deltasq_low + mnsq );
          return;
       }
