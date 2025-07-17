@@ -16,7 +16,9 @@ public:
   virtual ~ReducedNtuple();
 
 private:
-  const static int m_aTrees=1; // Number of RJR analysis trees
+  // Number of RJR analysis trees
+  const static int m_aTrees=3; // [JetsLeps_ISR, Leps_ISR, Jets_ISR]
+
   vector<bool> m_treeSkipped;
   bool m_library_generated;
   TTree* InitOutputTree(const string& sample, bool do_slim = false);
@@ -28,7 +30,6 @@ private:
   
   // common variables for output tree
   double m_weight;
-  double m_genweight;
   double m_PUweight;
   double m_PUweight_up;
   double m_PUweight_down;
@@ -81,6 +82,31 @@ private:
   int m_runnum;
   int m_luminum;
   Long64_t m_eventnum;
+
+  // additional vars for signal
+  int m_cascades_tree;
+  int m_cascades_prod;
+  int m_cascades_SlepSneu_1stDecay;
+  int m_cascades_SlepSneu_2ndDecay;
+  int m_cascades_N2_1stDecay;
+  int m_cascades_N2_2ndDecay;
+  int m_Npartons;
+  int m_MSlepL;
+  int m_MSneu;
+  int m_MN2;
+  int m_MC1;
+  int m_MN1;
+  int m_MP;
+  int m_NSparticleW;
+  int m_NSparticleZ;
+  int m_NSparticlePhoton;
+  vector<int> m_LSPParents;
+
+  // Additional vars for gen weighting
+  double m_XSec;
+  double m_genweight;
+  double m_Nweight;
+  double m_Nevent;
 
   int m_NPV;
   int m_NPU;
@@ -348,6 +374,8 @@ private:
   double m_cosLa;
   double m_cosLb;
 
+  double m_MT2;
+
   // ISR related variables
   double m_PISR;
   double m_PTISR;
@@ -377,6 +405,58 @@ private:
   double m_gammaCM0; // 2*MQ/MS
   double m_MVisACM0;
   double m_MVisBCM0;
+
+  // New info for RJR 'LEP' tree
+  double m_RISR_LEP;
+  double m_PTISR_LEP;
+  double m_MS_LEP;
+  double m_MSV_LEP;
+  double m_MQ_LEP;
+  double m_gamma_LEP;
+  double m_MPa_LEP;
+  double m_MPb_LEP;
+  double m_MVa_LEP;
+  double m_MVb_LEP;
+  double m_PTS_CM_LEP;
+  double m_MS_S0_LEP;
+  double m_MV_S0_LEP;
+  double m_MQ_S0_LEP;
+  double m_gamma_S0_LEP;
+  double m_MPTilde_LEP;
+  double m_MSTilde_LEP;
+  double m_gammaTilde_LEP;
+  double m_CosDecayAngle_Pa_LEP;
+  double m_CosDecayAngle_Pb_LEP;
+  double m_CosDecayAngle_S_LEP;
+  double m_RZPara_LEP;
+  double m_MINV_LEP;
+
+  // New info for RJR 'JET' tree
+  double m_gammaT_JET;
+  double m_Mperp_JET;
+  double m_RISR_JET;
+  double m_PTISR_JET;
+  double m_MS_JET;
+  double m_MSV_JET;
+  double m_MQ_JET;
+  double m_gamma_JET;
+  double m_MPa_JET;
+  double m_MPb_JET;
+  double m_MVa_JET;
+  double m_MVb_JET;
+  double m_PTS_CM_JET;
+  double m_MS_S0_JET;
+  double m_MV_S0_JET;
+  double m_MQ_S0_JET;
+  double m_gamma_S0_JET;
+  double m_MPTilde_JET;
+  double m_MSTilde_JET;
+  double m_gammaTilde_JET;
+  double m_CosDecayAngle_Pa_JET;
+  double m_CosDecayAngle_Pb_JET;
+  double m_CosDecayAngle_S_JET;
+  double m_RZPara_JET;
+  double m_MINV_JET;
 
   // RestFrames frames and friends
   LabRecoFrame*     LAB[m_aTrees];

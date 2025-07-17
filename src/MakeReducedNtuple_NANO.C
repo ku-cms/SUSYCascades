@@ -56,6 +56,8 @@ int main(int argc, char* argv[]) {
   bool DO_FOLDER = false;
   bool DO_TREE = false;
   bool DO_SMS = false;
+  bool DO_CASCADES = false;
+  bool DO_PRIVATEMC = false;
   bool DO_JSON = false;
   bool IS_DATA = false;
   bool IS_FASTSIM = false;
@@ -119,6 +121,9 @@ int main(int argc, char* argv[]) {
     if (strncmp(argv[i],"--sms",5)==0)  DO_SMS = true;
     if (strncmp(argv[i],"--data",6)==0)  IS_DATA = true;
     if (strncmp(argv[i],"--fastsim",9)==0)  IS_FASTSIM = true;
+    if (strncmp(argv[i],"--cascades",10)==0)  DO_CASCADES = true;
+    if (strncmp(argv[i],"--privatemc",11)==0)  DO_PRIVATEMC = true;
+    if (strncmp(argv[i],"--private",9)==0)  DO_PRIVATEMC = true;
 
     if (strncmp(argv[i],"--slim",6)==0) DO_slim = true;
     
@@ -183,16 +188,20 @@ int main(int argc, char* argv[]) {
   
   // add DAS count
   int NDAS = 0;
+  std::string DAS_datasetname = "PrivateMC";
+  std::string DAS_filename = "PrivateMC";
   NeventTool eventTool;
   int Nfile = filenames.size();
   for(int i = 0; i < Nfile; i++){
     chain->Add(filenames[i].c_str());
-    NDAS += eventTool.EventsInDAS(filenames[i]);
+    if(!DO_PRIVATEMC) NDAS += eventTool.EventsInDAS(filenames[i]);
     cout << "   Added file " << filenames[i] << endl;
   }
-  if(NDAS == 0) return 1; // will try to resubmit job
-  std::string DAS_datasetname = eventTool.Get_DASdatasetname(filenames[0]);
-  std::string DAS_filename = eventTool.Get_DASfilename(filenames[0]);
+  if(!DO_PRIVATEMC) {
+    if(NDAS == 0) return 1; // will try to resubmit job
+    DAS_datasetname = eventTool.Get_DASdatasetname(filenames[0]);
+    DAS_filename = eventTool.Get_DASfilename(filenames[0]);
+  }
 
   using NtupleVariant = std::variant<std::unique_ptr<ReducedNtuple<SUSYNANOBase>>, std::unique_ptr<ReducedNtuple<NANOULBase>>, std::unique_ptr<ReducedNtuple<NANORun3>>>;
   NtupleVariant ntuple;
@@ -215,7 +224,7 @@ int main(int argc, char* argv[]) {
   std::visit([&](auto& nt) { nt->AddPrefireFile(string(PREFIREFILE)); }, ntuple);
   std::visit([&](auto& nt) { nt->AddXSecJSON(string(XSJSONFILE)); }, ntuple);
   #ifdef _CMSSW_
-  if(!DO_SMS && !IS_DATA)
+  if(!DO_SMS && !IS_DATA && !DO_CASCADES)
     //ntuple->AddLHAPDF();
     std::visit([](auto& nt) { nt->AddLHAPDF(); }, ntuple);
   #endif
@@ -244,6 +253,12 @@ int main(int argc, char* argv[]) {
 
   if(IS_FASTSIM)
     std::visit([](auto& nt) { nt->DoFastSim(); }, ntuple);
+
+  if(DO_CASCADES)
+    std::visit([](auto& nt) { nt->DoCascades(); }, ntuple);
+
+  if(DO_PRIVATEMC)
+    std::visit([](auto& nt) { nt->DoPrivateMC(); }, ntuple);
 
   cout << "writing output with ichunk=" << ICHUNK << " nchunk=" << NCHUNK << endl;
   bool passedDASCheck = std::visit([&](auto& nt) -> bool { return nt->WriteNtuple(string(outputFileName), ICHUNK, NCHUNK, DO_slim, NDAS, string(DAS_datasetname), string(DAS_filename)); }, ntuple);

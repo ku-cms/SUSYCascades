@@ -1,5 +1,6 @@
 #include <TFile.h>
 #include <TError.h>
+#include <TParameter.h>
 
 #include "NtupleBase.hh"
 #include "SUSYNANOBase.hh"
@@ -23,7 +24,10 @@ NtupleBase<Base>::~NtupleBase(){
 }
 
 template <class Base>
-void NtupleBase<Base>::GetChunks(const Long64_t& NTOT, Long64_t& N0, Long64_t& N1, int ichunk, int nchunk){
+void NtupleBase<Base>::GetChunks(const Long64_t& u_NTOT, Long64_t& N0, Long64_t& N1, int ichunk, int nchunk){
+  Long64_t NTOT = u_NTOT;
+  if(NTOT == 0) // PrivateMC
+    NTOT = Base::fChain->GetEntries();
   if(nchunk >= NTOT){
     N1 = ichunk;
     N0 = ichunk-1;
@@ -106,7 +110,6 @@ bool NtupleBase<Base>::WriteNtuple(const string& filename, int ichunk, int nchun
       if(AnalysisBase<Base>::m_Systematics[s].Label().compare("METUncer_GenMET") == 0 && !AnalysisBase<Base>::IsFastSim())
 	continue;
 
-      //cout << "Filling " << AnalysisBase<Base>::m_Systematics[s].Label() << " " << do_slim << endl;
       FillOutputTree(m_Label2Tree[sample][isys], AnalysisBase<Base>::m_Systematics[s].Up(), do_slim);
       isys++;
       if(!(!AnalysisBase<Base>::m_Systematics[s]) && AnalysisBase<Base>::m_Systematics[s].Label().compare("METUncer_GenMET") != 0){
@@ -166,7 +169,7 @@ bool NtupleBase<Base>::WriteNtuple(const string& filename, int ichunk, int nchun
     Nevent_tot += m_mapNevent[m_masses[i]];
   }
   bool passed_DAS = true;
-  if(Nevent_tot != NDAS) passed_DAS = false;
+  if(NDAS > 0 && Nevent_tot != NDAS) passed_DAS = false;
   // Loop to fill tree
   for(int i = 0; i < Nmass; i++){
     Nevent = m_mapNevent[m_masses[i]];
@@ -186,6 +189,14 @@ bool NtupleBase<Base>::WriteNtuple(const string& filename, int ichunk, int nchun
     for(int i = 0; i < Nhisto; i++)
       histos[i]->Write("", TObject::kOverwrite);
   }
+
+  TParameter<bool> isData("IsData", AnalysisBase<Base>::IsData()); isData.Write();
+  TParameter<bool> isSMS("IsSMS", AnalysisBase<Base>::IsSMS()); isSMS.Write();
+  TParameter<bool> isCascades("IsCascades", AnalysisBase<Base>::IsCascades()); isCascades.Write();
+  TParameter<bool> isPrivateMC("IsPrivateMC", AnalysisBase<Base>::IsPrivateMC()); isPrivateMC.Write();
+  // Example read back from output:
+  // auto b = (TParameter<bool>*) f.Get("someBool");
+  // bool flag = b->GetVal();
   
   outfile->Close();
   delete outfile;

@@ -41,6 +41,8 @@ int main(int argc, char* argv[]) {
   bool DO_FOLDER = false;
   bool DO_TREE = false;
   bool DO_SMS = false;
+  bool DO_CASCADES = false;
+  bool DO_PRIVATEMC = false; // Private production (DAS info does not exist)
 
   if ( argc < 2 ){
     cout << "Error at Input: please specify an input file name, a list of input ROOT files and/or a folder path"; 
@@ -72,6 +74,9 @@ int main(int argc, char* argv[]) {
     if (strncmp(argv[i],"-dataset",8)==0)   sscanf(argv[i],"-dataset=%s", DataSet);
     if (strncmp(argv[i],"-filetag",8)==0)   sscanf(argv[i],"-filetag=%s", FileTag);
     if (strncmp(argv[i],"--sms",5)==0)  DO_SMS = true;
+    if (strncmp(argv[i],"--cascades",10)==0)  DO_CASCADES = true;
+    if (strncmp(argv[i],"--privatemc",11)==0)  DO_PRIVATEMC = true;
+    if (strncmp(argv[i],"--private",9)==0)  DO_PRIVATEMC = true;
   }
 
   gROOT->ProcessLine("#include <vector>");
@@ -118,8 +123,10 @@ int main(int argc, char* argv[]) {
   TChain* chain;
   if(DO_TREE)
     chain = (TChain*) new TChain(TreeName);
-  else
+  else if (DO_SMS)
     chain = (TChain*) new TChain("Events");
+  else
+    chain = (TChain*) new TChain("Runs");
   
   int Nfile = filenames.size();
   for(int i = 0; i < Nfile; i++){
@@ -141,32 +148,41 @@ int main(int argc, char* argv[]) {
   TBranch *b_GenPart_mass;
   TBranch *b_GenPart_pdgId;
 
-  string dataset = string(DataSet);
-  string filetag = string(FileTag);
-  
-  cout << "Setting Branch Addresses" << endl;
-
-  chain->SetBranchAddress("genWeight", &genWeight, &b_genWeight);
-  chain->SetBranchAddress("luminosityBlock", &luminosityBlock, &b_luminosityBlock);
-  
-  if(string(FileTag).find("130X") != std::string::npos) // Run3
-    chain->SetBranchAddress("nGenPart", &nGenPart_Run3, &b_nGenPart);
-  else
-    chain->SetBranchAddress("nGenPart", &nGenPart_Run2, &b_nGenPart);
-
-  chain->SetBranchAddress("GenPart_mass", GenPart_mass, &b_GenPart_mass);
-  chain->SetBranchAddress("GenPart_pdgId", GenPart_pdgId, &b_GenPart_pdgId);
-  chain->SetBranchStatus("*",0);
-  chain->SetBranchStatus("genWeight", 1);
-  chain->SetBranchStatus("luminosityBlock", 1), 
-  chain->SetBranchStatus("nGenPart", 1);
-  chain->SetBranchStatus("GenPart_mass", 1);
-  chain->SetBranchStatus("GenPart_pdgId", 1);
-
-  cout << "...Done" << endl;
-
   double Nevent = 0.;
   double Nweight = 0.;
+
+  Double_t genEventSumw;
+  Long64_t genEventCount;
+  TBranch  *b_genEventSumw;
+  TBranch  *b_genEventCount;
+
+  string dataset = string(DataSet);
+  string filetag = string(FileTag);
+    
+  cout << "Setting Branch Addresses" << endl;
+
+  if(DO_SMS){
+    chain->SetBranchAddress("genWeight", &genWeight, &b_genWeight);
+    chain->SetBranchAddress("luminosityBlock", &luminosityBlock, &b_luminosityBlock);
+    
+    if(string(FileTag).find("130X") != std::string::npos) // Run3
+      chain->SetBranchAddress("nGenPart", &nGenPart_Run3, &b_nGenPart);
+    else
+      chain->SetBranchAddress("nGenPart", &nGenPart_Run2, &b_nGenPart);
+
+    chain->SetBranchAddress("GenPart_mass", GenPart_mass, &b_GenPart_mass);
+    chain->SetBranchAddress("GenPart_pdgId", GenPart_pdgId, &b_GenPart_pdgId);
+    chain->SetBranchStatus("*",0);
+    chain->SetBranchStatus("genWeight", 1);
+    chain->SetBranchStatus("luminosityBlock", 1), 
+    chain->SetBranchStatus("nGenPart", 1);
+    chain->SetBranchStatus("GenPart_mass", 1);
+    chain->SetBranchStatus("GenPart_pdgId", 1);
+  }
+  else{
+    chain->SetBranchAddress("genEventSumw", &genEventSumw, &b_genEventSumw);
+    chain->SetBranchAddress("genEventCount", &genEventCount, &b_genEventCount);
+  }
 
   int MP = 0;
   int MC = 0;
@@ -181,19 +197,20 @@ int main(int argc, char* argv[]) {
   int NEVENT = chain->GetEntries();
   cout << "TOTAL of " << NEVENT << " entries" << endl;
   if(NEVENT == 0) return 1;
-  for(int e = 0; e < NEVENT; e++){
-    int mymod = NEVENT/10;
-    if(mymod < 1)
-      mymod = 1;
+  if(DO_SMS){
 
-    chain->GetEntry(e);
-    if(e%mymod == 0)
-      cout << " event = " << e << " : " << NEVENT << endl;
+    for(int e = 0; e < NEVENT; e++){
+      int mymod = NEVENT/10;
+      if(mymod < 1)
+        mymod = 1;
+
+      chain->GetEntry(e);
+      if(e%mymod == 0)
+        cout << " event = " << e << " : " << NEVENT << endl;
+
+      Nevent += 1.;
+      Nweight += genWeight;
      
-    Nevent += 1.;
-    Nweight += genWeight;
-
-    if(DO_SMS){
       MP = 0;
       MC = 0;
       int Ngen = 0;
@@ -202,11 +219,11 @@ int main(int argc, char* argv[]) {
       else
         Ngen = nGenPart_Run2;
       if(Ngen > 400){
-	cout << "weight? " << genWeight << endl;
+        cout << "weight? " << genWeight << endl;
       }
       //cout << "NGEN " << Ngen << endl;
       if(Ngen > maxNGEN)
-	maxNGEN = Ngen;
+        maxNGEN = Ngen;
       // for cascades
       int code = 0;
       bool has_Slep = false;
@@ -247,42 +264,49 @@ int main(int argc, char* argv[]) {
         else code += 200;
       }
       for(int i = 0; i < Ngen; i++){
-	PDGID = abs(GenPart_pdgId[i]);
-	if(PDGID > 1000000 && PDGID < 3000000){
-	  int mass = int(GenPart_mass[i]+0.5);
-	  if(PDGID == 1000022)
-	    MC = mass;
-	  else
-	    if(mass > MP)
-	      MP = mass;
-	}
+        PDGID = abs(GenPart_pdgId[i]);
+        if(PDGID > 1000000 && PDGID < 3000000){
+          int mass = int(GenPart_mass[i]+0.5);
+          if(PDGID == 1000022)
+            MC = mass;
+          else
+            if(mass > MP)
+              MP = mass;
+        }
       }
       Code = code;
       std::pair<int,std::pair<int,int>> masspair;
       masspair = std::make_pair(Code,std::make_pair(MP,MC));
       if(mapNevent.count(masspair) == 0){
-	masses.push_back(masspair);
-	mapNevent[masspair]    = 0.;
-	mapNweight[masspair]   = 0.;
+        masses.push_back(masspair);
+        mapNevent[masspair]  = 0.;
+        mapNweight[masspair] = 0.;
       }
 
       mapNevent[masspair]  += 1.;
       mapNweight[masspair] += genWeight;
     }
+    cout << "MAX NGEN " << maxNGEN << endl;
   }
-
-  if(DO_SMS) cout << "MAX NGEN " << maxNGEN << endl;
+  else{
+    Nevent = genEventCount;
+    Nweight = genEventSumw;
+  }
   // add DAS count
-  cout << "Adding DAS info..." << endl;
   int NDAS = 0;
   int Nevent_tot = 0;
   NeventTool eventTool;
-  for(int i = 0; i < Nfile; i++)
-    NDAS += eventTool.EventsInDAS(filenames[i]);
-  std::string DAS_datasetname = eventTool.Get_DASdatasetname(filenames[0]);
-  std::string DAS_filename = eventTool.Get_DASfilename(filenames[0]);
-  if(NDAS == 0) return 1; // will try to resubmit job
-  cout << "Added DAS info!" << endl;
+  std::string DAS_datasetname = "PrivateMC";
+  std::string DAS_filename = "PrivateMC";
+  if(!DO_PRIVATEMC){
+    cout << "Adding DAS info..." << endl;
+    for(int i = 0; i < Nfile; i++)
+      NDAS += eventTool.EventsInDAS(filenames[i]);
+    DAS_datasetname = eventTool.Get_DASdatasetname(filenames[0]);
+    DAS_filename = eventTool.Get_DASfilename(filenames[0]);
+    if(NDAS == 0) return 1; // will try to resubmit job
+    cout << "Added DAS info!" << endl;
+  }
 
   TFile* fout = new TFile(string(outputFileName).c_str(),"RECREATE");
   TTree* tout = (TTree*) new TTree("EventCount", "EventCount");
@@ -306,7 +330,7 @@ int main(int argc, char* argv[]) {
   }
   else Nevent_tot = Nevent;
   bool passed_DAS = true;
-  if(NDAS != Nevent_tot){ 
+  if(!DO_PRIVATEMC && NDAS != Nevent_tot){ 
     std::cout << "JOB FAILED DAS CHECK!" << std::endl;
     std::cout << "  NDAS: " << NDAS << std::endl;
     std::cout << "  Nevent_tot: " << Nevent_tot << std::endl;

@@ -19,7 +19,7 @@ AnalysisBase<Base>::AnalysisBase(TTree* tree)
 {
   m_Nsample = 0;
   m_SampleIndex = 0;
-  m_DoSMS = false;
+  m_IsSMS = false;
   m_IsData = false;
   m_IsFastSim = false;
 
@@ -75,7 +75,7 @@ void AnalysisBase<Base>::AddMMSSystematics(){
 
 template <class Base>
 void AnalysisBase<Base>::DoSMS(){
-  m_DoSMS = true;
+  m_IsSMS = true;
   m_IsData = false;
 }
 
@@ -83,12 +83,24 @@ template <class Base>
 void AnalysisBase<Base>::DoData(){
   m_IsData = true;
   m_IsFastSim = false;
-  m_DoSMS = false;
+  m_IsSMS = false;
 }
 
 template <class Base>
 void AnalysisBase<Base>::DoFastSim(){
   m_IsFastSim = true;
+  m_IsData = false;
+}
+
+template <class Base>
+void AnalysisBase<Base>::DoPrivateMC(){
+  m_IsPrivateMC = true;
+  m_IsData = false;
+}
+
+template <class Base>
+void AnalysisBase<Base>::DoCascades(){
+  m_IsCascades = true;
   m_IsData = false;
 }
 
@@ -110,6 +122,22 @@ double AnalysisBase<Base>::GetXsec(){
   else
     return 0.;
 }
+
+template <class Base>
+double AnalysisBase<Base>::GetNevent(){
+  if(m_Nsample)
+    return m_IndexToNevent[m_SampleIndex];
+  else
+    return 0.;
+}
+
+template <class Base>
+double AnalysisBase<Base>::GetNweight(){
+  if(m_Nsample)
+    return m_IndexToNweight[m_SampleIndex];
+  else
+    return 0.;
+}
   
 template <class Base>
 void AnalysisBase<Base>::AddLabels(const string& dataset, const string& filetag){
@@ -128,6 +156,9 @@ void AnalysisBase<Base>::AddLabels(const string& dataset, const string& filetag)
   if(m_FileTag.find("EE") != std::string::npos) m_IsEE = true;
   if(m_FileTag.find("BPix") != std::string::npos) m_IsBPix = true;
   if(m_FileTag.find("130X") != std::string::npos) m_IsRun3 = true;
+  if(m_FileTag.find("Cascades") != std::string::npos) DoCascades();
+  if(m_FileTag.find("SMS") != std::string::npos) DoSMS();
+  if(m_FileTag.find("Data") != std::string::npos) DoData();
   m_XsecTool.SetFileTag(filetag);
 }
 
@@ -159,6 +190,7 @@ void AnalysisBase<Base>::AddBtagFolder(const string& btagfold, const string& pro
     string filetag = m_FileTag;
     clip_string(filetag, "_Data");
     clip_string(filetag, "_SMS");
+    clip_string(filetag, "_Cascades");
     std::string Btag_file;
     if(!m_IsUL)
       Btag_file = btagfold+std::to_string(m_year)+"_"+filetag.substr(0, filetag.size() - 5)+"/btagging.json.gz";
@@ -555,6 +587,14 @@ bool AnalysisBase<Base>::IsGoodEvent(){
 }
 
 template <class Base>
+int AnalysisBase<Base>::GetNpartons(){
+  if(IsData()) return 0;
+  if constexpr (std::is_member_object_pointer<decltype(&Base::LHE_Njets)>::value)
+    return this->LHE_Njets;
+  return 0;
+}
+
+template <class Base>
 bool AnalysisBase<Base>::FastSimEventVeto(const ParticleList& GenJets){
   if constexpr (std::is_member_object_pointer<decltype(&Base::nJet)>::value &&
                 std::is_member_object_pointer<decltype(&Base::Jet_pt)>::value &&
@@ -688,7 +728,7 @@ ParticleList AnalysisBase<Base>::GetGenElectrons(){
         if(mom >= 0 && mom < N){
           int momID = this->GenPart_pdgId[mom];
           int momStatus = this->GenPart_status[mom];
-          while(abs(momID) == 11){
+          while(abs(momID) == 11 && (mom >= 0 && mom < N)){
             if(momStatus == 23){
               lep.SetMomPDGID(PDGID);
               lep.SetGenMomIndex(mom);
@@ -742,7 +782,7 @@ ParticleList AnalysisBase<Base>::GetGenMuons(){
         if(mom >= 0 && mom < N){
           int momID = this->GenPart_pdgId[mom];
           int momStatus = this->GenPart_status[mom];
-          while(abs(momID) == 13){
+          while(abs(momID) == 13 && (mom >= 0 && mom < N)){
             if(momStatus == 23){
               lep.SetMomPDGID(PDGID);
               lep.SetGenMomIndex(mom);
@@ -905,8 +945,216 @@ std::pair<int,int> AnalysisBase<Base>::GetSUSYMasses(){
 }
 
 template <class Base>
+int AnalysisBase<Base>::GetGenMass(const int& u_PDGID){
+  if(!IsData())
+      if constexpr (
+        std::is_member_object_pointer<decltype(&Base::nGenPart)>::value &&
+        std::is_member_object_pointer<decltype(&Base::GenPart_pdgId)>::value &&
+        std::is_member_object_pointer<decltype(&Base::GenPart_mass)>::value )
+      for(int i = 0; i < int(this->nGenPart); i++)
+        if(abs(this->GenPart_pdgId[i]) == u_PDGID)
+          return int(this->GenPart_mass[i]+0.5);
+  return 0;
+}
+
+template <class Base>
+int AnalysisBase<Base>::GetGenSUSYNBosons(const int& u_PDGID){
+  int NBosons = 0;
+  if(IsData())
+    return 0;
+
+  if constexpr (
+    std::is_member_object_pointer<decltype(&Base::nGenPart)>::value &&
+    std::is_member_object_pointer<decltype(&Base::GenPart_pdgId)>::value &&
+    std::is_member_object_pointer<decltype(&Base::GenPart_genPartIdxMother)>::value){
+
+    int N = this->nGenPart;
+    int PDGID;
+    for(int i = 0; i < N; i++){
+      PDGID = this->GenPart_pdgId[i];
+      if(abs(PDGID) == u_PDGID){
+        int mom = this->GenPart_genPartIdxMother[i];
+        if(mom >= 0 && mom < N){
+          int momPDGID = this->GenPart_pdgId[mom];
+          if(momPDGID > 1000000 && momPDGID < 3000000)
+            NBosons++;
+        }
+      }
+    }
+  }
+  return NBosons;
+}
+
+template <class Base>
+int AnalysisBase<Base>::GetGenCascadesProduction(int& firstSpart, int& secondSpart){
+  if(!IsCascades())
+    return 0;
+
+  if constexpr (
+    std::is_member_object_pointer<decltype(&Base::nGenPart)>::value &&
+    std::is_member_object_pointer<decltype(&Base::GenPart_status)>::value &&
+    std::is_member_object_pointer<decltype(&Base::GenPart_pdgId)>::value){
+
+    int N = this->nGenPart;
+    int PDGID;
+    bool SlepEP = false; // Positive Selectron
+    bool SlepEM = false; // Negative Selectron
+    bool SlepMP = false; // Positive Smuon
+    bool SlepMM = false; // Negative Smuon
+    bool SneuE  = false; // Selectron Sneutrino
+    bool SneuM  = false; // Smuon Sneutrino
+    bool found1st = false;
+    for(int i = 0; i < N; i++){
+      bool found = false;
+      PDGID = this->GenPart_pdgId[i];
+      if(abs(PDGID) > 1000010 && abs(PDGID) < 1000015 && this->GenPart_status[i] == 22){ // is Slep or Sneu
+        if(PDGID == -1000011)          { SlepEP = true; found = true; }
+        else if(PDGID == 1000011)      { SlepEM = true; found = true; }
+        else if(PDGID == -1000013)     { SlepMP = true; found = true; }
+        else if(PDGID == 1000013)      { SlepMM = true; found = true; }
+        else if(abs(PDGID) == 1000012) { SneuE = true;  found = true; } 
+        else if(abs(PDGID) == 1000014) { SneuM = true;  found = true; }
+        if(found && !found1st) { firstSpart = i; found1st = true; }
+        else if(found &&  found1st) { secondSpart = i; break; }
+      }
+    }
+    if(SlepEP && SlepEM) return 1; // SlepSlep Electron
+    if(SlepEP && SneuE)  return 2; // SlepSneu + Electron
+    if(SlepEM && SneuE)  return 3; // SlepSneu - Electron
+    if(SneuE && !(SlepEP || SlepEP)) return 4; // SneuSneu Electron
+    if(SlepMP && SlepMM) return 5; // SlepSlep Muon
+    if(SlepMP && SneuM)  return 6; // SlepSneu + Muon
+    if(SlepMM && SneuM)  return 7; // SlepSneu - Muon
+    if(SneuM && !(SlepMP || SlepMP)) return 8; // SneuSneu Muon
+  }
+  return 0;
+}
+
+template <class Base>
+int AnalysisBase<Base>::GetGenCascadesProduction(){
+  int dum1 = 0;
+  int dum2 = 0;
+  return GetGenCascadesProduction(dum1, dum2);
+}
+
+template <class Base>
+std::pair<int,int> AnalysisBase<Base>::GetGenCascadesDecayMode(const int& GenIndex){ // get decay of given particle by index
+  if(!IsCascades())
+    return std::pair<int,int>(0,0);
+
+  if constexpr (
+    std::is_member_object_pointer<decltype(&Base::nGenPart)>::value &&
+    std::is_member_object_pointer<decltype(&Base::GenPart_pdgId)>::value &&
+    std::is_member_object_pointer<decltype(&Base::GenPart_genPartIdxMother)>::value){
+
+    int N = this->nGenPart;
+    int mom, momPDGID;
+    int D1PDGID = 0, D2PDGID = 0; // Daughter PDG IDs
+    for(int i = 0; i < N; i++){
+      mom = this->GenPart_genPartIdxMother[i];
+      if(this->GenPart_pdgId[i] == this->GenPart_pdgId[GenIndex]) continue;
+      if(mom >= 0 && mom < N){
+        momPDGID = this->GenPart_pdgId[mom];
+        while(momPDGID == this->GenPart_pdgId[GenIndex] && (mom >= 0 && mom < N)){
+          if(mom == GenIndex){
+            if(D1PDGID == 0) D1PDGID = this->GenPart_pdgId[i];
+            else             D2PDGID = this->GenPart_pdgId[i];
+          }
+          mom = this->GenPart_genPartIdxMother[mom];
+        }
+      }
+    }
+    if(abs(D1PDGID) > abs(D2PDGID)) // convention that the 'D1' is always the lower abs(PDGID)
+       std::swap(D1PDGID,D2PDGID);  // swap value of vars to fit convention
+    return std::pair<int,int>(D1PDGID, D2PDGID);
+  }
+  return std::pair<int,int>(0,0);
+}
+
+template <class Base>
+// get index of particle with PDGID that comes from given mother
+// Example: Have a particle with PDGID of LSP and the index of the mom. Want to know the index of the LSP
+int AnalysisBase<Base>::GetGenCascadesIndex(const int& u_momIndex, const int& u_PDGID){
+  if(!IsCascades()) return -1;
+
+  if constexpr (
+    std::is_member_object_pointer<decltype(&Base::nGenPart)>::value &&
+    std::is_member_object_pointer<decltype(&Base::GenPart_pdgId)>::value &&
+    std::is_member_object_pointer<decltype(&Base::GenPart_genPartIdxMother)>::value){
+    
+    int N = this->nGenPart;
+    int mom;
+    for(int i = 0; i < N; i++){
+      if(this->GenPart_pdgId[i] != u_PDGID) continue;
+      mom = this->GenPart_genPartIdxMother[i];
+      while(mom > 0 && mom < N){
+        if(mom == u_momIndex) return i;
+        mom = this->GenPart_genPartIdxMother[mom];
+      }
+    }
+
+  }
+  return -1;
+}
+
+template <class Base>
+uint16_t AnalysisBase<Base>::GetGenCascadesTree(){
+  if(!IsCascades()) return 0;
+
+  if constexpr (
+    std::is_member_object_pointer<decltype(&Base::GenPart_pdgId)>::value){
+
+    int SlepSneu1st = -1;
+    int SlepSneu2nd = -1;
+    int prod_mode = GetGenCascadesProduction(SlepSneu1st, SlepSneu2nd);
+    if(prod_mode == 0) return 0;
+
+    if(prod_mode == 1 || prod_mode == 5) // SlepSlep prods
+      if(this->GenPart_pdgId[SlepSneu1st] < 0) // Slep^{-} is always '1st' or 'left' side of tree
+         std::swap(SlepSneu1st,SlepSneu2nd);
+    if(prod_mode == 2 || prod_mode == 3 || prod_mode == 6 || prod_mode == 7) // SlepSneu prods
+      if(abs(this->GenPart_pdgId[SlepSneu1st]) % 2 == 0) // Slep is always '1st' or 'left' side of tree
+         std::swap(SlepSneu1st,SlepSneu2nd);
+
+    int SlepSneu1stDecayMode = 0;
+    std::pair<int,int> SlepSneu1stDecays = GetGenCascadesDecayMode(SlepSneu1st);
+    if(SlepSneu1stDecays.second == 1000022) SlepSneu1stDecayMode = 1; // lep + N1
+    else if(SlepSneu1stDecays.second == 1000023) SlepSneu1stDecayMode = 2; // lep + N2
+    else if(abs(SlepSneu1stDecays.second) == 1000024) SlepSneu1stDecayMode = 3; // lep + C1
+    int SlepSneu2ndDecayMode = 0;
+    std::pair<int,int> SlepSneu2ndDecays = GetGenCascadesDecayMode(SlepSneu2nd);
+    if(SlepSneu2ndDecays.second == 1000022) SlepSneu2ndDecayMode = 1; // lep + N1
+    else if(SlepSneu2ndDecays.second == 1000023) SlepSneu2ndDecayMode = 2; // lep + N2
+    else if(abs(SlepSneu2ndDecays.second) == 1000024) SlepSneu2ndDecayMode = 3; // lep + C1
+    
+    int N2_1st_Index = -1;
+    int N2_1stDecayMode = 0;
+    if(SlepSneu1stDecayMode == 2){ // need to figure out N2 decay
+      N2_1st_Index = GetGenCascadesIndex(SlepSneu1st, 1000023); // get index of N2 coming from 1st Slep/Sneu
+      std::pair<int,int> N2_1stDecays = GetGenCascadesDecayMode(N2_1st_Index); // get decays of N2 from 1st Slep/Sneu
+      if(N2_1stDecays.first == 22) N2_1stDecayMode = 1; // N2 -> photon + LSP
+      else if(N2_1stDecays.first == 23) N2_1stDecayMode = 2; // N2 -> Z + LSP
+      else if(N2_1stDecays.second == 1000024) N2_1stDecayMode = 3; // N2 -> W + C1
+    }
+    int N2_2nd_Index = -1;
+    int N2_2ndDecayMode = 0;
+    if(SlepSneu2ndDecayMode == 2){ // need to figure out N2 decay
+      N2_2nd_Index = GetGenCascadesIndex(SlepSneu2nd, 1000023); // get index of N2 coming from 2nd Slep/Sneu
+      std::pair<int,int> N2_2ndDecays = GetGenCascadesDecayMode(N2_2nd_Index); // get decays of N2 from 2nd Slep/Sneu
+      if(N2_2ndDecays.first == 22) N2_2ndDecayMode = 1; // N2 -> photon + LSP
+      else if(N2_2ndDecays.first == 23) N2_2ndDecayMode = 2; // N2 -> Z + LSP
+      else if(N2_2ndDecays.second == 1000024) N2_2ndDecayMode = 3; // N2 -> W + C1
+    }
+
+    uint16_t packed = CascadesTreeEncoder::Encode(prod_mode, SlepSneu1stDecayMode, SlepSneu2ndDecayMode, N2_1stDecayMode, N2_2ndDecayMode);
+    return packed;
+  }
+  return 0;
+}
+
+template <class Base>
 int AnalysisBase<Base>::GetSampleIndex(){
-  if(!m_DoSMS){
+  if(!m_IsSMS && !m_IsCascades){
     if(m_Nsample == 0){
       m_IndexToSample[0]  = "KUAnalysis";
       m_IndexToXsec[0]    = m_XsecTool.GetXsec_BKG(m_DataSet);
@@ -926,13 +1174,12 @@ int AnalysisBase<Base>::GetSampleIndex(){
     int MC = 0;
     int Ngen = this->nGenPart;
     int PDGID;
-    // for cascades
+    // for cascades as SMS
     int code = 0;
     bool has_Slep = false;
     bool has_Snu = false;
     bool is_left = true;
-    // minus referring to charge of e or mu (not value of PDGID)
-    bool is_plus = true;
+    bool is_plus = true; // minus referring to charge of e or mu (not value of PDGID)
     for(int i = 0; i < Ngen; i++){
       PDGID = fabs(this->GenPart_pdgId[i]);
       if(PDGID > 1000000 && PDGID < 3000000){
@@ -944,7 +1191,7 @@ int AnalysisBase<Base>::GetSampleIndex(){
             MP = mass;
       }
       // Getting 'code' for cascades
-      if(m_DataSet.find("Cascade") != std::string::npos){
+      if(m_IsCascades && m_IsSMS){
         if (abs(PDGID) % 10000 == 11 || abs(PDGID) % 10000 == 13) {
           has_Slep = true;
           if (PDGID > 0) is_plus = false;
@@ -955,7 +1202,7 @@ int AnalysisBase<Base>::GetSampleIndex(){
         if (PDGID > 2000000) is_left = false;
       }
     } // for(int i = 0; i < Ngen; i++)
-    if(m_DataSet.find("Cascade") != std::string::npos){
+    if(m_IsCascades && m_IsSMS){
       // build code from booleans
       if(has_Slep && !has_Snu) code += 1; // SlepSlep
       if(has_Slep && has_Snu) code += 2; // SlepSnu
@@ -966,19 +1213,62 @@ int AnalysisBase<Base>::GetSampleIndex(){
       else code += 200;
     }
     
-    // int hash = 100000*MP + MC;
+    //int hash = 100000*MP + MC;
     long long hash = ((long long)MP << 28) | ((long long)MC << 14) | code;
-    if(m_HashToIndex.count(hash) == 0){
-      m_HashToIndex[hash] = m_Nsample;
-      m_IndexToSample[m_Nsample]  = std::string(Form("SMS_%d_%d_%d", MP, MC, code));
-      m_IndexToXsec[m_Nsample]    = m_XsecTool.GetXsec_SMS(m_DataSet, MP, code, m_IsRun3);
-      m_IndexToNevent[m_Nsample]  = m_NeventTool.GetNevent_SMS(m_DataSet, m_FileTag, MP, MC, code);
-      m_IndexToNweight[m_Nsample] = m_NeventTool.GetNweight_SMS(m_DataSet, m_FileTag, MP, MC, code);
-    
-      m_Nsample++;
+    if(m_IsCascades){
+      if(m_IsSMS){ // should not be needed
+        if(m_HashToIndex.count(hash) == 0){
+          m_HashToIndex[hash] = m_Nsample;
+          m_IndexToSample[m_Nsample]  = std::string(Form("SMS_%d_%d_%d", MP, MC, code));
+          m_IndexToXsec[m_Nsample]    = m_XsecTool.GetXsec_SMS_code(m_DataSet, MP, code, m_IsRun3);
+          m_IndexToNevent[m_Nsample]  = m_NeventTool.GetNevent_SMS_code(m_DataSet, m_FileTag, MP, MC, code);
+          m_IndexToNweight[m_Nsample] = m_NeventTool.GetNweight_SMS_code(m_DataSet, m_FileTag, MP, MC, code);
+          m_Nsample++;
+        }
+        return m_HashToIndex[hash];
+      } else {
+        if(m_Nsample == 0){
+          m_IndexToSample[0]  = "KUAnalysis";
+          m_IndexToXsec[0]    = m_XsecTool.GetXsec_Cascades(m_DataSet, MP, m_IsRun3);
+          m_IndexToNevent[0]  = m_NeventTool.GetNevent_Cascades(m_DataSet, m_FileTag);
+          m_IndexToNweight[0] = m_NeventTool.GetNweight_Cascades(m_DataSet, m_FileTag);
+          m_Nsample++;
+        }
+        return 0.;
+      }
+    } else {
+      if(m_HashToIndex.count(hash) == 0){
+        m_HashToIndex[hash] = m_Nsample;
+        m_IndexToSample[m_Nsample]  = std::string(Form("SMS_%d_%d", MP, MC));
+        m_IndexToXsec[m_Nsample]    = m_XsecTool.GetXsec_SMS(m_DataSet, MP);
+        m_IndexToNevent[m_Nsample]  = m_NeventTool.GetNevent_SMS(m_DataSet, m_FileTag, MP, MC);
+        m_IndexToNweight[m_Nsample] = m_NeventTool.GetNweight_SMS(m_DataSet, m_FileTag, MP, MC);
+        m_Nsample++;
+      }
+      return m_HashToIndex[hash];
     }
-    return m_HashToIndex[hash];
   }
+  return 0.;
+}
+
+template <class Base>
+vector<int> AnalysisBase<Base>::GetLSPParents(){
+  std::vector<int> LSPParents;
+  if constexpr (
+    std::is_member_object_pointer<decltype(&Base::nGenPart)>::value &&
+    std::is_member_object_pointer<decltype(&Base::GenPart_pdgId)>::value &&
+    std::is_member_object_pointer<decltype(&Base::GenPart_genPartIdxMother)>::value){
+
+    int N = this->nGenPart;
+    int PDGID, mom;
+    for(int i = 0; i < N; i++){
+      if(this->GenPart_pdgId[i] != 1000022) continue;
+      mom = this->GenPart_genPartIdxMother[i];
+      LSPParents.push_back(this->GenPart_pdgId[mom]);
+    }
+
+  }
+  return LSPParents;
 }
 
 template <class Base>
@@ -989,14 +1279,20 @@ double AnalysisBase<Base>::GetEventWeight(){
   if(m_IndexToNweight[m_SampleIndex] > 0.){
     if constexpr (std::is_member_object_pointer<decltype(&Base::genWeight)>::value && 
                   std::is_member_object_pointer<decltype(&Base::luminosityBlock)>::value){
-      double weight = this->genWeight*m_IndexToXsec[m_SampleIndex]/m_IndexToNweight[m_SampleIndex];
-      if(m_DoSMS)
+      double weight = m_IndexToXsec[m_SampleIndex];
+      if(m_IsPrivateMC)
+        weight *= 1./m_IndexToNevent[m_SampleIndex];
+      else 
+        weight *= this->genWeight/m_IndexToNweight[m_SampleIndex];
+      if(m_IsSMS)
         weight *= m_NeventTool.GetFilterEff(m_DataSet,m_FileTag,this->luminosityBlock);
       if(weight == 0. || weight == 1.){
+        cout << "weight " << weight << endl;
         cout << "genWeight " << this->genWeight << endl;
         cout << "Xsec " << m_IndexToXsec[m_SampleIndex] << endl;
+        cout << "Nevent " << m_IndexToNevent[m_SampleIndex] << endl;
         cout << "Nweight " << m_IndexToNweight[m_SampleIndex] << endl;
-        if(m_DoSMS)
+        if(m_IsSMS)
           cout << "Filter eff " << m_NeventTool.GetFilterEff(m_DataSet,m_FileTag,this->luminosityBlock) << endl;
       }
       return weight;
@@ -1062,7 +1358,7 @@ double AnalysisBase<Base>::GetPUWeight(int updown){
 #ifdef _CMSSW_
 template <class Base>
 void AnalysisBase<Base>::AddLHAPDF(){
-  if(IsData() || IsSMS())
+  if(IsData() || IsSMS() || IsCascades())
     return;
   m_LHETool.AddLHAPDF(m_year);
 }
@@ -1070,7 +1366,7 @@ void AnalysisBase<Base>::AddLHAPDF(){
 
 template <class Base>
 double AnalysisBase<Base>::GetPDFWeight(int updown){
-  if(IsData() || IsSMS())
+  if(IsData() || IsSMS() || IsCascades())
     return 1.;
   if constexpr (std::is_member_object_pointer<decltype(&Base::nLHEPdfWeight)>::value &&
                 std::is_member_object_pointer<decltype(&Base::LHEPdfWeight)>::value &&

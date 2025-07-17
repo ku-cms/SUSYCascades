@@ -24,8 +24,10 @@
 
 #include "Particle.hh"
 #include "Systematics.hh"
+#include "CascadesTreeEncoder.hh"
 
 #include "correction.h"
+#include "mt2_bisect.hh"
 
 using namespace std;
 
@@ -55,6 +57,8 @@ public:
   void DoSMS();
   void DoData();
   void DoFastSim();
+  void DoPrivateMC();
+  void DoCascades();
   void AddSystematics();
   void AddJESSystematics();
   void AddJERSystematics();
@@ -71,6 +75,7 @@ public:
   virtual int GetRunNum();
   virtual int GetLumiNum();
   virtual long GetEventNum();
+  virtual int GetNpartons();
 
   virtual bool PassEventFilter();
   virtual bool FastSimEventVeto(const ParticleList& GenJets);
@@ -119,9 +124,20 @@ public:
   void MomTensorCalc(vector<TLorentzVector>& input, vector<double>& eigenvalues, double pow = 1., bool threeD = true);
 
   virtual std::pair<int,int> GetSUSYMasses();
+  virtual int GetGenMass(const int& u_PDGID);
+  virtual int GetGenSUSYNBosons(const int& u_PDGID);
 
-  bool IsSMS(){ return m_DoSMS; }
+  virtual uint16_t GetGenCascadesTree();
+  virtual int GetGenCascadesProduction();
+  virtual int GetGenCascadesProduction(int& firstSpart, int& secondSpart);
+  virtual std::pair<int,int> GetGenCascadesDecayMode(const int& GenIndex);
+  virtual int GetGenCascadesIndex(const int& u_momIndex, const int& u_PDGID);
+  virtual vector<int> GetLSPParents();
+
+  bool IsSMS(){ return m_IsSMS; }
   bool IsData(){ return m_IsData; }
+  bool IsPrivateMC(){ return m_IsPrivateMC; }
+  bool IsCascades(){ return m_IsCascades; }
   bool IsFastSim(){ return m_IsFastSim; }
   
   string GetDataSet(){ return m_DataSet; }
@@ -129,9 +145,11 @@ public:
   int    GetYear(){ return m_year; }
   
 protected:
-  bool m_DoSMS;
+  bool m_IsSMS;
   bool m_IsData;
   bool m_IsFastSim;
+  bool m_IsPrivateMC;
+  bool m_IsCascades;
   
   virtual double GetEventWeight();
   virtual double GetGenEventWeight();
@@ -153,6 +171,8 @@ protected:
   virtual double GetMETTriggerSFWeight(double MET, double HT, int Nele, int Nmu, int updown = 0);
   virtual int GetMETTriggerSFCurve(double HT, int Nele, int Nmu);
   virtual double GetXsec();
+  virtual double GetNevent();
+  virtual double GetNweight();
   virtual bool   IsGoodEvent();
 
   void SetSystematic(const Systematic& sys);
