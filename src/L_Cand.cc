@@ -50,10 +50,6 @@ TLorentzVector L_Cand::TLV(int index){
   else return PL()[index];
 }
 
-Particle L_Cand::Cand_Part(int index){
-  return PL()[index];
-}
-
 L_CandMatch L_Cand::Match(){
   return m_Match;
 }
@@ -78,6 +74,10 @@ bool L_Cand::IsSameHemi(){
   return m_hemi;
 }
 
+Particle L_Cand::Cand_Part(int index){
+  return PL()[index];
+}
+
 Particle L_Cand::operator[](int index){
   return Cand_Part(index);
 }
@@ -90,6 +90,60 @@ Particle L_Cand::Cand_PartPlus(){
 Particle L_Cand::Cand_PartMinus(){
   if(Cand_Part(0).Charge() < 0) return Cand_Part(0);
   else return Cand_Part(1);
+}
+
+TLorentzVector L_Cand::TLV_Part(int index){
+  return TLorentzVector(PL()[index].X(), PL()[index].Y(), PL()[index].Z(), PL()[index].T());
+}
+
+TLorentzVector L_Cand::Cand_TLVPlus(){
+  if(Cand_Part(0).Charge() > 0) return Cand_Part(0);
+  else return Cand_Part(1);
+}
+
+TLorentzVector L_Cand::Cand_TLVMinus(){
+  if(Cand_Part(0).Charge() < 0) return Cand_Part(0);
+  else return Cand_Part(1);
+}
+
+L_Cand::L_Cand(const L_Cand& other) {
+    // Copy the basic members directly
+    m_Match = other.m_Match;
+    m_Side = other.m_Side;
+    m_TLV = other.m_TLV;
+    m_Flav = other.m_Flav;
+    m_hemi = other.m_hemi;
+
+    // Copy the ParticleList
+    m_PL = other.m_PL;
+
+    // Now call init() to recalculate m_TLV based on the copied ParticleList
+    init(m_PL);
+
+    m_pair = other.m_pair;  // If m_pair contains RestFrameList, copy it
+}
+
+L_Cand& L_Cand::operator=(const L_Cand& other){
+  if (this != &other) {  // Avoid self-assignment
+    // Clean up any resources if needed, or reset some members
+    m_Match = other.m_Match;
+    m_Side = other.m_Side;
+    m_TLV = other.m_TLV;
+    m_Flav = other.m_Flav;
+    m_hemi = other.m_hemi;
+
+    // Call init() to ensure correct initialization of m_PL and m_TLV
+    m_PL = other.m_PL; // Copy the ParticleList (shallow copy by default)
+    init(m_PL);  // Re-initialize m_TLV based on the new ParticleList
+
+    // If RestFrameList is also part of the copy and needs to be handled:
+    if (other.m_pair.second.GetN() > 0) {
+      // If you need to copy RestFrameList too, call the second init overload:
+      m_pair = other.m_pair;
+      init(m_PL, m_pair.second);  // Initialize with both ParticleList and RestFrameList
+    }
+  }
+  return *this; 
 }
 
 double L_Cand::Pt(){
@@ -183,3 +237,17 @@ double L_Cand::CosDecayAngle(){
   TLV_Cand_Child.Boost(-boost);
   return TLV_Cand_Child.Vect().Unit().Dot(boost.Unit());
 }
+
+double L_Cand::MCon(TVector3 boost){
+  TLorentzVector TLV_Cand_Child_a = TLV_Part(0);
+  TLorentzVector TLV_Cand_Child_b = TLV_Part(1);
+  TLV_Cand_Child_a.Boost(boost);
+  TLV_Cand_Child_b.Boost(boost);
+  return sqrt(TLV_Cand_Child_a.E()*TLV_Cand_Child_b.E() + TLV_Cand_Child_a.Vect().Dot(TLV_Cand_Child_b.Vect()) + TLV_Cand_Child_a.Mag2() + TLV_Cand_Child_b.Mag2());
+}
+
+double L_Cand::MCon(TLorentzVector frame){
+  TVector3 boost = -frame.BoostVector();
+  return MCon(boost);
+}
+

@@ -8,6 +8,7 @@ using namespace RestFrames;
 
 enum L_CandMatch { kMatched, kB, kUnmatched, kW, kZ };
 enum L_CandSide { kAside, kBside };
+enum L_CandQF {kOSSF, kSSSF, kOSOF, kSSOF};
  
 class L_Cand {
   private:
@@ -19,7 +20,7 @@ class L_Cand {
     void init(ParticleList PL);
     LepFlavor m_Flav;
     ParticleList m_PL;
-    const ConstRestFrameList m_RL;
+    //const ConstRestFrameList m_RL;
     bool m_hemi;
   
   public:
@@ -43,10 +44,15 @@ class L_Cand {
     void SetSameHemi(bool hemi);
     bool IsSameHemi();
   
+    L_Cand(const L_Cand& other);
+    L_Cand& operator=(const L_Cand& other);
     Particle Cand_Part(int index);
     Particle operator [] (int index);
     Particle Cand_PartPlus();
     Particle Cand_PartMinus();
+    TLorentzVector TLV_Part(int index);
+    TLorentzVector Cand_TLVPlus();
+    TLorentzVector Cand_TLVMinus();
   
     double Pt();
     double Eta();
@@ -66,39 +72,43 @@ class L_Cand {
     double Beta();
     double CosDecayAngleRF(const RestFrame& Frame = RestFrame::Empty());
     double CosDecayAngle();
+    double MCon(TVector3 boost = TVector3(0.,0.,0.)); // contravariant mass evaluated in frame set by boost
+    double MCon(TLorentzVector frame = TLorentzVector(0.,0.,0.,0.)); // contravariant mass evaluated in frame
   
 };
 
-inline void cand_matching(std::vector<L_Cand>& cand_list){ 
-  int N_cands = cand_list.size();
-  for(int i = 0; i < N_cands; i++){
-    bool unmatched = true; // both jets are radiative
-    bool matched = false; // both jets come from same boson
-    //if((cand_list[i][0].MomPDGID() == 23) && cand_list[i][0].GenMomIndex() == cand_list[i][1].GenMomIndex()){
-    if((cand_list[i][0].MomPDGID() == 23 && cand_list[i][1].MomPDGID() == 23)){
-      cand_list[i].SetMatch(kMatched);
+inline void cand_matching(L_Cand& cand){ 
+    bool unmatched = true; // both leps are radiative
+    bool matched = false; // both leps come from same boson
+    if(cand[0].GenMomIndex() == cand[1].GenMomIndex() && cand[0].GenMomIndex() >= 0){
+      cand.SetMatch(kMatched);
       unmatched = false;
       matched = true;
-      break;
     }
     if(!matched){
-      if(cand_list[i][0].MomPDGID() == 23 || cand_list[i][1].MomPDGID() == 23){
-        cand_list[i].SetMatch(kZ);
+      if(cand[0].MomPDGID() == 23 || cand[1].MomPDGID() == 23){
+        cand.SetMatch(kZ);
         unmatched = false;
       }
-      else if(cand_list[i][0].MomPDGID() == 24 || cand_list[i][1].MomPDGID() == 24){
-        cand_list[i].SetMatch(kW);
+      else if(cand[0].MomPDGID() == 24 || cand[1].MomPDGID() == 24){
+        cand.SetMatch(kW);
         unmatched = false;
       }
-      else if(cand_list[i][0].MomPDGID() == 6 || cand_list[i][1].MomPDGID() == 6){
-        cand_list[i].SetMatch(kB);
+      else if(cand[0].MomPDGID() == 6 || cand[1].MomPDGID() == 6){
+        cand.SetMatch(kB);
         unmatched = false;
       }
     } // if(!matched)
     if(unmatched){
-      cand_list[i].SetMatch(kUnmatched);
+      cand.SetMatch(kUnmatched);
     }
-  } // for(int i = 0; i < N_V_had; i++)
+} // cand_matching(L_Cand& cand)
+
+inline void cand_matching(std::vector<L_Cand>& cand_list){ 
+  int N_cands = cand_list.size();
+  for(int i = 0; i < N_cands; i++){
+    cand_matching(cand_list[i]);
+  } // for(int i = 0; i < N_cands; i++)
 } // cand_matching(const std::vector<L_Cand>& cand_list)
 
 #endif
