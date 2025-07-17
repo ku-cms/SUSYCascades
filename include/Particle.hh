@@ -27,6 +27,9 @@ public:
   int SourceID() const;
   void SetSourceID(int sourceid);
 
+  int Index() const;
+  void SetIndex(int index);
+
   int GenIndex() const;
   void SetGenIndex(int genindex);
 
@@ -93,6 +96,7 @@ private:
   int m_PDGID;
   int m_MomPDGID;
   int m_SourceID;
+  int m_Index;
   int m_GenIndex; // index of particle in gen record, for reco objects, corresponds to matched gen particle index
   int m_GenMomIndex; // index of mom of particle in gen record, for reco objects, corresponds to mom of matched gen particle index
   ParticleIDType m_ParticleID;

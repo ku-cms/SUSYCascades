@@ -53,6 +53,14 @@ void Particle::SetSourceID(int sourceid){
   m_SourceID = sourceid;
 }
 
+int Particle::Index() const {
+  return m_Index;
+}
+
+void Particle::SetIndex(int index){
+  m_Index = index;
+}
+
 int Particle::GenIndex() const {
   return m_GenIndex;
 }
