@@ -31,7 +31,7 @@ def getMissingFiles(outputDir,nSplit,nList):
             baseTupleList.remove(Tuple)
     return baseTupleList
 
-def makeSubmitScript(tuple_pairs,submitName,resubmit,maxResub,DataSetName):
+def makeSubmitScript(tuple_pairs,submitName,resubmit,maxResub,DataSetName,threshold):
     tuple_filelist = f"{submitName}_tuple.txt"
     resubmitFiles = 0
     if tuple_pairs == []:
@@ -71,7 +71,7 @@ def makeSubmitScript(tuple_pairs,submitName,resubmit,maxResub,DataSetName):
             print(f"If you are confident you want to resubmit, then you should rerun this script with '-l {resubmitFiles}'.")
             print(f"Or run condor_submit {newFileName}")
         else:
-            condor_monitor = CondorJobCountMonitor(threshold=80000,verbose=False)
+            condor_monitor = CondorJobCountMonitor(threshold=min(threshold+resubmitFiles,100000),verbose=False)
             condor_monitor.wait_until_jobs_below()
             os.system(f"condor_submit {newFileName}")
     return resubmitFiles
@@ -131,7 +131,7 @@ def UpdateFilterList(DataSetName, filterlist_filename, add):
         filterlist.write("\n".join(sorted(dataset_list)) + "\n")  # Sort for consistency
 
 # Check condor jobs
-def checkJobs(workingDir,outputDir,skipEC,skipDAS,skipMissing,skipSmall,skipErr,skipOut,skipZombie,resubmit,maxResub,filter_list):
+def checkJobs(workingDir,outputDir,skipEC,skipDAS,skipMissing,skipSmall,skipErr,skipOut,skipZombie,resubmit,maxResub,filter_list,threshold):
     print("Running over the directory '{0}'.".format(workingDir))
     print("------------------------------------------------------------")
     grep_ignore = "-e \"Warning\" -e \"WARNING\" -e \"TTree::SetBranchStatus\" -e \"libXrdSecztn.so\" -e \"Phi_mpi_pi\" -e \"tar: stdout: write error\" -e \"INFO\""
@@ -271,7 +271,7 @@ def checkJobs(workingDir,outputDir,skipEC,skipDAS,skipMissing,skipSmall,skipErr,
             failedEC = eventCountCheck(outputDir+'/'+DataSetName)
             resubmitFiles.extend(failedEC)
             print(f"Got {len(failedEC)} files failed EventCount check for dataset",DataSetName)
-        nJobs = makeSubmitScript(resubmitFiles,workingDir+"/src/"+DataSetName,resubmit,maxResub,DataSetName)
+        nJobs = makeSubmitScript(resubmitFiles,workingDir+"/src/"+DataSetName,resubmit,maxResub,DataSetName,threshold)
         total_resubmit += nJobs
     return total_resubmit
 
@@ -283,15 +283,15 @@ def main():
     parser.add_argument("--output",         "-o", default="/ospool/cms-user/"+USER+"/NTUPLES/Processing/Summer23BPix_130X/", help="output area for root files")
     parser.add_argument("--checkAll",       "-a", action='store_true', help="explicitly check all datasets in working directory (overwrite past checks)")
     parser.add_argument("--skipResubmit",   "-r", action='store_false', help="do not resubmit files")
-    parser.add_argument("--skipEC",         "-c", action='store_true', help="skip checking event count tree")
+    parser.add_argument("--skipEC",         "-c", action='store_true', help="skip checking event count tree against internal DAS")
     parser.add_argument("--skipDAS",        "-w", action='store_true', help="skip checking compared to central DAS")
     parser.add_argument("--skipMissing",    "-m", action='store_true', help="skip checking missing files")
     parser.add_argument("--skipSmall",      "-s", action='store_true', help="skip checking small files")
     parser.add_argument("--skipErr",        "-e", action='store_true', help="skip checking err files (recommended: slow)")
     parser.add_argument("--skipOut",        "-u", action='store_true', help="skip checking out files")
     parser.add_argument("--skipZombie",     "-z", action='store_true', help="skip checking zombie root files")
-    parser.add_argument("--maxResub",       "-l", default=100, help="max number of jobs to resubmit")
-    parser.add_argument("--threshold",      "-t", default=100, help="min number of jobs running before starting checker")
+    parser.add_argument("--maxResub",       "-l", default=5000, help="max number of jobs to resubmit")
+    parser.add_argument("--threshold",      "-t", default=90000, help="min number of jobs running before starting checker")
     parser.add_argument("--sleep",          "-p", default=1, help="time to sleep before starting checker")
 
     global DO_EVENTCOUNT
@@ -343,7 +343,7 @@ def main():
         print(f"Waiting until minumum of {threshold} jobs in the queue")
         condor_monitor.wait_until_jobs_below()
         print("Running checker...")
-        nJobs = checkJobs(directory,output,skipEC,skipDAS,skipMissing,skipSmall,skipErr,skipOut,skipZombie,resubmit,maxResub,filter_list)
+        nJobs = checkJobs(directory,output,skipEC,skipDAS,skipMissing,skipSmall,skipErr,skipOut,skipZombie,resubmit,maxResub,filter_list,threshold)
         if resubmit and nJobs > 0:
             print(f"Resubmitted a total of {nJobs} jobs!")
         print("Checker Complete!")
