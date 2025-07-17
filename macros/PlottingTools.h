@@ -32,6 +32,9 @@
 
 #include "RestFrames/RestFrames.hh"
 
+#include "../include/mt2_bisect.hh"
+mt2_bisect::mt2 mt2calc;
+
 using namespace std;
 using namespace RestFrames;
 
@@ -40,7 +43,7 @@ string g_PlotTitle;
 string g_Xname;
 double g_Xmin;
 double g_Xmax;
-double g_NX = 128.;
+double g_NX = 64.;
 string g_Yname;
 double g_Ymin;
 double g_Ymax;
@@ -971,60 +974,77 @@ void Plot_CutFlow(vector<TH1*> vect_h, bool Scale, double Scale_Val, double sign
 LabRecoFrame LAB("LAB","lab");
 DecayRecoFrame CM("CM","CM");
 DecayRecoFrame S("S","S");
-DecayRecoFrame X2a("X2a","X2a");
-DecayRecoFrame X2b("X2b","X2b");
+DecayRecoFrame Pa("Pa","Pa");
+DecayRecoFrame Pb("Pb","Pb");
 VisibleRecoFrame Ja("Ja","J_{a}");
 VisibleRecoFrame Jb("Jb","J_{b}");
+VisibleRecoFrame Va("Va","V_{a}");
+VisibleRecoFrame Vb("Vb","V_{b}");
 VisibleRecoFrame La("La","L_{a}");
 VisibleRecoFrame Lb("Lb","L_{b}");
 VisibleRecoFrame ISR("ISR","ISR");
-InvisibleRecoFrame X1a("X1a","X1a");
-InvisibleRecoFrame X1b("X1b","X1b");
+InvisibleRecoFrame Ia("Ia","I_{a}");
+InvisibleRecoFrame Ib("Ib","I_{b}");
+SelfAssemblingRecoFrame sLa("sLa","sLa");
+SelfAssemblingRecoFrame sLb("sLb","sLb");
 InvisibleGroup INV("INV","Invisible System");
 SetMassInvJigsaw InvM("InvM", "Set inv. system mass");
 SetRapidityInvJigsaw InvEta("InvEta", "Set inv. system rapidity");
 MinMassesSqInvJigsaw InvSplit("InvSplit", "INV -> I_{a} + I_{b}", 2);
+CombinatoricGroup COMB_L("COMB_L","Lepton Jigsaws");
+MinMassesSqCombJigsaw CombSplitSq_L("CombSplitSq_L", "Minimize M_{Sa}^{2} + M_{Sb}^{2}",2,2);
 
 void InitRJRtree(){
 
   LAB.SetChildFrame(CM);
   CM.AddChildFrame(S);
   CM.AddChildFrame(ISR);
-  S.AddChildFrame(X2a);
-  S.AddChildFrame(X2b);
-  X2a.AddChildFrame(Ja);
-  X2b.AddChildFrame(Jb);
-  X2a.AddChildFrame(La);
-  X2a.AddChildFrame(X1a);
-  X2b.AddChildFrame(Lb);
-  X2b.AddChildFrame(X1b);
+  S.AddChildFrame(Pa);
+  S.AddChildFrame(Pb);
+  Pa.AddChildFrame(sLa);
+  Pb.AddChildFrame(sLb);
+  sLa.AddChildFrame(La);
+  sLb.AddChildFrame(Lb);
+  Pa.AddChildFrame(Ia);
+  Pb.AddChildFrame(Ib);
 
   LAB.InitializeTree();
 
-  INV.AddFrame(X1a);
-  INV.AddFrame(X1b);
+  COMB_L.AddFrame(La);
+  COMB_L.SetNElementsForFrame(La, 0);
+  COMB_L.AddFrame(Lb);
+  COMB_L.SetNElementsForFrame(Lb, 0);
+  COMB_L.AddJigsaw(CombSplitSq_L);
+  CombSplitSq_L.AddCombFrame(La, 0);
+  CombSplitSq_L.AddCombFrame(Lb, 1);
+  CombSplitSq_L.AddObjectFrame(La, 0);
+  CombSplitSq_L.AddObjectFrame(Lb, 1);
+
+  INV.AddFrame(Ia);
+  INV.AddFrame(Ib);
   INV.AddJigsaw(InvM);
   INV.AddJigsaw(InvEta);
   InvEta.AddVisibleFrames(S.GetListVisibleFrames());
   
   INV.AddJigsaw(InvSplit);
-  InvSplit.AddVisibleFrames(X2a.GetListVisibleFrames(), 0);
-  InvSplit.AddVisibleFrames(X2b.GetListVisibleFrames(), 1);
-  InvSplit.AddInvisibleFrame(X1a, 0);
-  InvSplit.AddInvisibleFrame(X1b, 1);
+  InvSplit.AddVisibleFrames(Pa.GetListVisibleFrames(), 0);
+  InvSplit.AddVisibleFrames(Pb.GetListVisibleFrames(), 1);
+  InvSplit.AddInvisibleFrame(Ia, 0);
+  InvSplit.AddInvisibleFrame(Ib, 1);
 
   LAB.InitializeAnalysis();
 
 }
 
-void InitRJRtree2(){ // simple tree
+void DrawRJRtree(bool treeplot_INV = true){ // treeplot_INV: whether to flip treeplots to dark mode
+  TreePlot tree_plot("TreePlot","TreePlot");
+  tree_plot.SetTree(LAB);
+  tree_plot.Draw("ISR_LEP_tree", "Analysis Tree", treeplot_INV);
+  tree_plot.SetTree(INV);
+  tree_plot.Draw("ISR_LEP_inv", "Invisible Jigsaws", treeplot_INV);
+  tree_plot.SetTree(COMB_L);
+  tree_plot.Draw("ISR_LEP_leps", "Lep Jigsaws", treeplot_INV);
 
-  LAB.SetChildFrame(CM);
-  CM.AddChildFrame(La);
-  CM.AddChildFrame(Lb);
-
-  LAB.InitializeTree();
-
-  LAB.InitializeAnalysis();
-
+  tree_plot.WriteOutput("trees.root");
+  std::cout << "Writing trees to trees.root" << endl;
 }
