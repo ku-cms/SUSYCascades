@@ -418,7 +418,6 @@ void LepSFTool::BuildMap(const std::string& lepSFfolder){
   b_E_bank = true;
   
   std::cout<<"Beginning Electron init"<<std::endl;
-  std::cout<<"Zel id MC"<<std::endl;
   id_Zel_MC = new E_bank(2016,
 			 pathEl+"TnPZ_susyID_MC2016_Tight.root",
 			 pathEl+"TnPZ_susyID_MC2017_Tight.root",
@@ -431,7 +430,6 @@ void LepSFTool::BuildMap(const std::string& lepSFfolder){
   id_Zel_MC->applySystematic_ptRange(0., 20., {0.003, 0.003, 0.003}, 2016);
   id_Zel_MC->applySystematic_ptRange(20., 999., {0.002, 0.002, 0.002}, 2016);
 
-  std::cout<<"Zel iso MC"<<std::endl;
   iso_med_Zel_MC = new E_bank(2016,
 			      pathEl+"TnPZ_susyID_MC2016_Iso.root",
 			      pathEl+"TnPZ_susyID_MC2017_Iso.root",
@@ -445,7 +443,6 @@ void LepSFTool::BuildMap(const std::string& lepSFfolder){
   iso_med_Zel_MC->applySystematic_ptRange(20., 999., {0.001, 0.001, 0.001}, 2016);
 
 
-  std::cout<<"Zel sip MC"<<std::endl;
   sip_isomed_Zel_MC = new E_bank(2016,
 				 pathEl+"TnPZ_susyID_MC2016_Sip3D.root",
 				 pathEl+"TnPZ_susyID_MC2017_Sip3D.root",
@@ -458,7 +455,6 @@ void LepSFTool::BuildMap(const std::string& lepSFfolder){
   sip_isomed_Zel_MC->applySystematic_ptRange(0., 20., {0.001, 0.007, 0.011}, 2016);
   sip_isomed_Zel_MC->applySystematic_ptRange(20., 999., {0.005, 0.012, 0.003}, 2016);
 
-  std::cout<<"Zel id Data"<<std::endl;
   id_Zel_Data = new E_bank(2016,
 			   pathEl+"TnPZ_susyID_data2016_Tight.root",
 			   pathEl+"TnPZ_susyID_data2017_Tight.root",
@@ -472,7 +468,6 @@ void LepSFTool::BuildMap(const std::string& lepSFfolder){
   id_Zel_Data->applySystematic_ptRange(20., 999., {0.002, 0.002, 0.002}, 2016);;
 
 
-  std::cout<<"Zel iso Data"<<std::endl;
   iso_med_Zel_Data = new E_bank(2016,
 				pathEl+"TnPZ_susyID_data2016_Iso.root",
 				pathEl+"TnPZ_susyID_data2017_Iso.root",
@@ -485,7 +480,6 @@ void LepSFTool::BuildMap(const std::string& lepSFfolder){
   iso_med_Zel_Data->applySystematic_ptRange(0., 20., {0.002, 0.004, 0.003}, 2016);
   iso_med_Zel_Data->applySystematic_ptRange(20., 999., {0.001, 0.001, 0.001}, 2016);
 
-  std::cout<<"Zel sip Data"<<std::endl;
   sip_isomed_Zel_Data = new E_bank(2016,
 				   pathEl+"TnPZ_susyID_data2016_Sip3D.root",
 				   pathEl+"TnPZ_susyID_data2017_Sip3D.root",
@@ -498,7 +492,6 @@ void LepSFTool::BuildMap(const std::string& lepSFfolder){
   sip_isomed_Zel_Data->applySystematic_ptRange(0., 20., {0.001, 0.007, 0.011}, 2016);
   sip_isomed_Zel_Data->applySystematic_ptRange(20., 999., {0.005, 0.012, 0.003}, 2016);
 
-  std::cout<<"Zel VL MC"<<std::endl;
   vl_Zel_MC = new E_bank(2016,
 			 pathEl+"TnPZ_susyID_MC2016_veryLoose.root",
 			 pathEl+"TnPZ_susyID_MC2017_veryLoose.root",
@@ -511,7 +504,6 @@ void LepSFTool::BuildMap(const std::string& lepSFfolder){
   vl_Zel_MC->applySystematic_ptRange(0., 20., {0.02, 0.04, 0.02}, 2016);
   vl_Zel_MC->applySystematic_ptRange(20., 999., {0.003, 0.005, 0.003}, 2016);
 
-  std::cout<<"Zel VL Data"<<std::endl;
   vl_Zel_Data = new E_bank(2016,
 			   pathEl+"TnPZ_susyID_data2016_veryLoose.root",
 			   pathEl+"TnPZ_susyID_data2017_veryLoose.root",
@@ -526,7 +518,6 @@ void LepSFTool::BuildMap(const std::string& lepSFfolder){
 
   std::cout<<"Beginning Muon init"<<std::endl;
   /////MUON ID/////////
-  std::cout<<"J id data .."<<std::endl;
   id_Jmu_Data = new E_bank(2016,
 			   path+"TnPJ_MuonID_data2016_Mu7p5Tk2_veryLoose__Medium_E.root",
 			   path+"TnPJ_MuonID_data2017_Mu7p5Tk2_veryLoose__Medium_E.root",
@@ -537,7 +528,6 @@ void LepSFTool::BuildMap(const std::string& lepSFfolder){
   id_Jmu_Data->applySystematics(std::vector<double>{0.001,0.001}, 2017);
   id_Jmu_Data->applySystematics(std::vector<double>{0.002,0.001}, 2016);
 
-  std::cout<<"Z id data .."<<std::endl;
   id_Zmu_Data = new E_bank(2016,
 			   path+"TnP_MuonID_data2016_IsoTkMu22_veryLoose__Medium_A_pt1.root",
 			   path+"TnP_MuonID_data2017_isoMu24eta2p1_veryLoose__Medium_A_pt1.root",
@@ -548,7 +538,6 @@ void LepSFTool::BuildMap(const std::string& lepSFfolder){
   id_Zmu_Data->applySystematics(std::vector<double>{0.001,0.0003}, 2017);
   id_Zmu_Data->applySystematics(std::vector<double>{0.001,0.002}, 2016);
     
-  std::cout<<"J id mc .. "<<std::endl;
   id_Jmu_MC = new E_bank(2016,
 			 path+"TnPJ_MuonID_mc2016_weight_Mu7p5Tk2_veryLoose__Medium_E.root",
 			 path+"TnPJ_MuonID_mc2017_weight_Mu7p5Tk2_veryLoose__Medium_E.root",
@@ -559,7 +548,6 @@ void LepSFTool::BuildMap(const std::string& lepSFfolder){
   id_Jmu_MC->applySystematics(std::vector<double>{0.001,0.001}, 2017);
   id_Jmu_MC->applySystematics(std::vector<double>{0.002,0.001}, 2016);
 
-  std::cout<<"Z id mc .. "<<std::endl;
   id_Zmu_MC = new E_bank(2016,
 			 path+"TnP_MuonID_mc2016_weight_IsoTkMu22_veryLoose__Medium_A_pt1.root",
 			 path+"TnP_MuonID_mc2017_weight_isoMu24eta2p1_veryLoose__Medium_A_pt1.root",
@@ -572,7 +560,6 @@ void LepSFTool::BuildMap(const std::string& lepSFfolder){
 
   /////MUON ISO///////////
 
-  std::cout<<"Z iso data .. "<<std::endl;
   iso_med_Zmu_Data = new E_bank_fit(2016,
 				    path+"TnP_MuonID_data2016_IsoTkMu22_veryLoose__ISO_MED_A_pt1.root",
 				    path+"TnP_MuonID_data2017_isoMu24eta2p1_veryLoose__ISO_MED_A_pt1.root",
@@ -592,7 +579,6 @@ void LepSFTool::BuildMap(const std::string& lepSFfolder){
 			       "tpTree/Medium_pt_eta/fit_eff_plots/");
   //iso_med_Zmu_Data->applySystematicsLow(std::vector<double>{0.008,0.004});
 		
-  std::cout<<"Z iso MC .. "<<std::endl;		
   iso_med_Zmu_MC = new E_bank_fit(2016,
 				  path+"TnP_MuonID_mc2016_weight_IsoTkMu22_veryLoose__ISO_MED_A_pt1.root",
 				  path+"TnP_MuonID_mc2017_weight_isoMu24eta2p1_veryLoose__ISO_MED_A_pt1.root",
@@ -614,7 +600,6 @@ void LepSFTool::BuildMap(const std::string& lepSFfolder){
 
 
   //////MUON SIP//////////
-  std::cout<<"Z sip data .. "<<std::endl;
   sip_isomed_Zmu_Data = new E_bank_fit(2016,
 				       path+"TnP_MuonID_data2016_IsoTkMu22_veryLoose__SIP_ISOMED_A_pt1.root",
 				       path+"TnP_MuonID_data2017_isoMu24eta2p1_veryLoose__SIP_ISOMED_A_pt1.root",
@@ -634,7 +619,6 @@ void LepSFTool::BuildMap(const std::string& lepSFfolder){
 				  "tpTree/Medium_pt_eta/fit_eff_plots/");
   //sip_isomed_Zmu_Data->applySystematicsLow(std::vector<double>{0.005,0.003});
 				
-  std::cout<<"Z sip mc .. "<<std::endl;
   sip_isomed_Zmu_MC = new E_bank_fit(2016,
 				     path+"TnP_MuonID_mc2016_weight_IsoTkMu22_veryLoose__SIP_ISOMED_A_pt1.root",
 				     path+"TnP_MuonID_mc2017_weight_isoMu24eta2p1_veryLoose__SIP_ISOMED_A_pt1.root",
@@ -655,7 +639,6 @@ void LepSFTool::BuildMap(const std::string& lepSFfolder){
   //sip_isomed_Zmu_MC->applySystematicsLow(std::vector<double>{0.005,0.003});
 
   /////////MUON VERY LOOSE//////////
-  std::cout<<" Z VL data "<<std::endl;
   vl_Zmu_Data = new E_bank_fit(2016,
 			       path+"TnP_MuonID_data2016_IsoTkMu22_VeryLoose_A_pt1.root",
 			       path+"TnP_MuonID_data2017_isoMu24eta2p1_VeryLoose_A_pt1.root",
@@ -675,7 +658,6 @@ void LepSFTool::BuildMap(const std::string& lepSFfolder){
 			  "tpTree/Medium_pt_eta/fit_eff_plots/");
   //vl_Zmu_Data->applySystematicsLow(std::vector<double>{0.001,0.001});
 
-  std::cout<<" Z VL mc "<<std::endl;
   vl_Zmu_MC = new E_bank_fit(2016,
 			     path+"TnP_MuonID_mc2016_weight_IsoTkMu22_VeryLoose_A_pt1.root",
 			     path+"TnP_MuonID_mc2017_weight_isoMu24eta2p1_VeryLoose_A_pt1.root",
@@ -696,7 +678,6 @@ void LepSFTool::BuildMap(const std::string& lepSFfolder){
   //vl_Zmu_MC->applySystematics(std::vector<double>{0.001,0.001});
 
   /////fullsim fast sim SF
-  std::cout<<" el simF"<<std::endl;
 
   id_SimF_el =  new E_bank(2016,
 			   pathSimF+"TTJets_FastVsFull_Summer16_el_sf_ID.root",
@@ -722,7 +703,6 @@ void LepSFTool::BuildMap(const std::string& lepSFfolder){
 			  pathSimF+"TTJets_FastVsFull_Autumn18_el_sf_vl.root",
 			  "");
 
-  std::cout<<" mu simF"<<std::endl;
   id_SimF_mu =  new E_bank(2016,
 			   pathSimF+"TTJets_FastVsFull_Summer16_mu_sf_ID.root",
 			   pathSimF+"TTJets_FastVsFull_Fall17_mu_sf_ID.root",

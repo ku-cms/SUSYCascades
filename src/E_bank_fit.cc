@@ -53,7 +53,7 @@ void E_bank_fit::extractFit( TCanvas* hCanv, double fitLow, double fitUp, std::m
     }
 
 
-    proj->Fit("pol2","","",fitLow,fitUp);
+    proj->Fit("pol2","Q","",fitLow,fitUp);
     //proj->Fit("pol1","+","",fitLow,fitUp);
     TF1* fit2 = proj->GetFunction("pol2");
     //TF1* fit1 = proj->GetFunction("pol1");
@@ -65,7 +65,7 @@ void E_bank_fit::extractFit( TCanvas* hCanv, double fitLow, double fitUp, std::m
     //prob1 = fit1->GetProb();
     TF1* fit=fit2;
     //std::cout<<"pol1 P="<<prob1<<" pol2 P="<<prob2<<" Selecting ";
-    std::cout<<"pol2 P="<<prob2<<std::endl;		
+    //std::cout<<"pol2 P="<<prob2<<std::endl;		
     /*if( prob1 < 0.05){
       fit = fit2;
       std::cout<<" pol2"<<std::endl;
@@ -74,9 +74,9 @@ void E_bank_fit::extractFit( TCanvas* hCanv, double fitLow, double fitUp, std::m
       fit = fit1;
       std::cout<<" pol1"<<std::endl;
       }*/
-    if( prob2 < 0.01){
-      std::cout<<"Warning >> pol2 with P<1%"<<std::endl;
-    }
+    //if( prob2 < 0.01){
+    //  std::cout<<"Warning >> pol2 with P<1%"<<std::endl;
+    //}
     //TH1D *hint = new TH1D(("hint"+std::to_string(i)).c_str(),"Fitted CI", 17, 3, 20);
     TH1D *hint = new TH1D(("hint"+std::to_string(i)).c_str(),"Fitted CI", 17, 3, 20);//simple binning for gsb plots (this is temporary and not intended for efficiency extraction
     (TVirtualFitter::GetFitter())->GetConfidenceIntervals(hint, 0.68);
@@ -134,33 +134,28 @@ void E_bank_fit::extractFit( TCanvas* hCanv, double fitLow, double fitUp, std::m
 
 }
 void E_bank_fit::doLowPtFit(double fitLow, double fitUp, double split_threshold, std::string ffit16, std::string ffit17, std::string ffit18, std::string histPath ){
-  //
   _split_threshold = split_threshold;
   //open files similarly to e_bank
   TFile* f1 = TFile::Open(ffit16.c_str());
   f1->cd(histPath.c_str());
   std::string name = (gDirectory->GetListOfKeys()->At(0)->GetName());
-  std::cout<< "Performing 2016 fits ... ";
+  //std::cout<< "Performing 2016 fits ... ";
   extractFit( (TCanvas*) f1->Get((histPath+name).c_str()),fitLow ,fitUp , _fitmap16, 2016);
   f1->Close();
 
   TFile* f2 = TFile::Open(ffit17.c_str());
   f2->cd(histPath.c_str());
   name = (gDirectory->GetListOfKeys()->At(0)->GetName());
-  std::cout<< "Performing 2017 fits ... ";
+  //std::cout<< "Performing 2017 fits ... ";
   extractFit( (TCanvas*) f2->Get((histPath+name).c_str()),fitLow ,fitUp , _fitmap17, 2017);
   f2->Close();
 
   TFile* f3 = TFile::Open(ffit18.c_str());
   f3->cd(histPath.c_str());
   name = (gDirectory->GetListOfKeys()->At(0)->GetName());
-  std::cout<< "Performing 2018 fits ... ";
+  //std::cout<< "Performing 2018 fits ... ";
   extractFit( (TCanvas*) f3->Get((histPath+name).c_str()),fitLow ,fitUp , _fitmap18, 2017);
   f3->Close();	
-		
-
-
-
 }
 std::pair<double,double> E_bank_fit::getPair(double pt, double eta, int year){
   if(year>0)_year=year;
