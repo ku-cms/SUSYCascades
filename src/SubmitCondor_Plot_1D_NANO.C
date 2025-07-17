@@ -132,13 +132,13 @@ int main(int argc, char* argv[]) {
   };
 
   std::map<string,std::map<string,long double>> datasets_2017 = {
-    {"ttbar",TTJets_dataset_list_2017},
-    //{"TTZToQQ",TTZToQQ_dataset_list_2017},
-    //{"DB_WZ",WZ_dataset_list_2017},
-    {"DB_WW",WW_dataset_list_2017},
-    {"ZDY",ZDY_dataset_list_2017},
-    {"WJets",WJets_dataset_list_2017},
-    //{"TB_WWZ",WWZ_dataset_list_2017},
+    //{"ttbar",TTJets_dataset_list_2017},
+    ////{"TTZToQQ",TTZToQQ_dataset_list_2017},
+    ////{"DB_WZ",WZ_dataset_list_2017},
+    //{"DB_WW",WW_dataset_list_2017},
+    //{"ZDY",ZDY_dataset_list_2017},
+    //{"WJets",WJets_dataset_list_2017},
+    ////{"TB_WWZ",WWZ_dataset_list_2017},
   };
 
   std::map<string,std::map<string,long double>> datasets_2017_SMS = {
@@ -153,15 +153,15 @@ int main(int argc, char* argv[]) {
     {"Cascades_5",Cascades_5_dataset_list_2023BPix},
   };
   std::map<string,std::map<string,long double>> datasets_2023_BPix = {
-    {"ttbar",TTJets_dataset_list_2023BPix},
-    //{"DB_WZ",WZ_dataset_list_2023BPix},
+    //{"ttbar",TTJets_dataset_list_2023BPix},
+    ////{"DB_WZ",WZ_dataset_list_2023BPix},
   };
 
   vector<std::map<string,std::map<string,long double>>> datasets = {
     datasets_2017,
     datasets_2017_SMS,
     datasets_2023_BPix_SMS,
-    //datasets_2023_BPix,
+    datasets_2023_BPix,
   };
 
   gSystem->Exec("make cmssw -j4");

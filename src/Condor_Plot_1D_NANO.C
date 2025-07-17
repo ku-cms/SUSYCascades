@@ -457,6 +457,8 @@ int main(int argc, char* argv[]) {
   hists2.push_back(hist_RISR_MLb);
 
   TH2D* hist_EventCount = new TH2D("EventCount", "EventCount", 12, 0., 12., 20, 0., 20.);
+
+  int total_gen_lep_Z = 0;
    
   if(debug) cout << "Loading TChains" << endl;
   TChain* chain = new TChain("Events");
@@ -734,6 +736,7 @@ int main(int argc, char* argv[]) {
     
             if(momStatus == 23){
               lep.SetMomPDGID(PDGID);
+              lep.SetGenMomIndex(mom);
               lep.SetSourceID(GetLepSource(PDGID, PDGID, PDGID));
               break;
             }
@@ -748,6 +751,7 @@ int main(int argc, char* argv[]) {
           }
           
           lep.SetMomPDGID(momID);
+          lep.SetGenMomIndex(mom);
           lep.SetSourceID(GetLepSource(PDGID, PDGID, momID));
          }
         
@@ -774,6 +778,7 @@ int main(int argc, char* argv[]) {
           while(abs(momID) == 13){
             if(momStatus == 23){
               lep.SetMomPDGID(PDGID);
+              lep.SetGenMomIndex(mom);
               lep.SetSourceID(GetLepSource(PDGID, PDGID, PDGID));
               break;
             }
@@ -785,6 +790,7 @@ int main(int argc, char* argv[]) {
             momStatus = base->GenPart_status[mom];
           }
           lep.SetMomPDGID(momID);
+          lep.SetGenMomIndex(mom);
           lep.SetSourceID(GetLepSource(PDGID, PDGID, momID));
          }
          lep.SetCharge( (PDGID > 0 ? -1 : 1) );
@@ -807,6 +813,7 @@ int main(int argc, char* argv[]) {
          else mom = base->GenPart_genPartIdxMother[i];
          if(mom >= 0 && mom < N)
           p.SetMomPDGID(base->GenPart_pdgId[mom]);
+          p.SetGenMomIndex(mom);
           p.SetGenMomIndex(mom);
           p.SetPtEtaPhiM(base->GenPart_pt[i], base->GenPart_eta[i],
           	     base->GenPart_phi[i], max(float(0.),base->GenPart_mass[i]));
@@ -1284,6 +1291,14 @@ int main(int argc, char* argv[]) {
     hist_MQperp_RISR->Fill(MQperp, RISR, hweight);
     hist_gammaPerp_RISR->Fill(gammaPerp, RISR, hweight);
 
+    for(int i = 0; i < int(gen_leptons.size()); i++){
+      for(int j = i+1; j < int(gen_leptons.size()); j++){
+        if(gen_leptons[i].GenMomIndex() == gen_leptons[j].GenMomIndex() && gen_leptons[i].MomPDGID() == 23){
+          total_gen_lep_Z++;
+        }
+      }
+    }
+
     int EC_X = 0; // root hists have underflow in bin 0
     int cat_Nleps = Nleps;
     int cat_Njets_S = Njets_S;
@@ -1311,6 +1326,7 @@ int main(int argc, char* argv[]) {
     hist_MET->Fill(base->MET_pt, hweight);
   }
   
+  std::cout << "total_gen_lep_Z, total events: " << total_gen_lep_Z << "," << processed_events << std::endl;
   string output_root_filename = "output_Plot_1D_NANO_"+ofile;
   TFile* output_file = new TFile((output_root_filename).c_str(),"RECREATE");
   output_file->mkdir(plot_folder.c_str());
