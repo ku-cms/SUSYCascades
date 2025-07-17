@@ -104,12 +104,77 @@ void NeventTool::Initialize_BKG(const std::string& dataset, const std::string& f
   
 }
 
+void NeventTool::Initialize_Cascades(const std::string& dataset, const std::string& filetag) const {
+
+  std::pair<std::string,std::string> label(dataset,filetag);
+  
+  if(m_Tree == nullptr){
+    m_Label2Nevent_Cascades[label] = 0;
+    m_Label2Nweight_Cascades[label] = 0;
+    return;
+  }
+
+  double Nevent = 0;
+  double Nweight = 0;
+  
+  int N = m_Tree->GetEntries();
+  for(int i = 0; i < N; i++){
+    m_Tree->GetEntry(i);
+
+    if((dataset == (*m_dataset)) &&
+       (filetag == (*m_filetag))){
+      Nevent += m_Nevent;
+      Nweight += m_Nweight;
+    }
+  }
+
+  m_Label2Nevent_Cascades[label] = Nevent;
+  m_Label2Nweight_Cascades[label] = Nweight;
+  
+}
+
 void NeventTool::Initialize_SMS(const std::string& dataset, const std::string& filetag) const {
 
   std::pair<std::string,std::string> label(dataset,filetag);
 
-  m_Label2Nevent_SMS[label] = std::map<std::pair<int,std::pair<int,int>>,double>();
-  m_Label2Nweight_SMS[label] = std::map<std::pair<int,std::pair<int,int>>,double>();
+  m_Label2Nevent_SMS[label] = std::map<std::pair<int,int>,double>();
+  m_Label2Nweight_SMS[label] = std::map<std::pair<int,int>,double>();
+  
+  if(m_Tree == nullptr){
+    return;
+  }
+
+  double Nevent = 0;
+  double Nweight = 0;
+
+  //cout << "Initializing " << dataset << " " << filetag << endl;
+  
+  int N = m_Tree->GetEntries();
+  for(int i = 0; i < N; i++){
+    m_Tree->GetEntry(i);
+    
+    //cout << (*m_dataset) << " " << (*m_filetag) << endl;
+
+    if((dataset == (*m_dataset)) &&
+       (filetag == (*m_filetag))){
+
+      std::pair<int,int> masses(m_MP,m_MC);
+      if(m_Label2Nevent_SMS[label].count(masses) == 0){
+	m_Label2Nevent_SMS[label][masses] = 0.;
+	m_Label2Nweight_SMS[label][masses] = 0.;
+      }
+      m_Label2Nevent_SMS[label][masses] += m_Nevent;
+      m_Label2Nweight_SMS[label][masses] += m_Nweight;
+    }
+  }
+}
+
+void NeventTool::Initialize_SMS_code(const std::string& dataset, const std::string& filetag) const {
+
+  std::pair<std::string,std::string> label(dataset,filetag);
+
+  m_Label2Nevent_SMS_code[label] = std::map<std::pair<int,std::pair<int,int>>,double>();
+  m_Label2Nweight_SMS_code[label] = std::map<std::pair<int,std::pair<int,int>>,double>();
   
   if(m_Tree == nullptr){
     return;
@@ -131,14 +196,12 @@ void NeventTool::Initialize_SMS(const std::string& dataset, const std::string& f
 
       std::pair<int,std::pair<int,int>> masses;
       masses = std::make_pair(m_Code,std::make_pair(m_MP,m_MC));
-      if(m_Label2Nevent_SMS[label].count(masses) == 0){
-	m_Label2Nevent_SMS[label][masses] = 0.;
-	m_Label2Nweight_SMS[label][masses] = 0.;
-      } else {
-//cout << "HEREEREERE" << endl;
+      if(m_Label2Nevent_SMS_code[label].count(masses) == 0){
+	m_Label2Nevent_SMS_code[label][masses] = 0.;
+	m_Label2Nweight_SMS_code[label][masses] = 0.;
       }
-      m_Label2Nevent_SMS[label][masses] += m_Nevent;
-      m_Label2Nweight_SMS[label][masses] += m_Nweight;
+      m_Label2Nevent_SMS_code[label][masses] += m_Nevent;
+      m_Label2Nweight_SMS_code[label][masses] += m_Nweight;
     }
   }
 }
@@ -179,7 +242,19 @@ double NeventTool::GetNevent_BKG(const std::string& dataset, const std::string& 
   return m_Label2Nevent_BKG[label];
 }
 
-double NeventTool::GetNevent_SMS(const std::string& dataset, const std::string& filetag, int MP, int MC, int Code) const {
+double NeventTool::GetNevent_Cascades(const std::string& dataset, const std::string& filetag) const {
+  if(!m_Tree)
+    return 0.;
+
+  std::pair<std::string,std::string> label(dataset,filetag);
+  
+  if(m_Label2Nevent_Cascades.count(label) == 0)
+    Initialize_Cascades(dataset, filetag);
+
+  return m_Label2Nevent_Cascades[label];
+}
+
+double NeventTool::GetNevent_SMS(const std::string& dataset, const std::string& filetag, int MP, int MC) const {
   if(!m_Tree)
     return 0.;
 
@@ -188,13 +263,30 @@ double NeventTool::GetNevent_SMS(const std::string& dataset, const std::string& 
   if(m_Label2Nevent_SMS.count(label) == 0)
     Initialize_SMS(dataset, filetag);
 
-  std::pair<int,std::pair<int,int>> masses;
-  masses = std::make_pair(Code,std::make_pair(MP,MC));
+  std::pair<int,int> masses(MP,MC);
 
   if(m_Label2Nevent_SMS[label].count(masses) == 0)
     return 0.;
   
   return m_Label2Nevent_SMS[label][masses];
+}
+
+double NeventTool::GetNevent_SMS_code(const std::string& dataset, const std::string& filetag, int MP, int MC, int Code) const {
+  if(!m_Tree)
+    return 0.;
+
+  std::pair<std::string,std::string> label(dataset,filetag);
+  
+  if(m_Label2Nevent_SMS_code.count(label) == 0)
+    Initialize_SMS_code(dataset, filetag);
+
+  std::pair<int,std::pair<int,int>> masses;
+  masses = std::make_pair(Code,std::make_pair(MP,MC));
+
+  if(m_Label2Nevent_SMS_code[label].count(masses) == 0)
+    return 0.;
+  
+  return m_Label2Nevent_SMS_code[label][masses];
 }
 
 double NeventTool::GetNweight_BKG(const std::string& dataset, const std::string& filetag) const {
@@ -208,6 +300,22 @@ double NeventTool::GetNweight_BKG(const std::string& dataset, const std::string&
     Initialize_BKG(dataset, filetag);
 
   double Nweight = m_Label2Nweight_BKG[label];
+  std::cout << "Nweight from event tool is " << Nweight << std::endl;
+
+  return Nweight;
+}
+
+double NeventTool::GetNweight_Cascades(const std::string& dataset, const std::string& filetag) const {
+  std::cout << "Getting Nevent count for " << dataset << " " << filetag << std::endl;
+  if(!m_Tree)
+    return 0.;
+
+  std::pair<std::string,std::string> label(dataset,filetag);
+  
+  if(m_Label2Nweight_Cascades.count(label) == 0)
+    Initialize_Cascades(dataset, filetag);
+
+  double Nweight = m_Label2Nweight_Cascades[label];
   std::cout << "Nweight from event tool is " << Nweight << std::endl;
 
   return Nweight;
@@ -227,7 +335,7 @@ double NeventTool::GetFilterEff(const std::string& dataset, const std::string& f
   return m_Label2FilterEff[dataset][-1];
 }
 
-double NeventTool::GetNweight_SMS(const std::string& dataset, const std::string& filetag, int MP, int MC, int Code) const {
+double NeventTool::GetNweight_SMS(const std::string& dataset, const std::string& filetag, int MP, int MC) const {
   if(!m_Tree)
     return 0.;
 
@@ -236,35 +344,66 @@ double NeventTool::GetNweight_SMS(const std::string& dataset, const std::string&
   if(m_Label2Nweight_SMS.count(label) == 0)
     Initialize_SMS(dataset, filetag);
   
-  std::pair<int,std::pair<int,int>> masses;
-  masses = std::make_pair(Code,std::make_pair(MP,MC));
+  std::pair<int,int> masses(MP,MC);
 
   if(m_Label2Nweight_SMS[label].count(masses) == 0)
     return 0.;
   return m_Label2Nweight_SMS[label][masses];
 }
 
+double NeventTool::GetNweight_SMS_code(const std::string& dataset, const std::string& filetag, int MP, int MC, int Code) const {
+  if(!m_Tree)
+    return 0.;
+
+  std::pair<std::string,std::string> label(dataset,filetag);
+  
+  if(m_Label2Nweight_SMS_code.count(label) == 0)
+    Initialize_SMS_code(dataset, filetag);
+  
+  std::pair<int,std::pair<int,int>> masses = std::make_pair(Code,std::make_pair(MP,MC));
+
+  if(m_Label2Nweight_SMS_code[label].count(masses) == 0)
+    return 0.;
+  return m_Label2Nweight_SMS_code[label][masses];
+}
+
 std::map<std::pair<std::string,std::string>,double> NeventTool::InitMap_Nevent_BKG(){
   std::map<std::pair<std::string,std::string>,double> Label2Nevent;
-
   return Label2Nevent;
 }
 
 std::map<std::pair<std::string,std::string>,double> NeventTool::InitMap_Nweight_BKG(){
   std::map<std::pair<std::string,std::string>,double> Label2Nweight;
-  
   return Label2Nweight;
 }
 
-std::map<std::pair<std::string,std::string>,std::map<std::pair<int,std::pair<int,int>>,double>> NeventTool::InitMap_Nevent_SMS(){
-  std::map<std::pair<std::string,std::string>,std::map<std::pair<int,std::pair<int,int>>,double>> Label2Nevent;
-  
+std::map<std::pair<std::string,std::string>,double> NeventTool::InitMap_Nevent_Cascades(){
+  std::map<std::pair<std::string,std::string>,double> Label2Nevent;
   return Label2Nevent;
 }
 
-std::map<std::pair<std::string,std::string>,std::map<std::pair<int,std::pair<int,int>>,double>> NeventTool::InitMap_Nweight_SMS(){
-  std::map<std::pair<std::string,std::string>,std::map<std::pair<int,std::pair<int,int>>,double>> Label2Nweight;
+std::map<std::pair<std::string,std::string>,double> NeventTool::InitMap_Nweight_Cascades(){
+  std::map<std::pair<std::string,std::string>,double> Label2Nweight;
+  return Label2Nweight;
+}
 
+std::map<std::pair<std::string,std::string>,std::map<std::pair<int,int>,double> > NeventTool::InitMap_Nevent_SMS(){
+  std::map<std::pair<std::string,std::string>,std::map<std::pair<int,int>,double> > Label2Nevent;
+  return Label2Nevent;
+}
+
+std::map<std::pair<std::string,std::string>,std::map<std::pair<int,int>,double> > NeventTool::InitMap_Nweight_SMS(){
+  std::map<std::pair<std::string,std::string>,std::map<std::pair<int,int>,double> > Label2Nweight;
+  return Label2Nweight;
+}
+
+std::map<std::pair<std::string,std::string>,std::map<std::pair<int,std::pair<int,int>>,double>> NeventTool::InitMap_Nevent_SMS_code(){
+  std::map<std::pair<std::string,std::string>,std::map<std::pair<int,std::pair<int,int>>,double>> Label2Nevent;
+  return Label2Nevent;
+}
+
+std::map<std::pair<std::string,std::string>,std::map<std::pair<int,std::pair<int,int>>,double>> NeventTool::InitMap_Nweight_SMS_code(){
+  std::map<std::pair<std::string,std::string>,std::map<std::pair<int,std::pair<int,int>>,double>> Label2Nweight;
   return Label2Nweight;
 }
 
@@ -331,7 +470,11 @@ std::map<std::string,std::map<int,double> > NeventTool::InitMap_FilterEff(){
 
 std::map<std::pair<std::string,std::string>,double> NeventTool::m_Label2Nevent_BKG  = NeventTool::InitMap_Nevent_BKG();
 std::map<std::pair<std::string,std::string>,double> NeventTool::m_Label2Nweight_BKG = NeventTool::InitMap_Nweight_BKG();
-std::map<std::pair<std::string,std::string>,std::map<std::pair<int,std::pair<int,int>>,double>> NeventTool::m_Label2Nevent_SMS  = NeventTool::InitMap_Nevent_SMS();
-std::map<std::pair<std::string,std::string>,std::map<std::pair<int,std::pair<int,int>>,double>> NeventTool::m_Label2Nweight_SMS = NeventTool::InitMap_Nweight_SMS();
+std::map<std::pair<std::string,std::string>,double> NeventTool::m_Label2Nevent_Cascades  = NeventTool::InitMap_Nevent_Cascades();
+std::map<std::pair<std::string,std::string>,double> NeventTool::m_Label2Nweight_Cascades = NeventTool::InitMap_Nweight_Cascades();
+std::map<std::pair<std::string,std::string>,std::map<std::pair<int,int>,double> > NeventTool::m_Label2Nevent_SMS  = NeventTool::InitMap_Nevent_SMS();
+std::map<std::pair<std::string,std::string>,std::map<std::pair<int,int>,double> > NeventTool::m_Label2Nweight_SMS = NeventTool::InitMap_Nweight_SMS();
+std::map<std::pair<std::string,std::string>,std::map<std::pair<int,std::pair<int,int>>,double>> NeventTool::m_Label2Nevent_SMS_code  = NeventTool::InitMap_Nevent_SMS_code();
+std::map<std::pair<std::string,std::string>,std::map<std::pair<int,std::pair<int,int>>,double>> NeventTool::m_Label2Nweight_SMS_code = NeventTool::InitMap_Nweight_SMS_code();
 
 std::map<std::string,std::map<int,double> > NeventTool::m_Label2FilterEff = NeventTool::InitMap_FilterEff();

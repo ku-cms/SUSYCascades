@@ -23,9 +23,13 @@ public:
   void BuildFilterEffMap(const std::string& rootfile);
 
   double GetNevent_BKG(const std::string& dataset, const std::string& filetag) const;
-  double GetNevent_SMS(const std::string& dataset, const std::string& filetag, int MP, int MC, int Code) const;
+  double GetNevent_Cascades(const std::string& dataset, const std::string& filetag) const;
+  double GetNevent_SMS(const std::string& dataset, const std::string& filetag, int MP, int MC) const;
+  double GetNevent_SMS_code(const std::string& dataset, const std::string& filetag, int MP, int MC, int Code) const;
   double GetNweight_BKG(const std::string& dataset, const std::string& filetag) const;
-  double GetNweight_SMS(const std::string& dataset, const std::string& filetag, int MP, int MC, int Code) const;
+  double GetNweight_Cascades(const std::string& dataset, const std::string& filetag) const;
+  double GetNweight_SMS(const std::string& dataset, const std::string& filetag, int MP, int MC) const;
+  double GetNweight_SMS_code(const std::string& dataset, const std::string& filetag, int MP, int MC, int Code) const;
   double GetFilterEff(const std::string& dataset, const std::string& filetag, int lumiblock = -1) const;
 
   bool DatasetIsFastSim(const std::string& infile);
@@ -38,10 +42,18 @@ private:
   static std::map<std::pair<std::string,std::string>,double> InitMap_Nevent_BKG();
   static std::map<std::pair<std::string,std::string>,double> m_Label2Nweight_BKG;
   static std::map<std::pair<std::string,std::string>,double> InitMap_Nweight_BKG();
-  static std::map<std::pair<std::string,std::string>,std::map<std::pair<int,std::pair<int,int>>,double>> m_Label2Nevent_SMS;
-  static std::map<std::pair<std::string,std::string>,std::map<std::pair<int,std::pair<int,int>>,double>> InitMap_Nevent_SMS();
-  static std::map<std::pair<std::string,std::string>,std::map<std::pair<int,std::pair<int,int>>,double>> m_Label2Nweight_SMS;
-  static std::map<std::pair<std::string,std::string>,std::map<std::pair<int,std::pair<int,int>>,double>> InitMap_Nweight_SMS();
+  static std::map<std::pair<std::string,std::string>,double> m_Label2Nevent_Cascades;
+  static std::map<std::pair<std::string,std::string>,double> InitMap_Nevent_Cascades();
+  static std::map<std::pair<std::string,std::string>,double> m_Label2Nweight_Cascades;
+  static std::map<std::pair<std::string,std::string>,double> InitMap_Nweight_Cascades();
+  static std::map<std::pair<std::string,std::string>,std::map<std::pair<int,int>,double> > m_Label2Nevent_SMS;
+  static std::map<std::pair<std::string,std::string>,std::map<std::pair<int,int>,double> > InitMap_Nevent_SMS();
+  static std::map<std::pair<std::string,std::string>,std::map<std::pair<int,int>,double> > m_Label2Nweight_SMS;
+  static std::map<std::pair<std::string,std::string>,std::map<std::pair<int,int>,double> > InitMap_Nweight_SMS();
+  static std::map<std::pair<std::string,std::string>,std::map<std::pair<int,std::pair<int,int>>,double>> m_Label2Nevent_SMS_code;
+  static std::map<std::pair<std::string,std::string>,std::map<std::pair<int,std::pair<int,int>>,double>> InitMap_Nevent_SMS_code();
+  static std::map<std::pair<std::string,std::string>,std::map<std::pair<int,std::pair<int,int>>,double>> m_Label2Nweight_SMS_code;
+  static std::map<std::pair<std::string,std::string>,std::map<std::pair<int,std::pair<int,int>>,double>> InitMap_Nweight_SMS_code();
 
   static std::map<std::string,std::map<int,double> > InitMap_FilterEff();
   static std::map<std::string,std::map<int,double> > m_Label2FilterEff;
@@ -76,7 +88,9 @@ private:
   TBranch* b_m_Code;
 
   void Initialize_BKG(const std::string& dataset, const std::string& filetag) const;
+  void Initialize_Cascades(const std::string& dataset, const std::string& filetag) const;
   void Initialize_SMS(const std::string& dataset, const std::string& filetag) const;
+  void Initialize_SMS_code(const std::string& dataset, const std::string& filetag) const;
   void Initialize_FE(const std::string& dataset, const std::string& filetag) const;
   
 };

@@ -21,8 +21,7 @@ double XsecTool::GetXsec_BKG(const std::string& dataset) const {
   return m_Label2Xsec_BKG[dataset]*1000.;
 }
 
-double XsecTool::GetXsec_SMS(const std::string& dataset, double MP, unsigned int code, bool Run3) const {
-  if(code < 10) code += 10;
+double XsecTool::GetXsec_SMS(const std::string& dataset, double MP) const {
   std::string label = "";
   double BR = 1.;
   if(m_N_SMS.count(dataset) > 0)
@@ -71,13 +70,46 @@ double XsecTool::GetXsec_SMS(const std::string& dataset, double MP, unsigned int
        (dataset.find("T2bb")!=std::string::npos)){
       label = "StopStop";
     }
-    if(dataset.find("TSlepSlep")!=std::string::npos)
-      label = "SlepSlep_left"; //why?...
-    
+    if((dataset.find("TSlepSlep")!=std::string::npos) ||
+       // default to slepton xsec if for some reason end up here
+       (dataset.find("Cascade")!=std::string::npos)){
+      label = "SlepSlep_left";
+    }
     if((dataset.find("T1")!=std::string::npos) ||
        (dataset.find("T5")!=std::string::npos)){
       label = "GluinoGluino";
     }
+  }
+
+  if(m_N_SMS.count(label) == 0)
+    return 0.;
+
+  int N = m_N_SMS[label];
+  
+  if(MP < m_Label2Mass_SMS[label][0] ||
+     MP > m_Label2Mass_SMS[label][N-1])
+    return 0.;
+
+  for(int i = 0; i < N-1; i++){
+    if(MP <= m_Label2Mass_SMS[label][i+1]){
+      double x1 = m_Label2Mass_SMS[label][i];
+      double x2 = m_Label2Mass_SMS[label][i+1];
+      double y1 = m_Label2Xsec_SMS[label][i];
+      double y2 = m_Label2Xsec_SMS[label][i+1];
+      double beta = log(y1/y2)/(x2-x1);
+      return BR*y1*exp(beta*(x1-MP));
+    }
+  }
+  
+  return 0.;
+}
+
+double XsecTool::GetXsec_SMS_code(const std::string& dataset, double MP, unsigned int code, bool Run3) const {
+  if(code < 10) code += 10;
+  std::string label = "";
+  if(m_N_SMS.count(dataset) > 0)
+    label = dataset;
+  else {
     if(dataset.find("Cascade")!=std::string::npos){
       label = "Cascade";
       if (code % 10 == 1)      label += "_SlepSlep";
@@ -104,6 +136,7 @@ double XsecTool::GetXsec_SMS(const std::string& dataset, double MP, unsigned int
      MP > m_Label2Mass_SMS[label][N-1])
     return 0.;
 
+  double BR = 1.;
   for(int i = 0; i < N-1; i++){
     if(MP <= m_Label2Mass_SMS[label][i+1]){
       double x1 = m_Label2Mass_SMS[label][i];
@@ -114,11 +147,26 @@ double XsecTool::GetXsec_SMS(const std::string& dataset, double MP, unsigned int
       return BR*y1*exp(beta*(x1-MP));
     }
   }
+    
+  return 0.;
+}
+
+double XsecTool::GetXsec_Cascades(const std::string& dataset, double MP, bool Run3) const {
+  std::string label = dataset;
+  if(Run3) label += "_Run3";
+
+  if(m_Label2Xsec_Cascades.count(label) == 0) // catch
+    return 2.*GetXsec_SMS_code(dataset, MP, 212, Run3)
+            + GetXsec_SMS_code(dataset, MP, 211, Run3)
+            + GetXsec_SMS_code(dataset, MP, 113, Run3);
+  else
+    return m_Label2Xsec_Cascades[label];
   
   return 0.;
 }
 
 std::map<std::string,double> XsecTool::InitMap_Xsec_BKG(){
+// NOTE: SIGNAL XSECS SHOULD BE STORED IN fb   BKG XSECS SHOULD BE STORED IN pb (CONVERTED TO fb ABOVE IN GetXsec_BKG())
   std::map<std::string,double> Label2Xsec;
 
   Label2Xsec["GJets_DR-0p4_HT-100To200_TuneCP5_13TeV-madgraphMLM-pythia8"] = 5391.;
@@ -468,6 +516,8 @@ std::map<std::string,double> XsecTool::InitMap_Xsec_BKG(){
   Label2Xsec["WJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8"] = 61526.7;
 
   Label2Xsec["GluGluHto2Zto2L2Q_M-125_TuneCP5_13p6TeV_powheg-jhugenv7520-pythia8"] = 1.05372966;
+  Label2Xsec["TTHto2B_M-125_TuneCP5_13p6TeV_powheg-pythia8"] = 0.344; // from https://arxiv.org/pdf/2503.15043 Table 2
+  Label2Xsec["TTHtoNon2B_M-125_TuneCP5_13p6TeV_powheg-pythia8"] = 0.248; // from https://arxiv.org/pdf/2503.15043 Table 2
 
   return Label2Xsec;
 }
@@ -4019,6 +4069,17 @@ std::map<std::string,std::vector<double> > XsecTool::InitMap_Xsec_SMS(){
   return Label2Xsec;
 }
 
+std::map<std::string,double> XsecTool::InitMap_Xsec_Cascades(){
+  std::map<std::string,double> Label2Xsec;
+
+  Label2Xsec["SlepSnuCascade_220-209_200-190-180_2022_NANO_Run3"] = 196.2;
+  Label2Xsec["SlepSnuCascade_MN1-220_MN2-260_MC1-240_TuneCP5_13p6TeV_madgraphMLM-pythia8_Run3"] = 56.26;
+  Label2Xsec["SlepSnuCascade_MN1-260_MN2-280_MC1-270_TuneCP5_13p6TeV_madgraphMLM-pythia8_Run3"] = 56.26;
+  Label2Xsec["SlepSnuCascade_MN1-270_MN2-280_MC1-275_TuneCP5_13p6TeV_madgraphMLM-pythia8_Run3"] = 56.26;
+
+  return Label2Xsec;
+}
+
 std::map<std::string,std::vector<double> > XsecTool::InitMap_XsecUnc_SMS(){
   std::map<std::string,std::vector<double> > Label2XsecUnc; 
 
@@ -4468,6 +4529,7 @@ std::map<std::string,int> XsecTool::m_N_SMS = XsecTool::InitMap_N_SMS();
 std::map<std::string,std::vector<double> > XsecTool::m_Label2Mass_SMS = XsecTool::InitMap_Mass_SMS();
 std::map<std::string,std::vector<double> > XsecTool::m_Label2Xsec_SMS = XsecTool::InitMap_Xsec_SMS();
 std::map<std::string,std::vector<double> > XsecTool::m_Label2XsecUnc_SMS = XsecTool::InitMap_XsecUnc_SMS();
+std::map<std::string,double> XsecTool::m_Label2Xsec_Cascades = XsecTool::InitMap_Xsec_Cascades();
 
 // C1C1 2016   1000022 1000024
 // C1N1 2016   1000022 1000024
