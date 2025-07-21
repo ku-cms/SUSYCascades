@@ -192,7 +192,7 @@ def write_sh(srcfile,ifile,ofile,logfile,outfile,errfile,dataset,filetag,n,NAME)
     fsrc.write('output = '+outlog+" \n")
     fsrc.write('error = '+errlog+" \n")
     fsrc.write('log = '+loglog+" \n")
-    fsrc.write('request_memory = 2 GB \n')
+    fsrc.write('request_memory = 1 GB \n')
     if USE_URL:
         # Warning: The stash.osgconnect.net endpoint has been decommissioned.
         # CMS connect is working on implementing an OSDF endpoint solution.

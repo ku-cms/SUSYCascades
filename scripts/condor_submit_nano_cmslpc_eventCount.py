@@ -80,7 +80,7 @@ def write_sh(srcfile,ifile,ofile,logfile,outfile,errfile,dataset,filetag):
     fsrc.write('log = '+loglog+" \n")
     fsrc.write('priority = 10 \n')
     fsrc.write('Requirements = (Machine != "red-node000.unl.edu" && Machine != "ncm*.hpc.itc.rwth-aachen.de" && Machine != "mh-epyc7662-8.t2.ucsd.edu")\n')
-    fsrc.write('request_memory = 2 GB \n')
+    fsrc.write('request_memory = 1 GB \n')
 
     if CONNECT is True:
         transfer_input = 'transfer_input_files = '+TARGET+'config.tgz,/ospool/cms-user/zflowers/public/sandbox-CMSSW_13_3_1-el9.tar.bz2\n'
