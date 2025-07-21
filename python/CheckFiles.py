@@ -83,8 +83,7 @@ def testRootFile(root_file):
         # https://root-forum.cern.ch/t/readstreamerinfo-illegal-uid-with-newer-root-versions/41073
         ROOT.gErrorIgnoreLevel = ROOT.kFatal+1
         root_file_test = ROOT.TFile.Open(root_file);
-        if not root_file_test or root_file_test.IsZombie(): # or root_file_test.GetListOfKeys().GetSize() == 0:
-            print(root_file)
+        if not root_file_test or root_file_test.IsZombie() or root_file_test.GetListOfKeys().GetSize() == 0:
             status = False
         if root_file_test.IsOpen():
             root_file_test.Close()
