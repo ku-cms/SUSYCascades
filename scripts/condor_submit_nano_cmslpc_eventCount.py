@@ -1,5 +1,5 @@
 #! /usr/bin/env python
-import os, sys, time
+import os, sys, time, subprocess
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'python')))
 from CondorJobCountMonitor import CondorJobCountMonitor
 
@@ -15,7 +15,7 @@ EXE         = "MakeEventCount_NANO.x"
 RESTFRAMES  = './scripts/setup_RestFrames_connect.sh'
 #CMSSW_SETUP = './scripts/cmssw_setup_connect.sh'
 CMSSW_SETUP = './scripts/cmssw_setup_connect_el9.sh'
-TREE        = "Events"
+TREE        = "Runs"
 USER        = os.environ['USER']
 OUT         = "/uscms/home/"+USER+"/nobackup/EventCount/root/"
 #OUT         = "/ospool/cms-user/"+USER+"/NTUPLES/Processing"
@@ -23,8 +23,23 @@ LIST        = "default.list"
 QUEUE       = ""
 MAXN        = 1
 CONNECT     = False
-THRESHOLD   = 80000
+THRESHOLD   = 90000
 # ----------------------------------------------------------- #
+
+def get_auto_THRESHOLD():
+    result = subprocess.run(
+        ["condor_config_val", "-dump"],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True,
+        check=True
+    )
+    for line in result.stdout.splitlines():
+        if line.startswith("MAX_JOBS_PER_OWNER"):
+            _, value = line.split("=")
+            return int(value.strip())
+            break
+    return MAX_JOBS_SUB
 
 def new_listfile(rootlist, listfile):
     mylist = open(listfile,'w')
@@ -210,6 +225,7 @@ if __name__ == "__main__":
     if '--sms' in sys.argv:
         DO_SMS = 1
         argv_pos += 1
+        TREE = "Events"
     if '--cascades' in sys.argv:
         DO_CASCADES = 1
         argv_pos += 1
@@ -237,6 +253,8 @@ if __name__ == "__main__":
 
     if DO_PRIVATEMC:
         print ("Processing as Private MC")
+
+    THRESHOLD = get_auto_THRESHOLD()
 
     # input sample list
     listfile = LIST
@@ -334,6 +352,7 @@ if __name__ == "__main__":
             p = datasetlist.index(tagtuple[0])
             datasetlist[p][2].extend(rootlist)
 
+    job_total_dataset = {}
     for (dataset,filetag,rootlist) in datasetlist:
         os.system("mkdir -p "+os.path.join(listdir, dataset+'_'+filetag))
         listdir_sam = os.path.join(listdir, dataset+'_'+filetag)
@@ -357,6 +376,7 @@ if __name__ == "__main__":
         script_name = srcdir+'_'.join([dataset, filetag])+'.submit'
         write_sh(script_name, overlist_name, file_name+'.root', logfile, outfile, errfile, dataset, filetag)
         write_sh_single(script_name, overlist_name, file_name+'.root', logfile, outfile, errfile, dataset, filetag)
+        job_total_dataset[dataset+'_'+filetag] = len(rootlist)
 
     #print listdir
     os.system("cp -r "+listdir+" "+config)
@@ -366,8 +386,13 @@ if __name__ == "__main__":
     submit_list = [os.path.join(submit_dir, f) for f in os.listdir(submit_dir) if (os.path.isfile(os.path.join(submit_dir, f)) and ('.submit' in f) and ('_single' not in f))]
 
     if not DRY_RUN:
-        condor_monitor = CondorJobCountMonitor(threshold=THRESHOLD,verbose=False)
         for f in submit_list:
+            sample_handle = f.split("/")
+            sample_handle = sample_handle[-1]
+            sample_handle = sample_handle.replace(".submit",'')
+            print (f"submitting: {f}")
+            submit_jobs = job_total_dataset[sample_handle]
+            condor_monitor = CondorJobCountMonitor(threshold=THRESHOLD-submit_jobs,verbose=False)
             condor_monitor.wait_until_jobs_below()
             print("submitting: ", f)
             os.system('condor_submit ' + f)
