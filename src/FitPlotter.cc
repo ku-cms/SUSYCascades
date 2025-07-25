@@ -5483,15 +5483,30 @@ void FitPlotter::InitializeRecipes(){
   m_Color["DY"] = 7021;
   //m_Color["DY"] = 8006;
   
+  m_Title["Cascades_180"] = "Cascades 180";
+  m_Color["Cascades_180"] = 7040; // 7072 might be better...?
   m_Title["Cascades_220"] = "Cascades 220";
   m_Color["Cascades_220"] = 7071;
+  m_Title["Cascades_220_SMS"] = "Cascades 220 SMS";
+  m_Color["Cascades_220_SMS"] = 7071;
   //m_Color["Cascades_220"] = 8007;
   m_Title["Cascades_260"] = "Cascades 260";
   m_Color["Cascades_260"] = 7041;
+  m_Title["Cascades_260_SMS"] = "Cascades 260 SMS";
+  m_Color["Cascades_260_SMS"] = 7041;
   //m_Color["Cascades_260"] = 8008;
   m_Title["Cascades_270"] = "Cascades 270";
   m_Color["Cascades_270"] = 7061;
+  m_Title["Cascades_270_SMS"] = "Cascades 270 SMS";
+  m_Color["Cascades_270_SMS"] = 7061;
   //m_Color["Cascades_270"] = 8009;
+
+  m_Title["T1bbbb_1500_SMS"] = "T1bbbb 1500";
+  m_Color["T1bbbb_1500_SMS"] = 7071;
+  m_Title["T1bbbb_1752_SMS"] = "T1bbbb 1752";
+  m_Color["T1bbbb_1752_SMS"] = 7041;
+  m_Title["T1bbbb_1900_SMS"] = "T1bbbb 1900";
+  m_Color["T1bbbb_1900_SMS"] = 7061;
 
   VS s_Fakes_HF;
   s_Fakes_HF.a("Fakes_elf1G").a("Fakes_muf1G").a("Fakes_elf1S")

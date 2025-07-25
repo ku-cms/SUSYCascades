@@ -409,8 +409,6 @@ void SampleTool::InitSMS(const string& prefix, const string& filename, double we
       m_SProcSlepFlavor[m_iYear][proc][filename] = kFlavor;
       m_SProcW[m_iYear][proc][filename] = weight;
     }
-    
-   
   }
   file->Close();
   //register signal sys trees as different procs
@@ -1602,10 +1600,32 @@ void SampleTool::InitProcMap(){
     // -------------- //
     // --- Signal --- //
     // -------------- //
+
+    InitSMS("T1bbbb", m_Path+"Fall17_102X_SMS/SMS-T1bbbb_TuneCP2_13TeV-madgraphMLM-pythia8_Fall17_102X.root",1.,true);
     
-    InitSMS("Cascades", m_Path+"Summer23BPix_130X_SMS/SlepSnuCascade_MN1-220_MN2-260_MC1-240_TuneCP5_13p6TeV_madgraphMLM-pythia8_Summer23BPix_130X.root",1.);
-    InitSMS("Cascades", m_Path+"Summer23BPix_130X_SMS/SlepSnuCascade_MN1-260_MN2-280_MC1-270_TuneCP5_13p6TeV_madgraphMLM-pythia8_Summer23BPix_130X.root",1.);
-    InitSMS("Cascades", m_Path+"Summer23BPix_130X_SMS/SlepSnuCascade_MN1-270_MN2-280_MC1-275_TuneCP5_13p6TeV_madgraphMLM-pythia8_Summer23BPix_130X.root",1.);
+    InitSMS("Cascades_SMS", m_Path+"Summer23BPix_130X_SMS/SlepSnuCascade_MN1-220_MN2-260_MC1-240_TuneCP5_13p6TeV_madgraphMLM-pythia8_Summer23BPix_130X.root",1.);
+    InitSMS("Cascades_SMS", m_Path+"Summer23BPix_130X_SMS/SlepSnuCascade_MN1-260_MN2-280_MC1-270_TuneCP5_13p6TeV_madgraphMLM-pythia8_Summer23BPix_130X.root",1.);
+    InitSMS("Cascades_SMS", m_Path+"Summer23BPix_130X_SMS/SlepSnuCascade_MN1-270_MN2-280_MC1-275_TuneCP5_13p6TeV_madgraphMLM-pythia8_Summer23BPix_130X.root",1.);
+
+    Process Cascades_220("Cascades_220", kSig);
+    list.clear();
+    list += m_Path + "Summer23BPix_130X_Cascades/SlepSnuCascade_MN1-220_MN2-260_MC1-240_TuneCP5_13p6TeV_madgraphMLM-pythia8_Summer23BPix_130X.root";
+    m_Proc[m_iYear][Cascades_220] = pair<vector<string>,string>(list, "KUAnalysis");
+
+    Process Cascades_260("Cascades_260", kSig);
+    list.clear();
+    list += m_Path + "Summer23BPix_130X_Cascades/SlepSnuCascade_MN1-260_MN2-280_MC1-270_TuneCP5_13p6TeV_madgraphMLM-pythia8_Summer23BPix_130X.root";
+    m_Proc[m_iYear][Cascades_260] = pair<vector<string>,string>(list, "KUAnalysis");
+
+    Process Cascades_270("Cascades_270", kSig);
+    list.clear();
+    list += m_Path + "Summer23BPix_130X_Cascades/SlepSnuCascade_MN1-270_MN2-280_MC1-275_TuneCP5_13p6TeV_madgraphMLM-pythia8_Summer23BPix_130X.root";
+    m_Proc[m_iYear][Cascades_270] = pair<vector<string>,string>(list, "KUAnalysis");
+
+    Process Cascades_180("Cascades_180", kSig);
+    list.clear();
+    list += m_Path + "Summer22_130X_Cascades/SlepSnuCascade_220-209_200-190-180_2022_NANO_JustinPrivateMC_Summer22_130X_Cascades_Summer22_130X.root";
+    m_Proc[m_iYear][Cascades_180] = pair<vector<string>,string>(list, "KUAnalysis");
 
     // ------------ //
     // --- Data --- //
@@ -1618,8 +1638,6 @@ void SampleTool::InitProcMap(){
     m_Proc[m_iYear][data_obs] = pair<vector<string>,string>(list, "KUAnalysis");
 
   }
-
-
 
 }  
 
