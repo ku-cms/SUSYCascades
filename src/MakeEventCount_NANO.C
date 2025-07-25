@@ -123,10 +123,6 @@ int main(int argc, char* argv[]) {
   TChain* chain;
   if(DO_TREE)
     chain = (TChain*) new TChain(TreeName);
-  else if (DO_SMS)
-    chain = (TChain*) new TChain("Events");
-  else
-    chain = (TChain*) new TChain("Runs");
   
   int Nfile = filenames.size();
   for(int i = 0; i < Nfile; i++){
@@ -161,7 +157,7 @@ int main(int argc, char* argv[]) {
     
   cout << "Setting Branch Addresses" << endl;
 
-  if(DO_SMS){
+  if(TreeName == "Events"){
     chain->SetBranchAddress("genWeight", &genWeight, &b_genWeight);
     chain->SetBranchAddress("luminosityBlock", &luminosityBlock, &b_luminosityBlock);
     
@@ -197,7 +193,7 @@ int main(int argc, char* argv[]) {
   int NEVENT = chain->GetEntries();
   cout << "TOTAL of " << NEVENT << " entries" << endl;
   if(NEVENT == 0) return 1;
-  if(DO_SMS){
+  if(TreeName == "Events"){
 
     for(int e = 0; e < NEVENT; e++){
       int mymod = NEVENT/10;
@@ -289,6 +285,7 @@ int main(int argc, char* argv[]) {
     cout << "MAX NGEN " << maxNGEN << endl;
   }
   else{
+    chain->GetEntry(0);
     Nevent = genEventCount;
     Nweight = genEventSumw;
   }

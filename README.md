@@ -145,7 +145,7 @@ They are needed in order to properly calculate weights in reduced ntuples.
 There are a few python scripts intended for batch updating all samples from the main lists (needed for both bkg and signal).
 Run this to batch submit EC jobs
 ```
-scripts/submit_event_count.sh
+nohup ./scripts/submit_event_count.sh > submit_EC.debug 2>&1 &
 ```
 After EC jobs finish. Need to check for failed jobs.
 ```
