@@ -3,6 +3,8 @@ samples/NANO/Summer16_102X_SMS/SMS-N2C1-higgsino_mN2-260to500_TuneCUETP8M1_13TeV
 samples/NANO/Summer16_102X_SMS/SMS-N2N1-higgsino_TuneCUETP8M1_13TeV-madgraphMLM-pythia8.txt
 samples/NANO/Summer16_102X_SMS/SMS-N2N1-higgsino_mN2-260to500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8.txt
 samples/NANO/Summer16_102X_SMS/SMS-T1bbbb_TuneCUETP8M1_13TeV-madgraphMLM-pythia8.txt
+samples/NANO/Summer16_102X_SMS/SMS-T1qqqqL_TuneCUETP8M1_13TeV-madgraphMLM-pythia8.txt
+samples/NANO/Summer16_102X_SMS/SMS-T1qqqq_TuneCUETP8M1_13TeV-madgraphMLM-pythia8.txt
 samples/NANO/Summer16_102X_SMS/SMS-T1ttbb_TuneCUETP8M1_13TeV-madgraphMLM-pythia8.txt
 samples/NANO/Summer16_102X_SMS/SMS-T1tttt_TuneCUETP8M1_13TeV-madgraphMLM-pythia8.txt
 samples/NANO/Summer16_102X_SMS/SMS-T1tttt_mGluino-1200_mLSP-800_TuneCUETP8M1_13TeV-madgraphMLM-pythia8.txt
