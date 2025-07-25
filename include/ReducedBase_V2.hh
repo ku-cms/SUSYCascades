@@ -854,6 +854,7 @@ inline void ReducedBase_V2::Init(TTree *tree)
    genM_susy = 0;
    genPDGID_susy = 0;
    genMomPDGID_susy = 0;
+   LSPParents = 0;
    // Set branch addresses and branch pointers
    if (!tree) return;
    fChain = tree;
@@ -1136,6 +1137,7 @@ inline void ReducedBase_V2::Init(TTree *tree)
    fChain->SetBranchAddress("genM_susy", &genM_susy, &b_genM_susy);
    fChain->SetBranchAddress("genPDGID_susy", &genPDGID_susy, &b_genPDGID_susy);
    fChain->SetBranchAddress("genMomPDGID_susy", &genMomPDGID_susy, &b_genMomPDGID_susy);
+   fChain->SetBranchAddress("genweight", &genweight, &b_genweight);
    fChain->SetBranchAddress("cascades_tree", &cascades_tree, &b_cascades_tree);
    fChain->SetBranchAddress("cascades_prod", &cascades_prod, &b_cascades_prod);
    fChain->SetBranchAddress("cascades_SlepSneu_1stDecay", &cascades_SlepSneu_1stDecay, &b_cascades_SlepSneu_1stDecay);
@@ -1147,12 +1149,12 @@ inline void ReducedBase_V2::Init(TTree *tree)
    fChain->SetBranchAddress("MN2", &MN2, &b_MN2);
    fChain->SetBranchAddress("MC1", &MC1, &b_MC1);
    fChain->SetBranchAddress("MN1", &MN1, &b_MN1);
+   fChain->SetBranchAddress("MP", &MP, &b_MP);
    fChain->SetBranchAddress("NSparticleW", &NSparticleW, &b_NSparticleW);
    fChain->SetBranchAddress("NSparticleZ", &NSparticleZ, &b_NSparticleZ);
    fChain->SetBranchAddress("NSparticlePhoton", &NSparticlePhoton, &b_NSparticlePhoton);
    fChain->SetBranchAddress("LSPParents", &LSPParents, &b_LSPParents);
    fChain->SetBranchAddress("Npartons", &Npartons, &b_Npartons);
-   fChain->SetBranchAddress("genweight", &genweight, &b_genweight);
    fChain->SetBranchAddress("XSec", &XSec, &b_XSec);
    fChain->SetBranchAddress("Nweight", &Nweight, &b_Nweight);
    fChain->SetBranchAddress("Nevent", &Nevent, &b_Nevent);
@@ -1180,7 +1182,6 @@ inline void ReducedBase_V2::Init(TTree *tree)
    fChain->SetBranchAddress("CosDecayAngle_S_LEP", &CosDecayAngle_S_LEP, &b_CosDecayAngle_S_LEP);
    fChain->SetBranchAddress("RZPara_LEP", &RZPara_LEP, &b_RZPara_LEP);
    fChain->SetBranchAddress("MINV_LEP", &MINV_LEP, &b_MINV_LEP);
-   fChain->SetBranchAddress("MP", &MP, &b_MP);
    fChain->SetBranchAddress("Mperp_JET", &Mperp_JET, &b_Mperp_JET);
    fChain->SetBranchAddress("gammaT_JET", &gammaT_JET, &b_gammaT_JET);
    fChain->SetBranchAddress("RISR_JET", &RISR_JET, &b_RISR_JET);

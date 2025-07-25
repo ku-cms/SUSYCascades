@@ -909,7 +909,10 @@ void Plot_CutFlow(vector<TH1*> vect_h, bool Scale, double Scale_Val, double sign
     }
     if(p->second[0].Type() == kSig){
       vect_h[index]->SetLineWidth(1.0);
-      vect_h[index]->SetLineStyle(7.0);
+      if(p->first.find("SMS") != std::string::npos)
+        vect_h[index]->SetLineStyle(7.0);
+      else
+        vect_h[index]->SetLineStyle(9.0);
       vect_h[index]->SetLineColor(FP.getColor(p->first));
       vect_h[index]->SetMarkerColor(FP.getColor(p->first));
       vect_h[index]->Draw("SAMES");
