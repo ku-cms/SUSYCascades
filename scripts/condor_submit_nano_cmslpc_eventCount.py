@@ -386,13 +386,14 @@ if __name__ == "__main__":
     submit_list = [os.path.join(submit_dir, f) for f in os.listdir(submit_dir) if (os.path.isfile(os.path.join(submit_dir, f)) and ('.submit' in f) and ('_single' not in f))]
 
     if not DRY_RUN:
+        condor_monitor = CondorJobCountMonitor(threshold=THRESHOLD,verbose=False)
         for f in submit_list:
             sample_handle = f.split("/")
             sample_handle = sample_handle[-1]
             sample_handle = sample_handle.replace(".submit",'')
             print (f"submitting: {f}")
-            submit_jobs = job_total_dataset[sample_handle]
-            condor_monitor = CondorJobCountMonitor(threshold=THRESHOLD-submit_jobs,verbose=False)
+            submit_jobs = job_total_dataset[sample_handle] + 1
+            condor_monitor.set_threshold(THRESHOLD-submit_jobs)
             condor_monitor.wait_until_jobs_below()
             print("submitting: ", f)
             os.system('condor_submit ' + f)
