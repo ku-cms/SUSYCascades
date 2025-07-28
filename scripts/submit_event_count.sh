@@ -15,3 +15,4 @@ python3 scripts/condor_submit_nano_cmslpc_eventCount.py --connect -list samples/
 python3 scripts/condor_submit_nano_cmslpc_eventCount.py --connect -list samples/NANO/Lists/Summer23BPix_130X_SMS.list --sms --cascades
 python3 scripts/condor_submit_nano_cmslpc_eventCount.py --connect -list samples/NANO/Lists/Summer23BPix_130X_Cascades.list --cascades
 python3 scripts/condor_submit_nano_cmslpc_eventCount.py --connect -list samples/NANO/Lists/Summer22_130X_Cascades.list --cascades --privateMC
+python3 scripts/condor_submit_nano_cmslpc_eventCount.py --connect -list samples/NANO/Lists/Summer22_130X_SMS.list --sms --privateMC
