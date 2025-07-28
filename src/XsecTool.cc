@@ -4073,6 +4073,7 @@ std::map<std::string,double> XsecTool::InitMap_Xsec_Cascades(){
   std::map<std::string,double> Label2Xsec;
 
   Label2Xsec["SlepSnuCascade_220-209_200-190-180_2022_NANO_Run3"] = 196.2;
+  Label2Xsec["SlepSnuCascade_220-209_200-190-180_2022_NANO_JustinPrivateMC_Summer22_130X_Cascades_Run3"] = 196.2;
   Label2Xsec["SlepSnuCascade_MN1-220_MN2-260_MC1-240_TuneCP5_13p6TeV_madgraphMLM-pythia8_Run3"] = 56.26;
   Label2Xsec["SlepSnuCascade_MN1-260_MN2-280_MC1-270_TuneCP5_13p6TeV_madgraphMLM-pythia8_Run3"] = 56.26;
   Label2Xsec["SlepSnuCascade_MN1-270_MN2-280_MC1-275_TuneCP5_13p6TeV_madgraphMLM-pythia8_Run3"] = 56.26;
