@@ -23,6 +23,7 @@
 #include "SUSYNANOBase.hh"
 #include "NANOULBase.hh"
 #include "NANORun3.hh"
+#include "GitHashTool.hh"
 
 using namespace std;
 using std::vector;
@@ -262,6 +263,8 @@ int main(int argc, char* argv[]) {
 
   cout << "writing output with ichunk=" << ICHUNK << " nchunk=" << NCHUNK << endl;
   bool passedDASCheck = std::visit([&](auto& nt) -> bool { return nt->WriteNtuple(string(outputFileName), ICHUNK, NCHUNK, DO_slim, NDAS, string(DAS_datasetname), string(DAS_filename)); }, ntuple);
+  GitHashTool HashTool;
+  HashTool.WriteToROOT(string(outputFileName));
   if(!passedDASCheck){
     std::cout << "JOB FAILED DAS CHECK!" << std::endl;
     return 1;

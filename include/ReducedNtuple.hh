@@ -17,7 +17,7 @@ public:
 
 private:
   // Number of RJR analysis trees
-  const static int m_aTrees=3; // [JetsLeps_ISR, Leps_ISR, Jets_ISR]
+  const static int m_aTrees=4; // [JetsLeps_ISR, Leps_ISR, Jets_ISR, Jets]
 
   vector<bool> m_treeSkipped;
   bool m_library_generated;
@@ -246,7 +246,18 @@ private:
   //////////////////////
 
   // Object Counting Variables
+
+  vector<double> m_dphi_lep_S;
+  vector<double> m_cos_lep_S;
+  vector<double> m_dphi_SV_S;
+  vector<double> m_cos_SV_S;
+  vector<double> m_dphi_jet_S;
+  vector<double> m_cos_jet_S;
   
+  vector<double> m_dphiMET_lep_S;
+  vector<double> m_dphiMET_SV_S; 
+  vector<double> m_dphiMET_jet_S; 
+    
   int m_Njet_ISR;
   int m_Njet_S;
   int m_Nbjet_ISR;
@@ -262,17 +273,6 @@ private:
   vector<int> m_index_lep_ISR;
   vector<int> m_index_lep_S;
 
-  vector<double> m_dphi_lep_S;
-  vector<double> m_cos_lep_S;
-  vector<double> m_dphi_SV_S;
-  vector<double> m_cos_SV_S;
-  vector<double> m_dphi_jet_S;
-  vector<double> m_cos_jet_S;
-  
-  vector<double> m_dphiMET_lep_S;
-  vector<double> m_dphiMET_SV_S; 
-  vector<double> m_dphiMET_jet_S; 
-  
   int m_Njet_a;
   int m_Njet_b;
   int m_Nbjet_a;
@@ -288,6 +288,38 @@ private:
   vector<int> m_index_lep_b;
   vector<int> m_index_SV_a;
   vector<int> m_index_SV_b;
+
+  // LEP ISR tree
+  int m_Nlep_a_LEP;
+  int m_Nlep_b_LEP;
+ 
+  vector<int> m_index_lep_a_LEP;
+  vector<int> m_index_lep_b_LEP;
+
+  // JET ISR tree
+  int m_Njet_ISR_JET_ISR;
+  int m_Njet_S_JET_ISR;
+  int m_Nbjet_ISR_JET_ISR;
+  int m_Nbjet_S_JET_ISR;
+  vector<int> m_index_jet_ISR_JET_ISR;
+  vector<int> m_index_jet_S_JET_ISR;
+
+  int m_Njet_a_JET_ISR;
+  int m_Njet_b_JET_ISR;
+  int m_Nbjet_a_JET_ISR;
+  int m_Nbjet_b_JET_ISR;
+ 
+  vector<int> m_index_jet_a_JET_ISR;
+  vector<int> m_index_jet_b_JET_ISR;
+
+  // JET tree
+  int m_Njet_a_JET;
+  int m_Njet_b_JET;
+  int m_Nbjet_a_JET;
+  int m_Nbjet_b_JET;
+ 
+  vector<int> m_index_jet_a_JET;
+  vector<int> m_index_jet_b_JET;
   
   // Kinematic Variables
 
@@ -427,15 +459,42 @@ private:
   double m_gammaTilde_LEP;
   double m_CosDecayAngle_Pa_LEP;
   double m_CosDecayAngle_Pb_LEP;
+  double m_CosDecayAngle_Va_LEP;
+  double m_CosDecayAngle_Vb_LEP;
   double m_CosDecayAngle_S_LEP;
   double m_RZPara_LEP;
   double m_MINV_LEP;
 
+  // New info for RJR 'JET ISR' tree
+  double m_gammaT_JET_ISR;
+  double m_Mperp_JET_ISR;
+  double m_RISR_JET_ISR;
+  double m_PTISR_JET_ISR;
+  double m_MS_JET_ISR;
+  double m_MSV_JET_ISR;
+  double m_MQ_JET_ISR;
+  double m_gamma_JET_ISR;
+  double m_MPa_JET_ISR;
+  double m_MPb_JET_ISR;
+  double m_MVa_JET_ISR;
+  double m_MVb_JET_ISR;
+  double m_PTS_CM_JET_ISR;
+  double m_MS_S0_JET_ISR;
+  double m_MV_S0_JET_ISR;
+  double m_MQ_S0_JET_ISR;
+  double m_gamma_S0_JET_ISR;
+  double m_MPTilde_JET_ISR;
+  double m_MSTilde_JET_ISR;
+  double m_gammaTilde_JET_ISR;
+  double m_CosDecayAngle_Pa_JET_ISR;
+  double m_CosDecayAngle_Pb_JET_ISR;
+  double m_CosDecayAngle_Va_JET_ISR;
+  double m_CosDecayAngle_Vb_JET_ISR;
+  double m_CosDecayAngle_S_JET_ISR;
+  double m_RZPara_JET_ISR;
+  double m_MINV_JET_ISR;
+
   // New info for RJR 'JET' tree
-  double m_gammaT_JET;
-  double m_Mperp_JET;
-  double m_RISR_JET;
-  double m_PTISR_JET;
   double m_MS_JET;
   double m_MSV_JET;
   double m_MQ_JET;
@@ -444,7 +503,6 @@ private:
   double m_MPb_JET;
   double m_MVa_JET;
   double m_MVb_JET;
-  double m_PTS_CM_JET;
   double m_MS_S0_JET;
   double m_MV_S0_JET;
   double m_MQ_S0_JET;
@@ -454,9 +512,9 @@ private:
   double m_gammaTilde_JET;
   double m_CosDecayAngle_Pa_JET;
   double m_CosDecayAngle_Pb_JET;
+  double m_CosDecayAngle_Va_JET;
+  double m_CosDecayAngle_Vb_JET;
   double m_CosDecayAngle_S_JET;
-  double m_RZPara_JET;
-  double m_MINV_JET;
 
   // RestFrames frames and friends
   LabRecoFrame*     LAB[m_aTrees];

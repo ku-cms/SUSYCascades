@@ -31,41 +31,51 @@ ReducedNtuple<Base>::ReducedNtuple(TTree* tree)
     X1b[t] = new InvisibleRecoFrame("X1b","#tilde{#chi}_{1b}");
     
     if(t==0){ // ISR
-      LAB[0]->SetChildFrame(*CM[0]);
-      CM[0]->AddChildFrame(*S[0]);
-      CM[0]->AddChildFrame(*ISR[0]);
-      S[0]->AddChildFrame(*X2a[0]);
-      S[0]->AddChildFrame(*X2b[0]);
-      X2a[0]->AddChildFrame(*Ja[0]);
-      X2b[0]->AddChildFrame(*Jb[0]);
-      X2a[0]->AddChildFrame(*La[0]);
-      X2b[0]->AddChildFrame(*Lb[0]);
-      X2a[0]->AddChildFrame(*X1a[0]);
-      X2b[0]->AddChildFrame(*X1b[0]);
+      LAB[t]->SetChildFrame(*CM[t]);
+      CM[t]->AddChildFrame(*S[t]);
+      CM[t]->AddChildFrame(*ISR[t]);
+      S[t]->AddChildFrame(*X2a[t]);
+      S[t]->AddChildFrame(*X2b[t]);
+      X2a[t]->AddChildFrame(*Ja[t]);
+      X2b[t]->AddChildFrame(*Jb[t]);
+      X2a[t]->AddChildFrame(*La[t]);
+      X2b[t]->AddChildFrame(*Lb[t]);
+      X2a[t]->AddChildFrame(*X1a[t]);
+      X2b[t]->AddChildFrame(*X1b[t]);
     }
 
     if(t==1){ // LEP only
-      LAB[1]->SetChildFrame(*CM[1]);
-      CM[1]->AddChildFrame(*S[1]);
-      CM[1]->AddChildFrame(*ISR[1]);
-      S[1]->AddChildFrame(*X2a[1]);
-      S[1]->AddChildFrame(*X2b[1]);
-      X2a[1]->AddChildFrame(*La[1]);
-      X2b[1]->AddChildFrame(*Lb[1]);
-      X2a[1]->AddChildFrame(*X1a[1]);
-      X2b[1]->AddChildFrame(*X1b[1]);
+      LAB[t]->SetChildFrame(*CM[t]);
+      CM[t]->AddChildFrame(*S[t]);
+      CM[t]->AddChildFrame(*ISR[t]);
+      S[t]->AddChildFrame(*X2a[t]);
+      S[t]->AddChildFrame(*X2b[t]);
+      X2a[t]->AddChildFrame(*La[t]);
+      X2b[t]->AddChildFrame(*Lb[t]);
+      X2a[t]->AddChildFrame(*X1a[t]);
+      X2b[t]->AddChildFrame(*X1b[t]);
     }
 
-    if(t==2){
-      LAB[2]->SetChildFrame(*CM[2]);
-      CM[2]->AddChildFrame(*S[2]);
-      CM[2]->AddChildFrame(*ISR[2]);
-      S[2]->AddChildFrame(*X2a[2]);
-      S[2]->AddChildFrame(*X2b[2]);
-      X2a[2]->AddChildFrame(*Ja[2]);
-      X2b[2]->AddChildFrame(*Jb[2]);
-      X2a[2]->AddChildFrame(*X1a[2]);
-      X2b[2]->AddChildFrame(*X1b[2]);
+    if(t==2){ // JET & ISR only
+      LAB[t]->SetChildFrame(*CM[t]);
+      CM[t]->AddChildFrame(*S[t]);
+      CM[t]->AddChildFrame(*ISR[t]);
+      S[t]->AddChildFrame(*X2a[t]);
+      S[t]->AddChildFrame(*X2b[t]);
+      X2a[t]->AddChildFrame(*Ja[t]);
+      X2b[t]->AddChildFrame(*Jb[t]);
+      X2a[t]->AddChildFrame(*X1a[t]);
+      X2b[t]->AddChildFrame(*X1b[t]);
+    }
+
+    if(t==3){ // JET only
+      LAB[t]->SetChildFrame(*S[t]);
+      S[t]->AddChildFrame(*X2a[t]);
+      S[t]->AddChildFrame(*X2b[t]);
+      X2a[t]->AddChildFrame(*Ja[t]);
+      X2b[t]->AddChildFrame(*Jb[t]);
+      X2a[t]->AddChildFrame(*X1a[t]);
+      X2b[t]->AddChildFrame(*X1b[t]);
     }
 
     if(!LAB[t]->InitializeTree()){
@@ -115,6 +125,19 @@ ReducedNtuple<Base>::ReducedNtuple(TTree* tree)
       CombSplit_ISR[t]->AddObjectFrames(ISR[t]->GetListVisibleFrames(), 0);
       CombSplit_ISR[t]->AddObjectFrames(S[t]->GetListVisibleFrames(), 1);
       
+      COMB_J[t]->AddJigsaw(*CombSplit_J[t]);
+      CombSplit_J[t]->AddCombFrame(*Ja[t], 0);
+      CombSplit_J[t]->AddCombFrame(*Jb[t], 1);
+      CombSplit_J[t]->AddObjectFrames(X2a[t]->GetListVisibleFrames(), 0);
+      CombSplit_J[t]->AddObjectFrames(X2b[t]->GetListVisibleFrames(), 1);
+    }
+
+    if(t == 3){
+      COMB_J[t]->AddFrame(*Ja[t]);
+      COMB_J[t]->SetNElementsForFrame(*Ja[t], 0);
+      COMB_J[t]->AddFrame(*Jb[t]);
+      COMB_J[t]->SetNElementsForFrame(*Jb[t], 0);
+
       COMB_J[t]->AddJigsaw(*CombSplit_J[t]);
       CombSplit_J[t]->AddCombFrame(*Ja[t], 0);
       CombSplit_J[t]->AddCombFrame(*Jb[t], 1);
@@ -359,15 +382,6 @@ TTree* ReducedNtuple<Base>::InitOutputTree(const string& sample, bool do_slim){
     tree->Branch("M_Genjet",   &m_M_Genjet);
     tree->Branch("Index_jet",   &m_Index_jet);
   }
-  
-  tree->Branch("Njet_ISR", &m_Njet_ISR);
-  tree->Branch("Njet_S", &m_Njet_S);
-  tree->Branch("Nbjet_ISR", &m_Nbjet_ISR);
-  tree->Branch("Nbjet_S", &m_Nbjet_S);
-  tree->Branch("Nlep_ISR", &m_Nlep_ISR);
-  tree->Branch("Nlep_S", &m_Nlep_S);
-  tree->Branch("index_lep_ISR", &m_index_lep_ISR);
-  tree->Branch("index_lep_S", &m_index_lep_S);
 
   if(!do_slim){
     tree->Branch("dphi_lep_S", &m_dphi_lep_S);
@@ -379,16 +393,54 @@ TTree* ReducedNtuple<Base>::InitOutputTree(const string& sample, bool do_slim){
     tree->Branch("dphiMET_jet_S", &m_dphiMET_jet_S);
   }
   
+  // Object counting vars
+  // Base ISR+JET+LEP tree
+  tree->Branch("Njet_ISR", &m_Njet_ISR);
+  tree->Branch("Njet_S", &m_Njet_S);
+  tree->Branch("Nbjet_ISR", &m_Nbjet_ISR);
+  tree->Branch("Nbjet_S", &m_Nbjet_S);
+  tree->Branch("Nlep_ISR", &m_Nlep_ISR);
+  tree->Branch("Nlep_S", &m_Nlep_S);
+  tree->Branch("index_lep_ISR", &m_index_lep_ISR);
+  tree->Branch("index_lep_S", &m_index_lep_S);
   tree->Branch("Njet_a", &m_Njet_a);
   tree->Branch("Njet_b", &m_Njet_b);
   tree->Branch("Nbjet_a", &m_Nbjet_a);
   tree->Branch("Nbjet_b", &m_Nbjet_b);
   tree->Branch("Nlep_a", &m_Nlep_a);
   tree->Branch("Nlep_b", &m_Nlep_b);
-  
   tree->Branch("index_lep_a", &m_index_lep_a);
   tree->Branch("index_lep_b", &m_index_lep_b);
 
+  // ISR+LEP tree
+  tree->Branch("Nlep_a_LEP", &m_Nlep_a_LEP);
+  tree->Branch("Nlep_b_LEP", &m_Nlep_b_LEP);
+  tree->Branch("index_lep_a_LEP", &m_index_lep_a_LEP);
+  tree->Branch("index_lep_b_LEP", &m_index_lep_b_LEP);
+
+  // ISR+JET tree
+  tree->Branch("Njet_ISR_JET_ISR", &m_Njet_ISR_JET_ISR);
+  tree->Branch("Njet_S_JET_ISR", &m_Njet_S_JET_ISR);
+  tree->Branch("Nbjet_ISR_JET_ISR", &m_Nbjet_ISR_JET_ISR);
+  tree->Branch("Nbjet_S_JET_ISR", &m_Nbjet_S_JET_ISR);
+  tree->Branch("Njet_a_JET_ISR", &m_Njet_a_JET_ISR);
+  tree->Branch("Njet_b_JET_ISR", &m_Njet_b_JET_ISR);
+  tree->Branch("Nbjet_a_JET_ISR", &m_Nbjet_a_JET_ISR);
+  tree->Branch("Nbjet_b_JET_ISR", &m_Nbjet_b_JET_ISR);
+  tree->Branch("index_jet_a_JET_ISR", &m_index_jet_a_JET_ISR);
+  tree->Branch("index_jet_b_JET_ISR", &m_index_jet_b_JET_ISR);
+  tree->Branch("index_jet_ISR_JET_ISR", &m_index_jet_ISR_JET_ISR);
+  tree->Branch("index_jet_S_JET_ISR", &m_index_jet_S_JET_ISR);
+
+  // JET tree
+  tree->Branch("Njet_a_JET", &m_Njet_a_JET);
+  tree->Branch("Njet_b_JET", &m_Njet_b_JET);
+  tree->Branch("Nbjet_a_JET", &m_Nbjet_a_JET);
+  tree->Branch("Nbjet_b_JET", &m_Nbjet_b_JET);
+  tree->Branch("index_jet_a_JET", &m_index_jet_a_JET);
+  tree->Branch("index_jet_b_JET", &m_index_jet_b_JET);
+
+  // Kinematics
   tree->Branch("PTCM", &m_PTCM);
   tree->Branch("PzCM", &m_PzCM);
   tree->Branch("cosCM", &m_cosCM);
@@ -456,14 +508,40 @@ TTree* ReducedNtuple<Base>::InitOutputTree(const string& sample, bool do_slim){
   tree->Branch("gammaTilde_LEP", &m_gammaTilde_LEP);
   tree->Branch("CosDecayAngle_Pa_LEP", &m_CosDecayAngle_Pa_LEP);
   tree->Branch("CosDecayAngle_Pb_LEP", &m_CosDecayAngle_Pb_LEP);
+  tree->Branch("CosDecayAngle_Va_LEP", &m_CosDecayAngle_Va_LEP);
+  tree->Branch("CosDecayAngle_Vb_LEP", &m_CosDecayAngle_Vb_LEP);
   tree->Branch("CosDecayAngle_S_LEP", &m_CosDecayAngle_S_LEP);
   tree->Branch("RZPara_LEP", &m_RZPara_LEP);
   tree->Branch("MINV_LEP", &m_MINV_LEP);
 
-  tree->Branch("Mperp_JET", &m_Mperp_JET);
-  tree->Branch("gammaT_JET", &m_gammaT_JET);
-  tree->Branch("RISR_JET", &m_RISR_JET);
-  tree->Branch("PTISR_JET", &m_PTISR_JET);
+  tree->Branch("Mperp_JET_ISR", &m_Mperp_JET_ISR);
+  tree->Branch("gammaT_JET_ISR", &m_gammaT_JET_ISR);
+  tree->Branch("RISR_JET_ISR", &m_RISR_JET_ISR);
+  tree->Branch("PTISR_JET_ISR", &m_PTISR_JET_ISR);
+  tree->Branch("MS_JET_ISR", &m_MS_JET_ISR);
+  tree->Branch("MSV_JET_ISR", &m_MSV_JET_ISR);
+  tree->Branch("MQ_JET_ISR", &m_MQ_JET_ISR);
+  tree->Branch("gamma_JET_ISR", &m_gamma_JET_ISR);
+  tree->Branch("MPa_JET_ISR", &m_MPa_JET_ISR);
+  tree->Branch("MPb_JET_ISR", &m_MPb_JET_ISR);
+  tree->Branch("MVa_JET_ISR", &m_MVa_JET_ISR);
+  tree->Branch("MVb_JET_ISR", &m_MVb_JET_ISR);
+  tree->Branch("PTS_CM_JET_ISR", &m_PTS_CM_JET_ISR);
+  tree->Branch("MS_S0_JET_ISR", &m_MS_S0_JET_ISR);
+  tree->Branch("MV_S0_JET_ISR", &m_MV_S0_JET_ISR);
+  tree->Branch("MQ_S0_JET_ISR", &m_MQ_S0_JET_ISR);
+  tree->Branch("gamma_S0_JET_ISR", &m_gamma_S0_JET_ISR);
+  tree->Branch("MPTilde_JET_ISR", &m_MPTilde_JET_ISR);
+  tree->Branch("MSTilde_JET_ISR", &m_MSTilde_JET_ISR);
+  tree->Branch("gammaTilde_JET_ISR", &m_gammaTilde_JET_ISR);
+  tree->Branch("CosDecayAngle_Pa_JET_ISR", &m_CosDecayAngle_Pa_JET_ISR);
+  tree->Branch("CosDecayAngle_Pb_JET_ISR", &m_CosDecayAngle_Pb_JET_ISR);
+  tree->Branch("CosDecayAngle_Va_JET_ISR", &m_CosDecayAngle_Va_JET_ISR);
+  tree->Branch("CosDecayAngle_Vb_JET_ISR", &m_CosDecayAngle_Vb_JET_ISR);
+  tree->Branch("CosDecayAngle_S_JET_ISR", &m_CosDecayAngle_S_JET_ISR);
+  tree->Branch("RZPara_JET_ISR", &m_RZPara_JET_ISR);
+  tree->Branch("MINV_JET_ISR", &m_MINV_JET_ISR);
+
   tree->Branch("MS_JET", &m_MS_JET);
   tree->Branch("MSV_JET", &m_MSV_JET);
   tree->Branch("MQ_JET", &m_MQ_JET);
@@ -472,7 +550,6 @@ TTree* ReducedNtuple<Base>::InitOutputTree(const string& sample, bool do_slim){
   tree->Branch("MPb_JET", &m_MPb_JET);
   tree->Branch("MVa_JET", &m_MVa_JET);
   tree->Branch("MVb_JET", &m_MVb_JET);
-  tree->Branch("PTS_CM_JET", &m_PTS_CM_JET);
   tree->Branch("MS_S0_JET", &m_MS_S0_JET);
   tree->Branch("MV_S0_JET", &m_MV_S0_JET);
   tree->Branch("MQ_S0_JET", &m_MQ_S0_JET);
@@ -482,9 +559,9 @@ TTree* ReducedNtuple<Base>::InitOutputTree(const string& sample, bool do_slim){
   tree->Branch("gammaTilde_JET", &m_gammaTilde_JET);
   tree->Branch("CosDecayAngle_Pa_JET", &m_CosDecayAngle_Pa_JET);
   tree->Branch("CosDecayAngle_Pb_JET", &m_CosDecayAngle_Pb_JET);
+  tree->Branch("CosDecayAngle_Va_JET", &m_CosDecayAngle_Va_JET);
+  tree->Branch("CosDecayAngle_Vb_JET", &m_CosDecayAngle_Vb_JET);
   tree->Branch("CosDecayAngle_S_JET", &m_CosDecayAngle_S_JET);
-  tree->Branch("RZPara_JET", &m_RZPara_JET);
-  tree->Branch("MINV_JET", &m_MINV_JET);
 
   if(!do_slim){
     tree->Branch("MS", &m_MS);
@@ -638,6 +715,17 @@ void ReducedNtuple<Base>::ClearVariables(){
   for(int t = 0; t < m_aTrees; t++)
     m_treeSkipped.push_back(false);
 
+  m_dphi_lep_S.clear();
+  m_cos_lep_S.clear();
+  m_dphi_jet_S.clear();
+  m_cos_jet_S.clear();
+  m_dphi_SV_S.clear();
+  m_cos_SV_S.clear();
+
+  m_dphiMET_lep_S.clear();
+  m_dphiMET_jet_S.clear();
+  m_dphiMET_SV_S.clear();
+
   m_Njet_ISR = 0;
   m_Njet_S = 0;
   m_Nbjet_ISR = 0;
@@ -652,17 +740,6 @@ void ReducedNtuple<Base>::ClearVariables(){
   m_index_SV_S.clear();
   m_index_lep_ISR.clear();
   m_index_lep_S.clear();
-
-  m_dphi_lep_S.clear();
-  m_cos_lep_S.clear();
-  m_dphi_jet_S.clear();
-  m_cos_jet_S.clear();
-  m_dphi_SV_S.clear();
-  m_cos_SV_S.clear();
-
-  m_dphiMET_lep_S.clear();
-  m_dphiMET_jet_S.clear();
-  m_dphiMET_SV_S.clear();
  
   m_Njet_a = 0;
   m_Njet_b = 0;
@@ -679,6 +756,29 @@ void ReducedNtuple<Base>::ClearVariables(){
   m_index_lep_b.clear();
   m_index_SV_a.clear();
   m_index_SV_b.clear();
+
+  m_Nlep_a_LEP = 0;
+  m_Nlep_b_LEP = 0;
+  m_index_lep_a_LEP.clear();
+  m_index_lep_b_LEP.clear();
+  m_Njet_ISR_JET_ISR = 0;
+  m_Njet_S_JET_ISR = 0;
+  m_Nbjet_ISR_JET_ISR = 0;
+  m_Nbjet_S_JET_ISR = 0;
+  m_Njet_a_JET_ISR = 0;
+  m_Njet_b_JET_ISR = 0;
+  m_Nbjet_a_JET_ISR = 0;
+  m_Nbjet_b_JET_ISR = 0;
+  m_index_jet_a_JET_ISR.clear();
+  m_index_jet_b_JET_ISR.clear();
+  m_index_jet_ISR_JET_ISR.clear();
+  m_index_jet_S_JET_ISR.clear();
+  m_Njet_a_JET = 0;
+  m_Njet_b_JET = 0;
+  m_Nbjet_a_JET = 0;
+  m_Nbjet_b_JET = 0;
+  m_index_jet_a_JET.clear();
+  m_index_jet_b_JET.clear();
 
 }
 
@@ -1220,8 +1320,32 @@ void ReducedNtuple<Base>::FillOutputTree(TTree* tree, const Systematic& sys, boo
       ISR[t]->SetLabFrameFourVector(TLV_ISR);
       if(!LAB[t]->AnalyzeEvent())
         cout << "Something went wrong with tree event analysis" << endl;
+          
       bool BSideIsA = false;
       if(Lb[t]->GetFourVector().M() > La[t]->GetFourVector().M()) BSideIsA = true;
+
+      for(int i = 0; i < m_Nlep; i++){
+        if(COMB_L[t]->GetFrame(lepID[i]) == *La[t]){
+          if(!BSideIsA){
+            m_Nlep_a_LEP++;
+            m_index_lep_a_LEP.push_back(i);
+          }
+          else{
+            m_Nlep_b_LEP++;
+            m_index_lep_b_LEP.push_back(i);
+          }
+        }
+        if(COMB_L[t]->GetFrame(lepID[i]) == *Lb[t]){
+          if(!BSideIsA){
+            m_Nlep_b_LEP++;
+            m_index_lep_b_LEP.push_back(i);
+          }
+          else{
+            m_Nlep_a_LEP++;
+            m_index_lep_a_LEP.push_back(i);
+          }
+        }
+      }
 
       TVector3 vPISR = S[t]->GetFourVector(*CM[t]).Vect();
       m_PTISR_LEP = vPISR.Pt();
@@ -1238,7 +1362,10 @@ void ReducedNtuple<Base>::FillOutputTree(TTree* tree, const Systematic& sys, boo
       m_CosDecayAngle_S_LEP = S[t]->GetCosDecayAngle();
       m_CosDecayAngle_Pa_LEP = X2a[t]->GetCosDecayAngle();
       m_CosDecayAngle_Pb_LEP = X2b[t]->GetCosDecayAngle();
-      if(BSideIsA){ m_CosDecayAngle_Pa_LEP = X2b[t]->GetCosDecayAngle(); m_CosDecayAngle_Pb_LEP = X2a[t]->GetCosDecayAngle(); }
+      m_CosDecayAngle_Va_LEP = La[t]->GetCosDecayAngle();
+      m_CosDecayAngle_Vb_LEP = Lb[t]->GetCosDecayAngle();
+      if(BSideIsA){ m_CosDecayAngle_Pa_LEP = X2b[t]->GetCosDecayAngle(); m_CosDecayAngle_Pb_LEP = X2a[t]->GetCosDecayAngle(); 
+                    m_CosDecayAngle_Va_LEP = Lb[t]->GetCosDecayAngle(); m_CosDecayAngle_Vb_LEP = La[t]->GetCosDecayAngle(); }
       m_MVa_LEP = La[t]->GetFourVector().M();
       m_MVb_LEP = Lb[t]->GetFourVector().M();
       if(BSideIsA){ m_MVa = Lb[t]->GetFourVector().M(); m_MVb = La[t]->GetFourVector().M(); }
@@ -1271,7 +1398,7 @@ void ReducedNtuple<Base>::FillOutputTree(TTree* tree, const Systematic& sys, boo
       m_MSTilde_LEP = sqrt(m_MPTilde_LEP*m_MPTilde_LEP+X2a_S.Vect().Mag2());
       m_gammaTilde_LEP = m_MPTilde_LEP/m_MSTilde_LEP;
     }
-    if(t==2){
+    if(t==2){ // JET + ISR tree
       if(m_Njet < 2){
         m_treeSkipped[t] = true;
         continue;
@@ -1282,32 +1409,90 @@ void ReducedNtuple<Base>::FillOutputTree(TTree* tree, const Systematic& sys, boo
       }
       if(!LAB[t]->AnalyzeEvent())
         cout << "Something went wrong with tree event analysis" << endl;
+
       bool BSideIsA = false;
       if(Jb[t]->GetFourVector().M() > Ja[t]->GetFourVector().M()) BSideIsA = true;
 
+      // jet counting in ISR/S, hemispheres
+      for(int i = 0; i < m_Njet; i++){
+        if(COMB_J[t]->GetFrame(jetID[i]) == *ISR[t]){
+          m_Njet_ISR_JET_ISR++;
+          if(Jets[i].BtagID() >= kMedium)
+            m_Nbjet_ISR_JET_ISR++;
+          m_index_jet_ISR_JET_ISR.push_back(i);
+        }
+        if(COMB_J[t]->GetFrame(jetID[i]) == *Ja[t]){
+          if(!BSideIsA){
+            m_Njet_S_JET_ISR++;
+            m_Njet_a_JET_ISR++;
+            if(Jets[i].BtagID() >= kMedium){
+              m_Nbjet_S_JET_ISR++;
+              m_Nbjet_a_JET_ISR++;
+            }
+            m_index_jet_S_JET_ISR.push_back(i);
+            m_index_jet_a_JET_ISR.push_back(i);
+          }
+          else{
+            m_Njet_S_JET_ISR++;
+            m_Njet_b_JET_ISR++;
+            if(Jets[i].BtagID() >= kMedium){
+              m_Nbjet_S_JET_ISR++;
+              m_Nbjet_b_JET_ISR++;
+            }
+            m_index_jet_S_JET_ISR.push_back(i);
+            m_index_jet_b_JET_ISR.push_back(i);
+          }
+        }
+        if(COMB_J[t]->GetFrame(jetID[i]) == *Jb[t]){
+          if(!BSideIsA){
+            m_Njet_S_JET_ISR++;
+            m_Njet_b_JET_ISR++;
+            if(Jets[i].BtagID() >= kMedium){
+              m_Nbjet_S_JET_ISR++;
+              m_Nbjet_b_JET_ISR++;
+            }
+            m_index_jet_S_JET_ISR.push_back(i);
+            m_index_jet_b_JET_ISR.push_back(i);
+          }
+          else{
+            m_Njet_S_JET_ISR++;
+            m_Njet_a_JET_ISR++;
+            if(Jets[i].BtagID() >= kMedium){
+              m_Nbjet_S_JET_ISR++;
+              m_Nbjet_a_JET_ISR++;
+            }
+            m_index_jet_S_JET_ISR.push_back(i);
+            m_index_jet_a_JET_ISR.push_back(i);
+          }
+        }
+      }
+          
       TVector3 vPISR = S[t]->GetFourVector(*CM[t]).Vect();
-      m_PTISR_JET = vPISR.Pt();
+      m_PTISR_JET_ISR = vPISR.Pt();
       TVector3 vPINV = (X1a[t]->GetFourVector(*CM[t])+X1b[t]->GetFourVector(*CM[t])).Vect();
-      m_RISR_JET = fabs(vPINV.Dot(vPISR.Unit())) / vPISR.Mag();
+      m_RISR_JET_ISR = fabs(vPINV.Dot(vPISR.Unit())) / vPISR.Mag();
 
-      m_MPa_JET = X2a[t]->GetFourVector().M();
-      m_MPb_JET = X2b[t]->GetFourVector().M();
-      if(BSideIsA){ m_MPa_JET = X2b[t]->GetFourVector().M(); m_MPb_JET = X2a[t]->GetFourVector().M(); }
-      m_MS_JET = S[t]->GetFourVector().M();
-      m_MSV_JET = (Ja[t]->GetFourVector()+Jb[t]->GetFourVector()).M();
-      m_MQ_JET = sqrt(m_MPa_JET*m_MPa_JET+m_MPb_JET*m_MPb_JET)/sqrt(2.);
-      m_gamma_JET = 2.*m_MQ_JET/m_MS_JET;
-      m_CosDecayAngle_S_JET = S[t]->GetCosDecayAngle();
-      m_CosDecayAngle_Pa_JET = X2a[t]->GetCosDecayAngle();
-      m_CosDecayAngle_Pb_JET = X2b[t]->GetCosDecayAngle();
-      if(BSideIsA){ m_CosDecayAngle_Pa_JET = X2b[t]->GetCosDecayAngle(); m_CosDecayAngle_Pb_JET = X2a[t]->GetCosDecayAngle(); }
-      m_MVa_JET = Ja[t]->GetFourVector().M();
-      m_MVb_JET = Jb[t]->GetFourVector().M();
+      m_MPa_JET_ISR = X2a[t]->GetFourVector().M();
+      m_MPb_JET_ISR = X2b[t]->GetFourVector().M();
+      if(BSideIsA){ m_MPa_JET_ISR = X2b[t]->GetFourVector().M(); m_MPb_JET_ISR = X2a[t]->GetFourVector().M(); }
+      m_MS_JET_ISR = S[t]->GetFourVector().M();
+      m_MSV_JET_ISR = (Ja[t]->GetFourVector()+Jb[t]->GetFourVector()).M();
+      m_MQ_JET_ISR = sqrt(m_MPa_JET_ISR*m_MPa_JET_ISR+m_MPb_JET_ISR*m_MPb_JET_ISR)/sqrt(2.);
+      m_gamma_JET_ISR = 2.*m_MQ_JET_ISR/m_MS_JET_ISR;
+      m_CosDecayAngle_S_JET_ISR = S[t]->GetCosDecayAngle();
+      m_CosDecayAngle_Pa_JET_ISR = X2a[t]->GetCosDecayAngle();
+      m_CosDecayAngle_Pb_JET_ISR = X2b[t]->GetCosDecayAngle();
+      m_CosDecayAngle_Va_JET_ISR = Ja[t]->GetCosDecayAngle();
+      m_CosDecayAngle_Vb_JET_ISR = Jb[t]->GetCosDecayAngle();
+      if(BSideIsA){ m_CosDecayAngle_Pa_JET_ISR = X2b[t]->GetCosDecayAngle(); m_CosDecayAngle_Pb_JET_ISR = X2a[t]->GetCosDecayAngle(); 
+                    m_CosDecayAngle_Va_JET_ISR = Jb[t]->GetCosDecayAngle(); m_CosDecayAngle_Vb_JET_ISR = Ja[t]->GetCosDecayAngle(); }
+      m_MVa_JET_ISR = Ja[t]->GetFourVector().M();
+      m_MVb_JET_ISR = Jb[t]->GetFourVector().M();
       if(BSideIsA){ m_MVa = Jb[t]->GetFourVector().M(); m_MVb = Ja[t]->GetFourVector().M(); }
-      m_PTS_CM_JET = S[t]->GetFourVector(*CM[t]).Pt();
-      TLorentzVector TLV_L_CMJET = Ja[t]->GetFourVector(*CM[t]) + Jb[t]->GetFourVector(*CM[t]);
-      m_RZPara_JET = TLV_L_CMJET.Vect().Dot(S[t]->GetFourVector(*CM[t]).Vect().Unit())/S[t]->GetFourVector(*CM[t]).Vect().Mag();
-      m_MINV_JET = TLV_L_CMJET.M()*m_RISR_JET/m_RZPara_JET;
+      m_PTS_CM_JET_ISR = S[t]->GetFourVector(*CM[t]).Pt();
+      TLorentzVector TLV_L_CMJET_ISR = Ja[t]->GetFourVector(*CM[t]) + Jb[t]->GetFourVector(*CM[t]);
+      m_RZPara_JET_ISR = TLV_L_CMJET_ISR.Vect().Dot(S[t]->GetFourVector(*CM[t]).Vect().Unit())/S[t]->GetFourVector(*CM[t]).Vect().Mag();
+      m_MINV_JET_ISR = TLV_L_CMJET_ISR.M()*m_RISR_JET_ISR/m_RZPara_JET_ISR;
 
       TLorentzVector X1a_S = X1a[t]->GetFourVector(*S[t]);
       TLorentzVector X1b_S = X1b[t]->GetFourVector(*S[t]);
@@ -1321,17 +1506,17 @@ void ReducedNtuple<Base>::FillOutputTree(TTree* tree, const Systematic& sys, boo
       Ib_S0.SetPtEtaPhiM(X1b_S.Pt(), X1b_S.Eta(), X1b_S.Phi(), 0.);
       Ja_S0.SetPtEtaPhiM(Ja_S.Pt(), Ja_S.Eta(), Ja_S.Phi(), 0.);
       Jb_S0.SetPtEtaPhiM(Jb_S.Pt(), Jb_S.Eta(), Jb_S.Phi(), 0.);
-      m_MS_S0_JET = (Ia_S0+Ib_S0+Ja_S0+Jb_S0).M();
-      m_MV_S0_JET = (Ja_S0+Jb_S0).M();
-      m_MQ_S0_JET = sqrt(((Ia_S0+Ja_S0).M2()+(Ib_S0+Jb_S0).M2())/2.);
-      m_gamma_S0_JET = 2.*m_MQ_S0_JET/m_MS_S0_JET;
+      m_MS_S0_JET_ISR = (Ia_S0+Ib_S0+Ja_S0+Jb_S0).M();
+      m_MV_S0_JET_ISR = (Ja_S0+Jb_S0).M();
+      m_MQ_S0_JET_ISR = sqrt(((Ia_S0+Ja_S0).M2()+(Ib_S0+Jb_S0).M2())/2.);
+      m_gamma_S0_JET_ISR = 2.*m_MQ_S0_JET_ISR/m_MS_S0_JET_ISR;
 
       TLorentzVector X1a_X2a = X1a[t]->GetFourVector(*X2a[t]);
       TLorentzVector X1b_X2b = X1b[t]->GetFourVector(*X2b[t]);
       TLorentzVector X2a_S = X2a[t]->GetFourVector(*S[t]);
-      m_MPTilde_JET = X1a_X2a.Vect().Mag() + X1b_X2b.Vect().Mag();
-      m_MSTilde_JET = sqrt(m_MPTilde_JET*m_MPTilde_JET+X2a_S.Vect().Mag2());
-      m_gammaTilde_JET = m_MPTilde_JET/m_MSTilde_JET;
+      m_MPTilde_JET_ISR = X1a_X2a.Vect().Mag() + X1b_X2b.Vect().Mag();
+      m_MSTilde_JET_ISR = sqrt(m_MPTilde_JET_ISR*m_MPTilde_JET_ISR+X2a_S.Vect().Mag2());
+      m_gammaTilde_JET_ISR = m_MPTilde_JET_ISR/m_MSTilde_JET_ISR;
 
       // removing momentum components parallel to CM->S boost
       TLorentzVector vP_S_CM  = S[t]->GetFourVector(*CM[t]);
@@ -1375,10 +1560,104 @@ void ReducedNtuple<Base>::FillOutputTree(TTree* tree, const Systematic& sys, boo
       double PX2_BoostT = (vP_Ja_S+vP_Ia_S).P();
       double MX2a_BoostT = (vP_Ja_S+vP_Ia_S).M();
       double MX2b_BoostT = (vP_Jb_S+vP_Ib_S).M();
-      m_Mperp_JET = sqrt(MX2a_BoostT*MX2a_BoostT+MX2b_BoostT*MX2b_BoostT)/sqrt(2.);
-      m_gammaT_JET = 2*m_Mperp_JET/(sqrt(MX2a_BoostT*MX2a_BoostT+PX2_BoostT*PX2_BoostT) +
+      m_Mperp_JET_ISR = sqrt(MX2a_BoostT*MX2a_BoostT+MX2b_BoostT*MX2b_BoostT)/sqrt(2.);
+      m_gammaT_JET_ISR = 2*m_Mperp_JET_ISR/(sqrt(MX2a_BoostT*MX2a_BoostT+PX2_BoostT*PX2_BoostT) +
             		sqrt(MX2b_BoostT*MX2b_BoostT+PX2_BoostT*PX2_BoostT));
-    }
+    } // End JET_ISR
+    if(t==3){ // JET only (no ISR) tree
+      if(m_Njet < 2){
+        m_treeSkipped[t] = true;
+        continue;
+      }
+      std::vector<RFKey> jetID;
+      for(int i = 0; i < m_Njet; i++){
+        jetID.push_back(COMB_J[t]->AddLabFrameFourVector(Jets[i]));
+      }
+      if(!LAB[t]->AnalyzeEvent())
+        cout << "Something went wrong with tree event analysis" << endl;
+
+      bool BSideIsA = false;
+      if(Jb[t]->GetFourVector().M() > Ja[t]->GetFourVector().M()) BSideIsA = true;
+
+      // jet counting in ISR/S, hemispheres
+      for(int i = 0; i < m_Njet; i++){
+        if(COMB_J[t]->GetFrame(jetID[i]) == *Ja[t]){
+          if(!BSideIsA){
+            m_Njet_a_JET++;
+            if(Jets[i].BtagID() >= kMedium){
+              m_Nbjet_a_JET++;
+            }
+            m_index_jet_a_JET.push_back(i);
+          }
+          else{
+            m_Njet_b_JET++;
+            if(Jets[i].BtagID() >= kMedium){
+              m_Nbjet_b_JET++;
+            }
+            m_index_jet_b_JET.push_back(i);
+          }
+        }
+        if(COMB_J[t]->GetFrame(jetID[i]) == *Jb[t]){
+          if(!BSideIsA){
+            m_Njet_b_JET++;
+            if(Jets[i].BtagID() >= kMedium){
+              m_Nbjet_b_JET++;
+            }
+            m_index_jet_b_JET.push_back(i);
+          }
+          else{
+            m_Njet_a_JET++;
+            if(Jets[i].BtagID() >= kMedium){
+              m_Nbjet_a_JET++;
+            }
+            m_index_jet_a_JET.push_back(i);
+          }
+        }
+      }
+
+      m_MPa_JET = X2a[t]->GetFourVector().M();
+      m_MPb_JET = X2b[t]->GetFourVector().M();
+      if(BSideIsA){ m_MPa_JET = X2b[t]->GetFourVector().M(); m_MPb_JET = X2a[t]->GetFourVector().M(); }
+      m_MS_JET = S[t]->GetFourVector().M();
+      m_MSV_JET = (Ja[t]->GetFourVector()+Jb[t]->GetFourVector()).M();
+      m_MQ_JET = sqrt(m_MPa_JET*m_MPa_JET+m_MPb_JET*m_MPb_JET)/sqrt(2.);
+      m_gamma_JET = 2.*m_MQ_JET/m_MS_JET;
+      m_CosDecayAngle_S_JET = S[t]->GetCosDecayAngle();
+      m_CosDecayAngle_Pa_JET = X2a[t]->GetCosDecayAngle();
+      m_CosDecayAngle_Pb_JET = X2b[t]->GetCosDecayAngle();
+      m_CosDecayAngle_Va_JET = Ja[t]->GetCosDecayAngle();
+      m_CosDecayAngle_Vb_JET = Jb[t]->GetCosDecayAngle();
+      if(BSideIsA){ m_CosDecayAngle_Pa_JET = X2b[t]->GetCosDecayAngle(); m_CosDecayAngle_Pb_JET = X2a[t]->GetCosDecayAngle(); 
+                    m_CosDecayAngle_Va_JET = Jb[t]->GetCosDecayAngle(); m_CosDecayAngle_Vb_JET = Ja[t]->GetCosDecayAngle(); }
+      m_MVa_JET = Ja[t]->GetFourVector().M();
+      m_MVb_JET = Jb[t]->GetFourVector().M();
+      if(BSideIsA){ m_MVa = Jb[t]->GetFourVector().M(); m_MVb = Ja[t]->GetFourVector().M(); }
+
+      TLorentzVector X1a_S = X1a[t]->GetFourVector(*S[t]);
+      TLorentzVector X1b_S = X1b[t]->GetFourVector(*S[t]);
+      TLorentzVector Ja_S = Ja[t]->GetFourVector(*S[t]);
+      TLorentzVector Jb_S = Jb[t]->GetFourVector(*S[t]);
+      TLorentzVector Ia_S0;
+      TLorentzVector Ib_S0;
+      TLorentzVector Ja_S0;
+      TLorentzVector Jb_S0;
+      Ia_S0.SetPtEtaPhiM(X1a_S.Pt(), X1a_S.Eta(), X1a_S.Phi(), 0.);
+      Ib_S0.SetPtEtaPhiM(X1b_S.Pt(), X1b_S.Eta(), X1b_S.Phi(), 0.);
+      Ja_S0.SetPtEtaPhiM(Ja_S.Pt(), Ja_S.Eta(), Ja_S.Phi(), 0.);
+      Jb_S0.SetPtEtaPhiM(Jb_S.Pt(), Jb_S.Eta(), Jb_S.Phi(), 0.);
+      m_MS_S0_JET = (Ia_S0+Ib_S0+Ja_S0+Jb_S0).M();
+      m_MV_S0_JET = (Ja_S0+Jb_S0).M();
+      m_MQ_S0_JET = sqrt(((Ia_S0+Ja_S0).M2()+(Ib_S0+Jb_S0).M2())/2.);
+      m_gamma_S0_JET = 2.*m_MQ_S0_JET/m_MS_S0_JET;
+
+      TLorentzVector X1a_X2a = X1a[t]->GetFourVector(*X2a[t]);
+      TLorentzVector X1b_X2b = X1b[t]->GetFourVector(*X2b[t]);
+      TLorentzVector X2a_S = X2a[t]->GetFourVector(*S[t]);
+      m_MPTilde_JET = X1a_X2a.Vect().Mag() + X1b_X2b.Vect().Mag();
+      m_MSTilde_JET = sqrt(m_MPTilde_JET*m_MPTilde_JET+X2a_S.Vect().Mag2());
+      m_gammaTilde_JET = m_MPTilde_JET/m_MSTilde_JET;
+
+    } // End JET
   } // End of RJR trees analysis
 
   if(!AnalysisBase<Base>::IsData()){
