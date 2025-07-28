@@ -122,7 +122,8 @@ void NeventTool::Initialize_Cascades(const std::string& dataset, const std::stri
     m_Tree->GetEntry(i);
 
     if((dataset == (*m_dataset)) &&
-       (filetag == (*m_filetag))){
+       (filetag == (*m_filetag)) &&
+       (m_Code == 0)){
       Nevent += m_Nevent;
       Nweight += m_Nweight;
     }

@@ -120,16 +120,6 @@ int main(int argc, char* argv[]) {
     filenames.push_back(inputFileName);
   }
 
-  TChain* chain;
-  if(DO_TREE)
-    chain = (TChain*) new TChain(TreeName);
-  
-  int Nfile = filenames.size();
-  for(int i = 0; i < Nfile; i++){
-    chain->Add(filenames[i].c_str());
-    cout << "   Adding file " << filenames[i] << endl;
-  }
-
   Float_t genWeight;
   UInt_t  luminosityBlock;
   
@@ -154,10 +144,33 @@ int main(int argc, char* argv[]) {
 
   string dataset = string(DataSet);
   string filetag = string(FileTag);
+
+  TChain* chain;
+  if(DO_TREE)
+    chain = (TChain*) new TChain(TreeName);
+  
+  int Nfile = filenames.size();
+  for(int i = 0; i < Nfile; i++){
+    chain->Add(filenames[i].c_str());
+    cout << "   Adding file " << filenames[i] << endl;
+  }
     
   cout << "Setting Branch Addresses" << endl;
 
-  if(TreeName == "Events"){
+  bool status1 = false;
+  bool status2 = false;
+  if(strcmp(TreeName,"Runs") == 0){
+    if(chain->GetListOfBranches()->FindObject("genEventSumw"))
+      status1 = true;
+    if(chain->GetListOfBranches()->FindObject("genEventCount"))
+      status2 = true;
+  }
+
+  if(!status1 || !status2){
+    delete chain;
+    chain = (TChain*) new TChain("Events");
+    for(int i = 0; i < Nfile; i++)
+      chain->Add(filenames[i].c_str());
     chain->SetBranchAddress("genWeight", &genWeight, &b_genWeight);
     chain->SetBranchAddress("luminosityBlock", &luminosityBlock, &b_luminosityBlock);
     
@@ -175,10 +188,6 @@ int main(int argc, char* argv[]) {
     chain->SetBranchStatus("GenPart_mass", 1);
     chain->SetBranchStatus("GenPart_pdgId", 1);
   }
-  else{
-    chain->SetBranchAddress("genEventSumw", &genEventSumw, &b_genEventSumw);
-    chain->SetBranchAddress("genEventCount", &genEventCount, &b_genEventCount);
-  }
 
   int MP = 0;
   int MC = 0;
@@ -193,7 +202,7 @@ int main(int argc, char* argv[]) {
   int NEVENT = chain->GetEntries();
   cout << "TOTAL of " << NEVENT << " entries" << endl;
   if(NEVENT == 0) return 1;
-  if(TreeName == "Events"){
+  if(!status1 || !status2){
 
     for(int e = 0; e < NEVENT; e++){
       int mymod = NEVENT/10;
@@ -238,7 +247,7 @@ int main(int argc, char* argv[]) {
               MP = mass;
         }
         // Getting 'code' for cascades
-        if(dataset.find("Cascade") != std::string::npos){
+        if(DO_CASCADES && DO_SMS){
           if (abs(PDGID) % 10000 == 11 || abs(PDGID) % 10000 == 13) {
             has_Slep = true;
             if (PDGID > 0) is_plus = false;
@@ -249,7 +258,7 @@ int main(int argc, char* argv[]) {
           if (PDGID > 2000000) is_left = false;
         }
       } // for(int i = 0; i < Ngen; i++)
-      if(dataset.find("Cascade") != std::string::npos){
+      if(DO_CASCADES && DO_SMS){
         // build code from booleans
         if(has_Slep && !has_Snu) code += 1; // SlepSlep
         if(has_Slep && has_Snu) code += 2; // SlepSnu
