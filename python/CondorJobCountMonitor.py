@@ -18,11 +18,11 @@ class CondorJobCountMonitor:
             total = 0
             for line in output.split("\n"):
                 if "Total for query" in line:
-                    total += int(line.split(' ')[3])  # Extract total job count
+                    total += int(line.split(' ')[3]) # Extract total job count
             return total
         except Exception as e:
             print(f"Error retrieving job count: {e}")
-        return -1  # Return -1 if an error occurs
+        return -1 # Return -1 if an error occurs
     
     def wait_until_jobs_below(self):
         """Waits until the number of running jobs is below the given threshold."""
