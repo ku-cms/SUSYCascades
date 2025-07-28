@@ -32,6 +32,21 @@ MAX_JOBS_SUB = 15000 # Max jobs/submission (Connect max is 20000)
 MIN_JOBS_SUB = 5000 # Min jobs/submission
 # ----------------------------------------------------------- #
 
+def get_auto_THRESHOLD():
+    result = subprocess.run(
+        ["condor_config_val", "-dump"],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True,
+        check=True
+    )
+    for line in result.stdout.splitlines():
+        if line.startswith("MAX_JOBS_PER_OWNER"):
+            _, value = line.split("=")
+            return int(value.strip())
+            break
+    return MAX_JOBS_SUB
+
 def new_listfile(rootlist, listfile):
     mylist = open(listfile,'w')
     for f in rootlist:
@@ -307,6 +322,8 @@ if __name__ == "__main__":
     if MAX_JOBS_SUB < MIN_JOBS_SUB:
         MIN_JOBS_SUB = 1000
         MAX_JOBS_SUB = 10000
+
+    THRESHOLD = get_auto_THRESHOLD()
     
     print (" --- Preparing condor submission to create ntuples.")
     if DO_DATA:
@@ -332,8 +349,6 @@ if __name__ == "__main__":
 
     if COUNT:
         print (" --- Only Counting (No Processing)")
-
-    condor_monitor = CondorJobCountMonitor(threshold=THRESHOLD,verbose=False)
 
     # input sample list
     listfile = LIST
@@ -584,7 +599,6 @@ if __name__ == "__main__":
 
     submit_dir  = srcdir        
     submit_list = [os.path.join(submit_dir, f) for f in os.listdir(submit_dir) if (os.path.isfile(os.path.join(submit_dir, f)) and ('.submit' in f) and ('_single' not in f))]
-    #n_samples   = len(submit_list)
 
     # Prep csv file
     if CSV:
@@ -595,11 +609,14 @@ if __name__ == "__main__":
 
     # don't submit jobs if --dry-run or --count are used
     if not DRY_RUN and not COUNT:
+        condor_monitor = CondorJobCountMonitor(threshold=THRESHOLD,verbose=False)
         for f in submit_list:
             sample_handle = f.split("/")
             sample_handle = sample_handle[-1]
             sample_handle = sample_handle.replace(".submit",'')
             print (f"submitting: {f}")
+            submit_jobs = input_info[sample_handle]["n_jobs"] + 1
+            condor_monitor.set_threshold(THRESHOLD-submit_jobs)
             if CSV:
                 condor_monitor.wait_until_jobs_below()
                 os.system('condor_submit '+f+' | tee '+sample_handle+'.txt')
@@ -649,5 +666,5 @@ if __name__ == "__main__":
         # os.system(f'nohup python3 python/CheckFiles.py -d {TARGET}/ -o {OUT_DIR} -e > /dev/null 2>&1 &')
         print(Fore.GREEN + "Congrats... your jobs were submitted!" + Fore.RESET)
         print('Run this after jobs have finished to check for failed jobs (and resubmit them):')
-        print(f'nohup python3 python/CheckFiles.py -d {TARGET} -o {OUT_DIR} -e > CheckFiles_{filetag}.debug 2>&1 &')
+        print(f'nohup python3 python/CheckFiles.py -d {TARGET} -o {OUT_DIR} -e > CheckFiles_{filetag}_0.debug 2>&1 &')
 
