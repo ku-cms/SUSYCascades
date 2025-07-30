@@ -256,7 +256,7 @@ if __name__ == "__main__":
     if DO_PRIVATEMC:
         print ("Processing as Private MC")
 
-    THRESHOLD = get_auto_THRESHOLD()
+    THRESHOLD = 0.99*get_auto_THRESHOLD()
     gitHashTool = GitHashTool()
     GITHASH = gitHashTool.getHash()
 
@@ -395,7 +395,7 @@ if __name__ == "__main__":
             sample_handle = f.split("/")
             sample_handle = sample_handle[-1]
             sample_handle = sample_handle.replace(".submit",'')
-            submit_jobs = job_total_dataset[sample_handle] + 1
+            submit_jobs = job_total_dataset[sample_handle]
             condor_monitor.set_threshold(THRESHOLD-submit_jobs)
             condor_monitor.wait_until_jobs_below()
             print("submitting: ", f)
