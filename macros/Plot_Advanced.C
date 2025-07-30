@@ -7,14 +7,14 @@ void Plot_Advanced(){
   InitRJRtree();
   //DrawRJRtree(false); gApplication->Terminate(0); // end macro if making tree plot
 
-  string NtuplePath = "/local-scratch/zflowers/NTUPLES/HADD_NTUPLES_v2/";
+  string NtuplePath = "/local-scratch/zflowers/NTUPLES/HADD/";
 
   // 10 is Summer23BPix
   SampleTool ST(NtuplePath, 10);
   
   ScaleFactorTool SF;
 
-  output_root_file += "Advanced_NTUPLES_v2_Cands_";
+  output_root_file += "Advanced_NTUPLES_v3_";
 
   const double CandMinMass = 1.; // 3.5 to get above J/Psi
   const double CandMaxMass = 250.; // 45, 120, 250
@@ -25,7 +25,11 @@ void Plot_Advanced(){
   if(CandSameHemi) output_root_file += "SameHemi_";
 
   //g_Label = "TESTING";
-  g_Label = "3L 4<MVa<65 MS>100 MQ<150 LepQual";
+  //g_Label = "Jets";
+  //g_Label = "Graham";
+  //g_Label = "NoMET BL";
+  g_Label = "3L !Bronze maxSIP3D<3.5 MS>300 4<MVa<65 LepPtTrig Cos";
+  //g_Label = "=3L !Bronze MET150 PTISR150 RISR0.5";
   //g_Label = "=3L !Bronze !0J S";
   //g_Label = "2L PreSelection 0JS";
   //g_Label = "PreSelection 3ObjS HighMass CandCos<0.8 PZPara+ BetaZ<0.9 Exclusive";
@@ -62,21 +66,14 @@ void Plot_Advanced(){
   bool Norm = true; // scale hists by lumi
 
   std::vector<std::pair<std::string, ProcessList>> vec_samples;
-
-  std::map<std::string, VS> map_vsignals;
-  map_vsignals.insert(std::make_pair("Cascades_220", VS({"Cascades_*_220_*"})));
-  map_vsignals.insert(std::make_pair("Cascades_260", VS({"Cascades_*_260_*"})));
-  map_vsignals.insert(std::make_pair("Cascades_270", VS({"Cascades_*_270_*"})));
     
-  // loop over backgrounds and add to map
-  ProcessList backgrounds = ST.Get(kBkg);
-  //backgrounds = backgrounds.Remove("QCD");
-  for(int s = 0; s < int(backgrounds.GetN()); s++){
-    ProcessList bkg;
-    bkg += backgrounds[s];
-    vec_samples.push_back(std::make_pair(backgrounds[s].Name(), bkg));
-  }
-
+  std::map<std::string, VS> map_vsignals;
+  //map_vsignals.insert(std::make_pair("Cascades_220_SMS", VS({"Cascades_SMS_*_220_*"})));
+  //map_vsignals.insert(std::make_pair("Cascades_260_SMS", VS({"Cascades_SMS_*_260_*"})));
+  //map_vsignals.insert(std::make_pair("Cascades_270_SMS", VS({"Cascades_SMS_*_270_*"})));
+  //map_vsignals.insert(std::make_pair("T1bbbb_1500_SMS", VS({"T1bbbb_2000_1500_*"})));
+  //map_vsignals.insert(std::make_pair("T1bbbb_1900_SMS", VS({"T1bbbb_2000_1900_*"})));
+  //map_vsignals.insert(std::make_pair("T1bbbb_1752_SMS", VS({"T1bbbb_2000_1752_*"})));
   // loop over signals and add to map
   for(auto p = map_vsignals.begin(); p != map_vsignals.end(); p++){
     ProcessList signals;
@@ -84,6 +81,23 @@ void Plot_Advanced(){
       signals += ST.Get(s);
     }
     vec_samples.push_back(std::make_pair(p->first, signals));
+  }
+
+  ProcessList signals = ST.Get(kSig);
+  signals = signals.Remove("T1").Remove("SMS");
+  for(int s = 0; s < int(signals.GetN()); s++){
+    ProcessList sig;
+    sig += signals[s];
+    vec_samples.push_back(std::make_pair(signals[s].Name(), sig));
+  }
+
+  // loop over backgrounds and add to map
+  ProcessList backgrounds = ST.Get(kBkg);
+  //backgrounds = backgrounds.Remove("QCD");
+  for(int s = 0; s < int(backgrounds.GetN()); s++){
+    ProcessList bkg;
+    bkg += backgrounds[s];
+    vec_samples.push_back(std::make_pair(backgrounds[s].Name(), bkg));
   }
 
   // loop over data and add to map
@@ -175,7 +189,7 @@ void Plot_Advanced(){
 
   // hists for holding number of events
   const int EC_bins = vec_samples.size() + 1;
-  const int Zbi_bins = map_vsignals.size();
+  const int Zbi_bins = map_vsignals.size() + signals.GetN();
   int vec_samples_index = 0;
   int Zbi_samples_index = 0;
   TH2D* hist_EventCount = new TH2D("EventCount", "EventCount", 22, 0, 22, EC_bins, 0, EC_bins);
@@ -189,7 +203,8 @@ void Plot_Advanced(){
 
   // Cut flows
   vector<TH1*> vect_hist_cutflow;
-  const int CF_bins = 15;
+  const int CF_bins = 25;
+  vector<string> vect_str_cutflow_labels(CF_bins, "");
 
   for (auto p = vec_samples.begin(); p != vec_samples.end(); p++){
     hist_EventCount->GetYaxis()->SetBinLabel(vec_samples_index+1, FP.getTitle(p->first).c_str());
@@ -1056,6 +1071,8 @@ void Plot_Advanced(){
     TH2D* hist_RISRLEP_gammaTilde = new TH2D((title+"_RISRLEP_gammaTilde").c_str(), (title+"_RISRLEP_gammaTilde;R_{ISR}^{LEP};#tilde{#gamma}").c_str(), g_NX, 0., 1., g_NX, 0., 1.);
     hists2.push_back(hist_RISRLEP_gammaTilde);
 
+    TH2D* hist_MINVLEP_RISRLEP = new TH2D((title+"_MINVLEP_RISRLEP").c_str(), (title+"_MINVLEP_PTISRLEP;M_{INV}^{LEP};R_{ISR}^{LEP}").c_str(), g_NX, 0., 1000., g_NX, 0., 0.5);
+    hists2.push_back(hist_MINVLEP_RISRLEP);
     TH2D* hist_MINVLEP_MET = new TH2D((title+"_MINVLEP_MET").c_str(), (title+"_MINVLEP_MET;M_{INV}^{LEP};MET").c_str(), g_NX, 0., 1000., g_NX, 0., 700.);
     hists2.push_back(hist_MINVLEP_MET);
     TH2D* hist_MINVLEP_PTISRLEP = new TH2D((title+"_MINVLEP_PTISRLEP").c_str(), (title+"_MINVLEP_PTISRLEP;M_{INV}^{LEP};p_{T}^{ISR LEP}").c_str(), g_NX, 0., 1000., g_NX, 0., 800.);
@@ -1100,10 +1117,30 @@ void Plot_Advanced(){
     TH2D* hist_CosDecayAngleVaLEP_CosDecayAngleSLEP = new TH2D((title+"_CosDecayAngleVaLEP_CosDecayAngleSLEP").c_str(), (title+"_CosDecayAngleVaLEP_CosDecayAngleSLEP;cos#theta_{Va}^{LEP};cos#theta_{S}^{LEP}").c_str(), g_NX, -1., 1., g_NX, -1., 1.);
     hists2.push_back(hist_CosDecayAngleVaLEP_CosDecayAngleSLEP);
 
-    TH2D* hist_MSLEP_MCosDecayAngleP = new TH2D((title+"_MSLEP_MCosDecayAngleP").c_str(), (title+"_MSLEP_MCosDecayAngleP;M_{Q}^{LEP};cos#theta_{Pa}^{LEP}-cos#theta_{Pb}^{LEP}").c_str(), g_NX, 0., 600., g_NX, -2., 2.);
+    TH2D* hist_MSLEP_MCosDecayAngleP = new TH2D((title+"_MSLEP_MCosDecayAngleP").c_str(), (title+"_MSLEP_MCosDecayAngleP;M_{S}^{LEP};cos#theta_{Pa}^{LEP}-cos#theta_{Pb}^{LEP}").c_str(), g_NX, 0., 600., g_NX, -2., 2.);
     hists2.push_back(hist_MSLEP_MCosDecayAngleP);
     TH2D* hist_MQLEP_MCosDecayAngleP = new TH2D((title+"_MQLEP_MCosDecayAngleP").c_str(), (title+"_MQLEP_MCosDecayAngleP;M_{Q}^{LEP};cos#theta_{Pa}^{LEP}-cos#theta_{Pb}^{LEP}").c_str(), g_NX, 0., 600., g_NX, -2., 2.);
     hists2.push_back(hist_MQLEP_MCosDecayAngleP);
+
+    TH2D* hist_CosDecayAnglePaLEP_MPb = new TH2D((title+"_CosDecayAnglePaLEP_MPb").c_str(), (title+"_CosDecayAnglePaLEP_MPb;cos#theta^{Pa};M_{Pb}^{LEP}").c_str(), g_NX, -1., 1., g_NX, 0., 300.);
+    hists2.push_back(hist_CosDecayAnglePaLEP_MPb);
+    TH2D* hist_CosDecayAnglePaLEP_MVa = new TH2D((title+"_CosDecayAnglePaLEP_MVa").c_str(), (title+"_CosDecayAnglePaLEP_MVa;cos#theta^{Pa};M_{Va}^{LEP}").c_str(), g_NX, -1., 1., g_NX, 0., 200.);
+    hists2.push_back(hist_CosDecayAnglePaLEP_MVa);
+    TH2D* hist_CosDecayAnglePbLEP_MPa = new TH2D((title+"_CosDecayAnglePbLEP_MPa").c_str(), (title+"_CosDecayAnglePbLEP_MPa;cos#theta^{Pb};M_{Pa}^{LEP}").c_str(), g_NX, -1., 1., g_NX, 0., 300.);
+    hists2.push_back(hist_CosDecayAnglePbLEP_MPa);
+    TH2D* hist_CosDecayAnglePbLEP_MPb = new TH2D((title+"_CosDecayAnglePbLEP_MPb").c_str(), (title+"_CosDecayAnglePbLEP_MPb;cos#theta^{Pb};M_{Pb}^{LEP}").c_str(), g_NX, -1., 1., g_NX, 0., 300.);
+    hists2.push_back(hist_CosDecayAnglePbLEP_MPb);
+    TH2D* hist_CosDecayAnglePbLEP_MVa = new TH2D((title+"_CosDecayAnglePbLEP_MVa").c_str(), (title+"_CosDecayAnglePbLEP_MVa;cos#theta^{Pb};M_{Va}^{LEP}").c_str(), g_NX, -1., 1., g_NX, 0., 200.);
+    hists2.push_back(hist_CosDecayAnglePbLEP_MVa);
+    TH2D* hist_CosDecayAnglePbLEP_MS = new TH2D((title+"_CosDecayAnglePbLEP_MS").c_str(), (title+"_CosDecayAnglePbLEP_MS;cos#theta^{Pb};M_{S}^{LEP}").c_str(), g_NX, -1., 1., g_NX, 0., 1000.);
+    hists2.push_back(hist_CosDecayAnglePbLEP_MS);
+    TH2D* hist_MPb_MVa = new TH2D((title+"_MPb_MVa").c_str(), (title+"_MPb_MVa;M_{Pb}^{LEP};M_{Va}^{LEP}").c_str(), g_NX, 0., 300., g_NX, 0., 200.);
+    hists2.push_back(hist_MPb_MVa); 
+
+    TH2D* hist_MPa_MCosDecayAngleM = new TH2D((title+"_MPa_MCosDecayAngleM").c_str(), (title+"_MPa_MCosDecayAngleM;M_{Pa}^{LEP};cos#theta_{Pa}^{LEP}*cos#theta_{Pb}^{LEP}").c_str(), g_NX, 0., 300., g_NX, -1., 1.);
+    hists2.push_back(hist_MPa_MCosDecayAngleM);
+    TH2D* hist_MPb_MCosDecayAngleM = new TH2D((title+"_MPb_MCosDecayAngleM").c_str(), (title+"_MPb_MCosDecayAngleM;M_{Pb}^{LEP};cos#theta_{Pb}^{LEP}*cos#theta_{Pb}^{LEP}").c_str(), g_NX, 0., 300., g_NX, -1., 1.);
+    hists2.push_back(hist_MPb_MCosDecayAngleM);
 
     TEfficiency* eff_METtrig = new TEfficiency((title+"_eff_METtrig").c_str(), "Efficiency of MET trigger;Eff;MET [GeV]", g_NX, 0., 500.);
     effs.push_back(eff_METtrig);
@@ -1147,7 +1184,9 @@ void Plot_Advanced(){
         
         ReducedBase_V2* base = new ReducedBase_V2(chain);
         
+        gErrorIgnoreLevel = kFatal;
         int Nentry = base->fChain->GetEntries(); 
+        gErrorIgnoreLevel = 0;
         if(SKIP < 1.) SKIP = 1.;
         int BKG_SKIP = SKIP;
         if(is_data || is_signal) BKG_SKIP = 1; // only use skip on BKG
@@ -1167,10 +1206,10 @@ void Plot_Advanced(){
           CF_bin = 0;
           hist_CutFlow->SetBinContent(CF_bin, hist_CutFlow->GetBinContent(CF_bin)+weight);
           CF_bin++; hist_CutFlow->SetBinContent(CF_bin, hist_CutFlow->GetBinContent(CF_bin)+weight); 
-          hist_CutFlow->GetXaxis()->SetBinLabel(CF_bin, "NTUPLES (>= 2L)");
+          vect_str_cutflow_labels[CF_bin] = "NTUPLES";
 
           // Get Physics Objects
-          int Njet = base->Njet;
+          int Njet     = base->Njet;
           int Nlep     = base->Nlep;
           int NjetS    = base->Njet_S;
           int NbjetS   = base->Nbjet_S;
@@ -1184,11 +1223,11 @@ void Plot_Advanced(){
           // Apply PreSelection
           //if(base->Njet == 0) continue;
           //CF_bin++; hist_CutFlow->SetBinContent(CF_bin, hist_CutFlow->GetBinContent(CF_bin)+weight); 
-          //hist_CutFlow->GetXaxis()->SetBinLabel(CF_bin, "Njet > 0");
+          //vect_str_cutflow_labels[CF_bin] = "Njet > 0";
 
           if(Nlep != 3) continue;
           CF_bin++; hist_CutFlow->SetBinContent(CF_bin, hist_CutFlow->GetBinContent(CF_bin)+weight); 
-          hist_CutFlow->GetXaxis()->SetBinLabel(CF_bin, "= 3L");
+          vect_str_cutflow_labels[CF_bin] = "= 3L";
           
           //if(do_FilterDilepton)
           //  if(SF.DileptonEvent(base))
@@ -1200,6 +1239,9 @@ void Plot_Advanced(){
           double RISR = base->RISR;
           double PTISR = base->PTISR;
           double PISR = base->PISR;
+          // JET
+          //RISR = base->RISR_JET;
+          //PTISR = base->PTISR_JET;
 
           double MSperpCM0 = base->MSperpCM0;
           double MQperpCM0 = base->MQperpCM0;
@@ -1216,30 +1258,23 @@ void Plot_Advanced(){
           //if(MET < 150.) // PreSelection
           //  continue;
           //CF_bin++; hist_CutFlow->SetBinContent(CF_bin, hist_CutFlow->GetBinContent(CF_bin)+weight); 
-          //hist_CutFlow->GetXaxis()->SetBinLabel(CF_bin, "MET > 150");
+          //vect_str_cutflow_labels[CF_bin] = "MET > 150";
           
           // apply trigger to data and FullSim events
           if(!base->SingleElectrontrigger && !base->SingleMuontrigger && !is_FastSim) // ATLAS
             continue;
           CF_bin++; hist_CutFlow->SetBinContent(CF_bin, hist_CutFlow->GetBinContent(CF_bin)+weight); 
-          hist_CutFlow->GetXaxis()->SetBinLabel(CF_bin, "Lepton trigger");
+          vect_str_cutflow_labels[CF_bin] = "Lepton trigger";
 
           //if(!base->METORtrigger && !is_FastSim) // PreSelection
           //  continue;
           //CF_bin++; hist_CutFlow->SetBinContent(CF_bin, hist_CutFlow->GetBinContent(CF_bin)+weight); 
-          //hist_CutFlow->GetXaxis()->SetBinLabel(CF_bin, "MET trigger");
+          //vect_str_cutflow_labels[CF_bin] = "MET trigger";
 
-          //if(PTISR < 100.) // PreSelection
+          //if(base->PTISR_JET < 250.) // PreSelection
 	  //  continue;
           //CF_bin++; hist_CutFlow->SetBinContent(CF_bin, hist_CutFlow->GetBinContent(CF_bin)+weight); 
-          //hist_CutFlow->GetXaxis()->SetBinLabel(CF_bin, "PTISR > 100");
-            
-          //if(RISR < 0.4 || RISR > 0.7) // CR
-          //if(RISR < 0.7 || RISR > 1.0)
-          //if(RISR < 0.5 || RISR > 1.0) // PreSelection
-          //  continue;
-          //CF_bin++; hist_CutFlow->SetBinContent(CF_bin, hist_CutFlow->GetBinContent(CF_bin)+weight); 
-          //hist_CutFlow->GetXaxis()->SetBinLabel(CF_bin, "R_{ISR} > 0.5");
+          //vect_str_cutflow_labels[CF_bin] = "PTISR > 250";
 
           // Cleaning cuts...
           double dphiCMI = base->dphiCMI;
@@ -1256,21 +1291,44 @@ void Plot_Advanced(){
           //   -1.5625*x*x+7.8125*x-8.766 > 0.)
           //  continue;
           //CF_bin++; hist_CutFlow->SetBinContent(CF_bin, hist_CutFlow->GetBinContent(CF_bin)+weight); 
-          //hist_CutFlow->GetXaxis()->SetBinLabel(CF_bin, "Cleaning Cuts");
+          //vect_str_cutflow_labels[CF_bin] = "Cleaning Cuts";
           // End of Cleaning cuts...
             
           double dphiMET_V = base->dphiMET_V;
           //if(fabs(base->dphiMET_V) > acos(-1.)/2.) continue; // PreSelection
           //CF_bin++; hist_CutFlow->SetBinContent(CF_bin, hist_CutFlow->GetBinContent(CF_bin)+weight); 
-          //hist_CutFlow->GetXaxis()->SetBinLabel(CF_bin, "#Delta#phi(MET, V) < #frac{#pi}{2}");
+          //vect_str_cutflow_labels[CF_bin] = "#Delta#phi(MET, V) < #frac{#pi}{2}";
+            
+          //if(RISR < 0.4 || RISR > 0.7) // CR
+          //if(RISR < 0.7 || RISR > 1.0)
+          //if(RISR < 0.5 || RISR > 1.0) // PreSelection
+          //if(base->RISR_JET < 0.5 || base->RISR_JET > 1.0) // PreSelection
+          //  continue;
+          //CF_bin++; hist_CutFlow->SetBinContent(CF_bin, hist_CutFlow->GetBinContent(CF_bin)+weight); 
+          //vect_str_cutflow_labels[CF_bin] = "R_{ISR} > 0.5";
+
+          //if(base->RISR_JET < 0.7) // PreSelection
+          //  continue;
+          //CF_bin++; hist_CutFlow->SetBinContent(CF_bin, hist_CutFlow->GetBinContent(CF_bin)+weight); 
+          //vect_str_cutflow_labels[CF_bin] = "R_{ISR} > 0.7";
+
+          //if(base->RISR_JET < 0.8) // PreSelection
+          //  continue;
+          //CF_bin++; hist_CutFlow->SetBinContent(CF_bin, hist_CutFlow->GetBinContent(CF_bin)+weight); 
+          //vect_str_cutflow_labels[CF_bin] = "R_{ISR} > 0.8";
+
+          //if(base->RISR_JET < 0.9) // PreSelection
+          //  continue;
+          //CF_bin++; hist_CutFlow->SetBinContent(CF_bin, hist_CutFlow->GetBinContent(CF_bin)+weight); 
+          //vect_str_cutflow_labels[CF_bin] = "R_{ISR} > 0.9";
 
           //if(Nlep + NjetS < 3) continue; // min 3 objects in S
           //CF_bin++; hist_CutFlow->SetBinContent(CF_bin, hist_CutFlow->GetBinContent(CF_bin)+weight); 
-          //hist_CutFlow->GetXaxis()->SetBinLabel(CF_bin, "3 Obj S");
+          //vect_str_cutflow_labels[CF_bin] = "3 Obj S";
 
           //if(Nlep < 3) continue;
           //CF_bin++; hist_CutFlow->SetBinContent(CF_bin, hist_CutFlow->GetBinContent(CF_bin)+weight); 
-          //hist_CutFlow->GetXaxis()->SetBinLabel(CF_bin, ">= 3L");
+          //vect_str_cutflow_labels[CF_bin] = ">= 3L";
 
           LepList list_a;
           LepList list_b;
@@ -1331,42 +1389,48 @@ void Plot_Advanced(){
           }
           if(nBL > 0) continue; // no bronze leps
           CF_bin++; hist_CutFlow->SetBinContent(CF_bin, hist_CutFlow->GetBinContent(CF_bin)+weight); 
-          hist_CutFlow->GetXaxis()->SetBinLabel(CF_bin, "!Bronze");
+          vect_str_cutflow_labels[CF_bin] = "!Bronze";
           //if(nSL > 0) continue; // no silver leps
           //if(nGL > 0) continue; // no gold leps
           //if(nSL > 3) continue; // no more than N silver leps
-          if(nGL < 1) continue; // at least N gold leps
+          if((abs(base->PDGID_lep->at(0)) == 13 && base->PT_lep->at(0) < 26.) || (abs(base->PDGID_lep->at(0)) == 11 && base->PT_lep->at(0) < 30.)) continue;
           CF_bin++; hist_CutFlow->SetBinContent(CF_bin, hist_CutFlow->GetBinContent(CF_bin)+weight); 
-          hist_CutFlow->GetXaxis()->SetBinLabel(CF_bin, "Lep Qual: GXX");
-          if(nGL < 2) continue; // at least N gold leps
-          CF_bin++; hist_CutFlow->SetBinContent(CF_bin, hist_CutFlow->GetBinContent(CF_bin)+weight); 
-          hist_CutFlow->GetXaxis()->SetBinLabel(CF_bin, "Lep Qual: GGX");
-          if(nGL < 3) continue; // at least N gold leps
-          CF_bin++; hist_CutFlow->SetBinContent(CF_bin, hist_CutFlow->GetBinContent(CF_bin)+weight); 
-          hist_CutFlow->GetXaxis()->SetBinLabel(CF_bin, "Lep Qual: GGG");
-          //if(base->PT_lep->at(0) < 20.) continue;
-          //CF_bin++; hist_CutFlow->SetBinContent(CF_bin, hist_CutFlow->GetBinContent(CF_bin)+weight); 
-          //hist_CutFlow->GetXaxis()->SetBinLabel(CF_bin, "p_{T}^{1} > 20");
+          vect_str_cutflow_labels[CF_bin] = "p_{T}^{1} > trig";
           //if(base->PT_lep->at(1) < 12.5) continue;
           //CF_bin++; hist_CutFlow->SetBinContent(CF_bin, hist_CutFlow->GetBinContent(CF_bin)+weight); 
-          //hist_CutFlow->GetXaxis()->SetBinLabel(CF_bin, "p_{T}^{2} > 12.5");
+          //vect_str_cutflow_labels[CF_bin] = "p_{T}^{2} > 12.5";
           //if(Nlep > 2)
           //  if(base->PT_lep->at(2) < 7.5) continue;
           //CF_bin++; hist_CutFlow->SetBinContent(CF_bin, hist_CutFlow->GetBinContent(CF_bin)+weight); 
-          //hist_CutFlow->GetXaxis()->SetBinLabel(CF_bin, "p_{T}^{3} > 7.5");
+          //vect_str_cutflow_labels[CF_bin] = "p_{T}^{3} > 7.5";
 
           //if(NbjetISR + NbjetS != 2) continue; // CR
           if(NbjetISR + NbjetS > 1) continue; // SR & ATLAS 'B-Veto'
           CF_bin++; hist_CutFlow->SetBinContent(CF_bin, hist_CutFlow->GetBinContent(CF_bin)+weight); 
-          hist_CutFlow->GetXaxis()->SetBinLabel(CF_bin, "B-Veto");
+          vect_str_cutflow_labels[CF_bin] = "B-Veto";
+
+          double maxSIP3D = std::max({base->SIP3D_lep->at(0), base->SIP3D_lep->at(1), base->SIP3D_lep->at(2)});
+          if(maxSIP3D > 3.5) continue;
+          CF_bin++; hist_CutFlow->SetBinContent(CF_bin, hist_CutFlow->GetBinContent(CF_bin)+weight); 
+          vect_str_cutflow_labels[CF_bin] = "SIP3DMax < 3.5";
+
+          //if(nGL < 1) continue; // at least N gold leps
+          //CF_bin++; hist_CutFlow->SetBinContent(CF_bin, hist_CutFlow->GetBinContent(CF_bin)+weight); 
+          //vect_str_cutflow_labels[CF_bin] = "Lep Qual: GXX";
+          //if(nGL < 2) continue; // at least N gold leps
+          //CF_bin++; hist_CutFlow->SetBinContent(CF_bin, hist_CutFlow->GetBinContent(CF_bin)+weight); 
+          //vect_str_cutflow_labels[CF_bin] = "Lep Qual: GGX";
+          //if(nGL < 3) continue; // at least N gold leps
+          //CF_bin++; hist_CutFlow->SetBinContent(CF_bin, hist_CutFlow->GetBinContent(CF_bin)+weight); 
+          //vect_str_cutflow_labels[CF_bin] = "Lep Qual: GGG";
 
           //if(NjetS != 0) continue; // SR
           //CF_bin++; hist_CutFlow->SetBinContent(CF_bin, hist_CutFlow->GetBinContent(CF_bin)+weight); 
-          //hist_CutFlow->GetXaxis()->SetBinLabel(CF_bin, "\"0J S\"");
+          //vect_str_cutflow_labels[CF_bin] = "0J S";
 
           //if(NjetS == 0) continue; // SR
           //CF_bin++; hist_CutFlow->SetBinContent(CF_bin, hist_CutFlow->GetBinContent(CF_bin)+weight); 
-          //hist_CutFlow->GetXaxis()->SetBinLabel(CF_bin, "\"!0J S\"");
+          //vect_str_cutflow_labels[CF_bin] = "!0J S";
 
           for(int i = 0; i < Nlep; i++){
             for(int j = 0; j < base->genNlep; j++){
@@ -1529,7 +1593,7 @@ void Plot_Advanced(){
           //  }
           //}
 
-          if(N_V_lep_cands == 0) continue;
+          //if(N_V_lep_cands == 0) continue;
           int min_cand_index = 0;
           int max_cand_index = 0;
           for(int i = 1; i < N_V_lep_cands; i++){
@@ -1538,528 +1602,558 @@ void Plot_Advanced(){
             if(V_lep_cands[i].Mass() > V_lep_cands[max_cand_index].Mass()) // cand with max mass
               max_cand_index = i;
           }
-          L_Cand cand = V_lep_cands[min_cand_index];
-          L_Cand MAXcand = V_lep_cands[max_cand_index];
+          if(N_V_lep_cands > 0){
+            L_Cand cand = V_lep_cands[min_cand_index];
+            L_Cand MAXcand = V_lep_cands[max_cand_index];
 
-          // CandCuts
-          TLorentzVector TLV_Cand = cand.TLV();
-          TLorentzVector TLV_Cand_CM = TLV_Cand;
-          TLV_Cand_CM.Boost(-beta_CM);
-          double PZPara = TLV_Cand_CM.Vect().Dot(S_CM.Vect().Unit());
-          //if(cand.M() <= CandMinMass || cand.M() > CandMaxMass) continue; 
-          //if(MAXcand.M() <= CandMinMass || MAXcand.M() > CandMaxMass) continue; 
-          hist_CandCosDecayAngle_BetaZLAB_PreCut->Fill(cand.CosDecayAngle(), TLV_Cand.Pz()/TLV_Cand.E(), weight);
-          //if(fabs(cand.CosDecayAngle()) > 0.8) continue;
-          //if(TLV_Cand.Pz()/TLV_Cand.E() > 0.9) continue;
-          //if(PZPara < 0.) continue;
-          //if(cand.Match() != kMatched) continue;
+            // CandCuts
+            TLorentzVector TLV_Cand = cand.TLV();
+            TLorentzVector TLV_Cand_CM = TLV_Cand;
+            TLV_Cand_CM.Boost(-beta_CM);
+            double PZPara = TLV_Cand_CM.Vect().Dot(S_CM.Vect().Unit());
+            //if(cand.M() <= CandMinMass || cand.M() > CandMaxMass) continue; 
+            //if(MAXcand.M() <= CandMinMass || MAXcand.M() > CandMaxMass) continue; 
+            hist_CandCosDecayAngle_BetaZLAB_PreCut->Fill(cand.CosDecayAngle(), TLV_Cand.Pz()/TLV_Cand.E(), weight);
+            //if(fabs(cand.CosDecayAngle()) > 0.8) continue;
+            //if(TLV_Cand.Pz()/TLV_Cand.E() > 0.9) continue;
+            //if(PZPara < 0.) continue;
+            //if(cand.Match() != kMatched) continue;
 
-          bool i_a = inVec((*base->index_lep_a),cand[0].Index());
-          bool j_a = inVec((*base->index_lep_a),cand[1].Index());
-          if(i_a == j_a || (Nlep == 2 && NjetS == 0)){
-            cand.SetSameHemi(true);
-          }
-          else cand.SetSameHemi(false);
-          //if(CandSameHemi && !cand.IsSameHemi()) continue;
-          // Flavor and/or Charge Req
-          //if(OSSF && !(abs(cand.PL()[0].PDGID()) == abs(cand.PL()[1].PDGID()) && cand.PL()[0].Charge() != cand.PL()[1].Charge())) continue;
-          //if(OSOF && !(abs(cand.PL()[0].PDGID()) != abs(cand.PL()[1].PDGID()) && cand.PL()[0].Charge() != cand.PL()[1].Charge())) continue;
-          //if(SSOF && !(abs(cand.PL()[0].PDGID()) != abs(cand.PL()[1].PDGID()) && cand.PL()[0].Charge() == cand.PL()[1].Charge())) continue;
-          //if(SSSF && !(abs(cand.PL()[0].PDGID()) == abs(cand.PL()[1].PDGID()) && cand.PL()[0].Charge() == cand.PL()[1].Charge())) continue;
+            bool i_a = inVec((*base->index_lep_a),cand[0].Index());
+            bool j_a = inVec((*base->index_lep_a),cand[1].Index());
+            if(i_a == j_a || (Nlep == 2 && NjetS == 0)){
+              cand.SetSameHemi(true);
+            }
+            else cand.SetSameHemi(false);
+            //if(CandSameHemi && !cand.IsSameHemi()) continue;
+            // Flavor and/or Charge Req
+            //if(OSSF && !(abs(cand.PL()[0].PDGID()) == abs(cand.PL()[1].PDGID()) && cand.PL()[0].Charge() != cand.PL()[1].Charge())) continue;
+            //if(OSOF && !(abs(cand.PL()[0].PDGID()) != abs(cand.PL()[1].PDGID()) && cand.PL()[0].Charge() != cand.PL()[1].Charge())) continue;
+            //if(SSOF && !(abs(cand.PL()[0].PDGID()) != abs(cand.PL()[1].PDGID()) && cand.PL()[0].Charge() == cand.PL()[1].Charge())) continue;
+            //if(SSSF && !(abs(cand.PL()[0].PDGID()) == abs(cand.PL()[1].PDGID()) && cand.PL()[0].Charge() == cand.PL()[1].Charge())) continue;
 
-          TVector3 beta_Cand_CM = TLV_Cand_CM.BoostVector();
-          Particle part_Cand_Child = cand.Cand_PartPlus();
-          TLorentzVector TLV_Cand_Child;
-          TLV_Cand_Child.SetPtEtaPhiM(part_Cand_Child.Pt(), part_Cand_Child.Eta(), part_Cand_Child.Phi(), part_Cand_Child.M());
-          TLorentzVector TLV_Cand_Child_CM = TLV_Cand_Child;
-          TLV_Cand_Child_CM.Boost(-beta_CM);
-          TLV_Cand_Child_CM.Boost(-beta_Cand_CM);
-          double CosDecayAngleCM = fabs(TLV_Cand_Child_CM.Vect().Unit().Dot(beta_Cand_CM.Unit())); // 'original' using CM
-          double CosDecayAngle = fabs(cand.CosDecayAngle()); // decay angle without using CM
-          double CandML = TLV_Cand.M();
-          double Beta = cand.Beta();
-          double BetaCM = TLV_Cand_CM.P()/TLV_Cand_CM.E();
-          double CandECM = TLV_Cand_CM.E();
-          double PZzLAB = TLV_Cand.Pz();
-          double PZPerp = TLV_Cand_CM.Vect().Cross(S_CM.Vect().Unit()).Mag();
-          double RZPara = PZPara/S_CM.Vect().Mag();
-          double RZPerp = PZPerp/S_CM.Vect().Mag();
-          double PZAng = atan(PZPara/PZPerp);
-          TLorentzVector TLV_Cand_Transverse = TLV_Cand;
-          TLV_Cand_Transverse.SetZ(0.);
-          TVector3 TV3_Cand_Transverse = TLV_Cand_Transverse.Vect();
-          double PZParaLABMET = TV3_Cand_Transverse.Dot(TV3_MET.Unit());
-          double PZPerpLABMET = TV3_Cand_Transverse.Cross(TV3_MET.Unit()).Mag();
-          double RZParaLABMET = PZParaLABMET/MET;
-          double RZPerpLABMET = PZPerpLABMET/MET;
-          double PZAngLABMET = atan(PZParaLABMET/PZPerpLABMET);
-          double MRZPara = CandML/RZPara;
-          double MRZPerp = CandML/RZPerp;
-          double MRZParaLABMET = CandML/RZParaLABMET;
-          double MRZPerpLABMET = CandML/RZPerpLABMET;
-          double MPZPara = fabs(PZPara/CandML);
-          double MPZPerp = fabs(PZPerp/CandML);
-          double MPZParaLABMET = fabs(PZParaLABMET/TLV_Cand_Transverse.Mag());
-          double MPZPerpLABMET = fabs(PZPerpLABMET/TLV_Cand_Transverse.Mag());
-          double BetaZPara = PZPara/CandECM;
-          double BetaZPerp = PZPerp/CandECM;
-          double BetaZLAB = TLV_Cand.Pz()/TLV_Cand.E();
-          double MInv = CandML*RISR/RZPara;
-          double CandMdivPTISR = CandML/PTISR;
-          double RZParaM = RZPara/CandML;
-          TLorentzVector TLV_MAXCand = MAXcand.TLV();
-          double MAXcandML = TLV_MAXCand.M();
-          double MAXcandBetaZLAB = TLV_MAXCand.Pz()/TLV_MAXCand.E();
-          double MAXCosDecayAngle = fabs(MAXcand.CosDecayAngle());
-          TLorentzVector TLV_Cand_Child_a = cand.TLV_Part(0);
-          TLorentzVector TLV_Cand_Child_b = cand.TLV_Part(1);
-          double pa[3] = {TLV_Cand_Child_a.M(), TLV_Cand_Child_a.Px(), TLV_Cand_Child_a.Py()};
-          double pb[3] = {TLV_Cand_Child_b.M(), TLV_Cand_Child_b.Px(), TLV_Cand_Child_b.Py()};
-          double pmiss[3] = {0.0, TV3_MET.Px(), TV3_MET.Py()}; // Invisible particle mass = 0
-          mt2calc.set_momenta(pa, pb, pmiss);
-          mt2calc.set_mn(0.0); // assume massless invisible particles like neutrinos
-          double MT2 = mt2calc.get_mt2();
-          TLorentzVector MAXTLV_Cand_Child_a = MAXcand.TLV_Part(0);
-          TLorentzVector MAXTLV_Cand_Child_b = MAXcand.TLV_Part(1);
-          double MAXpa[3] = {MAXTLV_Cand_Child_a.M(), MAXTLV_Cand_Child_a.Px(), MAXTLV_Cand_Child_a.Py()};
-          double MAXpb[3] = {MAXTLV_Cand_Child_b.M(), MAXTLV_Cand_Child_b.Px(), MAXTLV_Cand_Child_b.Py()};
-          mt2calc.set_momenta(MAXpa, MAXpb, pmiss);
-          mt2calc.set_mn(0.0); // assume massless invisible particles like neutrinos
-          double MT2MAX = mt2calc.get_mt2();
-          double MCon_CM = MAXcand.MCon(TLV_CM);
-          TLorentzVector TLV_Cand_LEPS;
-          //std::vector<TLorentzVector> vect_TLV_Cand_LEPS;
-          //vect_TLV_Cand_LEPS.push_back(cand.TLV_Part(0));
-          //vect_TLV_Cand_LEPS.push_back(cand.TLV_Part(1));
-          //vect_TLV_Cand_LEPS.push_back(MAXcand.TLV_Part(0));
-          //vect_TLV_Cand_LEPS.push_back(MAXcand.TLV_Part(1));
-          //std::vector<TLorentzVector> vect_TLV_Cand_LEPS_unq; // unique
-          //for (const auto& lep : vect_TLV_Cand_LEPS) {
-          //    bool is_unique = true;
-          //    for (const auto& u : vect_TLV_Cand_LEPS_unq) {
-          //      if ((lep - u).Vect().Mag() < 1e-6 && std::abs(lep.E() - u.E()) < 1e-6) {
-          //        is_unique = false;
-          //        break;
-          //    }
-          //  }
-          //  if (is_unique) vect_TLV_Cand_LEPS_unq.push_back(lep);
-          //}
-          //for (const auto& lep : vect_TLV_Cand_LEPS_unq) TLV_Cand_LEPS += lep;
-          for(int i = 0; i < Nlep; i++){
-            TLorentzVector dummy_TLV;
-            dummy_TLV.SetPtEtaPhiM( base->PT_lep->at(i),
-                                    base->Eta_lep->at(i),
-                                    base->Phi_lep->at(i),
-                                    std::max(0.,base->M_lep->at(i)) );
-             TLV_Cand_LEPS += dummy_TLV;
-          }
-          double MCon_LEPS = MAXcand.MCon(TLV_Cand_LEPS);
-          TLorentzVector TLV_LEPS_MET = S_CM;
-          for(int i = 0; i < NjetS; i++){
-            index = (*base->index_jet_S)[i];
-            TLorentzVector SJet;
-            SJet.SetPtEtaPhiM(  base->PT_jet->at(i),
-                                base->Eta_jet->at(i),
-                                base->Phi_jet->at(i),
-                                std::max(0.,base->M_jet->at(i)) );
-            SJet.Boost(-beta_CM);
-            TLV_LEPS_MET -= SJet;
-          } // end S-jet loop
-          double MCon_LEPSMET = MAXcand.MCon(TLV_LEPS_MET);
-          TLorentzVector TLV_Cand_Child_a_CM = TLV_Cand_Child_a;
-          TLorentzVector TLV_Cand_Child_b_CM = TLV_Cand_Child_b;
-          TLorentzVector MAXTLV_Cand_Child_a_CM = MAXTLV_Cand_Child_a;
-          TLorentzVector MAXTLV_Cand_Child_b_CM = MAXTLV_Cand_Child_b;
-          if(cand.PL()[0].Charge() != cand.PL()[1].Charge()){ // Opposite Sign
-            TLV_Cand_Child_a_CM = cand.Cand_TLVPlus();
-            TLV_Cand_Child_b_CM = cand.Cand_TLVMinus();
-          } // Opposite Sign
-          if(MAXcand.PL()[0].Charge() != MAXcand.PL()[1].Charge()){ // Opposite Sign
-            MAXTLV_Cand_Child_a_CM = MAXcand.Cand_TLVPlus();
-            MAXTLV_Cand_Child_b_CM = MAXcand.Cand_TLVMinus();
-          } // Opposite Sign
-          TLV_Cand_Child_a_CM.Boost(-beta_CM);
-          TLV_Cand_Child_b_CM.Boost(-beta_CM);
-          MAXTLV_Cand_Child_a_CM.Boost(-beta_CM);
-          MAXTLV_Cand_Child_b_CM.Boost(-beta_CM);
-          double CosThetaRazor = fabs(((TLV_Cand_Child_a_CM.E() - TLV_Cand_Child_b_CM.E()) * (TLV_Cand_Child_a_CM.E() - TLV_Cand_Child_b_CM.E())) /
-                                 (((TLV_Cand_Child_a_CM.E() - TLV_Cand_Child_b_CM.E()) * (TLV_Cand_Child_a_CM.E() - TLV_Cand_Child_b_CM.E()))
-                                 + (TLV_Cand_Child_a_CM + TLV_Cand_Child_b_CM).Mag2()));
-          double MAXCosThetaRazor = fabs(((MAXTLV_Cand_Child_a_CM.E() - MAXTLV_Cand_Child_b_CM.E()) * (MAXTLV_Cand_Child_a_CM.E() - MAXTLV_Cand_Child_b_CM.E())) /
-                                 (((MAXTLV_Cand_Child_a_CM.E() - MAXTLV_Cand_Child_b_CM.E()) * (MAXTLV_Cand_Child_a_CM.E() - MAXTLV_Cand_Child_b_CM.E()))
-                                 + (MAXTLV_Cand_Child_a_CM + MAXTLV_Cand_Child_b_CM).Mag2()));
-          TLorentzVector TLV_MAXCand_CM = TLV_MAXCand;
-          TLV_MAXCand_CM.Boost(-beta_CM);
-          double PZParaMAX = TLV_MAXCand_CM.Vect().Dot(S_CM.Vect().Unit());
-          double RZParaMAX = PZParaMAX/S_CM.Vect().Mag();
-          double MAXMInv = MAXcandML*RISR/RZParaMAX;
-          hist_CandML->Fill(CandML, weight);
-          hist_CandBeta->Fill(Beta, weight);
-          hist_CandBetaCM->Fill(BetaCM, weight);
-          hist_CandBeta_CandBetaCM->Fill(Beta, BetaCM, weight);
-          hist_CandDeltaPhiMET->Fill(cand.DeltaPhi(TV3_MET), weight);
-          hist_CandCosDecayAngle->Fill(CosDecayAngle, weight);
-          hist_CandCosDecayAngleCM->Fill(CosDecayAngleCM, weight);
-          hist_CandMdivPTISR->Fill(CandMdivPTISR, weight);
-          hist_MInv->Fill(MInv, weight);
-          hist_OneMinusRZPara->Fill(1-RZPara, weight);
-          hist_PzCM->Fill(PzCM, weight);
-          hist_BetaZLAB->Fill(BetaZLAB, weight);
-          hist_RZParaM->Fill(RZParaM, weight);
-          hist_RZParaDivRISR->Fill(RZPara/RISR, weight);
-          hist_RZPara->Fill(RZPara, weight);
-          hist_RZPerp->Fill(RZPerp, weight);
-          hist_RISR_CandML->Fill(RISR, CandML, weight);
-          hist_RISR_CandBeta->Fill(RISR, Beta, weight);
-          hist_CandML_CandBeta->Fill(CandML, Beta, weight);
-          hist_Beta_CandCosDecayAngleCM->Fill(Beta, CosDecayAngleCM, weight);
-          hist_Beta_CandCosDecayAngle->Fill(Beta, CosDecayAngle, weight);
-          hist_Beta_CandDeltaPhiMET->Fill(Beta, cand.DeltaPhi(TV3_MET), weight);
-          hist_RISR_CandBetaCM->Fill(RISR, BetaCM, weight);
-          hist_CandML_CandBetaCM->Fill(CandML, BetaCM, weight);
-          hist_BetaCM_CandCosDecayAngleCM->Fill(BetaCM, CosDecayAngleCM, weight);
-          hist_BetaCM_CandCosDecayAngle->Fill(BetaCM, CosDecayAngle, weight);
-          hist_BetaCM_CandDeltaPhiMET->Fill(BetaCM, cand.DeltaPhi(TV3_MET), weight);
-          hist_RISR_CandDeltaPhiMET->Fill(RISR, cand.DeltaPhi(TV3_MET), weight);
-          hist_CandML_CandDeltaPhiMET->Fill(CandML, cand.DeltaPhi(TV3_MET), weight);
-          hist_CandML_CandCosDecayAngleCM->Fill(CandML, CosDecayAngleCM, weight);
-          hist_CandCosDecayAngleCM_CandDeltaPhiMET->Fill(CosDecayAngleCM, cand.DeltaPhi(TV3_MET), weight);
-          hist_CandML_CandCosDecayAngle->Fill(CandML, CosDecayAngle, weight);
-          hist_CandCosDecayAngle_CandDeltaPhiMET->Fill(CosDecayAngle, cand.DeltaPhi(TV3_MET), weight);
-          hist_CandML_RZPara->Fill(CandML, RZPara, weight);
-          hist_CandML_RZPerp->Fill(CandML, RZPerp, weight);
-          hist_PZAng->Fill(PZAng, weight);
-          hist_PZPara->Fill(RZPara, weight);
-          hist_PZPerp->Fill(RZPerp, weight);
-          hist_CandML_PZAng->Fill(CandML, PZAng, weight);
-          hist_RZPara_RZPerp->Fill(RZPara, RZPerp, weight);
-          hist_CandML_PZPara->Fill(CandML, PZPara, weight);
-          hist_CandML_PZPerp->Fill(CandML, PZPerp, weight);
-          hist_CandML_RZParaLABMET->Fill(CandML, RZParaLABMET, weight);
-          hist_CandML_RZPerpLABMET->Fill(CandML, RZPerpLABMET, weight);
-          hist_PZAngLABMET->Fill(PZAngLABMET, weight);
-          hist_CandML_PZAngLABMET->Fill(CandML, PZAngLABMET, weight);
-          hist_RZParaLABMET_RZPerpLABMET->Fill(RZParaLABMET, RZPerpLABMET, weight);
-          hist_CandML_PZParaLABMET->Fill(CandML, PZParaLABMET, weight);
-          hist_CandML_PZPerpLABMET->Fill(CandML, PZPerpLABMET, weight);
-          hist_CandCosDecayAngle_RZPara->Fill(CosDecayAngle, RZPara, weight);
-          hist_CandCosDecayAngle_RZPerp->Fill(CosDecayAngle, RZPerp, weight); 
-          hist_CandCosDecayAngle_PZAng->Fill(CosDecayAngle, PZAng, weight); 
-          hist_CandCosDecayAngle_PZPara->Fill(CosDecayAngle, PZPara, weight); 
-          hist_CandCosDecayAngle_PZPerp->Fill(CosDecayAngle, PZPara, weight); 
-          hist_CandCosDecayAngle_RZParaLABMET->Fill(CosDecayAngle, RZParaLABMET, weight); 
-          hist_CandCosDecayAngle_RZPerpLABMET->Fill(CosDecayAngle, RZPerpLABMET, weight); 
-          hist_CandCosDecayAngle_PZAngLABMET->Fill(CosDecayAngle, PZAngLABMET, weight); 
-          hist_CandCosDecayAngle_PZParaLABMET->Fill(CosDecayAngle, PZParaLABMET, weight); 
-          hist_CandCosDecayAngle_PZPerpLABMET->Fill(CosDecayAngle, PZPerpLABMET, weight); 
-          //hist_CandCosDecayAngleCM_RZPara->Fill(CosDecayAngleCM, RZPara, weight);
-          //hist_CandCosDecayAngleCM_RZPerp->Fill(CosDecayAngleCM, RZPerp, weight); 
-          //hist_CandCosDecayAngleCM_PZAng->Fill(CosDecayAngleCM, PZAng, weight); 
-          //hist_CandCosDecayAngleCM_PZPara->Fill(CosDecayAngleCM, PZPara, weight); 
-          //hist_CandCosDecayAngleCM_PZPerp->Fill(CosDecayAngleCM, PZPara, weight); 
-          //hist_CandCosDecayAngleCM_RZParaLABMET->Fill(CosDecayAngleCM, RZParaLABMET, weight); 
-          //hist_CandCosDecayAngleCM_RZPerpLABMET->Fill(CosDecayAngleCM, RZPerpLABMET, weight); 
-          //hist_CandCosDecayAngleCM_PZAngLABMET->Fill(CosDecayAngleCM, PZAngLABMET, weight); 
-          //hist_CandCosDecayAngleCM_PZParaLABMET->Fill(CosDecayAngleCM, PZParaLABMET, weight); 
-          //hist_CandCosDecayAngleCM_PZPerpLABMET->Fill(CosDecayAngleCM, PZPerpLABMET, weight); 
-          //hist_Beta_RZPara->Fill(Beta, RZPara, weight); 
-          //hist_Beta_RZPerp->Fill(Beta, RZPerp, weight); 
-          //hist_Beta_PZAng->Fill(Beta, PZAng, weight); 
-          //hist_Beta_PZPara->Fill(Beta, PZPara, weight); 
-          //hist_Beta_PZPerp->Fill(Beta, PZPerp, weight); 
-          //hist_Beta_RZParaLABMET->Fill(Beta, RZParaLABMET, weight); 
-          //hist_Beta_RZPerpLABMET->Fill(Beta, RZPerpLABMET, weight); 
-          //hist_Beta_PZAngLABMET->Fill(Beta, PZAngLABMET, weight); 
-          //hist_Beta_PZParaLABMET->Fill(Beta, PZParaLABMET, weight); 
-          //hist_Beta_PZPerpLABMET->Fill(Beta, PZPerpLABMET, weight); 
-          //hist_BetaCM_RZPara->Fill(BetaCM, RZPara, weight); 
-          //hist_BetaCM_RZPerp->Fill(BetaCM, RZPerp, weight); 
-          //hist_BetaCM_PZAng->Fill(BetaCM, PZAng, weight); 
-          //hist_BetaCM_PZPara->Fill(BetaCM, PZPara, weight); 
-          //hist_BetaCM_PZPerp->Fill(BetaCM, PZPerp, weight); 
-          //hist_BetaCM_RZParaLABMET->Fill(BetaCM, RZParaLABMET, weight); 
-          //hist_BetaCM_RZPerpLABMET->Fill(BetaCM, RZPerpLABMET, weight); 
-          //hist_BetaCM_PZAngLABMET->Fill(BetaCM, PZAngLABMET, weight); 
-          //hist_BetaCM_PZParaLABMET->Fill(BetaCM, PZParaLABMET, weight); 
-          //hist_BetaCM_PZPerpLABMET->Fill(BetaCM, PZPerpLABMET, weight); 
-          //hist_RZPara_RZParaLABMET->Fill(RZPara, RZParaLABMET, weight);
-          //hist_RZPerp_RZPerpLABMET->Fill(RZPerp, RZPerpLABMET, weight);
-          //hist_PZPara_PZParaLABMET->Fill(PZPara, PZParaLABMET, weight);
-          //hist_PZPerp_PZPerpLABMET->Fill(PZPerp, PZPerpLABMET, weight);
-          //hist_PZPara_CandECM->Fill(PZPara, CandECM, weight);
-          //hist_PZPerp_CandECM->Fill(PZPerp, CandECM, weight);
-          hist_MRZPara->Fill(MRZPara, weight);
-          hist_MRZPerp->Fill(MRZPerp, weight);
-          hist_MRZParaLABMET->Fill(MRZParaLABMET, weight);
-          hist_MRZPerpLABMET->Fill(MRZPerpLABMET, weight);
-          hist_CandML_MRZPara->Fill(CandML, MRZPara, weight);
-          hist_CandML_MRZPerp->Fill(CandML, MRZPerp, weight);
-          hist_CandML_MRZParaLABMET->Fill(CandML, MRZParaLABMET, weight);
-          hist_CandML_MRZPerpLABMET->Fill(CandML, MRZPerpLABMET, weight);
-          hist_CandCosDecayAngle_MPZPara->Fill(CosDecayAngle, MPZPara, weight);
-          hist_CandCosDecayAngle_MPZPerp->Fill(CosDecayAngle, MPZPerp, weight);
-          hist_CandCosDecayAngle_MPZParaLABMET->Fill(CosDecayAngle, MPZParaLABMET, weight);
-          hist_CandCosDecayAngle_MPZPerpLABMET->Fill(CosDecayAngle, MPZPerpLABMET, weight);
-          hist_CandCosDecayAngleCM_MPZPara->Fill(CosDecayAngleCM, MPZPara, weight);
-          hist_CandCosDecayAngleCM_MPZPerp->Fill(CosDecayAngleCM, MPZPerp, weight);
-          hist_CandCosDecayAngleCM_MPZParaLABMET->Fill(CosDecayAngleCM, MPZParaLABMET, weight);
-          hist_CandCosDecayAngleCM_MPZPerpLABMET->Fill(CosDecayAngleCM, MPZPerpLABMET, weight);
-          hist_Beta_MPZPara->Fill(Beta, MPZPara, weight);
-          hist_Beta_MPZPerp->Fill(Beta, MPZPerp, weight);
-          hist_Beta_MPZParaLABMET->Fill(Beta, MPZParaLABMET, weight);
-          hist_Beta_MPZPerpLABMET->Fill(Beta, MPZPerpLABMET, weight);
-          hist_BetaCM_MPZPara->Fill(BetaCM, MPZPara, weight);
-          hist_BetaCM_MPZPerp->Fill(BetaCM, MPZPerp, weight);
-          hist_BetaCM_MPZParaLABMET->Fill(BetaCM, MPZParaLABMET, weight);
-          hist_BetaCM_MPZPerpLABMET->Fill(BetaCM, MPZPerpLABMET, weight);
-          hist_PZAng_MPZPara->Fill(PZAng, MPZPara, weight);
-          hist_PZAng_MPZPerp->Fill(PZAng, MPZPerp, weight);
-          hist_PZAng_MPZParaLABMET->Fill(PZAng, MPZParaLABMET, weight);
-          hist_PZAng_MPZPerpLABMET->Fill(PZAng, MPZPerpLABMET, weight);
-          hist_CandCosDecayAngle_CandCosDecayAngleCM->Fill(CosDecayAngle, CosDecayAngleCM, weight);
-          hist_CandML_BetaZPara->Fill(CandML, BetaZPara, weight);
-          hist_CandML_BetaZPerp->Fill(CandML, BetaZPerp, weight);
-          hist_CandCosDecayAngle_BetaZPara->Fill(CosDecayAngle, BetaZPara, weight);
-          hist_CandCosDecayAngle_BetaZPerp->Fill(CosDecayAngle, BetaZPerp, weight);
-          hist_CandCosDecayAngleCM_BetaZPara->Fill(CosDecayAngleCM, BetaZPara, weight);
-          hist_CandCosDecayAngleCM_BetaZPerp->Fill(CosDecayAngleCM, BetaZPerp, weight);
-          hist_DecayAngleDiff_PzCM->Fill(CosDecayAngleCM - CosDecayAngle, PzCM, weight);
-          hist_BetaDiff_PzCM->Fill(BetaCM - Beta, PzCM, weight);
-          hist_DecayAngleDiff_BetaDiff->Fill(CosDecayAngleCM - CosDecayAngle, BetaCM - Beta, weight);
-          hist_MRZPara_RZPara->Fill(MRZPara, RZPara, weight);
-          hist_MRZPara_CandCosDecayAngleCM->Fill(MRZPara, CosDecayAngleCM, weight);
-          hist_MRZPara_BetaCM->Fill(MRZPara, BetaCM, weight);
-          hist_MRZPara_CandPZzLAB->Fill(MRZPara, PZzLAB, weight);
-          hist_RZPara_CandPZzLAB->Fill(RZPara, PZzLAB, weight);
-          hist_RZPerp_CandPZzLAB->Fill(RZPerp, PZzLAB, weight);
-          hist_RISR_RZPara->Fill(RISR, RZPara, weight);
-          hist_RISR_MRZPara->Fill(RISR, MRZPara, weight);
-          hist_RISR_CandPZzLAB->Fill(RISR, PZzLAB, weight);
-          hist_RISR_BetaZLAB->Fill(RISR, BetaZLAB, weight);
-          hist_CandML_BetaZLAB->Fill(CandML, BetaZLAB, weight);
-          hist_RZPara_BetaZLAB->Fill(RZPara, BetaZLAB, weight);
-          hist_MRZPara_BetaZLAB->Fill(MRZPara, BetaZLAB, weight);
-          hist_RZPerp_BetaZLAB->Fill(RZPerp, BetaZLAB, weight);
-          hist_CandCosDecayAngle_BetaZLAB->Fill(CosDecayAngle, BetaZLAB, weight);
-          hist_CandCosDecayAngleCM_BetaZLAB->Fill(CosDecayAngleCM, BetaZLAB, weight);
-          hist_RZParaM_RZPara->Fill(RZParaM, RZPara, weight);
-          hist_RZParaM_CandCosDecayAngleCM->Fill(RZParaM, CosDecayAngle, weight);
-          hist_RZParaM_BetaCM->Fill(RZParaM, BetaCM, weight);
-          hist_RZParaM_CandPZzLAB->Fill(RZParaM, PZzLAB, weight);
-          hist_RZParaM_BetaZLAB->Fill(RZParaM, BetaZLAB, weight);
-          //hist_MRZPara_OneMinusRZPara->Fill(MRZPara, 1.-RZPara, weight);
-          //hist_OneMinusRZPara_CandPZzLAB->Fill(1.-RZPara, PZzLAB, weight);
-          //hist_RISR_OneMinusRZPara->Fill(RISR, 1.-RZPara, weight);
-          //hist_OneMinusRZPara_BetaZLAB->Fill(1.-RZPara, BetaZLAB, weight);
-          //hist_BetaCM_OneMinusRZPara->Fill(BetaCM, 1.-RZPara, weight);
-          //hist_CandCosDecayAngle_OneMinusRZPara->Fill(CosDecayAngle, 1.-RZPara, weight);
-          //hist_Beta_OneMinusRZPara->Fill(Beta, 1-RZPara, weight);
-          //hist_CandCosDecayAngleCM_OneMinusRZPara->Fill(CosDecayAngleCM, 1.-RZPara, weight);
-          //hist_MRZPara_CandMdivPTISR->Fill(MRZPara, CandMdivPTISR, weight);
-          //hist_CandMdivPTISR_CandPZzLAB->Fill(CandMdivPTISR, PZzLAB, weight);
-          //hist_RISR_CandMdivPTISR->Fill(RISR, CandMdivPTISR, weight);
-          //hist_CandMdivPTISR_BetaZLAB->Fill(CandMdivPTISR, BetaZLAB, weight);
-          //hist_BetaCM_CandMdivPTISR->Fill(BetaCM, CandMdivPTISR, weight);
-          //hist_CandCosDecayAngle_CandMdivPTISR->Fill(CosDecayAngle, CandMdivPTISR, weight);
-          //hist_Beta_CandMdivPTISR->Fill(Beta, CandMdivPTISR, weight);
-          //hist_CandCosDecayAngleCM_CandMdivPTISR->Fill(CosDecayAngleCM, CandMdivPTISR, weight);
-          hist_MRZPara_MInv->Fill(MRZPara, MInv, weight);
-          hist_MInv_CandPZzLAB->Fill(MInv, PZzLAB, weight);
-          hist_RISR_MInv->Fill(RISR, MInv, weight);
-          hist_MInv_BetaZLAB->Fill(MInv, BetaZLAB, weight);
-          hist_BetaCM_MInv->Fill(BetaCM, MInv, weight);
-          hist_CandCosDecayAngle_MInv->Fill(CosDecayAngle, MInv, weight);
-          hist_Beta_MInv->Fill(Beta, MInv, weight);
-          hist_CandCosDecayAngleCM_MInv->Fill(CosDecayAngleCM, MInv, weight);
-          //hist_CandML_RZParaM->Fill(CandML, RZParaM, weight);
-          //hist_CandML_OneMinusRZPara->Fill(CandML, 1.-RZPara, weight);
-          //hist_CandML_CandMdivPTISR->Fill(CandML, CandMdivPTISR, weight);
-          hist_CandML_MInv->Fill(CandML, MInv, weight);
-          //hist_RZParaDivRISR_RZParaM->Fill(RZPara/RISR, RZParaM, weight);
-          //hist_RZParaDivRISR_CandMdivPTISR->Fill(RZPara/RISR, CandMdivPTISR, weight);
-          //hist_RZParaDivRISR_MInv->Fill(RZPara/RISR, MInv, weight);
-          //hist_RZParaDivRISR_BetaZLAB->Fill(RZPara/RISR, BetaZLAB, weight);
-          //hist_RZParaDivRISR_MRZPara->Fill(RZPara/RISR, MRZPara, weight);
-          //hist_RZParaDivRISR_RZPara->Fill(RZPara/RISR, RZPara, weight);
-          //hist_RZParaDivRISR_OneMinusRZPara->Fill(RZPara/RISR, 1-RZPara, weight);
-          //hist_RZParaDivRISR_Beta->Fill(RZPara/RISR, Beta, weight);
-          //hist_RZParaDivRISR_BetaCM->Fill(RZPara/RISR, BetaCM, weight);
-          //hist_RZParaDivRISR_CandCosDecayAngle->Fill(RZPara/RISR, CosDecayAngle, weight);
-          //hist_RZParaDivRISR_CandCosDecayAngleCM->Fill(RZPara/RISR, CosDecayAngleCM, weight);
-          //hist_CandMLDivRISR_CandML->Fill(RZPara/RISR, CandML, weight);
-          hist_CandML_MAXcandML->Fill(CandML, MAXcandML, weight);
-          hist_BetaZLAB_MAXcandBetaZLAB->Fill(BetaZLAB, MAXcandBetaZLAB, weight);
-          hist_CosDecayAngle_MAXcandCosDecayAngle->Fill(CosDecayAngle, MAXCosDecayAngle, weight);
-          hist_MAXcandBetaZLAB_MAXcandCosDecayAngle->Fill(MAXcandBetaZLAB, MAXCosDecayAngle, weight);
-          hist_MAXcandML_MT2->Fill(MAXcandML, MT2, weight);
-          hist_MAXcandML_MConCM->Fill(MAXcandML, MCon_CM, weight);
-          hist_MAXcandML_MConLEPS->Fill(MAXcandML, MCon_LEPS, weight);
-          hist_MT2_MConCM->Fill(MT2, MCon_CM, weight);
-          hist_MT2_MConLEPS->Fill(MT2, MCon_LEPS, weight);
-          hist_MConCM_MConLEPS->Fill(MCon_CM, MCon_LEPS, weight);
-          hist_CandML_MT2->Fill(CandML, MT2, weight);
-          hist_CandML_MConCM->Fill(CandML, MCon_CM, weight);
-          hist_CandML_MConLEPS->Fill(CandML, MCon_LEPS, weight);
-          hist_CandML_MT2MAX->Fill(CandML, MT2MAX, weight);
-          hist_CandML_MConLEPSMET->Fill(CandML, MCon_LEPSMET, weight);
-          hist_CandML_CosThetaRazor->Fill(CandML, CosThetaRazor, weight);
-          hist_CandML_MAXCosThetaRazor->Fill(CandML, MAXCosThetaRazor, weight);
-          hist_CandML_MAXMInv->Fill(CandML, MAXMInv, weight);
-          hist_MAXCandML_MT2MAX->Fill(MAXcandML, MT2MAX, weight);
-          hist_MAXCandML_MCon_LEPSMET->Fill(MAXcandML, MCon_LEPSMET, weight);
-          hist_MAXCandML_CosThetaRazor->Fill(MAXcandML, CosThetaRazor, weight);
-          hist_MAXCandML_MAXCosThetaRazor->Fill(MAXcandML, MAXCosThetaRazor, weight);
-          hist_MAXCandML_MAXMInv->Fill(MAXcandML, MAXMInv, weight);
-          hist_MAXCandML_RISR->Fill(MAXcandML, RISR, weight);
-          hist_MAXCandML_MInv->Fill(MAXcandML, MInv, weight);
-          hist_MConCM_MT2MAX->Fill(MCon_CM, MT2MAX, weight);
-          hist_MConCM_MConLEPSMET->Fill(MCon_CM, MCon_LEPSMET, weight);
-          hist_MConCM_CosThetaRazor->Fill(MCon_CM, CosThetaRazor, weight);
-          hist_MConCM_MAXCosThetaRazor->Fill(MCon_CM, MAXCosThetaRazor, weight);
-          hist_MConCM_MAXMInv->Fill(MCon_CM, MAXMInv, weight);
-          hist_MConCM_RISR->Fill(MCon_CM, RISR, weight);
-          hist_MConCM_MInv->Fill(MCon_CM, MInv, weight);
-          hist_MConLEPS_MT2MAX->Fill(MCon_LEPS, MT2MAX, weight);
-          hist_MConLEPS_MConLEPSMET->Fill(MCon_LEPS, MCon_LEPSMET, weight);
-          hist_MConLEPS_CosThetaRazor->Fill(MCon_LEPS, CosThetaRazor, weight);
-          hist_MConLEPS_MAXCosThetaRazor->Fill(MCon_LEPS, MAXCosThetaRazor, weight);
-          hist_MConLEPS_MAXMInv->Fill(MCon_LEPS, MAXMInv, weight);
-          hist_MConLEPS_RISR->Fill(MCon_LEPS, RISR, weight);
-          hist_MConLEPS_MInv->Fill(MCon_LEPS, MInv, weight);
-          hist_MT2_MT2MAX->Fill(MT2, MT2MAX, weight);
-          hist_MT2_MConLEPSMET->Fill(MT2, MCon_LEPSMET, weight);
-          hist_MT2_CosThetaRazor->Fill(MT2, CosThetaRazor, weight);
-          hist_MT2_MAXCosThetaRazor->Fill(MT2, MAXCosThetaRazor, weight);
-          hist_MT2_MAXMInv->Fill(MT2, MAXMInv, weight);
-          hist_MT2_RISR->Fill(MT2, RISR, weight);
-          hist_MT2_MInv->Fill(MT2, MInv, weight);
-          hist_MT2MAX_MConLEPSMET->Fill(MT2MAX, MCon_LEPSMET, weight);
-          hist_MT2MAX_CosThetaRazor->Fill(MT2MAX, CosThetaRazor, weight);
-          hist_MT2MAX_MAXCosThetaRazor->Fill(MT2MAX, MAXCosThetaRazor, weight);
-          hist_MT2MAX_MAXMInv->Fill(MT2MAX, MAXMInv, weight);
-          hist_MT2MAX_RISR->Fill(MT2MAX, RISR, weight);
-          hist_MT2MAX_MInv->Fill(MT2MAX, MInv, weight);
-          hist_MConLEPSMET_CosThetaRazor->Fill(MCon_LEPSMET, CosThetaRazor, weight);
-          hist_MConLEPSMET_MAXCosThetaRazor->Fill(MCon_LEPSMET, MAXCosThetaRazor, weight);
-          hist_MConLEPSMET_MAXMInv->Fill(MCon_LEPSMET, MAXMInv, weight);
-          hist_MConLEPSMET_RISR->Fill(MCon_LEPSMET, RISR, weight);
-          hist_MConLEPSMET_MInv->Fill(MCon_LEPSMET, MInv, weight);
-          hist_CosThetaRazor_MAXCosThetaRazor->Fill(CosThetaRazor, MAXCosThetaRazor, weight);
-          hist_CosThetaRazor_MAXMInv->Fill(CosThetaRazor, MAXMInv, weight);
-          hist_CosThetaRazor_RISR->Fill(CosThetaRazor, RISR, weight);
-          hist_CosThetaRazor_MInv->Fill(CosThetaRazor, MInv, weight);
-          hist_MAXCosThetaRazor_MAXMInv->Fill(MAXCosThetaRazor, MAXMInv, weight);
-          hist_MAXCosThetaRazor_RISR->Fill(MAXCosThetaRazor, RISR, weight);
-          hist_MAXCosThetaRazor_MInv->Fill(MAXCosThetaRazor, MInv, weight);
-          hist_MAXMInv_RISR->Fill(MAXMInv, RISR, weight);
-          hist_MAXMInv_MInv->Fill(MAXMInv, MInv, weight);
-          hist_MAXCandML_MAXCosDecayAngle->Fill(MAXcandML, MAXCosDecayAngle, weight);
+            TVector3 beta_Cand_CM = TLV_Cand_CM.BoostVector();
+            Particle part_Cand_Child = cand.Cand_PartPlus();
+            TLorentzVector TLV_Cand_Child;
+            TLV_Cand_Child.SetPtEtaPhiM(part_Cand_Child.Pt(), part_Cand_Child.Eta(), part_Cand_Child.Phi(), part_Cand_Child.M());
+            TLorentzVector TLV_Cand_Child_CM = TLV_Cand_Child;
+            TLV_Cand_Child_CM.Boost(-beta_CM);
+            TLV_Cand_Child_CM.Boost(-beta_Cand_CM);
+            double CosDecayAngleCM = fabs(TLV_Cand_Child_CM.Vect().Unit().Dot(beta_Cand_CM.Unit())); // 'original' using CM
+            double CosDecayAngle = fabs(cand.CosDecayAngle()); // decay angle without using CM
+            double CandML = TLV_Cand.M();
+            double Beta = cand.Beta();
+            double BetaCM = TLV_Cand_CM.P()/TLV_Cand_CM.E();
+            double CandECM = TLV_Cand_CM.E();
+            double PZzLAB = TLV_Cand.Pz();
+            double PZPerp = TLV_Cand_CM.Vect().Cross(S_CM.Vect().Unit()).Mag();
+            double RZPara = PZPara/S_CM.Vect().Mag();
+            double RZPerp = PZPerp/S_CM.Vect().Mag();
+            double PZAng = atan(PZPara/PZPerp);
+            TLorentzVector TLV_Cand_Transverse = TLV_Cand;
+            TLV_Cand_Transverse.SetZ(0.);
+            TVector3 TV3_Cand_Transverse = TLV_Cand_Transverse.Vect();
+            double PZParaLABMET = TV3_Cand_Transverse.Dot(TV3_MET.Unit());
+            double PZPerpLABMET = TV3_Cand_Transverse.Cross(TV3_MET.Unit()).Mag();
+            double RZParaLABMET = PZParaLABMET/MET;
+            double RZPerpLABMET = PZPerpLABMET/MET;
+            double PZAngLABMET = atan(PZParaLABMET/PZPerpLABMET);
+            double MRZPara = CandML/RZPara;
+            double MRZPerp = CandML/RZPerp;
+            double MRZParaLABMET = CandML/RZParaLABMET;
+            double MRZPerpLABMET = CandML/RZPerpLABMET;
+            double MPZPara = fabs(PZPara/CandML);
+            double MPZPerp = fabs(PZPerp/CandML);
+            double MPZParaLABMET = fabs(PZParaLABMET/TLV_Cand_Transverse.Mag());
+            double MPZPerpLABMET = fabs(PZPerpLABMET/TLV_Cand_Transverse.Mag());
+            double BetaZPara = PZPara/CandECM;
+            double BetaZPerp = PZPerp/CandECM;
+            double BetaZLAB = TLV_Cand.Pz()/TLV_Cand.E();
+            double MInv = CandML*RISR/RZPara;
+            double CandMdivPTISR = CandML/PTISR;
+            double RZParaM = RZPara/CandML;
+            TLorentzVector TLV_MAXCand = MAXcand.TLV();
+            double MAXcandML = TLV_MAXCand.M();
+            double MAXcandBetaZLAB = TLV_MAXCand.Pz()/TLV_MAXCand.E();
+            double MAXCosDecayAngle = fabs(MAXcand.CosDecayAngle());
+            TLorentzVector TLV_Cand_Child_a = cand.TLV_Part(0);
+            TLorentzVector TLV_Cand_Child_b = cand.TLV_Part(1);
+            double pa[3] = {TLV_Cand_Child_a.M(), TLV_Cand_Child_a.Px(), TLV_Cand_Child_a.Py()};
+            double pb[3] = {TLV_Cand_Child_b.M(), TLV_Cand_Child_b.Px(), TLV_Cand_Child_b.Py()};
+            double pmiss[3] = {0.0, TV3_MET.Px(), TV3_MET.Py()}; // Invisible particle mass = 0
+            mt2calc.set_momenta(pa, pb, pmiss);
+            mt2calc.set_mn(0.0); // assume massless invisible particles like neutrinos
+            double MT2 = mt2calc.get_mt2();
+            TLorentzVector MAXTLV_Cand_Child_a = MAXcand.TLV_Part(0);
+            TLorentzVector MAXTLV_Cand_Child_b = MAXcand.TLV_Part(1);
+            double MAXpa[3] = {MAXTLV_Cand_Child_a.M(), MAXTLV_Cand_Child_a.Px(), MAXTLV_Cand_Child_a.Py()};
+            double MAXpb[3] = {MAXTLV_Cand_Child_b.M(), MAXTLV_Cand_Child_b.Px(), MAXTLV_Cand_Child_b.Py()};
+            mt2calc.set_momenta(MAXpa, MAXpb, pmiss);
+            mt2calc.set_mn(0.0); // assume massless invisible particles like neutrinos
+            double MT2MAX = mt2calc.get_mt2();
+            double MCon_CM = MAXcand.MCon(TLV_CM);
+            TLorentzVector TLV_Cand_LEPS;
+            //std::vector<TLorentzVector> vect_TLV_Cand_LEPS;
+            //vect_TLV_Cand_LEPS.push_back(cand.TLV_Part(0));
+            //vect_TLV_Cand_LEPS.push_back(cand.TLV_Part(1));
+            //vect_TLV_Cand_LEPS.push_back(MAXcand.TLV_Part(0));
+            //vect_TLV_Cand_LEPS.push_back(MAXcand.TLV_Part(1));
+            //std::vector<TLorentzVector> vect_TLV_Cand_LEPS_unq; // unique
+            //for (const auto& lep : vect_TLV_Cand_LEPS) {
+            //    bool is_unique = true;
+            //    for (const auto& u : vect_TLV_Cand_LEPS_unq) {
+            //      if ((lep - u).Vect().Mag() < 1e-6 && std::abs(lep.E() - u.E()) < 1e-6) {
+            //        is_unique = false;
+            //        break;
+            //    }
+            //  }
+            //  if (is_unique) vect_TLV_Cand_LEPS_unq.push_back(lep);
+            //}
+            //for (const auto& lep : vect_TLV_Cand_LEPS_unq) TLV_Cand_LEPS += lep;
+            for(int i = 0; i < Nlep; i++){
+              TLorentzVector dummy_TLV;
+              dummy_TLV.SetPtEtaPhiM( base->PT_lep->at(i),
+                                      base->Eta_lep->at(i),
+                                      base->Phi_lep->at(i),
+                                      std::max(0.,base->M_lep->at(i)) );
+               TLV_Cand_LEPS += dummy_TLV;
+            }
+            double MCon_LEPS = MAXcand.MCon(TLV_Cand_LEPS);
+            TLorentzVector TLV_LEPS_MET = S_CM;
+            for(int i = 0; i < NjetS; i++){
+              index = (*base->index_jet_S)[i];
+              TLorentzVector SJet;
+              SJet.SetPtEtaPhiM(  base->PT_jet->at(i),
+                                  base->Eta_jet->at(i),
+                                  base->Phi_jet->at(i),
+                                  std::max(0.,base->M_jet->at(i)) );
+              SJet.Boost(-beta_CM);
+              TLV_LEPS_MET -= SJet;
+            } // end S-jet loop
+            double MCon_LEPSMET = MAXcand.MCon(TLV_LEPS_MET);
+            TLorentzVector TLV_Cand_Child_a_CM = TLV_Cand_Child_a;
+            TLorentzVector TLV_Cand_Child_b_CM = TLV_Cand_Child_b;
+            TLorentzVector MAXTLV_Cand_Child_a_CM = MAXTLV_Cand_Child_a;
+            TLorentzVector MAXTLV_Cand_Child_b_CM = MAXTLV_Cand_Child_b;
+            if(cand.PL()[0].Charge() != cand.PL()[1].Charge()){ // Opposite Sign
+              TLV_Cand_Child_a_CM = cand.Cand_TLVPlus();
+              TLV_Cand_Child_b_CM = cand.Cand_TLVMinus();
+            } // Opposite Sign
+            if(MAXcand.PL()[0].Charge() != MAXcand.PL()[1].Charge()){ // Opposite Sign
+              MAXTLV_Cand_Child_a_CM = MAXcand.Cand_TLVPlus();
+              MAXTLV_Cand_Child_b_CM = MAXcand.Cand_TLVMinus();
+            } // Opposite Sign
+            TLV_Cand_Child_a_CM.Boost(-beta_CM);
+            TLV_Cand_Child_b_CM.Boost(-beta_CM);
+            MAXTLV_Cand_Child_a_CM.Boost(-beta_CM);
+            MAXTLV_Cand_Child_b_CM.Boost(-beta_CM);
+            double CosThetaRazor = fabs(((TLV_Cand_Child_a_CM.E() - TLV_Cand_Child_b_CM.E()) * (TLV_Cand_Child_a_CM.E() - TLV_Cand_Child_b_CM.E())) /
+                                   (((TLV_Cand_Child_a_CM.E() - TLV_Cand_Child_b_CM.E()) * (TLV_Cand_Child_a_CM.E() - TLV_Cand_Child_b_CM.E()))
+                                   + (TLV_Cand_Child_a_CM + TLV_Cand_Child_b_CM).Mag2()));
+            double MAXCosThetaRazor = fabs(((MAXTLV_Cand_Child_a_CM.E() - MAXTLV_Cand_Child_b_CM.E()) * (MAXTLV_Cand_Child_a_CM.E() - MAXTLV_Cand_Child_b_CM.E())) /
+                                   (((MAXTLV_Cand_Child_a_CM.E() - MAXTLV_Cand_Child_b_CM.E()) * (MAXTLV_Cand_Child_a_CM.E() - MAXTLV_Cand_Child_b_CM.E()))
+                                   + (MAXTLV_Cand_Child_a_CM + MAXTLV_Cand_Child_b_CM).Mag2()));
+            TLorentzVector TLV_MAXCand_CM = TLV_MAXCand;
+            TLV_MAXCand_CM.Boost(-beta_CM);
+            double PZParaMAX = TLV_MAXCand_CM.Vect().Dot(S_CM.Vect().Unit());
+            double RZParaMAX = PZParaMAX/S_CM.Vect().Mag();
+            double MAXMInv = MAXcandML*RISR/RZParaMAX;
+            hist_CandML->Fill(CandML, weight);
+            hist_CandBeta->Fill(Beta, weight);
+            hist_CandBetaCM->Fill(BetaCM, weight);
+            hist_CandBeta_CandBetaCM->Fill(Beta, BetaCM, weight);
+            hist_CandDeltaPhiMET->Fill(cand.DeltaPhi(TV3_MET), weight);
+            hist_CandCosDecayAngle->Fill(CosDecayAngle, weight);
+            hist_CandCosDecayAngleCM->Fill(CosDecayAngleCM, weight);
+            hist_CandMdivPTISR->Fill(CandMdivPTISR, weight);
+            hist_MInv->Fill(MInv, weight);
+            hist_OneMinusRZPara->Fill(1-RZPara, weight);
+            hist_PzCM->Fill(PzCM, weight);
+            hist_BetaZLAB->Fill(BetaZLAB, weight);
+            hist_RZParaM->Fill(RZParaM, weight);
+            hist_RZParaDivRISR->Fill(RZPara/RISR, weight);
+            hist_RZPara->Fill(RZPara, weight);
+            hist_RZPerp->Fill(RZPerp, weight);
+            hist_RISR_CandML->Fill(RISR, CandML, weight);
+            hist_RISR_CandBeta->Fill(RISR, Beta, weight);
+            hist_CandML_CandBeta->Fill(CandML, Beta, weight);
+            hist_Beta_CandCosDecayAngleCM->Fill(Beta, CosDecayAngleCM, weight);
+            hist_Beta_CandCosDecayAngle->Fill(Beta, CosDecayAngle, weight);
+            hist_Beta_CandDeltaPhiMET->Fill(Beta, cand.DeltaPhi(TV3_MET), weight);
+            hist_RISR_CandBetaCM->Fill(RISR, BetaCM, weight);
+            hist_CandML_CandBetaCM->Fill(CandML, BetaCM, weight);
+            hist_BetaCM_CandCosDecayAngleCM->Fill(BetaCM, CosDecayAngleCM, weight);
+            hist_BetaCM_CandCosDecayAngle->Fill(BetaCM, CosDecayAngle, weight);
+            hist_BetaCM_CandDeltaPhiMET->Fill(BetaCM, cand.DeltaPhi(TV3_MET), weight);
+            hist_RISR_CandDeltaPhiMET->Fill(RISR, cand.DeltaPhi(TV3_MET), weight);
+            hist_CandML_CandDeltaPhiMET->Fill(CandML, cand.DeltaPhi(TV3_MET), weight);
+            hist_CandML_CandCosDecayAngleCM->Fill(CandML, CosDecayAngleCM, weight);
+            hist_CandCosDecayAngleCM_CandDeltaPhiMET->Fill(CosDecayAngleCM, cand.DeltaPhi(TV3_MET), weight);
+            hist_CandML_CandCosDecayAngle->Fill(CandML, CosDecayAngle, weight);
+            hist_CandCosDecayAngle_CandDeltaPhiMET->Fill(CosDecayAngle, cand.DeltaPhi(TV3_MET), weight);
+            hist_CandML_RZPara->Fill(CandML, RZPara, weight);
+            hist_CandML_RZPerp->Fill(CandML, RZPerp, weight);
+            hist_PZAng->Fill(PZAng, weight);
+            hist_PZPara->Fill(RZPara, weight);
+            hist_PZPerp->Fill(RZPerp, weight);
+            hist_CandML_PZAng->Fill(CandML, PZAng, weight);
+            hist_RZPara_RZPerp->Fill(RZPara, RZPerp, weight);
+            hist_CandML_PZPara->Fill(CandML, PZPara, weight);
+            hist_CandML_PZPerp->Fill(CandML, PZPerp, weight);
+            hist_CandML_RZParaLABMET->Fill(CandML, RZParaLABMET, weight);
+            hist_CandML_RZPerpLABMET->Fill(CandML, RZPerpLABMET, weight);
+            hist_PZAngLABMET->Fill(PZAngLABMET, weight);
+            hist_CandML_PZAngLABMET->Fill(CandML, PZAngLABMET, weight);
+            hist_RZParaLABMET_RZPerpLABMET->Fill(RZParaLABMET, RZPerpLABMET, weight);
+            hist_CandML_PZParaLABMET->Fill(CandML, PZParaLABMET, weight);
+            hist_CandML_PZPerpLABMET->Fill(CandML, PZPerpLABMET, weight);
+            hist_CandCosDecayAngle_RZPara->Fill(CosDecayAngle, RZPara, weight);
+            hist_CandCosDecayAngle_RZPerp->Fill(CosDecayAngle, RZPerp, weight); 
+            hist_CandCosDecayAngle_PZAng->Fill(CosDecayAngle, PZAng, weight); 
+            hist_CandCosDecayAngle_PZPara->Fill(CosDecayAngle, PZPara, weight); 
+            hist_CandCosDecayAngle_PZPerp->Fill(CosDecayAngle, PZPara, weight); 
+            hist_CandCosDecayAngle_RZParaLABMET->Fill(CosDecayAngle, RZParaLABMET, weight); 
+            hist_CandCosDecayAngle_RZPerpLABMET->Fill(CosDecayAngle, RZPerpLABMET, weight); 
+            hist_CandCosDecayAngle_PZAngLABMET->Fill(CosDecayAngle, PZAngLABMET, weight); 
+            hist_CandCosDecayAngle_PZParaLABMET->Fill(CosDecayAngle, PZParaLABMET, weight); 
+            hist_CandCosDecayAngle_PZPerpLABMET->Fill(CosDecayAngle, PZPerpLABMET, weight); 
+            //hist_CandCosDecayAngleCM_RZPara->Fill(CosDecayAngleCM, RZPara, weight);
+            //hist_CandCosDecayAngleCM_RZPerp->Fill(CosDecayAngleCM, RZPerp, weight); 
+            //hist_CandCosDecayAngleCM_PZAng->Fill(CosDecayAngleCM, PZAng, weight); 
+            //hist_CandCosDecayAngleCM_PZPara->Fill(CosDecayAngleCM, PZPara, weight); 
+            //hist_CandCosDecayAngleCM_PZPerp->Fill(CosDecayAngleCM, PZPara, weight); 
+            //hist_CandCosDecayAngleCM_RZParaLABMET->Fill(CosDecayAngleCM, RZParaLABMET, weight); 
+            //hist_CandCosDecayAngleCM_RZPerpLABMET->Fill(CosDecayAngleCM, RZPerpLABMET, weight); 
+            //hist_CandCosDecayAngleCM_PZAngLABMET->Fill(CosDecayAngleCM, PZAngLABMET, weight); 
+            //hist_CandCosDecayAngleCM_PZParaLABMET->Fill(CosDecayAngleCM, PZParaLABMET, weight); 
+            //hist_CandCosDecayAngleCM_PZPerpLABMET->Fill(CosDecayAngleCM, PZPerpLABMET, weight); 
+            //hist_Beta_RZPara->Fill(Beta, RZPara, weight); 
+            //hist_Beta_RZPerp->Fill(Beta, RZPerp, weight); 
+            //hist_Beta_PZAng->Fill(Beta, PZAng, weight); 
+            //hist_Beta_PZPara->Fill(Beta, PZPara, weight); 
+            //hist_Beta_PZPerp->Fill(Beta, PZPerp, weight); 
+            //hist_Beta_RZParaLABMET->Fill(Beta, RZParaLABMET, weight); 
+            //hist_Beta_RZPerpLABMET->Fill(Beta, RZPerpLABMET, weight); 
+            //hist_Beta_PZAngLABMET->Fill(Beta, PZAngLABMET, weight); 
+            //hist_Beta_PZParaLABMET->Fill(Beta, PZParaLABMET, weight); 
+            //hist_Beta_PZPerpLABMET->Fill(Beta, PZPerpLABMET, weight); 
+            //hist_BetaCM_RZPara->Fill(BetaCM, RZPara, weight); 
+            //hist_BetaCM_RZPerp->Fill(BetaCM, RZPerp, weight); 
+            //hist_BetaCM_PZAng->Fill(BetaCM, PZAng, weight); 
+            //hist_BetaCM_PZPara->Fill(BetaCM, PZPara, weight); 
+            //hist_BetaCM_PZPerp->Fill(BetaCM, PZPerp, weight); 
+            //hist_BetaCM_RZParaLABMET->Fill(BetaCM, RZParaLABMET, weight); 
+            //hist_BetaCM_RZPerpLABMET->Fill(BetaCM, RZPerpLABMET, weight); 
+            //hist_BetaCM_PZAngLABMET->Fill(BetaCM, PZAngLABMET, weight); 
+            //hist_BetaCM_PZParaLABMET->Fill(BetaCM, PZParaLABMET, weight); 
+            //hist_BetaCM_PZPerpLABMET->Fill(BetaCM, PZPerpLABMET, weight); 
+            //hist_RZPara_RZParaLABMET->Fill(RZPara, RZParaLABMET, weight);
+            //hist_RZPerp_RZPerpLABMET->Fill(RZPerp, RZPerpLABMET, weight);
+            //hist_PZPara_PZParaLABMET->Fill(PZPara, PZParaLABMET, weight);
+            //hist_PZPerp_PZPerpLABMET->Fill(PZPerp, PZPerpLABMET, weight);
+            //hist_PZPara_CandECM->Fill(PZPara, CandECM, weight);
+            //hist_PZPerp_CandECM->Fill(PZPerp, CandECM, weight);
+            hist_MRZPara->Fill(MRZPara, weight);
+            hist_MRZPerp->Fill(MRZPerp, weight);
+            hist_MRZParaLABMET->Fill(MRZParaLABMET, weight);
+            hist_MRZPerpLABMET->Fill(MRZPerpLABMET, weight);
+            hist_CandML_MRZPara->Fill(CandML, MRZPara, weight);
+            hist_CandML_MRZPerp->Fill(CandML, MRZPerp, weight);
+            hist_CandML_MRZParaLABMET->Fill(CandML, MRZParaLABMET, weight);
+            hist_CandML_MRZPerpLABMET->Fill(CandML, MRZPerpLABMET, weight);
+            hist_CandCosDecayAngle_MPZPara->Fill(CosDecayAngle, MPZPara, weight);
+            hist_CandCosDecayAngle_MPZPerp->Fill(CosDecayAngle, MPZPerp, weight);
+            hist_CandCosDecayAngle_MPZParaLABMET->Fill(CosDecayAngle, MPZParaLABMET, weight);
+            hist_CandCosDecayAngle_MPZPerpLABMET->Fill(CosDecayAngle, MPZPerpLABMET, weight);
+            hist_CandCosDecayAngleCM_MPZPara->Fill(CosDecayAngleCM, MPZPara, weight);
+            hist_CandCosDecayAngleCM_MPZPerp->Fill(CosDecayAngleCM, MPZPerp, weight);
+            hist_CandCosDecayAngleCM_MPZParaLABMET->Fill(CosDecayAngleCM, MPZParaLABMET, weight);
+            hist_CandCosDecayAngleCM_MPZPerpLABMET->Fill(CosDecayAngleCM, MPZPerpLABMET, weight);
+            hist_Beta_MPZPara->Fill(Beta, MPZPara, weight);
+            hist_Beta_MPZPerp->Fill(Beta, MPZPerp, weight);
+            hist_Beta_MPZParaLABMET->Fill(Beta, MPZParaLABMET, weight);
+            hist_Beta_MPZPerpLABMET->Fill(Beta, MPZPerpLABMET, weight);
+            hist_BetaCM_MPZPara->Fill(BetaCM, MPZPara, weight);
+            hist_BetaCM_MPZPerp->Fill(BetaCM, MPZPerp, weight);
+            hist_BetaCM_MPZParaLABMET->Fill(BetaCM, MPZParaLABMET, weight);
+            hist_BetaCM_MPZPerpLABMET->Fill(BetaCM, MPZPerpLABMET, weight);
+            hist_PZAng_MPZPara->Fill(PZAng, MPZPara, weight);
+            hist_PZAng_MPZPerp->Fill(PZAng, MPZPerp, weight);
+            hist_PZAng_MPZParaLABMET->Fill(PZAng, MPZParaLABMET, weight);
+            hist_PZAng_MPZPerpLABMET->Fill(PZAng, MPZPerpLABMET, weight);
+            hist_CandCosDecayAngle_CandCosDecayAngleCM->Fill(CosDecayAngle, CosDecayAngleCM, weight);
+            hist_CandML_BetaZPara->Fill(CandML, BetaZPara, weight);
+            hist_CandML_BetaZPerp->Fill(CandML, BetaZPerp, weight);
+            hist_CandCosDecayAngle_BetaZPara->Fill(CosDecayAngle, BetaZPara, weight);
+            hist_CandCosDecayAngle_BetaZPerp->Fill(CosDecayAngle, BetaZPerp, weight);
+            hist_CandCosDecayAngleCM_BetaZPara->Fill(CosDecayAngleCM, BetaZPara, weight);
+            hist_CandCosDecayAngleCM_BetaZPerp->Fill(CosDecayAngleCM, BetaZPerp, weight);
+            hist_DecayAngleDiff_PzCM->Fill(CosDecayAngleCM - CosDecayAngle, PzCM, weight);
+            hist_BetaDiff_PzCM->Fill(BetaCM - Beta, PzCM, weight);
+            hist_DecayAngleDiff_BetaDiff->Fill(CosDecayAngleCM - CosDecayAngle, BetaCM - Beta, weight);
+            hist_MRZPara_RZPara->Fill(MRZPara, RZPara, weight);
+            hist_MRZPara_CandCosDecayAngleCM->Fill(MRZPara, CosDecayAngleCM, weight);
+            hist_MRZPara_BetaCM->Fill(MRZPara, BetaCM, weight);
+            hist_MRZPara_CandPZzLAB->Fill(MRZPara, PZzLAB, weight);
+            hist_RZPara_CandPZzLAB->Fill(RZPara, PZzLAB, weight);
+            hist_RZPerp_CandPZzLAB->Fill(RZPerp, PZzLAB, weight);
+            hist_RISR_RZPara->Fill(RISR, RZPara, weight);
+            hist_RISR_MRZPara->Fill(RISR, MRZPara, weight);
+            hist_RISR_CandPZzLAB->Fill(RISR, PZzLAB, weight);
+            hist_RISR_BetaZLAB->Fill(RISR, BetaZLAB, weight);
+            hist_CandML_BetaZLAB->Fill(CandML, BetaZLAB, weight);
+            hist_RZPara_BetaZLAB->Fill(RZPara, BetaZLAB, weight);
+            hist_MRZPara_BetaZLAB->Fill(MRZPara, BetaZLAB, weight);
+            hist_RZPerp_BetaZLAB->Fill(RZPerp, BetaZLAB, weight);
+            hist_CandCosDecayAngle_BetaZLAB->Fill(CosDecayAngle, BetaZLAB, weight);
+            hist_CandCosDecayAngleCM_BetaZLAB->Fill(CosDecayAngleCM, BetaZLAB, weight);
+            hist_RZParaM_RZPara->Fill(RZParaM, RZPara, weight);
+            hist_RZParaM_CandCosDecayAngleCM->Fill(RZParaM, CosDecayAngle, weight);
+            hist_RZParaM_BetaCM->Fill(RZParaM, BetaCM, weight);
+            hist_RZParaM_CandPZzLAB->Fill(RZParaM, PZzLAB, weight);
+            hist_RZParaM_BetaZLAB->Fill(RZParaM, BetaZLAB, weight);
+            //hist_MRZPara_OneMinusRZPara->Fill(MRZPara, 1.-RZPara, weight);
+            //hist_OneMinusRZPara_CandPZzLAB->Fill(1.-RZPara, PZzLAB, weight);
+            //hist_RISR_OneMinusRZPara->Fill(RISR, 1.-RZPara, weight);
+            //hist_OneMinusRZPara_BetaZLAB->Fill(1.-RZPara, BetaZLAB, weight);
+            //hist_BetaCM_OneMinusRZPara->Fill(BetaCM, 1.-RZPara, weight);
+            //hist_CandCosDecayAngle_OneMinusRZPara->Fill(CosDecayAngle, 1.-RZPara, weight);
+            //hist_Beta_OneMinusRZPara->Fill(Beta, 1-RZPara, weight);
+            //hist_CandCosDecayAngleCM_OneMinusRZPara->Fill(CosDecayAngleCM, 1.-RZPara, weight);
+            //hist_MRZPara_CandMdivPTISR->Fill(MRZPara, CandMdivPTISR, weight);
+            //hist_CandMdivPTISR_CandPZzLAB->Fill(CandMdivPTISR, PZzLAB, weight);
+            //hist_RISR_CandMdivPTISR->Fill(RISR, CandMdivPTISR, weight);
+            //hist_CandMdivPTISR_BetaZLAB->Fill(CandMdivPTISR, BetaZLAB, weight);
+            //hist_BetaCM_CandMdivPTISR->Fill(BetaCM, CandMdivPTISR, weight);
+            //hist_CandCosDecayAngle_CandMdivPTISR->Fill(CosDecayAngle, CandMdivPTISR, weight);
+            //hist_Beta_CandMdivPTISR->Fill(Beta, CandMdivPTISR, weight);
+            //hist_CandCosDecayAngleCM_CandMdivPTISR->Fill(CosDecayAngleCM, CandMdivPTISR, weight);
+            hist_MRZPara_MInv->Fill(MRZPara, MInv, weight);
+            hist_MInv_CandPZzLAB->Fill(MInv, PZzLAB, weight);
+            hist_RISR_MInv->Fill(RISR, MInv, weight);
+            hist_MInv_BetaZLAB->Fill(MInv, BetaZLAB, weight);
+            hist_BetaCM_MInv->Fill(BetaCM, MInv, weight);
+            hist_CandCosDecayAngle_MInv->Fill(CosDecayAngle, MInv, weight);
+            hist_Beta_MInv->Fill(Beta, MInv, weight);
+            hist_CandCosDecayAngleCM_MInv->Fill(CosDecayAngleCM, MInv, weight);
+            //hist_CandML_RZParaM->Fill(CandML, RZParaM, weight);
+            //hist_CandML_OneMinusRZPara->Fill(CandML, 1.-RZPara, weight);
+            //hist_CandML_CandMdivPTISR->Fill(CandML, CandMdivPTISR, weight);
+            hist_CandML_MInv->Fill(CandML, MInv, weight);
+            //hist_RZParaDivRISR_RZParaM->Fill(RZPara/RISR, RZParaM, weight);
+            //hist_RZParaDivRISR_CandMdivPTISR->Fill(RZPara/RISR, CandMdivPTISR, weight);
+            //hist_RZParaDivRISR_MInv->Fill(RZPara/RISR, MInv, weight);
+            //hist_RZParaDivRISR_BetaZLAB->Fill(RZPara/RISR, BetaZLAB, weight);
+            //hist_RZParaDivRISR_MRZPara->Fill(RZPara/RISR, MRZPara, weight);
+            //hist_RZParaDivRISR_RZPara->Fill(RZPara/RISR, RZPara, weight);
+            //hist_RZParaDivRISR_OneMinusRZPara->Fill(RZPara/RISR, 1-RZPara, weight);
+            //hist_RZParaDivRISR_Beta->Fill(RZPara/RISR, Beta, weight);
+            //hist_RZParaDivRISR_BetaCM->Fill(RZPara/RISR, BetaCM, weight);
+            //hist_RZParaDivRISR_CandCosDecayAngle->Fill(RZPara/RISR, CosDecayAngle, weight);
+            //hist_RZParaDivRISR_CandCosDecayAngleCM->Fill(RZPara/RISR, CosDecayAngleCM, weight);
+            //hist_CandMLDivRISR_CandML->Fill(RZPara/RISR, CandML, weight);
+            hist_CandML_MAXcandML->Fill(CandML, MAXcandML, weight);
+            hist_BetaZLAB_MAXcandBetaZLAB->Fill(BetaZLAB, MAXcandBetaZLAB, weight);
+            hist_CosDecayAngle_MAXcandCosDecayAngle->Fill(CosDecayAngle, MAXCosDecayAngle, weight);
+            hist_MAXcandBetaZLAB_MAXcandCosDecayAngle->Fill(MAXcandBetaZLAB, MAXCosDecayAngle, weight);
+            hist_MAXcandML_MT2->Fill(MAXcandML, MT2, weight);
+            hist_MAXcandML_MConCM->Fill(MAXcandML, MCon_CM, weight);
+            hist_MAXcandML_MConLEPS->Fill(MAXcandML, MCon_LEPS, weight);
+            hist_MT2_MConCM->Fill(MT2, MCon_CM, weight);
+            hist_MT2_MConLEPS->Fill(MT2, MCon_LEPS, weight);
+            hist_MConCM_MConLEPS->Fill(MCon_CM, MCon_LEPS, weight);
+            hist_CandML_MT2->Fill(CandML, MT2, weight);
+            hist_CandML_MConCM->Fill(CandML, MCon_CM, weight);
+            hist_CandML_MConLEPS->Fill(CandML, MCon_LEPS, weight);
+            hist_CandML_MT2MAX->Fill(CandML, MT2MAX, weight);
+            hist_CandML_MConLEPSMET->Fill(CandML, MCon_LEPSMET, weight);
+            hist_CandML_CosThetaRazor->Fill(CandML, CosThetaRazor, weight);
+            hist_CandML_MAXCosThetaRazor->Fill(CandML, MAXCosThetaRazor, weight);
+            hist_CandML_MAXMInv->Fill(CandML, MAXMInv, weight);
+            hist_MAXCandML_MT2MAX->Fill(MAXcandML, MT2MAX, weight);
+            hist_MAXCandML_MCon_LEPSMET->Fill(MAXcandML, MCon_LEPSMET, weight);
+            hist_MAXCandML_CosThetaRazor->Fill(MAXcandML, CosThetaRazor, weight);
+            hist_MAXCandML_MAXCosThetaRazor->Fill(MAXcandML, MAXCosThetaRazor, weight);
+            hist_MAXCandML_MAXMInv->Fill(MAXcandML, MAXMInv, weight);
+            hist_MAXCandML_RISR->Fill(MAXcandML, RISR, weight);
+            hist_MAXCandML_MInv->Fill(MAXcandML, MInv, weight);
+            hist_MConCM_MT2MAX->Fill(MCon_CM, MT2MAX, weight);
+            hist_MConCM_MConLEPSMET->Fill(MCon_CM, MCon_LEPSMET, weight);
+            hist_MConCM_CosThetaRazor->Fill(MCon_CM, CosThetaRazor, weight);
+            hist_MConCM_MAXCosThetaRazor->Fill(MCon_CM, MAXCosThetaRazor, weight);
+            hist_MConCM_MAXMInv->Fill(MCon_CM, MAXMInv, weight);
+            hist_MConCM_RISR->Fill(MCon_CM, RISR, weight);
+            hist_MConCM_MInv->Fill(MCon_CM, MInv, weight);
+            hist_MConLEPS_MT2MAX->Fill(MCon_LEPS, MT2MAX, weight);
+            hist_MConLEPS_MConLEPSMET->Fill(MCon_LEPS, MCon_LEPSMET, weight);
+            hist_MConLEPS_CosThetaRazor->Fill(MCon_LEPS, CosThetaRazor, weight);
+            hist_MConLEPS_MAXCosThetaRazor->Fill(MCon_LEPS, MAXCosThetaRazor, weight);
+            hist_MConLEPS_MAXMInv->Fill(MCon_LEPS, MAXMInv, weight);
+            hist_MConLEPS_RISR->Fill(MCon_LEPS, RISR, weight);
+            hist_MConLEPS_MInv->Fill(MCon_LEPS, MInv, weight);
+            hist_MT2_MT2MAX->Fill(MT2, MT2MAX, weight);
+            hist_MT2_MConLEPSMET->Fill(MT2, MCon_LEPSMET, weight);
+            hist_MT2_CosThetaRazor->Fill(MT2, CosThetaRazor, weight);
+            hist_MT2_MAXCosThetaRazor->Fill(MT2, MAXCosThetaRazor, weight);
+            hist_MT2_MAXMInv->Fill(MT2, MAXMInv, weight);
+            hist_MT2_RISR->Fill(MT2, RISR, weight);
+            hist_MT2_MInv->Fill(MT2, MInv, weight);
+            hist_MT2MAX_MConLEPSMET->Fill(MT2MAX, MCon_LEPSMET, weight);
+            hist_MT2MAX_CosThetaRazor->Fill(MT2MAX, CosThetaRazor, weight);
+            hist_MT2MAX_MAXCosThetaRazor->Fill(MT2MAX, MAXCosThetaRazor, weight);
+            hist_MT2MAX_MAXMInv->Fill(MT2MAX, MAXMInv, weight);
+            hist_MT2MAX_RISR->Fill(MT2MAX, RISR, weight);
+            hist_MT2MAX_MInv->Fill(MT2MAX, MInv, weight);
+            hist_MConLEPSMET_CosThetaRazor->Fill(MCon_LEPSMET, CosThetaRazor, weight);
+            hist_MConLEPSMET_MAXCosThetaRazor->Fill(MCon_LEPSMET, MAXCosThetaRazor, weight);
+            hist_MConLEPSMET_MAXMInv->Fill(MCon_LEPSMET, MAXMInv, weight);
+            hist_MConLEPSMET_RISR->Fill(MCon_LEPSMET, RISR, weight);
+            hist_MConLEPSMET_MInv->Fill(MCon_LEPSMET, MInv, weight);
+            hist_CosThetaRazor_MAXCosThetaRazor->Fill(CosThetaRazor, MAXCosThetaRazor, weight);
+            hist_CosThetaRazor_MAXMInv->Fill(CosThetaRazor, MAXMInv, weight);
+            hist_CosThetaRazor_RISR->Fill(CosThetaRazor, RISR, weight);
+            hist_CosThetaRazor_MInv->Fill(CosThetaRazor, MInv, weight);
+            hist_MAXCosThetaRazor_MAXMInv->Fill(MAXCosThetaRazor, MAXMInv, weight);
+            hist_MAXCosThetaRazor_RISR->Fill(MAXCosThetaRazor, RISR, weight);
+            hist_MAXCosThetaRazor_MInv->Fill(MAXCosThetaRazor, MInv, weight);
+            hist_MAXMInv_RISR->Fill(MAXMInv, RISR, weight);
+            hist_MAXMInv_MInv->Fill(MAXMInv, MInv, weight);
+            hist_MAXCandML_MAXCosDecayAngle->Fill(MAXcandML, MAXCosDecayAngle, weight);
+          } // at least one lep cand
 
           // Implement new RJR tree
-          LAB.ClearEvent();
-          vector<RFKey> lep_RJR_keys;
-          INV.SetLabFrameThreeVector(TV3_MET);
-          TLorentzVector TLV_RJR_Jets;
-          for(int i = 0; i < Njet; i++){
-            TLorentzVector jet; jet.SetPtEtaPhiM( base->PT_jet->at(i),
-                                    base->Eta_jet->at(i),
-                                    base->Phi_jet->at(i),
-                                    std::max(0.,base->M_jet->at(i)) );
-            TLV_RJR_Jets += jet;
-          }
-          ISR.SetLabFrameFourVector(TLV_RJR_Jets);
-          for(int i = 0; i < Nlep; i++){
-            TLorentzVector lep; lep.SetPtEtaPhiM( base->PT_lep->at(i),
-                                    base->Eta_lep->at(i),
-                                    base->Phi_lep->at(i),
-                                    std::max(0.,base->M_lep->at(i)) );
-            RFKey key = COMB_L.AddLabFrameFourVector(lep);
-            lep_RJR_keys.push_back(key);
-          }
-          if(!LAB.AnalyzeEvent()) cout << "Problem with RJR Analyze Event \n";
-          bool BSideIsA = false;
-          if(Lb.GetFourVector().M() > La.GetFourVector().M()) BSideIsA = true;
+          //LAB.ClearEvent();
+          //vector<RFKey> lep_RJR_keys;
+          //INV.SetLabFrameThreeVector(TV3_MET);
+          //TLorentzVector TLV_RJR_Jets;
+          //for(int i = 0; i < Njet; i++){
+          //  TLorentzVector jet; jet.SetPtEtaPhiM( base->PT_jet->at(i),
+          //                          base->Eta_jet->at(i),
+          //                          base->Phi_jet->at(i),
+          //                          std::max(0.,base->M_jet->at(i)) );
+          //  TLV_RJR_Jets += jet;
+          //}
+          //ISR.SetLabFrameFourVector(TLV_RJR_Jets);
+          //for(int i = 0; i < Nlep; i++){
+          //  TLorentzVector lep; lep.SetPtEtaPhiM( base->PT_lep->at(i),
+          //                          base->Eta_lep->at(i),
+          //                          base->Phi_lep->at(i),
+          //                          std::max(0.,base->M_lep->at(i)) );
+          //  RFKey key = COMB_L.AddLabFrameFourVector(lep);
+          //  lep_RJR_keys.push_back(key);
+          //}
+          //if(!LAB.AnalyzeEvent()) cout << "Problem with RJR Analyze Event \n";
+          //bool BSideIsA = false;
+          //if(Lb.GetFourVector().M() > La.GetFourVector().M()) BSideIsA = true;
 
-          TVector3 vPISR = S.GetFourVector(CM).Vect();
-          double PTISR_LEP = vPISR.Pt();
-          TVector3 vPINV = (Ia.GetFourVector(CM)+Ib.GetFourVector(CM)).Vect();
+          //TVector3 vPISR = S.GetFourVector(CM).Vect();
+          double PTISR_LEP = base->PTISR_LEP;//vPISR.Pt();
+          //TVector3 vPINV = (Ia.GetFourVector(CM)+Ib.GetFourVector(CM)).Vect();
 
-          double MPa = Pa.GetFourVector().M();
-          double MPb = Pb.GetFourVector().M();
-          if(BSideIsA){ MPa = Pb.GetFourVector().M(); MPb = Pa.GetFourVector().M(); }
-          double RISR_LEP = fabs(vPINV.Dot(vPISR.Unit())) / vPISR.Mag();
-          double MQ_LEP = sqrt(MPa*MPa+MPb*MPb)/sqrt(2.);
-          double MS_LEP = S.GetFourVector().M();
-          double gamma_LEP = 2.*MQ_LEP/MS_LEP;
-          double CosDecayAngle_S_LEP = S.GetCosDecayAngle();
-          double CosDecayAngle_Pa_LEP = Pa.GetCosDecayAngle();
-          double CosDecayAngle_Pb_LEP = Pb.GetCosDecayAngle();
-          double CosDecayAngle_Va_LEP = sLa.GetCosDecayAngle();
-          double CosDecayAngle_Vb_LEP = sLb.GetCosDecayAngle();
-          if(BSideIsA){ CosDecayAngle_Pa_LEP = Pb.GetCosDecayAngle(); CosDecayAngle_Pb_LEP = Pa.GetCosDecayAngle(); }
-          double MVa = La.GetFourVector().M();
-          double MVb = Lb.GetFourVector().M();
-          if(BSideIsA){ MVa = Lb.GetFourVector().M(); MVb = La.GetFourVector().M(); }
-          double PTS_CM = S.GetFourVector(CM).Pt();
-          TLorentzVector TLV_L_CMLEP = La.GetFourVector(CM) + Lb.GetFourVector(CM);
-          double RZPara_LEP = TLV_L_CMLEP.Vect().Dot(S.GetFourVector(CM).Vect().Unit())/S.GetFourVector(CM).Vect().Mag();
-          double MINV_LEP = TLV_L_CMLEP.M()*RISR_LEP/RZPara_LEP;
+          //double MPa = Pa.GetFourVector().M();
+          //double MPb = Pb.GetFourVector().M();
+          //if(BSideIsA){ MPa = Pb.GetFourVector().M(); MPb = Pa.GetFourVector().M(); }
+          double MPa = base->MPa_LEP;
+          double MPb = base->MPb_LEP;
+          double RISR_LEP = base->RISR_LEP;//fabs(vPINV.Dot(vPISR.Unit())) / vPISR.Mag();
+          double MQ_LEP = base->MQ_LEP;//sqrt(MPa*MPa+MPb*MPb)/sqrt(2.);
+          double MS_LEP = base->MS_LEP;//S.GetFourVector().M();
+          double gamma_LEP = base->gamma_LEP;//2.*MQ_LEP/MS_LEP;
+          double CosDecayAngle_S_LEP = base->CosDecayAngle_S_LEP;//S.GetCosDecayAngle();
+          //double CosDecayAngle_Pa_LEP = Pa.GetCosDecayAngle();
+          //double CosDecayAngle_Pb_LEP = Pb.GetCosDecayAngle();
+          double CosDecayAngle_Va_LEP = 0.;//sLa.GetCosDecayAngle();
+          double CosDecayAngle_Vb_LEP = 0.;//sLb.GetCosDecayAngle();
+          //if(BSideIsA){ CosDecayAngle_Pa_LEP = Pb.GetCosDecayAngle(); CosDecayAngle_Pb_LEP = Pa.GetCosDecayAngle(); }
+          double CosDecayAngle_Pa_LEP = base->CosDecayAngle_Pa_LEP;
+          double CosDecayAngle_Pb_LEP = base->CosDecayAngle_Pb_LEP;
+          //double MVa = La.GetFourVector().M();
+          //double MVb = Lb.GetFourVector().M();
+          //if(BSideIsA){ MVa = Lb.GetFourVector().M(); MVb = La.GetFourVector().M(); }
+          double MVa = base->MVa;
+          double MVb = base->MVb;
+          //double PTS_CM = S.GetFourVector(CM).Pt();
+          double PTS_CM = base->PTS_CM_LEP;
+          //TLorentzVector TLV_L_CMLEP = La.GetFourVector(CM) + Lb.GetFourVector(CM);
+          //double RZPara_LEP = TLV_L_CMLEP.Vect().Dot(S.GetFourVector(CM).Vect().Unit())/S.GetFourVector(CM).Vect().Mag();
+          //double MINV_LEP = TLV_L_CMLEP.M()*RISR_LEP/RZPara_LEP;
+          double MINV_LEP = base->MINV_LEP;
 
-          TLorentzVector Ia_S = Ia.GetFourVector(S);
-          TLorentzVector Ib_S = Ib.GetFourVector(S);
-          TLorentzVector La_S = La.GetFourVector(S);
-          TLorentzVector Lb_S = Lb.GetFourVector(S);
-          TLorentzVector Ia_S0;
-          TLorentzVector Ib_S0;
-          TLorentzVector La_S0;
-          TLorentzVector Lb_S0;
-          Ia_S0.SetPtEtaPhiM(Ia_S.Pt(), Ia_S.Eta(), Ia_S.Phi(), 0.);
-          Ib_S0.SetPtEtaPhiM(Ib_S.Pt(), Ib_S.Eta(), Ib_S.Phi(), 0.);
-          La_S0.SetPtEtaPhiM(La_S.Pt(), La_S.Eta(), La_S.Phi(), 0.);
-          Lb_S0.SetPtEtaPhiM(Lb_S.Pt(), Lb_S.Eta(), Lb_S.Phi(), 0.);
-          double MS_S0 = (Ia_S0+Ib_S0+La_S0+Lb_S0).M();
-          double MV_S0 = (La_S0+Lb_S0).M();
-          double MQ_S0 = sqrt(((Ia_S0+La_S0).M2()+(Ib_S0+Lb_S0).M2())/2.);
-          double gamma_S0 = 2.*MQ_S0/MS_S0;
+          //TLorentzVector Ia_S = Ia.GetFourVector(S);
+          //TLorentzVector Ib_S = Ib.GetFourVector(S);
+          //TLorentzVector La_S = La.GetFourVector(S);
+          //TLorentzVector Lb_S = Lb.GetFourVector(S);
+          //TLorentzVector Ia_S0;
+          //TLorentzVector Ib_S0;
+          //TLorentzVector La_S0;
+          //TLorentzVector Lb_S0;
+          //Ia_S0.SetPtEtaPhiM(Ia_S.Pt(), Ia_S.Eta(), Ia_S.Phi(), 0.);
+          //Ib_S0.SetPtEtaPhiM(Ib_S.Pt(), Ib_S.Eta(), Ib_S.Phi(), 0.);
+          //La_S0.SetPtEtaPhiM(La_S.Pt(), La_S.Eta(), La_S.Phi(), 0.);
+          //Lb_S0.SetPtEtaPhiM(Lb_S.Pt(), Lb_S.Eta(), Lb_S.Phi(), 0.);
+          //double MS_S0 = (Ia_S0+Ib_S0+La_S0+Lb_S0).M();
+          //double MV_S0 = (La_S0+Lb_S0).M();
+          //double MQ_S0 = sqrt(((Ia_S0+La_S0).M2()+(Ib_S0+Lb_S0).M2())/2.);
+          //double gamma_S0 = 2.*MQ_S0/MS_S0;
+          double MS_S0 = base->MS_S0_LEP;
+          double MV_S0 = base->MV_S0_LEP;
+          double MQ_S0 = base->MQ_S0_LEP;
+          double gamma_S0 = base->gamma_S0_LEP;
 
-          TLorentzVector Ia_Pa = Ia.GetFourVector(Pa);
-          TLorentzVector Ib_Pb = Ib.GetFourVector(Pb);
-          double MPTilde = Ia_Pa.Vect().Mag() + Ib_Pb.Vect().Mag();
-          TLorentzVector Pa_S = Pa.GetFourVector(S);
-          double MSTilde = sqrt(MPTilde*MPTilde+Pa_S.Vect().Mag2());
-          double gammaTilde = MPTilde/MSTilde;
+          //TLorentzVector Ia_Pa = Ia.GetFourVector(Pa);
+          //TLorentzVector Ib_Pb = Ib.GetFourVector(Pb);
+          double MPTilde = base->MPTilde_LEP;//Ia_Pa.Vect().Mag() + Ib_Pb.Vect().Mag();
+          //TLorentzVector Pa_S = Pa.GetFourVector(S);
+          double MSTilde = base->MSTilde_LEP;//sqrt(MPTilde*MPTilde+Pa_S.Vect().Mag2());
+          double gammaTilde = base->gammaTilde_LEP;//MPTilde/MSTilde;
 
-          if(MS_LEP < 100.) continue;
+          //if(RISR_LEP < 0.5) continue;
+          //CF_bin++; hist_CutFlow->SetBinContent(CF_bin, hist_CutFlow->GetBinContent(CF_bin)+weight); 
+          //vect_str_cutflow_labels[CF_bin] = "R_{ISR}^{LEP} > 0.5";
+
+          //if(PTISR_LEP < 150.) continue;
+          //CF_bin++; hist_CutFlow->SetBinContent(CF_bin, hist_CutFlow->GetBinContent(CF_bin)+weight); 
+          //vect_str_cutflow_labels[CF_bin] = "PT_{ISR}^{LEP} > 150";
+
+          if(MVa < 4 || MVa > 65.) continue;
           CF_bin++; hist_CutFlow->SetBinContent(CF_bin, hist_CutFlow->GetBinContent(CF_bin)+weight); 
-          hist_CutFlow->GetXaxis()->SetBinLabel(CF_bin, "MS^{LEP} > 100");
+          vect_str_cutflow_labels[CF_bin] = "4 < M_{Va}^{LEP} < 65";
 
-          if(MQ_LEP > 150.) continue;
+          if(MS_LEP < 300.) continue;
           CF_bin++; hist_CutFlow->SetBinContent(CF_bin, hist_CutFlow->GetBinContent(CF_bin)+weight); 
-          hist_CutFlow->GetXaxis()->SetBinLabel(CF_bin, "MQ^{LEP} < 150");
+          vect_str_cutflow_labels[CF_bin] = "MS^{LEP} > 300";
+
+          //if(MQ_LEP > 150.) continue;
+          //CF_bin++; hist_CutFlow->SetBinContent(CF_bin, hist_CutFlow->GetBinContent(CF_bin)+weight); 
+          //vect_str_cutflow_labels[CF_bin] = "MQ^{LEP} < 150";
+
+          //if(CosDecayAngle_Pa_LEP > 0.4 && fabs(CosDecayAngle_Pb_LEP) < 0.2) continue;
+          //CF_bin++; hist_CutFlow->SetBinContent(CF_bin, hist_CutFlow->GetBinContent(CF_bin)+weight); 
+          //vect_str_cutflow_labels[CF_bin] = "cos#theta^{A} > 0.4 @ |cos#theta^{B}| < 0.2";
+
+          //if(CosDecayAngle_Pa_LEP*CosDecayAngle_Pb_LEP) continue;
+          //CF_bin++; hist_CutFlow->SetBinContent(CF_bin, hist_CutFlow->GetBinContent(CF_bin)+weight); 
+          //vect_str_cutflow_labels[CF_bin] = "cos#theta^{A} * cos#theta^{B} < 0.2";
+
+          //if(MPa/MPb > 0.5) continue;
+          //CF_bin++; hist_CutFlow->SetBinContent(CF_bin, hist_CutFlow->GetBinContent(CF_bin)+weight); 
+          //vect_str_cutflow_labels[CF_bin] = "M_{Pa}^{LEP}/M_{Pb}^{LEP} > 0.5";
+
+          //if((MS_LEP > 180. && MS_LEP < 250.) && MPa/MPb > 0.5) continue;
+          //CF_bin++; hist_CutFlow->SetBinContent(CF_bin, hist_CutFlow->GetBinContent(CF_bin)+weight); 
+          //vect_str_cutflow_labels[CF_bin] = "M_{Pa}^{LEP}/M_{Pb}^{LEP} > 0.5 MS < 250";
+
+          //if((MS_LEP > 180. && MS_LEP < 250.) && MPa/MPb > 1.) continue;
+          //CF_bin++; hist_CutFlow->SetBinContent(CF_bin, hist_CutFlow->GetBinContent(CF_bin)+weight); 
+          //vect_str_cutflow_labels[CF_bin] = "M_{Pa}^{LEP}/M_{Pb}^{LEP} > 1. MS < 250";
 
           //if(gamma_LEP < 0.5) continue;
           //CF_bin++; hist_CutFlow->SetBinContent(CF_bin, hist_CutFlow->GetBinContent(CF_bin)+weight); 
-          //hist_CutFlow->GetXaxis()->SetBinLabel(CF_bin, "#gamma^{LEP} > 0.5");
-
-          if(MVa < 4. || MVa > 65.) continue;
-          CF_bin++; hist_CutFlow->SetBinContent(CF_bin, hist_CutFlow->GetBinContent(CF_bin)+weight); 
-          hist_CutFlow->GetXaxis()->SetBinLabel(CF_bin, "4 < M_{Va}^{LEP} < 65");
+          //vect_str_cutflow_labels[CF_bin] = "#gamma^{LEP} > 0.5";
 
           //if(CosDecayAngle_Pa_LEP > 0.9) continue;
           //CF_bin++; hist_CutFlow->SetBinContent(CF_bin, hist_CutFlow->GetBinContent(CF_bin)+weight); 
-          //hist_CutFlow->GetXaxis()->SetBinLabel(CF_bin, "cos#theta_{Pa}^{LEP} < 0.9");
-
-          //if(MPa/MPb < 0.5) continue;
-          //CF_bin++; hist_CutFlow->SetBinContent(CF_bin, hist_CutFlow->GetBinContent(CF_bin)+weight); 
-          //hist_CutFlow->GetXaxis()->SetBinLabel(CF_bin, "M_{Pa}^{LEP}/M_{Pb}^{LEP} > 0.5");
-
-          //if(MPa/MPb < 0.75) continue;
-          //CF_bin++; hist_CutFlow->SetBinContent(CF_bin, hist_CutFlow->GetBinContent(CF_bin)+weight); 
-          //hist_CutFlow->GetXaxis()->SetBinLabel(CF_bin, "M_{Pa}^{LEP}/M_{Pb}^{LEP} > 0.75");
-
-          //if(MPa/MPb < 1.) continue;
-          //CF_bin++; hist_CutFlow->SetBinContent(CF_bin, hist_CutFlow->GetBinContent(CF_bin)+weight); 
-          //hist_CutFlow->GetXaxis()->SetBinLabel(CF_bin, "M_{Pa}^{LEP}/M_{Pb}^{LEP} > 1.");
+          //vect_str_cutflow_labels[CF_bin] = "cos#theta_{Pa}^{LEP} < 0.9";
 
           hist_RISRLEP_RISR->Fill(RISR_LEP, RISR, weight);
           hist_MQLEP_MSLEP->Fill(MQ_LEP, MS_LEP, weight);
@@ -2105,12 +2199,23 @@ void Plot_Advanced(){
           hist_MPTilde_gammaTilde->Fill(MPTilde, gammaTilde, weight);
           hist_MSTilde_gammaTilde->Fill(MSTilde, gammaTilde, weight);
 
+          hist_CosDecayAnglePaLEP_MPb->Fill(CosDecayAngle_Pa_LEP, MPb, weight);
+          hist_CosDecayAnglePaLEP_MVa->Fill(CosDecayAngle_Pa_LEP, MVa, weight);
+          hist_CosDecayAnglePbLEP_MPa->Fill(CosDecayAngle_Pb_LEP, MPa, weight);
+          hist_CosDecayAnglePbLEP_MPb->Fill(CosDecayAngle_Pb_LEP, MPb, weight);
+          hist_CosDecayAnglePbLEP_MVa->Fill(CosDecayAngle_Pb_LEP, MVa, weight);
+          hist_CosDecayAnglePbLEP_MS->Fill(CosDecayAngle_Pb_LEP, MS_LEP, weight);
+          hist_MPb_MVa->Fill(MPb, MVa, weight);
+
           hist_CosDecayAngleVaLEP_CosDecayAnglePbLEP->Fill(CosDecayAngle_Va_LEP, CosDecayAngle_Pb_LEP, weight);
           hist_CosDecayAngleVaLEP_CosDecayAngleSLEP->Fill(CosDecayAngle_Va_LEP, CosDecayAngle_S_LEP, weight);
           hist_MVa_CosDecayAngleVaLEP->Fill(MVa, CosDecayAngle_Va_LEP, weight);
           hist_MS_CosDecayAngleVaLEP->Fill(MS_LEP, CosDecayAngle_Va_LEP, weight);
           hist_MSLEP_MCosDecayAngleP->Fill(MS_LEP, CosDecayAngle_Pa_LEP-CosDecayAngle_Pb_LEP, weight);
           hist_MQLEP_MCosDecayAngleP->Fill(MQ_LEP, CosDecayAngle_Pa_LEP-CosDecayAngle_Pb_LEP, weight);
+
+          hist_MPa_MCosDecayAngleM->Fill(MPa, CosDecayAngle_Pa_LEP*CosDecayAngle_Pb_LEP, weight);
+          hist_MPb_MCosDecayAngleM->Fill(MPb, CosDecayAngle_Pa_LEP*CosDecayAngle_Pb_LEP, weight);
 
           hist_MET_RISRLEP->Fill(MET, RISR_LEP, weight);
           hist_MET_PTISRLEP->Fill(MET, PTISR_LEP, weight);
@@ -2128,6 +2233,7 @@ void Plot_Advanced(){
           hist_RISRLEP_MSTilde->Fill(RISR_LEP, MSTilde, weight);
           hist_RISRLEP_gammaTilde->Fill(RISR_LEP, gammaTilde, weight);
 
+          hist_MINVLEP_RISRLEP->Fill(MINV_LEP, RISR_LEP, weight);
           hist_MINVLEP_MET->Fill(MINV_LEP, MET, weight);
           hist_MINVLEP_PTISRLEP->Fill(MINV_LEP, PTISR_LEP, weight);
           hist_MINVLEP_MS->Fill(MINV_LEP, MS_LEP, weight);
@@ -2316,6 +2422,9 @@ void Plot_Advanced(){
         delete chain;
         std::cout << "Integral of file: " << file << " is " << hist_MET->Integral() << std::endl;
       } // for(int f = 0; f < Nfile; f++)
+
+      for(int i = 1; i < CF_bins; i++)
+        hist_CutFlow->GetXaxis()->SetBinLabel(i, vect_str_cutflow_labels[i].c_str());
 
     } // for(int s = 0; s < Nsample; s++)
 
