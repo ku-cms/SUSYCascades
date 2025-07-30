@@ -2,6 +2,7 @@
 import os, sys, time, subprocess
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'python')))
 from CondorJobCountMonitor import CondorJobCountMonitor
+from GitHashTool import GitHashTool
 
 # ----------------------------------------------------------- #
 # Parameters
@@ -18,12 +19,12 @@ CMSSW_SETUP = './scripts/cmssw_setup_connect_el9.sh'
 TREE        = "Runs"
 USER        = os.environ['USER']
 OUT         = "/uscms/home/"+USER+"/nobackup/EventCount/root/"
-#OUT         = "/ospool/cms-user/"+USER+"/NTUPLES/Processing"
 LIST        = "default.list"
 QUEUE       = ""
 MAXN        = 1
 CONNECT     = False
 THRESHOLD   = 90000
+GITHASH     = ""
 # ----------------------------------------------------------- #
 
 def get_auto_THRESHOLD():
@@ -68,7 +69,7 @@ def create_filelist(rootlist, dataset, filetag):
 
     return listlist
 
-def write_sh(srcfile,ifile,ofile,logfile,outfile,errfile,dataset,filetag):
+def write_sh(srcfile,ifile,ofile,logfile,outfile,errfile,dataset,filetag,GITHASH):
     fsrc = open(srcfile,'w')
     fsrc.write('universe = vanilla \n')
     fsrc.write('executable = '+jobEXE+" \n")
@@ -85,7 +86,7 @@ def write_sh(srcfile,ifile,ofile,logfile,outfile,errfile,dataset,filetag):
         fsrc.write('--privateMC ')
     fsrc.write('-dataset='+dataset+" ")
     fsrc.write('-filetag='+filetag+" ")
-
+    fsrc.write('-githash='+GITHASH+" ")
     fsrc.write('\n')
     outlog = outfile+".out"
     errlog = errfile+".err"
@@ -128,14 +129,14 @@ def write_sh(srcfile,ifile,ofile,logfile,outfile,errfile,dataset,filetag):
     fsrc.write('queue from '+ifile+'\n')
     fsrc.close()
 
-def write_sh_single(srcfile,ifile,ofile,logfile,outfile,errfile,dataset,filetag):
+def write_sh_single(srcfile,ifile,ofile,logfile,outfile,errfile,dataset,filetag,GITHASH):
     srcfile = srcfile.replace('.submit','_single.submit')
     ofile = ofile.replace('_$(ItemIndex)','_0')
     outfile = outfile.replace('_$(ItemIndex)','_0')
     errfile = errfile.replace('_$(ItemIndex)','_0')
     logfile = logfile.replace('_$(ItemIndex)','_0')
     list_name = os.path.basename(ifile).replace('_list', '_0')
-    ifile = os.path.join('./config/list', list_name)
+    ifile = os.path.join('./config/list', dataset+'_'+filetag, list_name)
 
     fsrc = open(srcfile,'w')
     fsrc.write('# Note: For only submitting 1 job! \n')
@@ -157,6 +158,7 @@ def write_sh_single(srcfile,ifile,ofile,logfile,outfile,errfile,dataset,filetag)
         fsrc.write('--privateMC ')
     fsrc.write('-dataset='+dataset+" ")
     fsrc.write('-filetag='+filetag+" ")
+    fsrc.write('-githash='+GITHASH+" ")
     fsrc.write('\n')
     outlog = outfile+".out"
     errlog = errfile+".err"
@@ -164,7 +166,7 @@ def write_sh_single(srcfile,ifile,ofile,logfile,outfile,errfile,dataset,filetag)
     fsrc.write('output = '+outlog+" \n")
     fsrc.write('error = '+errlog+" \n")
     fsrc.write('log = '+loglog+" \n")
-    fsrc.write('request_memory = 2 GB \n')
+    fsrc.write('request_memory = 1 GB \n')
     fsrc.write('+RequiresCVMFS = True \n')
 
     if CONNECT is True:
@@ -255,6 +257,8 @@ if __name__ == "__main__":
         print ("Processing as Private MC")
 
     THRESHOLD = get_auto_THRESHOLD()
+    gitHashTool = GitHashTool()
+    GITHASH = gitHashTool.getHash()
 
     # input sample list
     listfile = LIST
@@ -374,8 +378,8 @@ if __name__ == "__main__":
         errfile = os.path.join(errdir, dataset+'_'+filetag, file_name.split('/')[-1])
 
         script_name = srcdir+'_'.join([dataset, filetag])+'.submit'
-        write_sh(script_name, overlist_name, file_name+'.root', logfile, outfile, errfile, dataset, filetag)
-        write_sh_single(script_name, overlist_name, file_name+'.root', logfile, outfile, errfile, dataset, filetag)
+        write_sh(script_name, overlist_name, file_name+'.root', logfile, outfile, errfile, dataset, filetag, GITHASH)
+        write_sh_single(script_name, overlist_name, file_name+'.root', logfile, outfile, errfile, dataset, filetag, GITHASH)
         job_total_dataset[dataset+'_'+filetag] = len(rootlist)
 
     #print listdir

@@ -35,6 +35,7 @@ int main(int argc, char* argv[]) {
   char TreeName[400];
   char DataSet[400];
   char FileTag[400];
+  char gitHash[400];
 
   bool DO_FILE = false;
   bool DO_LIST = false;
@@ -77,6 +78,7 @@ int main(int argc, char* argv[]) {
     if (strncmp(argv[i],"--cascades",10)==0)  DO_CASCADES = true;
     if (strncmp(argv[i],"--privatemc",11)==0)  DO_PRIVATEMC = true;
     if (strncmp(argv[i],"--private",9)==0)  DO_PRIVATEMC = true;
+    if (strncmp(argv[i],"-githash",8)==0)  sscanf(argv[i],"-githash=%s", gitHash);
   }
 
   gROOT->ProcessLine("#include <vector>");
@@ -359,6 +361,8 @@ int main(int argc, char* argv[]) {
 
   fout->cd();
   tout->Write("", TObject::kOverwrite);
+  TNamed param("GitCommitHash", gitHash);
+  param.Write();
   fout->Close();
   if(passed_DAS) return 0;
   else return 1;

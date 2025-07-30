@@ -23,7 +23,6 @@
 #include "SUSYNANOBase.hh"
 #include "NANOULBase.hh"
 #include "NANORun3.hh"
-#include "GitHashTool.hh"
 
 using namespace std;
 using std::vector;
@@ -74,6 +73,8 @@ int main(int argc, char* argv[]) {
   
   int ICHUNK = 1;
   int NCHUNK = 1;
+
+  char gitHash[400];
   
   if ( argc < 2 ){
     cout << "Error at Input: please specify an input file name, a list of input ROOT files and/or a folder path"; 
@@ -135,9 +136,8 @@ int main(int argc, char* argv[]) {
     if (strncmp(argv[i],"--sysMMS",8)==0)  DO_SYS_MMS = true;
     if (strncmp(argv[i],"--sysEES",8)==0)  DO_SYS_EES = true;
 
-    if(strncmp(argv[i],"-split",6)==0){
-      sscanf(argv[i],"-split=%d,%d", &ICHUNK, &NCHUNK);
-    }
+    if (strncmp(argv[i],"-split",6)==0)  sscanf(argv[i],"-split=%d,%d", &ICHUNK, &NCHUNK);
+    if (strncmp(argv[i],"-githash",8)==0)  sscanf(argv[i],"-githash=%s", gitHash);
   }
 
   gROOT->ProcessLine("#include <vector>");
@@ -263,8 +263,11 @@ int main(int argc, char* argv[]) {
 
   cout << "writing output with ichunk=" << ICHUNK << " nchunk=" << NCHUNK << endl;
   bool passedDASCheck = std::visit([&](auto& nt) -> bool { return nt->WriteNtuple(string(outputFileName), ICHUNK, NCHUNK, DO_slim, NDAS, string(DAS_datasetname), string(DAS_filename)); }, ntuple);
-  GitHashTool HashTool;
-  HashTool.WriteToROOT(string(outputFileName));
+  TFile* outfile = new TFile(outputFileName,"UPDATE");
+  TNamed param("GitCommitHash", gitHash);
+  param.Write();
+  outfile->Close();
+  delete outfile;
   if(!passedDASCheck){
     std::cout << "JOB FAILED DAS CHECK!" << std::endl;
     return 1;

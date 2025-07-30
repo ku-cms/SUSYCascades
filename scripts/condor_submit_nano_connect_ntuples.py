@@ -23,13 +23,13 @@ CMSSW_SETUP  = './scripts/cmssw_setup_connect_el9.sh'
 TREE         = "Events"
 USER         = os.environ['USER']
 OUT_BASE     = "/ospool/cms-user/"+USER+"/NTUPLES/Processing"
-#OUT_BASE     = "/uscms/home/"+USER+"/nobackup/NTUPLES/Processing"
 LIST         = "default.list"
 QUEUE        = ""
 SPLIT        = 100
 THRESHOLD    = 85000
 MAX_JOBS_SUB = 15000 # Max jobs/submission (Connect max is 20000)
 MIN_JOBS_SUB = 5000 # Min jobs/submission
+GITHASH      = ""
 # ----------------------------------------------------------- #
 
 def get_auto_THRESHOLD():
@@ -74,7 +74,7 @@ def create_filelist(rootlist, dataset, filetag):
 
     return listlist
 
-def write_sh_single(srcfile,ifile,ofile,logfile,outfile,errfile,dataset,filetag,n,NAME):
+def write_sh_single(srcfile,ifile,ofile,logfile,outfile,errfile,dataset,filetag,n,NAME,GITHASH):
     srcfile = srcfile.replace('.submit','_single.submit')
     ofile = ofile.replace('_$(ItemIndex)_$(Step)','_0_0')
     outfile = outfile.replace('_$(ItemIndex)_$(Step)','_0_0')
@@ -121,6 +121,7 @@ def write_sh_single(srcfile,ifile,ofile,logfile,outfile,errfile,dataset,filetag,
     fsrc.write('-metfile='+METFILE+" ")
     fsrc.write('-prefirefile='+PREFIREFILE+" ")
     fsrc.write('-xsjsonfile='+XSJSONFILE+" ")
+    fsrc.write('-githash='+GITHASH+" ")
     fsrc.write('-split=1,'+str(n)+'\n')
 
     outlog = outfile+".out"
@@ -129,7 +130,7 @@ def write_sh_single(srcfile,ifile,ofile,logfile,outfile,errfile,dataset,filetag,
     fsrc.write('output = '+outlog+" \n")
     fsrc.write('error = '+errlog+" \n")
     fsrc.write('log = '+loglog+" \n")
-    fsrc.write('request_memory = 2 GB \n')
+    fsrc.write('request_memory = 1 GB \n')
     fsrc.write('+RequiresCVMFS = True \n')
     if USE_URL:
         # Warning: The stash.osgconnect.net endpoint has been decommissioned.
@@ -163,7 +164,7 @@ def write_sh_single(srcfile,ifile,ofile,logfile,outfile,errfile,dataset,filetag,
     fsrc.write('queue')
     fsrc.close()
 
-def write_sh(srcfile,ifile,ofile,logfile,outfile,errfile,dataset,filetag,n,NAME):
+def write_sh(srcfile,ifile,ofile,logfile,outfile,errfile,dataset,filetag,n,NAME,GITHASH):
     fsrc = open(srcfile,'w')
     fsrc.write('universe = vanilla \n')
     fsrc.write('executable = '+jobEXE+" \n")
@@ -198,6 +199,7 @@ def write_sh(srcfile,ifile,ofile,logfile,outfile,errfile,dataset,filetag,n,NAME)
     fsrc.write('-metfile='+METFILE+" ")
     fsrc.write('-prefirefile='+PREFIREFILE+" ")
     fsrc.write('-xsjsonfile='+XSJSONFILE+" ")
+    fsrc.write('-githash='+GITHASH+" ")
     splitstring = '-split=%s,%d\n' % ('$$([$(Step)+1])', n)
     fsrc.write(splitstring)
 
@@ -324,6 +326,8 @@ if __name__ == "__main__":
         MAX_JOBS_SUB = 10000
 
     THRESHOLD = get_auto_THRESHOLD()
+    gitHashTool = GitHashTool()
+    GITHASH = gitHashTool.getHash()
     
     print (" --- Preparing condor submission to create ntuples.")
     if DO_DATA:
@@ -582,8 +586,8 @@ if __name__ == "__main__":
             errfile = os.path.join(errdir, dataset+'_'+filetag, file_name.split('/')[-1])
 
             script_name = srcdir+'_'.join([dataset, filetag])+'.submit'
-            write_sh(script_name, overlist_name, file_name+'.root', logfile, outfile, errfile, dataset, filetag, dataset_split[dataset+"_"+filetag], NAME)
-            write_sh_single(script_name, overlist_name, file_name+'.root', logfile, outfile, errfile, dataset, filetag, dataset_split[dataset+"_"+filetag], NAME)
+            write_sh(script_name, overlist_name, file_name+'.root', logfile, outfile, errfile, dataset, filetag, dataset_split[dataset+"_"+filetag], NAME, GITHASH)
+            write_sh_single(script_name, overlist_name, file_name+'.root', logfile, outfile, errfile, dataset, filetag, dataset_split[dataset+"_"+filetag], NAME, GITHASH)
     
     if VERBOSE and not COUNT:
         print("Created area for log files")
