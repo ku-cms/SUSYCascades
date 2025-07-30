@@ -325,7 +325,7 @@ if __name__ == "__main__":
         MIN_JOBS_SUB = 1000
         MAX_JOBS_SUB = 10000
 
-    THRESHOLD = get_auto_THRESHOLD()
+    THRESHOLD = 0.99*get_auto_THRESHOLD()
     gitHashTool = GitHashTool()
     GITHASH = gitHashTool.getHash()
     
@@ -619,7 +619,7 @@ if __name__ == "__main__":
             sample_handle = sample_handle[-1]
             sample_handle = sample_handle.replace(".submit",'')
             print (f"submitting: {f}")
-            submit_jobs = input_info[sample_handle]["n_jobs"] + 1
+            submit_jobs = input_info[sample_handle]["n_jobs"]
             condor_monitor.set_threshold(THRESHOLD-submit_jobs)
             if CSV:
                 condor_monitor.wait_until_jobs_below()
