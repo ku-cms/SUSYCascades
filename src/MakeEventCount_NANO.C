@@ -18,7 +18,6 @@
 #include <TLorentzVector.h>
 
 #include "NeventTool.hh"
-#include "GitHashTool.hh"
 
 using namespace std;
 using std::vector;
@@ -361,8 +360,6 @@ int main(int argc, char* argv[]) {
   fout->cd();
   tout->Write("", TObject::kOverwrite);
   fout->Close();
-  GitHashTool HashTool;
-  HashTool.WriteToROOT(string(outputFileName));
   if(passed_DAS) return 0;
   else return 1;
 }
