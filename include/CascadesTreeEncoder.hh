@@ -6,7 +6,7 @@
 class CascadesTreeEncoder {
   public:
     // Encode cascade gen prod & decay values into a single uint16_t
-    // Production: 1-8, SlepSneu1st: 1-3, SlepSneu2nd: 1-3, N2_1st: 0-3, N2_2nd: 0-3
+    // Production: 1-8, SlepSneu1st: 1-3, SlepSneu2nd: 1-3, N2_1st: 0-4, N2_2nd: 0-4
     static uint16_t Encode(const int& A, const int& B, const int& C, const int& D, const int& E);
     // Example encode: uint16_t packed = CascadesTreeEncoder::Encode(5, 2, 2, 1, 0);
     static std::tuple<int, int, int, int, int> Decode(const uint16_t& packed);

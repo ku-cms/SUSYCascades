@@ -1134,7 +1134,8 @@ uint16_t AnalysisBase<Base>::GetGenCascadesTree(){
       std::pair<int,int> N2_1stDecays = GetGenCascadesDecayMode(N2_1st_Index); // get decays of N2 from 1st Slep/Sneu
       if(N2_1stDecays.first == 22) N2_1stDecayMode = 1; // N2 -> photon + LSP
       else if(N2_1stDecays.first == 23) N2_1stDecayMode = 2; // N2 -> Z + LSP
-      else if(N2_1stDecays.second == 1000024) N2_1stDecayMode = 3; // N2 -> W + C1
+      else if(N2_1stDecays.second == 1000024) N2_1stDecayMode = 3; // N2 -> W- + C1+
+      else if(N2_1stDecays.second == -1000024) N2_1stDecayMode = 4; // N2 -> W+ + C1-
     }
     int N2_2nd_Index = -1;
     int N2_2ndDecayMode = 0;
@@ -1143,7 +1144,8 @@ uint16_t AnalysisBase<Base>::GetGenCascadesTree(){
       std::pair<int,int> N2_2ndDecays = GetGenCascadesDecayMode(N2_2nd_Index); // get decays of N2 from 2nd Slep/Sneu
       if(N2_2ndDecays.first == 22) N2_2ndDecayMode = 1; // N2 -> photon + LSP
       else if(N2_2ndDecays.first == 23) N2_2ndDecayMode = 2; // N2 -> Z + LSP
-      else if(N2_2ndDecays.second == 1000024) N2_2ndDecayMode = 3; // N2 -> W + C1
+      else if(N2_2ndDecays.second == 1000024) N2_2ndDecayMode = 3; // N2 -> W- + C1+
+      else if(N2_2ndDecays.second == -1000024) N2_2ndDecayMode = 4; // N2 -> W+ + C1-
     }
 
     uint16_t packed = CascadesTreeEncoder::Encode(prod_mode, SlepSneu1stDecayMode, SlepSneu2ndDecayMode, N2_1stDecayMode, N2_2ndDecayMode);
