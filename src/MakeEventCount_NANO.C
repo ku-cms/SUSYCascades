@@ -190,6 +190,10 @@ int main(int argc, char* argv[]) {
     chain->SetBranchStatus("GenPart_mass", 1);
     chain->SetBranchStatus("GenPart_pdgId", 1);
   }
+  else{
+    chain->SetBranchAddress("genEventSumw", &genEventSumw, &b_genEventSumw);
+    chain->SetBranchAddress("genEventCount", &genEventCount, &b_genEventCount);
+  }
 
   int MP = 0;
   int MC = 0;

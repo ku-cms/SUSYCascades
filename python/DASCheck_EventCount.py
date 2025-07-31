@@ -24,6 +24,13 @@ def process_DASCheck_event_count(input_dir, working_dir, output_dir, dryrun, fil
         for EC_dir in dirs:
             if EC_dir.endswith('_EventCount'):
                 command = f"python3 python/CheckFiles.py -d {EC_dir} -o {output_dir}{EC_dir} --eventCount -t {threshold}"
+                submitFiles = [f for f in os.listdir('{EC_dir}/src/') if f.endswith('.submit') and os.path.isfile(f)]
+                firstsubmitFile = sorted(files)[0] if files else None
+                with open(firstsubmitFile) as f:
+                    for line in f:
+                        if '--private' in line:
+                            command += " -w -c"
+                            break
                 os.makedirs("DASCheck_logs/",exist_ok=True)
                 output_file = f"DASCheck_logs/DASCheck_{EC_dir}.txt"
                 if not dryrun:
