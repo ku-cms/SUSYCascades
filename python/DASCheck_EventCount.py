@@ -24,9 +24,9 @@ def process_DASCheck_event_count(input_dir, working_dir, output_dir, dryrun, fil
         for EC_dir in dirs:
             if EC_dir.endswith('_EventCount'):
                 command = f"python3 python/CheckFiles.py -d {EC_dir} -o {output_dir}{EC_dir} --eventCount -t {threshold}"
-                submitFiles = [f for f in os.listdir('{EC_dir}/src/') if f.endswith('.submit') and os.path.isfile(f)]
-                firstsubmitFile = sorted(files)[0] if files else None
-                with open(firstsubmitFile) as f:
+                submitFiles = [f for f in os.listdir(f'{EC_dir}/src/') if f.endswith('.submit') and os.path.isfile(os.path.join(f'{EC_dir}/src/',f))]
+                firstsubmitFile = sorted(submitFiles)[0] if submitFiles else None
+                with open(os.path.join(f'{EC_dir}/src/',firstsubmitFile)) as f:
                     for line in f:
                         if '--private' in line:
                             command += " -w -c"
