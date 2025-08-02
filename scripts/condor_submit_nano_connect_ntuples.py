@@ -1,9 +1,9 @@
 #! /usr/bin/env python
-
 import os, sys, time, subprocess, re
 from colorama import Fore, Back, Style
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'python')))
 from CondorJobCountMonitor import CondorJobCountMonitor
+from GitHashTool import GitHashTool
 
 # Example submission: 
 # nohup python3 scripts/condor_submit_nano_connect_ntuples.py -split 25 -list samples/NANO/Lists/Summer23BPix_130X.list --verbose --csv > submit_bkg.debug 2>&1 &
@@ -670,5 +670,5 @@ if __name__ == "__main__":
         # os.system(f'nohup python3 python/CheckFiles.py -d {TARGET}/ -o {OUT_DIR} -e > /dev/null 2>&1 &')
         print(Fore.GREEN + "Congrats... your jobs were submitted!" + Fore.RESET)
         print('Run this after jobs have finished to check for failed jobs (and resubmit them):')
-        print(f'nohup python3 python/CheckFiles.py -d {TARGET} -o {OUT_DIR} -e > CheckFiles_{filetag}_0.debug 2>&1 &')
+        print(f'nohup python3 python/CheckFiles.py -d {TARGET} -o {OUT_DIR} > CheckFiles_{filetag}_0.debug 2>&1 &')
 
