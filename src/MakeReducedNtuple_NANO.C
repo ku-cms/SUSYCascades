@@ -264,8 +264,13 @@ int main(int argc, char* argv[]) {
   cout << "writing output with ichunk=" << ICHUNK << " nchunk=" << NCHUNK << endl;
   bool passedDASCheck = std::visit([&](auto& nt) -> bool { return nt->WriteNtuple(string(outputFileName), ICHUNK, NCHUNK, DO_slim, NDAS, string(DAS_datasetname), string(DAS_filename)); }, ntuple);
   TFile* outfile = new TFile(outputFileName,"UPDATE");
+  TDirectory* metaDir = outfile->GetDirectory("meta");
+  if(!metaDir)
+    metaDir = outfile->mkdir("meta");
+  metaDir->cd();
   TNamed param("GitCommitHash", gitHash);
   param.Write();
+  outfile->cd();
   outfile->Close();
   delete outfile;
   if(!passedDASCheck){

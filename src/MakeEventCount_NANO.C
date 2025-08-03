@@ -167,12 +167,57 @@ int main(int argc, char* argv[]) {
     if(chain->GetListOfBranches()->FindObject("genEventCount"))
       status2 = true;
   }
+  int NEVENT = 0;
 
-  if(!status1 || !status2){
+  if(status1 && status2){
+    chain->SetBranchAddress("genEventSumw", &genEventSumw, &b_genEventSumw);
+    chain->SetBranchAddress("genEventCount", &genEventCount, &b_genEventCount);
+  }
+
+  // add DAS count
+  int NDAS = 0;
+  int Nevent_tot = 0;
+  NeventTool eventTool;
+  std::string DAS_datasetname = "PrivateMC";
+  std::string DAS_filename = "PrivateMC";
+  if(!DO_PRIVATEMC){
+    cout << "Adding DAS info..." << endl;
+    for(int i = 0; i < Nfile; i++)
+      NDAS += eventTool.EventsInDAS(filenames[i]);
+    DAS_datasetname = eventTool.Get_DASdatasetname(filenames[0]);
+    DAS_filename = eventTool.Get_DASfilename(filenames[0]);
+    if(NDAS == 0) return 1; // will try to resubmit job
+    cout << "Added DAS info!" << endl;
+  }
+  bool passed_DAS = true;
+  if(status1 && status2){
+    chain->GetEntry(0);
+    Nevent = genEventCount;
+    Nweight = genEventSumw;
+    if(!DO_PRIVATEMC && NDAS != Nevent){
+      passed_DAS = false;
+      Nevent = 0;
+      Nweight = 0;
+      NEVENT = 0;
+    }
+  }
+
+  int MP = 0;
+  int MC = 0;
+  int Code = 0;
+  int PDGID;
+  std::vector<std::pair<int,std::pair<int,int>>> masses;
+  std::map<std::pair<int,std::pair<int,int>>,double > mapNevent;
+  std::map<std::pair<int,std::pair<int,int>>,double > mapNweight;
+  int maxNGEN = 0;
+
+  if(!status1 || !status2 || !passed_DAS){
     delete chain;
     chain = (TChain*) new TChain("Events");
     for(int i = 0; i < Nfile; i++)
       chain->Add(filenames[i].c_str());
+    NEVENT = chain->GetEntries();
+    if(NEVENT == 0) return 1;
     chain->SetBranchAddress("genWeight", &genWeight, &b_genWeight);
     chain->SetBranchAddress("luminosityBlock", &luminosityBlock, &b_luminosityBlock);
     
@@ -189,26 +234,6 @@ int main(int argc, char* argv[]) {
     chain->SetBranchStatus("nGenPart", 1);
     chain->SetBranchStatus("GenPart_mass", 1);
     chain->SetBranchStatus("GenPart_pdgId", 1);
-  }
-  else{
-    chain->SetBranchAddress("genEventSumw", &genEventSumw, &b_genEventSumw);
-    chain->SetBranchAddress("genEventCount", &genEventCount, &b_genEventCount);
-  }
-
-  int MP = 0;
-  int MC = 0;
-  int Code = 0;
-  int PDGID;
-  std::vector<std::pair<int,std::pair<int,int>>> masses;
-  std::map<std::pair<int,std::pair<int,int>>,double > mapNevent;
-  std::map<std::pair<int,std::pair<int,int>>,double > mapNweight;
-   
-  int maxNGEN = 0;
-
-  int NEVENT = chain->GetEntries();
-  cout << "TOTAL of " << NEVENT << " entries" << endl;
-  if(NEVENT == 0) return 1;
-  if(!status1 || !status2){
 
     for(int e = 0; e < NEVENT; e++){
       int mymod = NEVENT/10;
@@ -299,26 +324,6 @@ int main(int argc, char* argv[]) {
     }
     cout << "MAX NGEN " << maxNGEN << endl;
   }
-  else{
-    chain->GetEntry(0);
-    Nevent = genEventCount;
-    Nweight = genEventSumw;
-  }
-  // add DAS count
-  int NDAS = 0;
-  int Nevent_tot = 0;
-  NeventTool eventTool;
-  std::string DAS_datasetname = "PrivateMC";
-  std::string DAS_filename = "PrivateMC";
-  if(!DO_PRIVATEMC){
-    cout << "Adding DAS info..." << endl;
-    for(int i = 0; i < Nfile; i++)
-      NDAS += eventTool.EventsInDAS(filenames[i]);
-    DAS_datasetname = eventTool.Get_DASdatasetname(filenames[0]);
-    DAS_filename = eventTool.Get_DASfilename(filenames[0]);
-    if(NDAS == 0) return 1; // will try to resubmit job
-    cout << "Added DAS info!" << endl;
-  }
 
   TFile* fout = new TFile(string(outputFileName).c_str(),"RECREATE");
   TTree* tout = (TTree*) new TTree("EventCount", "EventCount");
@@ -341,13 +346,18 @@ int main(int argc, char* argv[]) {
     }
   }
   else Nevent_tot = Nevent;
-  bool passed_DAS = true;
-  if(!DO_PRIVATEMC && NDAS != Nevent_tot){ 
-    std::cout << "JOB FAILED DAS CHECK!" << std::endl;
-    std::cout << "  NDAS: " << NDAS << std::endl;
-    std::cout << "  Nevent_tot: " << Nevent_tot << std::endl;
-    passed_DAS = false;
+  passed_DAS = true;
+  if(!DO_PRIVATEMC){
+    if(NDAS != Nevent_tot){ 
+      std::cout << "JOB FAILED DAS CHECK!" << std::endl;
+      std::cout << "  NDAS: " << NDAS << std::endl;
+      std::cout << "  Nevent_tot: " << Nevent_tot << std::endl;
+      passed_DAS = false;
+    } else {
+      std::cout << "JOB PASSED DAS CHECK!" << std::endl;
+    }
   }
+
   if(DO_SMS){
     int Nmass = masses.size();
     for(int i = 0; i < Nmass; i++){
@@ -365,8 +375,13 @@ int main(int argc, char* argv[]) {
 
   fout->cd();
   tout->Write("", TObject::kOverwrite);
+  TDirectory* metaDir = fout->GetDirectory("meta");
+  if(!metaDir)
+    metaDir = fout->mkdir("meta");
+  metaDir->cd();
   TNamed param("GitCommitHash", gitHash);
   param.Write();
+  fout->cd();
   fout->Close();
   if(passed_DAS) return 0;
   else return 1;

@@ -5376,7 +5376,7 @@ ParticleList AnalysisBase<NANORun3>::GetElectrons(){
       continue;
     if(Electron_pfRelIso03_all[i]*Electron_pt[i] >= 20. + 300./Electron_pt[i])
       continue;
-    if(minus_iso_hoe(Electron_vidNestedWPBitmap[i], 1, std::less<int>()))
+    if(!minus_iso_hoe(Electron_vidNestedWPBitmap[i], 4, std::greater_equal<int>()))
       continue;
 
     Particle lep;
@@ -5400,7 +5400,7 @@ ParticleList AnalysisBase<NANORun3>::GetElectrons(){
 
     if(  lep.MiniIso()*lep.Pt() >= 4.
       || lep.RelIso()*lep.Pt() >= 4.
-      || !minus_iso_hoe(Electron_vidNestedWPBitmap[i], 4, std::equal_to<int>())
+      || !minus_iso_hoe(Electron_vidNestedWPBitmap[i], 4, std::greater_equal<int>())
     )
       lep.SetLepQual(kBronze);
     else if(lep.SIP3D() > 2.)
