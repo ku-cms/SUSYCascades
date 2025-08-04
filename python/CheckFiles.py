@@ -130,7 +130,7 @@ def UpdateFilterList(DataSetName, filterlist_filename, add):
         filterlist.write("\n".join(sorted(dataset_list)) + "\n")  # Sort for consistency
 
 # Check condor jobs
-def checkJobs(workingDir,outputDir,skipEC,skipDAS,skipMissing,skipSmall,skipErr,skipOut,skipZombie,resubmit,maxResub,filter_list,threshold):
+def checkJobs(workingDir,outputDir,skipEC,skipDAS,skipMissing,skipSmall,skipErr,skipOut,skipZombie,resubmit,maxResub,filter_list,threshold,skipDASDataset):
     print("Running over the directory '{0}'.".format(workingDir))
     print("------------------------------------------------------------")
     grep_ignore = "-e \"Warning\" -e \"WARNING\" -e \"TTree::SetBranchStatus\" -e \"libXrdSecztn.so\" -e \"Phi_mpi_pi\" -e \"tar: stdout: write error\" -e \"INFO\""
@@ -155,6 +155,7 @@ def checkJobs(workingDir,outputDir,skipEC,skipDAS,skipMissing,skipSmall,skipErr,
             NDAS = 0
             event_count = EventCount()
             listDir = os.path.join(workingDir, "config/list", DataSetName)
+            dataset = []
             for lFile in os.listdir(listDir):
                 if lFile.endswith('.list') and not lFile.endswith('_list.list'):
                     with open(os.path.join(listDir,lFile),'r') as input_root_files:
@@ -170,6 +171,22 @@ def checkJobs(workingDir,outputDir,skipEC,skipDAS,skipMissing,skipSmall,skipErr,
             if NDAS != NDAS_true:
                 comp_percent = 100.*math.floor(NDAS/NDAS_true * 1000) / 1000
                 print(f'{DataSetName} failed the DAS check! ({comp_percent}%) Use other options to investigate')
+                if(not skipDASDataset and dataset):
+                    files_datasets = set()
+                    bash = "find "+outputDir+'/'+DataSetName+" -type f"
+                    files = subprocess.check_output(['bash','-c', bash]).decode()
+                    files = files.split("\n")
+                    files.remove('')
+                    for file in files:
+                        file_datasets = event_count.getDASDatasetNames(file)
+                        for ds in file_datasets:
+                            if ds not in files_datasets:
+                                files_datasets.add(ds)
+                    dataset_set = set(dataset)
+                    if files_datasets != dataset_set:
+                        print(f'{DataSetName} dataset mismatch!')
+                        print(f'From files:   {sorted(files_datasets)}')
+                        print(f'From DAS: {sorted(dataset_set)}')
                 UpdateFilterList(DataSetName, f"{workingDir}/CheckFiles_FilterList.txt", True)
             else:
                 print(f'{DataSetName} passed the DAS check!')
@@ -289,6 +306,7 @@ def main():
     parser.add_argument("--skipErr",        "-e", action='store_true', help="skip checking err files (recommended: slow)")
     parser.add_argument("--skipOut",        "-u", action='store_true', help="skip checking out files")
     parser.add_argument("--skipZombie",     "-z", action='store_true', help="skip checking zombie root files")
+    parser.add_argument("--skipDASDataset", "-k", action='store_true', help="skip checking DAS dataset matches")
     parser.add_argument("--maxResub",       "-l", default=5000, help="max number of jobs to resubmit")
     parser.add_argument("--threshold",      "-t", default=90000, help="min number of jobs running before starting checker")
     parser.add_argument("--sleep",          "-p", default=1, help="time to sleep before starting checker")
@@ -307,6 +325,7 @@ def main():
     skipErr        = options.skipErr
     skipOut        = options.skipOut
     skipZombie     = options.skipZombie
+    skipDASDataset = options.skipDASDataset
     maxResub       = int(options.maxResub)
     threshold      = int(options.threshold)
     sleep_time     = int(options.sleep)
@@ -342,7 +361,7 @@ def main():
         print(f"Waiting until minumum of {threshold} jobs in the queue")
         condor_monitor.wait_until_jobs_below()
         print("Running checker...")
-        nJobs = checkJobs(directory,output,skipEC,skipDAS,skipMissing,skipSmall,skipErr,skipOut,skipZombie,resubmit,maxResub,filter_list,threshold)
+        nJobs = checkJobs(directory,output,skipEC,skipDAS,skipMissing,skipSmall,skipErr,skipOut,skipZombie,resubmit,maxResub,filter_list,threshold,skipDASDataset)
         if resubmit and nJobs > 0:
             print(f"Resubmitted a total of {nJobs} jobs!")
         print("Checker Complete!")
