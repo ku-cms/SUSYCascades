@@ -178,7 +178,7 @@ def checkJobs(workingDir,outputDir,skipEC,skipDAS,skipMissing,skipSmall,skipErr,
                     files = files.split("\n")
                     files.remove('')
                     for file in files:
-                        file_datasets = event_count.getDASDatasetNames(file)
+                        file_datasets = event_count.getFullDASDatasetNames(file)
                         for ds in file_datasets:
                             if ds not in files_datasets:
                                 files_datasets.add(ds)
