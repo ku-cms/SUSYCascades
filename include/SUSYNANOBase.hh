@@ -116,6 +116,7 @@ public :
   Bool_t          Electron_mvaSpring16HZZ_WPL[25];   //[nElectron]
   Bool_t          Electron_mvaNoIso_WP80[25];   //[nElectron]
   Bool_t          Electron_mvaIso_WP80[25];   //[nElectron]
+  Bool_t          Electron_mvaIso_WP90[25];   //[nElectron]
   Int_t           nLowPtElectron;
   Bool_t          LowPtElectron_convVeto[50];   //[nLowPtElectron]
   UChar_t         LowPtElectron_convWP[50];   //[nLowPtElectron]
@@ -1323,6 +1324,7 @@ public :
   TBranch        *b_Electron_mvaSpring16HZZ_WPL;   //!
   TBranch        *b_Electron_mvaNoIso_WP80;   //!
   TBranch        *b_Electron_mvaIso_WP80;   //!
+  TBranch        *b_Electron_mvaIso_WP90;   //!
   TBranch        *b_nLowPtElectron;   //!
   TBranch        *b_LowPtElectron_convVeto;   //!
   TBranch        *b_LowPtElectron_convWP;   //!
@@ -2589,6 +2591,7 @@ inline void SUSYNANOBase::Init(TTree *tree)
   fChain->SetBranchAddress("Electron_mvaSpring16HZZ_WPL", Electron_mvaSpring16HZZ_WPL, &b_Electron_mvaSpring16HZZ_WPL);
   fChain->SetBranchAddress("Electron_mvaNoIso_WP80", Electron_mvaNoIso_WP80, &b_Electron_mvaNoIso_WP80);
   fChain->SetBranchAddress("Electron_mvaIso_WP80", Electron_mvaIso_WP80, &b_Electron_mvaIso_WP80);
+  fChain->SetBranchAddress("Electron_mvaIso_WP90", Electron_mvaIso_WP90, &b_Electron_mvaIso_WP90);
   fChain->SetBranchAddress("nLowPtElectron", &nLowPtElectron, &b_nLowPtElectron);
   fChain->SetBranchAddress("LowPtElectron_convVeto", &LowPtElectron_convVeto, &b_LowPtElectron_convVeto);
   fChain->SetBranchAddress("LowPtElectron_convWP", &LowPtElectron_convWP, &b_LowPtElectron_convWP);

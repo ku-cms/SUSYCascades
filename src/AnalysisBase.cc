@@ -360,6 +360,11 @@ bool AnalysisBase<Base>::GetMETORtrigger(){
 }
 
 template <class Base>
+bool AnalysisBase<Base>::GetMETDoubleMutrigger(){
+  return false;
+}
+
+template <class Base>
 bool AnalysisBase<Base>::GetSingleElectrontrigger(){
   return false;
 }
@@ -376,6 +381,16 @@ bool AnalysisBase<Base>::GetDoubleElectrontrigger(){
 
 template <class Base>
 bool AnalysisBase<Base>::GetDoubleMuontrigger(){
+  return false;
+}
+
+template <class Base>
+bool AnalysisBase<Base>::GetTripleElectrontrigger(){
+  return false;
+}
+
+template <class Base>
+bool AnalysisBase<Base>::GetTripleMuontrigger(){
   return false;
 }
 
@@ -1523,6 +1538,15 @@ bool AnalysisBase<SUSYNANOBase>::GetMETORtrigger(){
 }
 
 template <>
+bool AnalysisBase<SUSYNANOBase>::GetMETDoubleMutrigger(){
+  if(m_year == 2016 ||
+     m_year == 2017 ||
+     m_year == 2018  )
+     return 0; //?
+  return 0;
+}
+
+template <>
 bool AnalysisBase<SUSYNANOBase>::GetSingleElectrontrigger(){
   if(m_year == 2016)
     return (HLT_Ele27_WPTight_Gsf);
@@ -1534,11 +1558,9 @@ bool AnalysisBase<SUSYNANOBase>::GetSingleElectrontrigger(){
 
 template <>
 bool AnalysisBase<SUSYNANOBase>::GetSingleMuontrigger(){
-  if(m_year == 2016)
-    return (HLT_IsoMu24 ||
-            HLT_IsoTkMu24);
-  if(m_year == 2017 ||
-     m_year == 2018)
+  if(m_year == 2016 ||
+     m_year == 2017 ||
+     m_year == 2018  )
     return (HLT_IsoMu24 ||
             HLT_IsoTkMu24);
   return 0;
@@ -1546,21 +1568,39 @@ bool AnalysisBase<SUSYNANOBase>::GetSingleMuontrigger(){
 
 template <>
 bool AnalysisBase<SUSYNANOBase>::GetDoubleElectrontrigger(){
-  if(m_year == 2016)
-    return (HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL);
-  if(m_year == 2017 ||
-     m_year == 2018)
-    return (HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL);
+  if(m_year == 2016 ||
+     m_year == 2017 ||
+     m_year == 2018  )
+    return HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL;
   return 0;
 }
 
 template <>
 bool AnalysisBase<SUSYNANOBase>::GetDoubleMuontrigger(){
+  if(m_year == 2016 ||
+     m_year == 2017 ||
+     m_year == 2018  )
+    return HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL;
+  return 0;
+}
+
+template <>
+bool AnalysisBase<SUSYNANOBase>::GetTripleElectrontrigger(){
   if(m_year == 2016)
-    return (HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL);
+    return (false); //?
   if(m_year == 2017 ||
      m_year == 2018)
-    return (HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL);
+    return (false); //?
+  return 0;
+}
+
+template <>
+bool AnalysisBase<SUSYNANOBase>::GetTripleMuontrigger(){
+  if(m_year == 2016)
+    return (false); //?
+  if(m_year == 2017 ||
+     m_year == 2018)
+    return (false); //?
   return 0;
 }
 
@@ -2993,6 +3033,11 @@ bool AnalysisBase<NANOULBase>::GetMETORtrigger(){
 }
 
 template <>
+bool AnalysisBase<NANOULBase>::GetMETDoubleMutrigger(){
+   return 0; //?
+}
+
+template <>
 bool AnalysisBase<NANOULBase>::GetSingleElectrontrigger(){
   if(m_year == 2016)
     return (HLT_Ele27_WPTight_Gsf);
@@ -3016,6 +3061,16 @@ bool AnalysisBase<NANOULBase>::GetDoubleElectrontrigger(){
 template <>
 bool AnalysisBase<NANOULBase>::GetDoubleMuontrigger(){
   return HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL;
+}
+
+template <>
+bool AnalysisBase<NANOULBase>::GetTripleElectrontrigger(){
+  return 0; //?
+}
+
+template <>
+bool AnalysisBase<NANOULBase>::GetTripleMuontrigger(){
+  return 0; //?
 }
 
 template <>
@@ -4459,6 +4514,11 @@ bool AnalysisBase<NANORun3>::GetMETORtrigger(){
 }
 
 template <>
+bool AnalysisBase<NANORun3>::GetMETDoubleMutrigger(){
+  return 0; //?
+}
+
+template <>
 bool AnalysisBase<NANORun3>::GetSingleElectrontrigger(){
   return HLT_Ele30_WPTight_Gsf;
 }
@@ -4476,6 +4536,16 @@ bool AnalysisBase<NANORun3>::GetDoubleElectrontrigger(){
 template <>
 bool AnalysisBase<NANORun3>::GetDoubleMuontrigger(){
   return HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL;
+}
+
+template <>
+bool AnalysisBase<NANORun3>::GetTripleElectrontrigger(){
+  return 0; //?
+}
+
+template <>
+bool AnalysisBase<NANORun3>::GetTripleMuontrigger(){
+  return 0; //?
 }
 
 template <>
@@ -5372,11 +5442,11 @@ ParticleList AnalysisBase<NANORun3>::GetElectrons(){
     if(Electron_pt[i] < 7. || fabs(Electron_eta[i]) > 2.5)
       continue;
     if(fabs(Electron_dxy[i]) >= 0.05 || fabs(Electron_dz[i]) >= 0.1 ||
-       Electron_sip3d[i] >= 8)
+       Electron_sip3d[i] >= 6)
       continue;
     if(Electron_pfRelIso03_all[i]*Electron_pt[i] >= 20. + 300./Electron_pt[i])
       continue;
-    if(!minus_iso_hoe(Electron_vidNestedWPBitmap[i], 4, std::greater_equal<int>()))
+    if(!minus_iso_hoe(Electron_vidNestedWPBitmap[i], 1, std::greater_equal<int>()))
       continue;
 
     Particle lep;
@@ -5400,7 +5470,10 @@ ParticleList AnalysisBase<NANORun3>::GetElectrons(){
 
     if(  lep.MiniIso()*lep.Pt() >= 4.
       || lep.RelIso()*lep.Pt() >= 4.
-      || !minus_iso_hoe(Electron_vidNestedWPBitmap[i], 4, std::greater_equal<int>())
+      || (
+           (Electron_pt[i] < 20. && !minus_iso_hoe(Electron_vidNestedWPBitmap[i], 4, std::greater_equal<int>())) ||
+           (Electron_pt[i] >= 20. && !Electron_mvaIso_WP90[i])
+         )
     )
       lep.SetLepQual(kBronze);
     else if(lep.SIP3D() > 2.)
@@ -5425,7 +5498,7 @@ ParticleList AnalysisBase<NANORun3>::GetLowPtElectrons(){
       continue;
     if(fabs(LowPtElectron_dxy[i]) >= 0.05 || fabs(LowPtElectron_dz[i]) >= 0.1)
       continue;
-    if(LowPtElectron_ID[i] < 1.)
+    if(LowPtElectron_ID[i] < 1.5)
       continue;
     
     if(LowPtElectron_dxyErr[i] < 1.e-8 || LowPtElectron_dzErr[i] < 1.e-8)
@@ -5445,7 +5518,7 @@ ParticleList AnalysisBase<NANORun3>::GetLowPtElectrons(){
     float IP_3D     = sqrt(dxy*dxy + dz*dz);
     float SIP_3D    = sqrt(sigma_xy*sigma_xy + sigma_z*sigma_z);
 
-    if (SIP_3D > 8.)
+    if (SIP_3D > 6.)
       continue;
 
     if(LowPtElectron_miniPFRelIso_all[i]*LowPtElectron_pt[i] >= 20. + 300./LowPtElectron_pt[i])
@@ -5523,7 +5596,7 @@ ParticleList AnalysisBase<NANORun3>::GetMuons(){
     // baseline lepton definition
     if(Muon_pt[i] < 3. || fabs(Muon_eta[i]) > 2.4)
       continue;
-    if(fabs(Muon_dxy[i]) >= 0.05 || fabs(Muon_dz[i]) >= 0.1 || Muon_sip3d[i] >= 8.)
+    if(fabs(Muon_dxy[i]) >= 0.05 || fabs(Muon_dz[i]) >= 0.1 || Muon_sip3d[i] >= 6.)
       continue;
     if(Muon_pfRelIso03_all[i]*Muon_pt[i] >= 20. + 300./Muon_pt[i])
       continue;

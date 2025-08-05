@@ -199,6 +199,24 @@ public :
    Double_t        dphiCM;
    Double_t        dphiCMI;
    Double_t        dphiMET_V;
+   Double_t        PTCM_LEP;
+   Double_t        PzCM_LEP;
+   Double_t        cosCM_LEP;
+   Double_t        dphiCM_LEP;
+   Double_t        dphiCMI_LEP;
+   Double_t        dphiMET_V_LEP;
+   Double_t        PTCM_JET_ISR;
+   Double_t        PzCM_JET_ISR;
+   Double_t        cosCM_JET_ISR;
+   Double_t        dphiCM_JET_ISR;
+   Double_t        dphiCMI_JET_ISR;
+   Double_t        dphiMET_V_JET_ISR;
+   Double_t        PTCM_JET;
+   Double_t        PzCM_JET;
+   Double_t        cosCM_JET;
+   Double_t        dphiCM_JET;
+   Double_t        dphiCMI_JET;
+   Double_t        dphiMET_V_JET;
    Double_t        Mperp;
    Double_t        gammaT;
    Double_t        EJ_BoostT;
@@ -592,6 +610,24 @@ public :
    TBranch        *b_dphiCM;   //!
    TBranch        *b_dphiCMI;   //!
    TBranch        *b_dphiMET_V;   //!
+   TBranch        *b_PTCM_LEP;   //!
+   TBranch        *b_PzCM_LEP;   //!
+   TBranch        *b_cosCM_LEP;   //!
+   TBranch        *b_dphiCM_LEP;   //!
+   TBranch        *b_dphiCMI_LEP;   //!
+   TBranch        *b_dphiMET_V_LEP;   //!
+   TBranch        *b_PTCM_JET_ISR;   //!
+   TBranch        *b_PzCM_JET_ISR;   //!
+   TBranch        *b_cosCM_JET_ISR;   //!
+   TBranch        *b_dphiCM_JET_ISR;   //!
+   TBranch        *b_dphiCMI_JET_ISR;   //!
+   TBranch        *b_dphiMET_V_JET_ISR;   //!
+   TBranch        *b_PTCM_JET;   //!
+   TBranch        *b_PzCM_JET;   //!
+   TBranch        *b_cosCM_JET;   //!
+   TBranch        *b_dphiCM_JET;   //!
+   TBranch        *b_dphiCMI_JET;   //!
+   TBranch        *b_dphiMET_V_JET;   //!
    TBranch        *b_Mperp;   //!
    TBranch        *b_gammaT;   //!
    TBranch        *b_EJ_BoostT;   //!
@@ -1135,6 +1171,24 @@ inline void ReducedBase_V2::Init(TTree *tree)
    fChain->SetBranchAddress("dphiCM", &dphiCM, &b_dphiCM);
    fChain->SetBranchAddress("dphiCMI", &dphiCMI, &b_dphiCMI);
    fChain->SetBranchAddress("dphiMET_V", &dphiMET_V, &b_dphiMET_V);
+   fChain->SetBranchAddress("PTCM_LEP", &PTCM_LEP, &b_PTCM_LEP);
+   fChain->SetBranchAddress("PzCM_LEP", &PzCM_LEP, &b_PzCM_LEP);
+   fChain->SetBranchAddress("cosCM_LEP", &cosCM_LEP, &b_cosCM_LEP);
+   fChain->SetBranchAddress("dphiCM_LEP", &dphiCM_LEP, &b_dphiCM_LEP);
+   fChain->SetBranchAddress("dphiCMI_LEP", &dphiCMI_LEP, &b_dphiCMI_LEP);
+   fChain->SetBranchAddress("dphiMET_V_LEP", &dphiMET_V_LEP, &b_dphiMET_V_LEP);
+   fChain->SetBranchAddress("PTCM_JET_ISR", &PTCM_JET_ISR, &b_PTCM_JET_ISR);
+   fChain->SetBranchAddress("PzCM_JET_ISR", &PzCM_JET_ISR, &b_PzCM_JET_ISR);
+   fChain->SetBranchAddress("cosCM_JET_ISR", &cosCM_JET_ISR, &b_cosCM_JET_ISR);
+   fChain->SetBranchAddress("dphiCM_JET_ISR", &dphiCM_JET_ISR, &b_dphiCM_JET_ISR);
+   fChain->SetBranchAddress("dphiCMI_JET_ISR", &dphiCMI_JET_ISR, &b_dphiCMI_JET_ISR);
+   fChain->SetBranchAddress("dphiMET_V_JET_ISR", &dphiMET_V_JET_ISR, &b_dphiMET_V_JET_ISR);
+   fChain->SetBranchAddress("PTCM_JET", &PTCM_JET, &b_PTCM_JET);
+   fChain->SetBranchAddress("PzCM_JET", &PzCM_JET, &b_PzCM_JET);
+   fChain->SetBranchAddress("cosCM_JET", &cosCM_JET, &b_cosCM_JET);
+   fChain->SetBranchAddress("dphiCM_JET", &dphiCM_JET, &b_dphiCM_JET);
+   fChain->SetBranchAddress("dphiCMI_JET", &dphiCMI_JET, &b_dphiCMI_JET);
+   fChain->SetBranchAddress("dphiMET_V_JET", &dphiMET_V_JET, &b_dphiMET_V_JET);
    fChain->SetBranchAddress("Mperp", &Mperp, &b_Mperp);
    fChain->SetBranchAddress("gammaT", &gammaT, &b_gammaT);
    fChain->SetBranchAddress("EJ_BoostT", &EJ_BoostT, &b_EJ_BoostT);

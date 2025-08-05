@@ -448,6 +448,27 @@ TTree* ReducedNtuple<Base>::InitOutputTree(const string& sample, bool do_slim){
   tree->Branch("dphiCMI", &m_dphiCMI);
   tree->Branch("dphiMET_V", &m_dphiMET_V);
 
+  tree->Branch("PTCM_LEP", &m_PTCM_LEP);
+  tree->Branch("PzCM_LEP", &m_PzCM_LEP);
+  tree->Branch("cosCM_LEP", &m_cosCM_LEP);
+  tree->Branch("dphiCM_LEP", &m_dphiCM_LEP);
+  tree->Branch("dphiCMI_LEP", &m_dphiCMI_LEP);
+  tree->Branch("dphiMET_V_LEP", &m_dphiMET_V_LEP);
+
+  tree->Branch("PTCM_JET_ISR", &m_PTCM_JET_ISR);
+  tree->Branch("PzCM_JET_ISR", &m_PzCM_JET_ISR);
+  tree->Branch("cosCM_JET_ISR", &m_cosCM_JET_ISR);
+  tree->Branch("dphiCM_JET_ISR", &m_dphiCM_JET_ISR);
+  tree->Branch("dphiCMI_JET_ISR", &m_dphiCMI_JET_ISR);
+  tree->Branch("dphiMET_V_JET_ISR", &m_dphiMET_V_JET_ISR);
+
+  tree->Branch("PTCM_JET", &m_PTCM_JET);
+  tree->Branch("PzCM_JET", &m_PzCM_JET);
+  tree->Branch("cosCM_JET", &m_cosCM_JET);
+  tree->Branch("dphiCM_JET", &m_dphiCM_JET);
+  tree->Branch("dphiCMI_JET", &m_dphiCMI_JET);
+  tree->Branch("dphiMET_V_JET", &m_dphiMET_V_JET);
+
   tree->Branch("Mperp", &m_Mperp);
   tree->Branch("gammaT", &m_gammaT);
   tree->Branch("EJ_BoostT", &m_EJ_BoostT);
@@ -1347,6 +1368,13 @@ void ReducedNtuple<Base>::FillOutputTree(TTree* tree, const Systematic& sys, boo
         }
       }
 
+      m_PTCM_LEP = CM[t]->GetFourVector().Pt();
+      m_PzCM_LEP = CM[t]->GetFourVector().Pz();
+      m_cosCM_LEP = CM[t]->GetCosDecayAngle();
+      m_dphiCM_LEP = CM[t]->GetDeltaPhiDecayAngle();
+      m_dphiCMI_LEP = CM[t]->GetDeltaPhiBoostVisible();
+      m_dphiMET_V_LEP = S[t]->GetListVisibleFrames().GetFourVector().Vect().DeltaPhi(ETMiss);
+
       TVector3 vPISR = S[t]->GetFourVector(*CM[t]).Vect();
       m_PTISR_LEP = vPISR.Pt();
       TVector3 vPINV = (X1a[t]->GetFourVector(*CM[t])+X1b[t]->GetFourVector(*CM[t])).Vect();
@@ -1466,6 +1494,13 @@ void ReducedNtuple<Base>::FillOutputTree(TTree* tree, const Systematic& sys, boo
           }
         }
       }
+
+      m_PTCM_JET_ISR = CM[t]->GetFourVector().Pt();
+      m_PzCM_JET_ISR = CM[t]->GetFourVector().Pz();
+      m_cosCM_JET_ISR = CM[t]->GetCosDecayAngle();
+      m_dphiCM_JET_ISR = CM[t]->GetDeltaPhiDecayAngle();
+      m_dphiCMI_JET_ISR = CM[t]->GetDeltaPhiBoostVisible();
+      m_dphiMET_V_JET_ISR = S[t]->GetListVisibleFrames().GetFourVector().Vect().DeltaPhi(ETMiss);
           
       TVector3 vPISR = S[t]->GetFourVector(*CM[t]).Vect();
       m_PTISR_JET_ISR = vPISR.Pt();
@@ -1614,6 +1649,14 @@ void ReducedNtuple<Base>::FillOutputTree(TTree* tree, const Systematic& sys, boo
           }
         }
       }
+
+      // no 'CM' system since everything is in S
+      m_PTCM_JET = S[t]->GetFourVector().Pt();
+      m_PzCM_JET = S[t]->GetFourVector().Pz();
+      m_cosCM_JET = S[t]->GetCosDecayAngle();
+      m_dphiCM_JET = S[t]->GetDeltaPhiDecayAngle();
+      m_dphiCMI_JET = S[t]->GetDeltaPhiBoostVisible();
+      m_dphiMET_V_JET = S[t]->GetListVisibleFrames().GetFourVector().Vect().DeltaPhi(ETMiss);
 
       m_MPa_JET = X2a[t]->GetFourVector().M();
       m_MPb_JET = X2b[t]->GetFourVector().M();
@@ -1811,6 +1854,8 @@ void ReducedNtuple<Base>::FillOutputTree(TTree* tree, const Systematic& sys, boo
   m_SingleMuontrigger = AnalysisBase<Base>::GetSingleMuontrigger();
   m_DoubleElectrontrigger = AnalysisBase<Base>::GetDoubleElectrontrigger();
   m_DoubleMuontrigger = AnalysisBase<Base>::GetDoubleMuontrigger();
+  m_TripleElectrontrigger = AnalysisBase<Base>::GetTripleElectrontrigger();
+  m_TripleMuontrigger = AnalysisBase<Base>::GetTripleMuontrigger();
   m_EMutrigger = AnalysisBase<Base>::GetEMutrigger(); 
   
   m_MET     = ETMiss.Pt();

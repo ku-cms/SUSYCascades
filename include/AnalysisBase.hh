@@ -89,10 +89,14 @@ public:
   virtual bool GetMETtrigger();
   virtual bool GetMETORtrigger();
 
+  virtual bool GetMETDoubleMutrigger();
+
   virtual bool GetSingleElectrontrigger();
   virtual bool GetSingleMuontrigger();
   virtual bool GetDoubleElectrontrigger();
   virtual bool GetDoubleMuontrigger();
+  virtual bool GetTripleElectrontrigger();
+  virtual bool GetTripleMuontrigger();
   virtual bool GetEMutrigger(); 
   
   virtual TVector3 GetPV(bool& good);

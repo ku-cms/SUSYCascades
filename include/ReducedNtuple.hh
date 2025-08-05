@@ -150,6 +150,8 @@ private:
   bool m_SingleMuontrigger;
   bool m_DoubleElectrontrigger;
   bool m_DoubleMuontrigger;
+  bool m_TripleElectrontrigger;
+  bool m_TripleMuontrigger;
   bool m_EMutrigger;  
   
   int m_Nele;
@@ -465,6 +467,13 @@ private:
   double m_RZPara_LEP;
   double m_MINV_LEP;
 
+  double m_PTCM_LEP;
+  double m_PzCM_LEP;
+  double m_cosCM_LEP;
+  double m_dphiCM_LEP;
+  double m_dphiCMI_LEP;
+  double m_dphiMET_V_LEP;
+
   // New info for RJR 'JET ISR' tree
   double m_gammaT_JET_ISR;
   double m_Mperp_JET_ISR;
@@ -494,6 +503,13 @@ private:
   double m_RZPara_JET_ISR;
   double m_MINV_JET_ISR;
 
+  double m_PTCM_JET_ISR;
+  double m_PzCM_JET_ISR;
+  double m_cosCM_JET_ISR;
+  double m_dphiCM_JET_ISR;
+  double m_dphiCMI_JET_ISR;
+  double m_dphiMET_V_JET_ISR;
+
   // New info for RJR 'JET' tree
   double m_MS_JET;
   double m_MSV_JET;
@@ -515,6 +531,13 @@ private:
   double m_CosDecayAngle_Va_JET;
   double m_CosDecayAngle_Vb_JET;
   double m_CosDecayAngle_S_JET;
+
+  double m_PTCM_JET;
+  double m_PzCM_JET;
+  double m_cosCM_JET;
+  double m_dphiCM_JET;
+  double m_dphiCMI_JET;
+  double m_dphiMET_V_JET;
 
   // RestFrames frames and friends
   LabRecoFrame*     LAB[m_aTrees];
