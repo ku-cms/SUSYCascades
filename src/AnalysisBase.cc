@@ -1196,7 +1196,7 @@ int AnalysisBase<Base>::GetSampleIndex(){
     bool has_Slep = false;
     bool has_Snu = false;
     bool is_left = true;
-    bool is_plus = true; // minus referring to charge of e or mu (not value of PDGID)
+    bool is_plus = true; // plus referring to charge of e or mu (not value of PDGID)
     for(int i = 0; i < Ngen; i++){
       PDGID = fabs(this->GenPart_pdgId[i]);
       if(PDGID > 1000000 && PDGID < 3000000){
@@ -5441,12 +5441,16 @@ ParticleList AnalysisBase<NANORun3>::GetElectrons(){
     // baseline lepton definition
     if(Electron_pt[i] < 7. || fabs(Electron_eta[i]) > 2.5)
       continue;
+    if(fabs(Electron_eta[i]) >= 1.4442 && fabs(Electron_eta[i]) <= 1.566)
+      continue;
     if(fabs(Electron_dxy[i]) >= 0.05 || fabs(Electron_dz[i]) >= 0.1 ||
        Electron_sip3d[i] >= 6)
       continue;
     if(Electron_pfRelIso03_all[i]*Electron_pt[i] >= 20. + 300./Electron_pt[i])
       continue;
-    if(!minus_iso_hoe(Electron_vidNestedWPBitmap[i], 1, std::greater_equal<int>()))
+    if(!minus_iso_hoe(Electron_vidNestedWPBitmap[i], 2, std::greater_equal<int>()))
+      continue;
+    if(Electron_lostHits[i] != 0)
       continue;
 
     Particle lep;
@@ -5467,19 +5471,31 @@ ParticleList AnalysisBase<NANORun3>::GetElectrons(){
 
     lep.SetRelIso(Electron_pfRelIso03_all[i]);
     lep.SetMiniIso(Electron_miniPFRelIso_all[i]);
-
-    if(  lep.MiniIso()*lep.Pt() >= 4.
-      || lep.RelIso()*lep.Pt() >= 4.
-      || (
-           (Electron_pt[i] < 20. && !minus_iso_hoe(Electron_vidNestedWPBitmap[i], 4, std::greater_equal<int>())) ||
-           (Electron_pt[i] >= 20. && !Electron_mvaIso_WP90[i])
-         )
-    )
-      lep.SetLepQual(kBronze);
-    else if(lep.SIP3D() > 2.)
-      lep.SetLepQual(kSilver);
-    else
-      lep.SetLepQual(kGold);
+    if( ( Electron_pt[i] < 20. && (
+          lep.MiniIso()*lep.Pt() >= 4. || 
+          lep.RelIso()*lep.Pt() >= 4. ||
+          !minus_iso_hoe(Electron_vidNestedWPBitmap[i], 4, std::greater_equal<int>())
+        )) ||
+        ( Electron_pt[i] >= 20. && (
+          !Electron_mvaIso_WP90[i]
+        ))
+      ) 
+        lep.SetLepQual(kBronze);
+    else if(( Electron_pt[i] < 20. && (
+          lep.MiniIso()*lep.Pt() < 4. && 
+          lep.RelIso()*lep.Pt() < 4. &&
+          minus_iso_hoe(Electron_vidNestedWPBitmap[i], 4, std::greater_equal<int>())
+        )) ||
+        ( Electron_pt[i] >= 20. && (
+          Electron_mvaIso_WP90[i]
+        ))
+      )
+    { 
+      if(lep.SIP3D() >= 2)
+        lep.SetLepQual(kSilver);
+      else
+        lep.SetLepQual(kGold);
+    }
     list.push_back(lep);
 
   } // for(int i = 0; i < N; i++)
@@ -5494,11 +5510,15 @@ ParticleList AnalysisBase<NANORun3>::GetLowPtElectrons(){
     // baseline lepton definition
     if(LowPtElectron_pt[i] < 2. || LowPtElectron_pt[i] >= 7. || fabs(LowPtElectron_eta[i]) > 2.5)
       continue;
+    if(fabs(Electron_eta[i]) >= 1.4442 && fabs(Electron_eta[i]) <= 1.566)
+      continue;
     if(LowPtElectron_convVeto[i] == 0)
       continue;
     if(fabs(LowPtElectron_dxy[i]) >= 0.05 || fabs(LowPtElectron_dz[i]) >= 0.1)
       continue;
     if(LowPtElectron_ID[i] < 1.5)
+      continue;
+    if(LowPtElectron_lostHits[i] != 0)
       continue;
     
     if(LowPtElectron_dxyErr[i] < 1.e-8 || LowPtElectron_dzErr[i] < 1.e-8)
@@ -5543,43 +5563,41 @@ ParticleList AnalysisBase<NANORun3>::GetLowPtElectrons(){
     lep.SetMiniIso(LowPtElectron_miniPFRelIso_all[i]);
     lep.SetParticleID(kVeryLoose); // need to set to something for later on
     
-    if(LowPtElectron_lostHits[i] == 0){
-      float pt = lep.Pt();
-      float absEta = std::abs(lep.Eta());
-      float id = LowPtElectron_ID[i];
+    float pt = lep.Pt();
+    float absEta = std::abs(lep.Eta());
+    float id = LowPtElectron_ID[i];
 
-      bool failsIso = lep.MiniIso() * pt >= 4. || lep.RelIso() * pt >= 4.;
-      if (failsIso) {
+    bool failsIso = lep.MiniIso() * pt >= 4. || lep.RelIso() * pt >= 4.;
+    if (failsIso) {
+      lep.SetLepQual(kBronze);
+    } else {
+      bool passesID = false;
+
+      if (pt >= 2. && pt < 5.) {
+        if (absEta >= 1.48 && absEta < 2.5)
+          passesID = false; // always Bronze
+        else if (absEta >= 0.8 && absEta < 1.48)
+          passesID = id >= 3;
+        else if (absEta < 0.8)
+          passesID = id >= 2.3;
+      } else if (pt >= 5. && pt < 7.) {
+        if (absEta >= 1.48 && absEta < 2.5)
+          passesID = id >= 3.5;
+        else if (absEta >= 0.8 && absEta < 1.48)
+          passesID = id >= 3;
+        else if (absEta < 0.8)
+          passesID = id >= 2.3;
+      }
+
+      if (!passesID) {
         lep.SetLepQual(kBronze);
+      } else if (lep.SIP3D() >= 2.) {
+        lep.SetLepQual(kSilver);
       } else {
-        bool passesID = false;
+        lep.SetLepQual(kGold);
+      }
+    } // else
 
-        if (pt >= 2. && pt < 5.) {
-          if (absEta >= 1.48 && absEta < 2.5)
-            passesID = false; // always Bronze
-          else if (absEta >= 0.8 && absEta < 1.48)
-            passesID = id >= 3;
-          else if (absEta < 0.8)
-            passesID = id >= 2.3;
-        } else if (pt >= 5. && pt < 8.) {
-          if (absEta >= 1.48 && absEta < 2.5)
-            passesID = id >= 3.5;
-          else if (absEta >= 0.8 && absEta < 1.48)
-            passesID = id >= 3;
-          else if (absEta < 0.8)
-            passesID = id >= 2.3;
-        }
-
-        if (!passesID) {
-          lep.SetLepQual(kBronze);
-        } else if (lep.SIP3D() > 2.) {
-          lep.SetLepQual(kSilver);
-        } else {
-          lep.SetLepQual(kGold);
-        }
-      } // else
-
-    } // if(Electron_lostHits[i] == 0)
  
     list.push_back(lep);
   }
@@ -5628,7 +5646,7 @@ ParticleList AnalysisBase<NANORun3>::GetMuons(){
       lep.SetParticleID(kMedium);
     if(lep.ParticleID() < kTight || lep.MiniIso()*lep.Pt() >= 4. || lep.RelIso()*lep.Pt() >= 4.)
       lep.SetLepQual(kBronze);
-    else if(lep.SIP3D() > 2.)
+    else if(lep.SIP3D() >= 2.)
       lep.SetLepQual(kSilver);
     else
       lep.SetLepQual(kGold);
