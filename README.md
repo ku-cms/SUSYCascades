@@ -168,31 +168,3 @@ Connect:
 ### Updating Lists
 If needed to update lists or update cross-sections use this repo: https://github.com/ku-cms/ListMaker
 Only use if dataset is not already in samples/NANO/, otherwise can modify an existing list
-
-<!---
- ### Running combineTool.py on cms connect syntax
- To run text2workspace (T2W):
- Go to the directory with the datacard for a given mass point
- ```
- combineTool.py -M T2W -i datacard.txt -m MASS_Value --job-mode connect -o workspace.root --input-file ../../../FitInput_KUEWKino_2017.root --sub-opts='+ProjectName=cms.org.ku" \n request_memory = 8 GB \n'
- ```
- 
- Note that mass value will typically be the name of the directory that the datacard is in (ex: 5000325) and the input file is the path to the output root file from BuildFit.x
- 
- To run AsymptoticLimits:
- Go to the directory that was the output of BuildFit.x 
- ```
- combineTool.py -M AsymptoticLimits -d */*/*/datacard.txt --job-mode connect --input-file FitInput_KUEWKino_2017.root --sub-opts='+ProjectName="cms.org.ku" \n request_memory = 8 GB \n'
- ```
- 
- To run impacts:
- Go to the directory that the workspace (and datacard) live in
- ```
- combineTool.py -M Impacts -d workspace.root -m MASS_Value --doInitialFit --robustFit 1 --job-mode connect --sub-opts='+ProjectName="cms.org.ku" \n request_memory = 8 GB \n'
- combineTool.py -M Impacts -d workspace.root -m 5000325 --input-file ../ --job-mode connect --sub-opts='+ProjectName="cms.org.ku" \n request_memory = 8 GB \n' 
- ```
- 
- Note that the second step only should be ran after the jobs in the first step finish
- The input file is just the entire directory that the workspace lives in
---->
-
