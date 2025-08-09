@@ -87,6 +87,8 @@ public :
    Bool_t          METORtrigger;
    Bool_t          DoubleElectrontrigger;
    Bool_t          DoubleMuontrigger;
+   Bool_t          TripleElectrontrigger;
+   Bool_t          TripleMuontrigger;
    Bool_t          EventFlag_FailJetID;
    Bool_t          EventFlag_JetInHEM;
    Bool_t          EventFlag_JetInHEM_Pt20;
@@ -239,8 +241,6 @@ public :
    Double_t        MbVPerpCM0;
    Double_t        MQperpCM0;
    Double_t        gammaPerpCM0;
-   Double_t        MVisAperpCM0;
-   Double_t        MVisBperpCM0;
    Double_t        MSCM0;
    Double_t        MaCM0;
    Double_t        MbCM0;
@@ -248,8 +248,14 @@ public :
    Double_t        MbVCM0;
    Double_t        MQCM0;
    Double_t        gammaCM0;
-   Double_t        MVisACM0;
-   Double_t        MVisBCM0;
+   Double_t        MQV;
+   Double_t        MQV_JET;
+   Double_t        MQV_JET_ISR;
+   Double_t        MQV_LEP;
+   Double_t        gammaV;
+   Double_t        gammaV_JET;
+   Double_t        gammaV_JET_ISR;
+   Double_t        gammaV_LEP;
    Double_t        MS;
    Double_t        PS;
    Double_t        cosS;
@@ -498,6 +504,8 @@ public :
    TBranch        *b_METORtrigger;   //!
    TBranch        *b_DoubleElectrontrigger;   //!
    TBranch        *b_DoubleMuontrigger;   //!
+   TBranch        *b_TripleElectrontrigger;   //!
+   TBranch        *b_TripleMuontrigger;   //!
    TBranch        *b_EventFlag_FailJetID;   //!
    TBranch        *b_EventFlag_JetInHEM;   //!
    TBranch        *b_EventFlag_JetInHEM_Pt20;   //!
@@ -650,8 +658,6 @@ public :
    TBranch        *b_MbVPerpCM0;   //!
    TBranch        *b_MQperpCM0;   //!
    TBranch        *b_gammaPerpCM0;   //!
-   TBranch        *b_MVisAperpCM0;   //!
-   TBranch        *b_MVisBperpCM0;   //!
    TBranch        *b_MSCM0;   //!
    TBranch        *b_MaCM0;   //!
    TBranch        *b_MbCM0;   //!
@@ -659,8 +665,14 @@ public :
    TBranch        *b_MbVCM0;   //!
    TBranch        *b_MQCM0;   //!
    TBranch        *b_gammaCM0;   //!
-   TBranch        *b_MVisACM0;   //!
-   TBranch        *b_MVisBCM0;   //!
+   TBranch        *b_MQV;   //!
+   TBranch        *b_MQV_JET;   //!
+   TBranch        *b_MQV_JET_ISR;   //!
+   TBranch        *b_MQV_LEP;   //!
+   TBranch        *b_gammaV;   //!
+   TBranch        *b_gammaV_JET;   //!
+   TBranch        *b_gammaV_JET_ISR;   //!
+   TBranch        *b_gammaV_LEP;   //!
    TBranch        *b_MS;   //!
    TBranch        *b_PS;   //!
    TBranch        *b_cosS;   //!
@@ -1059,6 +1071,8 @@ inline void ReducedBase_V2::Init(TTree *tree)
    fChain->SetBranchAddress("METORtrigger", &METORtrigger, &b_METORtrigger);
    fChain->SetBranchAddress("DoubleElectrontrigger", &DoubleElectrontrigger, &b_DoubleElectrontrigger);
    fChain->SetBranchAddress("DoubleMuontrigger", &DoubleMuontrigger, &b_DoubleMuontrigger);
+   fChain->SetBranchAddress("TripleElectrontrigger", &TripleElectrontrigger, &b_TripleElectrontrigger);
+   fChain->SetBranchAddress("TripleMuontrigger", &TripleMuontrigger, &b_TripleMuontrigger);
    fChain->SetBranchAddress("EventFlag_FailJetID", &EventFlag_FailJetID, &b_EventFlag_FailJetID);
    fChain->SetBranchAddress("EventFlag_JetInHEM", &EventFlag_JetInHEM, &b_EventFlag_JetInHEM);
    fChain->SetBranchAddress("EventFlag_JetInHEM_Pt20", &EventFlag_JetInHEM_Pt20, &b_EventFlag_JetInHEM_Pt20);
@@ -1211,8 +1225,6 @@ inline void ReducedBase_V2::Init(TTree *tree)
    fChain->SetBranchAddress("MbVPerpCM0", &MbVPerpCM0, &b_MbVPerpCM0);
    fChain->SetBranchAddress("MQperpCM0", &MQperpCM0, &b_MQperpCM0);
    fChain->SetBranchAddress("gammaPerpCM0", &gammaPerpCM0, &b_gammaPerpCM0);
-   fChain->SetBranchAddress("MVisAperpCM0", &MVisAperpCM0, &b_MVisAperpCM0);
-   fChain->SetBranchAddress("MVisBperpCM0", &MVisBperpCM0, &b_MVisBperpCM0);
    fChain->SetBranchAddress("MSCM0", &MSCM0, &b_MSCM0);
    fChain->SetBranchAddress("MaCM0", &MaCM0, &b_MaCM0);
    fChain->SetBranchAddress("MbCM0", &MbCM0, &b_MbCM0);
@@ -1220,8 +1232,14 @@ inline void ReducedBase_V2::Init(TTree *tree)
    fChain->SetBranchAddress("MbVCM0", &MbVCM0, &b_MbVCM0);
    fChain->SetBranchAddress("MQCM0", &MQCM0, &b_MQCM0);
    fChain->SetBranchAddress("gammaCM0", &gammaCM0, &b_gammaCM0);
-   fChain->SetBranchAddress("MVisACM0", &MVisACM0, &b_MVisACM0);
-   fChain->SetBranchAddress("MVisBCM0", &MVisBCM0, &b_MVisBCM0);
+   fChain->SetBranchAddress("MQV", &MQV, &b_MQV);
+   fChain->SetBranchAddress("MQV_JET", &MQV_JET, &b_MQV_JET);
+   fChain->SetBranchAddress("MQV_JET_ISR", &MQV_JET_ISR, &b_MQV_JET_ISR);
+   fChain->SetBranchAddress("MQV_LEP", &MQV_LEP, &b_MQV_LEP);
+   fChain->SetBranchAddress("gammaV", &gammaV, &b_gammaV);
+   fChain->SetBranchAddress("gammaV_JET", &gammaV_JET, &b_gammaV_JET);
+   fChain->SetBranchAddress("gammaV_JET_ISR", &gammaV_JET_ISR, &b_gammaV_JET_ISR);
+   fChain->SetBranchAddress("gammaV_LEP", &gammaV_LEP, &b_gammaV_LEP);
    fChain->SetBranchAddress("MS", &MS, &b_MS);
    fChain->SetBranchAddress("PS", &PS, &b_PS);
    fChain->SetBranchAddress("cosS", &cosS, &b_cosS);

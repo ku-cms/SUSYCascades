@@ -296,22 +296,23 @@ TTree* ReducedNtuple<Base>::InitOutputTree(const string& sample, bool do_slim){
   tree->Branch("PrefireWeight_up", &m_PrefireWeight_up);
   tree->Branch("PrefireWeight_down", &m_PrefireWeight_down);
 
-  tree->Branch("METtrigger", &m_METtrigger);
-  tree->Branch("METORtrigger", &m_METORtrigger);
-
   if(!do_slim){
-    tree->Branch("DoubleElectrontrigger", &m_DoubleElectrontrigger);
-    tree->Branch("DoubleMuontrigger", &m_DoubleMuontrigger);
     tree->Branch("EventFlag_FailJetID", &m_EventFlag_FailJetID);
     tree->Branch("EventFlag_JetInHEM", &m_EventFlag_JetInHEM);
     tree->Branch("EventFlag_JetInHEM_Pt20", &m_EventFlag_JetInHEM_Pt20);
     tree->Branch("EventFlag_JetInHEM_Pt20_JetID", &m_EventFlag_JetInHEM_Pt20_JetID);
-    tree->Branch("HEM_Veto", &m_HEM_Veto);
   }
+  tree->Branch("HEM_Veto", &m_HEM_Veto);
 
+  tree->Branch("METtrigger", &m_METtrigger);
+  tree->Branch("METORtrigger", &m_METORtrigger);
   tree->Branch("SingleElectrontrigger", &m_SingleElectrontrigger);
   tree->Branch("SingleMuontrigger", &m_SingleMuontrigger);
   tree->Branch("EMutrigger", &m_EMutrigger);
+  tree->Branch("DoubleElectrontrigger", &m_DoubleElectrontrigger);
+  tree->Branch("DoubleMuontrigger", &m_DoubleMuontrigger);
+  tree->Branch("TripleElectrontrigger", &m_TripleElectrontrigger);
+  tree->Branch("TripleMuontrigger", &m_TripleMuontrigger);
   
   tree->Branch("MET", &m_MET);
   tree->Branch("MET_phi", &m_MET_phi);
@@ -496,8 +497,6 @@ TTree* ReducedNtuple<Base>::InitOutputTree(const string& sample, bool do_slim){
   tree->Branch("MbVPerpCM0", &m_MbVPerpCM0);
   tree->Branch("MQperpCM0", &m_MQperpCM0); // sqrt(Ma*Ma + Mb*Mb)/sqrt(2)
   tree->Branch("gammaPerpCM0", &m_gammaPerpCM0); // 2*MQ/MS
-  tree->Branch("MVisAperpCM0", &m_MVisAperpCM0);
-  tree->Branch("MVisBperpCM0", &m_MVisBperpCM0);
   tree->Branch("MSCM0", &m_MSCM0); 
   tree->Branch("MaCM0", &m_MaCM0);
   tree->Branch("MbCM0", &m_MbCM0);
@@ -505,8 +504,6 @@ TTree* ReducedNtuple<Base>::InitOutputTree(const string& sample, bool do_slim){
   tree->Branch("MbVCM0", &m_MbVCM0);
   tree->Branch("MQCM0", &m_MQCM0); // sqrt(Ma*Ma + Mb*Mb)/sqrt(2)
   tree->Branch("gammaCM0", &m_gammaCM0); // 2*MQ/MS
-  tree->Branch("MVisACM0", &m_MVisACM0);
-  tree->Branch("MVisBCM0", &m_MVisBCM0);
 
   tree->Branch("MT2", &m_MT2);
   tree->Branch("RISR_LEP", &m_RISR_LEP);
@@ -583,6 +580,15 @@ TTree* ReducedNtuple<Base>::InitOutputTree(const string& sample, bool do_slim){
   tree->Branch("CosDecayAngle_Va_JET", &m_CosDecayAngle_Va_JET);
   tree->Branch("CosDecayAngle_Vb_JET", &m_CosDecayAngle_Vb_JET);
   tree->Branch("CosDecayAngle_S_JET", &m_CosDecayAngle_S_JET);
+
+  tree->Branch("MQV", &m_MQV);
+  tree->Branch("gammaV", &m_gammaV);
+  tree->Branch("MQV_LEP", &m_MQV_LEP);
+  tree->Branch("gammaV_LEP", &m_gammaV_LEP);
+  tree->Branch("MQV_JET_ISR", &m_MQV_JET_ISR);
+  tree->Branch("gammaV_JET_ISR", &m_gammaV_JET_ISR);
+  tree->Branch("MQV_JET", &m_MQV_JET);
+  tree->Branch("gammaV_JET", &m_gammaV_JET);
 
   if(!do_slim){
     tree->Branch("MS", &m_MS);
@@ -1293,8 +1299,6 @@ void ReducedNtuple<Base>::FillOutputTree(TTree* tree, const Systematic& sys, boo
       m_MbVPerpCM0 = (vP_Jb_CM_PerpM0_TLV + vP_Lb_CM_PerpM0_TLV).Mag();
       m_MQperpCM0 = sqrt((m_MaPerpCM0*m_MaPerpCM0 + m_MbPerpCM0*m_MbPerpCM0)/2.); 
       m_gammaPerpCM0 = 2*m_MQperpCM0/m_MSperpCM0;
-      m_MVisAperpCM0 = (vP_Ja_CM_PerpM0_TLV + vP_La_CM_PerpM0_TLV).Mag();
-      m_MVisBperpCM0 = (vP_Jb_CM_PerpM0_TLV + vP_Lb_CM_PerpM0_TLV).Mag();
       // variables using 4-vects constructed by evaluating in CM frame
       TLorentzVector vP_Ja_CM0;
       TLorentzVector vP_Jb_CM0;
@@ -1310,15 +1314,15 @@ void ReducedNtuple<Base>::FillOutputTree(TTree* tree, const Systematic& sys, boo
       vP_Ia_CM0.SetPtEtaPhiM(vP_Ia_CM.Pt(), vP_Ia_CM.Eta(), vP_Ia_CM.Phi(), 0.);
       vP_Ib_CM0.SetPtEtaPhiM(vP_Ib_CM.Pt(), vP_Ib_CM.Eta(), vP_Ib_CM.Phi(), 0.);
 
-      m_MSCM0 = (vP_Ja_CM0 + vP_Jb_CM0 + vP_La_CM0 + vP_Lb_CM0 + vP_Ia_CM0 + vP_Ib_CM0).Mag();
+      m_MSCM0 = (vP_Ja_CM0 + vP_Jb_CM0 + vP_La_CM0 + vP_Lb_CM0 + vP_Ia_CM0 + vP_Ib_CM0).Mag(); // this is Mr or 'ass mass' in the LLP analysis
       m_MaCM0 = (vP_Ja_CM0 + vP_La_CM0 + vP_Ia_CM0).Mag();
       m_MbCM0 = (vP_Jb_CM0 + vP_Lb_CM0 + vP_Ib_CM0).Mag();
       m_MaVCM0 = (vP_Ja_CM0 + vP_La_CM0).Mag();
       m_MbVCM0 = (vP_Jb_CM0 + vP_Lb_CM0).Mag();
       m_MQCM0 = sqrt((m_MaCM0*m_MaCM0 + m_MbCM0*m_MbCM0)/2.); 
-      m_gammaCM0 = 2*m_MQCM0/m_MSCM0;
-      m_MVisACM0 = (vP_Ja_CM0 + vP_La_CM0).Mag();
-      m_MVisBCM0 = (vP_Jb_CM0 + vP_Lb_CM0).Mag();
+      m_gammaCM0 = 2.*m_MQCM0/m_MSCM0; // this is 'R' in the LLP analysis
+      m_MQV = sqrt(((Ja[t]->GetFourVector()+La[t]->GetFourVector()).M2() + (Jb[t]->GetFourVector()+Lb[t]->GetFourVector()).M2())/2.);
+      m_gammaV = 2.*m_MQV/m_MSCM0; // this is 'Rv' in the LLP analysis
 
     }
     if(t==1){
@@ -1414,10 +1418,12 @@ void ReducedNtuple<Base>::FillOutputTree(TTree* tree, const Systematic& sys, boo
       Ib_S0.SetPtEtaPhiM(X1b_S.Pt(), X1b_S.Eta(), X1b_S.Phi(), 0.);
       La_S0.SetPtEtaPhiM(La_S.Pt(), La_S.Eta(), La_S.Phi(), 0.);
       Lb_S0.SetPtEtaPhiM(Lb_S.Pt(), Lb_S.Eta(), Lb_S.Phi(), 0.);
-      m_MS_S0_LEP = (Ia_S0+Ib_S0+La_S0+Lb_S0).M();
+      m_MS_S0_LEP = (Ia_S0+Ib_S0+La_S0+Lb_S0).M(); // this is Mr or 'ass mass' in the LLP analysis
       m_MV_S0_LEP = (La_S0+Lb_S0).M();
       m_MQ_S0_LEP = sqrt(((Ia_S0+La_S0).M2()+(Ib_S0+Lb_S0).M2())/2.);
-      m_gamma_S0_LEP = 2.*m_MQ_S0_LEP/m_MS_S0_LEP;
+      m_gamma_S0_LEP = 2.*m_MQ_S0_LEP/m_MS_S0_LEP; // this is 'R' in the LLP analysis
+      m_MQV_LEP = sqrt(((La[t]->GetMass()*La[t]->GetMass())+(Lb[t]->GetMass()*Lb[t]->GetMass()))/2.);
+      m_gammaV_LEP = 2.*m_MQV_LEP/m_MS_S0_LEP; // this is 'Rv' in the LLP analysis
 
       TLorentzVector X1a_X2a = X1a[t]->GetFourVector(*X2a[t]);
       TLorentzVector X1b_X2b = X1b[t]->GetFourVector(*X2b[t]);
@@ -1541,10 +1547,12 @@ void ReducedNtuple<Base>::FillOutputTree(TTree* tree, const Systematic& sys, boo
       Ib_S0.SetPtEtaPhiM(X1b_S.Pt(), X1b_S.Eta(), X1b_S.Phi(), 0.);
       Ja_S0.SetPtEtaPhiM(Ja_S.Pt(), Ja_S.Eta(), Ja_S.Phi(), 0.);
       Jb_S0.SetPtEtaPhiM(Jb_S.Pt(), Jb_S.Eta(), Jb_S.Phi(), 0.);
-      m_MS_S0_JET_ISR = (Ia_S0+Ib_S0+Ja_S0+Jb_S0).M();
+      m_MS_S0_JET_ISR = (Ia_S0+Ib_S0+Ja_S0+Jb_S0).M(); // this is Mr or 'ass mass' in the LLP analysis
       m_MV_S0_JET_ISR = (Ja_S0+Jb_S0).M();
       m_MQ_S0_JET_ISR = sqrt(((Ia_S0+Ja_S0).M2()+(Ib_S0+Jb_S0).M2())/2.);
-      m_gamma_S0_JET_ISR = 2.*m_MQ_S0_JET_ISR/m_MS_S0_JET_ISR;
+      m_gamma_S0_JET_ISR = 2.*m_MQ_S0_JET_ISR/m_MS_S0_JET_ISR; // this is 'R' in the LLP analysis
+      m_MQV_JET_ISR = sqrt(((Ja[t]->GetMass()*Ja[t]->GetMass())+(Jb[t]->GetMass()*Jb[t]->GetMass()))/2.);
+      m_gammaV_JET_ISR = 2.*m_MQV_JET_ISR/m_MS_S0_JET_ISR; // this is 'Rv' in the LLP analysis
 
       TLorentzVector X1a_X2a = X1a[t]->GetFourVector(*X2a[t]);
       TLorentzVector X1b_X2b = X1b[t]->GetFourVector(*X2b[t]);
@@ -1688,10 +1696,12 @@ void ReducedNtuple<Base>::FillOutputTree(TTree* tree, const Systematic& sys, boo
       Ib_S0.SetPtEtaPhiM(X1b_S.Pt(), X1b_S.Eta(), X1b_S.Phi(), 0.);
       Ja_S0.SetPtEtaPhiM(Ja_S.Pt(), Ja_S.Eta(), Ja_S.Phi(), 0.);
       Jb_S0.SetPtEtaPhiM(Jb_S.Pt(), Jb_S.Eta(), Jb_S.Phi(), 0.);
-      m_MS_S0_JET = (Ia_S0+Ib_S0+Ja_S0+Jb_S0).M();
+      m_MS_S0_JET = (Ia_S0+Ib_S0+Ja_S0+Jb_S0).M(); // this is Mr or 'ass mass' in the LLP analysis
       m_MV_S0_JET = (Ja_S0+Jb_S0).M();
       m_MQ_S0_JET = sqrt(((Ia_S0+Ja_S0).M2()+(Ib_S0+Jb_S0).M2())/2.);
-      m_gamma_S0_JET = 2.*m_MQ_S0_JET/m_MS_S0_JET;
+      m_gamma_S0_JET = 2.*m_MQ_S0_JET/m_MS_S0_JET; // this is 'R' in the LLP analysis
+      m_MQV_JET = sqrt(((Ja[t]->GetMass()*Ja[t]->GetMass())+(Jb[t]->GetMass()*Jb[t]->GetMass()))/2.);
+      m_gammaV_JET = 2.*m_MQV_JET/m_MS_S0_JET; // this is 'Rv' in the LLP analysis
 
       TLorentzVector X1a_X2a = X1a[t]->GetFourVector(*X2a[t]);
       TLorentzVector X1b_X2b = X1b[t]->GetFourVector(*X2b[t]);

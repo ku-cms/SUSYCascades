@@ -5444,7 +5444,7 @@ ParticleList AnalysisBase<NANORun3>::GetElectrons(){
     if(fabs(Electron_eta[i]) >= 1.4442 && fabs(Electron_eta[i]) <= 1.566)
       continue;
     if(fabs(Electron_dxy[i]) >= 0.05 || fabs(Electron_dz[i]) >= 0.1 ||
-       Electron_sip3d[i] >= 6)
+       Electron_sip3d[i] >= 8)
       continue;
     if(Electron_pfRelIso03_all[i]*Electron_pt[i] >= 20. + 300./Electron_pt[i])
       continue;
@@ -5538,7 +5538,7 @@ ParticleList AnalysisBase<NANORun3>::GetLowPtElectrons(){
     float IP_3D     = sqrt(dxy*dxy + dz*dz);
     float SIP_3D    = sqrt(sigma_xy*sigma_xy + sigma_z*sigma_z);
 
-    if (SIP_3D > 6.)
+    if (SIP_3D >= 8.)
       continue;
 
     if(LowPtElectron_miniPFRelIso_all[i]*LowPtElectron_pt[i] >= 20. + 300./LowPtElectron_pt[i])
@@ -5614,7 +5614,7 @@ ParticleList AnalysisBase<NANORun3>::GetMuons(){
     // baseline lepton definition
     if(Muon_pt[i] < 3. || fabs(Muon_eta[i]) > 2.4)
       continue;
-    if(fabs(Muon_dxy[i]) >= 0.05 || fabs(Muon_dz[i]) >= 0.1 || Muon_sip3d[i] >= 6.)
+    if(fabs(Muon_dxy[i]) >= 0.05 || fabs(Muon_dz[i]) >= 0.1 || Muon_sip3d[i] >= 8.)
       continue;
     if(Muon_pfRelIso03_all[i]*Muon_pt[i] >= 20. + 300./Muon_pt[i])
       continue;

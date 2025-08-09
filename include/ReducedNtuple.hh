@@ -427,8 +427,6 @@ private:
   double m_MbVPerpCM0;
   double m_MQperpCM0; // sqrt(Ma*Ma + Mb*Mb)/sqrt(2)
   double m_gammaPerpCM0; // 2*MQ/MS
-  double m_MVisAperpCM0;
-  double m_MVisBperpCM0;
   // variables using 4-vects constructed by evaluating in CM frame
   double m_MSCM0; 
   double m_MaCM0;
@@ -437,8 +435,6 @@ private:
   double m_MbVCM0;
   double m_MQCM0; // sqrt(Ma*Ma + Mb*Mb)/sqrt(2)
   double m_gammaCM0; // 2*MQ/MS
-  double m_MVisACM0;
-  double m_MVisBCM0;
 
   // New info for RJR 'LEP' tree
   double m_RISR_LEP;
@@ -538,6 +534,16 @@ private:
   double m_dphiCM_JET;
   double m_dphiCMI_JET;
   double m_dphiMET_V_JET;
+
+  // analogous Vis vars to LLP analysis
+  double m_MQV;
+  double m_gammaV;
+  double m_MQV_LEP;
+  double m_gammaV_LEP;
+  double m_MQV_JET_ISR;
+  double m_gammaV_JET_ISR;
+  double m_MQV_JET;
+  double m_gammaV_JET;
 
   // RestFrames frames and friends
   LabRecoFrame*     LAB[m_aTrees];
