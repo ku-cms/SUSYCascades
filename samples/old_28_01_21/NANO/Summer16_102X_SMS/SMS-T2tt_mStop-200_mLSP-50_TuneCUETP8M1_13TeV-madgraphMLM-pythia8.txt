@@ -1,2 +1,0 @@
-root://cmsxrootd.fnal.gov//store/mc/RunIISummer16NanoAODv7/SMS-T2tt_mStop-200_mLSP-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/NANOAODSIM/PUMoriond17_Nano02Apr2020_102X_mcRun2_asymptotic_v8-v1/60000/78ACB401-9822-6246-A3ED-D9E51EC84A5F.root
-root://cmsxrootd.fnal.gov//store/mc/RunIISummer16NanoAODv7/SMS-T2tt_mStop-200_mLSP-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/NANOAODSIM/PUMoriond17_Nano02Apr2020_102X_mcRun2_asymptotic_v8-v1/60000/5E3A62E0-4DF9-D349-8FFB-88909412A10B.root

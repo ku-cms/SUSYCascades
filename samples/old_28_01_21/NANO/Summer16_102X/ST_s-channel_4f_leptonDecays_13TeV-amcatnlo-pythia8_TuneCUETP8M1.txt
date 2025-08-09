@@ -1,3 +1,0 @@
-root://cmsxrootd.fnal.gov//store/mc/RunIISummer16NanoAODv7/ST_s-channel_4f_leptonDecays_13TeV-amcatnlo-pythia8_TuneCUETP8M1/NANOAODSIM/PUMoriond17_Nano02Apr2020_102X_mcRun2_asymptotic_v8-v1/100000/7F7F13FF-CDE2-7745-BE5E-0D3837CC9224.root
-root://cmsxrootd.fnal.gov//store/mc/RunIISummer16NanoAODv7/ST_s-channel_4f_leptonDecays_13TeV-amcatnlo-pythia8_TuneCUETP8M1/NANOAODSIM/PUMoriond17_Nano02Apr2020_102X_mcRun2_asymptotic_v8-v1/100000/62D9D2FC-E76F-B24B-AA8F-40870C6204C2.root
-root://cmsxrootd.fnal.gov//store/mc/RunIISummer16NanoAODv7/ST_s-channel_4f_leptonDecays_13TeV-amcatnlo-pythia8_TuneCUETP8M1/NANOAODSIM/PUMoriond17_Nano02Apr2020_102X_mcRun2_asymptotic_v8-v1/100000/5F48CFB3-83C5-9748-9006-00C6AB0F84D9.root

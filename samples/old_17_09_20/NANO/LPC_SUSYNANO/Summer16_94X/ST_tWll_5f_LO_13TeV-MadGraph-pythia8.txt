@@ -1,2 +1,0 @@
-root://cmseos.fnal.gov//eos/uscms/store/user/lpcsusyhad/Stop_production/Summer16_94X_v3/PreProcessed_22Feb2019/ST_tWll_5f_LO_13TeV-MadGraph-pythia8/2016_MINIAODv3_RunIISummer16MiniAODv3-PUMoriond17_94X_v3-v1/190225_170516/0000/prod2016MC_NANO_1.root
-root://cmseos.fnal.gov//eos/uscms/store/user/lpcsusyhad/Stop_production/Summer16_94X_v3/PreProcessed_22Feb2019/ST_tWll_5f_LO_13TeV-MadGraph-pythia8/2016_MINIAODv3_RunIISummer16MiniAODv3-PUMoriond17_94X_v3-v1/190225_170516/0000/prod2016MC_NANO_2.root

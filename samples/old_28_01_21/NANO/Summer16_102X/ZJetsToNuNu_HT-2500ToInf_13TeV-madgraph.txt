@@ -1,1 +1,0 @@
-root://cmsxrootd.fnal.gov//store/mc/RunIISummer16NanoAODv7/ZJetsToNuNu_HT-2500ToInf_13TeV-madgraph/NANOAODSIM/PUMoriond17_Nano02Apr2020_102X_mcRun2_asymptotic_v8-v1/100000/58D25E65-8E60-B845-B3D1-35F1EE7140FE.root

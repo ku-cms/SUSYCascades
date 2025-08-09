@@ -1,1 +1,0 @@
-root://cmsxrootd.fnal.gov//store/mc/RunIISummer16NanoAODv7/SMS-T2-4bd_2Lfilter_mStop-275_mLSP-205_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/NANOAODSIM/PUMoriond17_Nano02Apr2020_102X_mcRun2_asymptotic_v8-v1/120000/620084E2-10E3-E541-9D7E-57D6B6635EB1.root

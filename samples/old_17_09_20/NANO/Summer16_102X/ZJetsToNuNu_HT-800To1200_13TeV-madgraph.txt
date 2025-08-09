@@ -1,6 +1,0 @@
-root://cmsxrootd.fnal.gov//store/mc/RunIISummer16NanoAODv5/ZJetsToNuNu_HT-800To1200_13TeV-madgraph/NANOAODSIM/PUMoriond17_Nano1June2019_102X_mcRun2_asymptotic_v7-v1/30000/DD6141E0-9D95-C24C-8DC5-EC96FA0C4DA0.root
-root://cmsxrootd.fnal.gov//store/mc/RunIISummer16NanoAODv5/ZJetsToNuNu_HT-800To1200_13TeV-madgraph/NANOAODSIM/PUMoriond17_Nano1June2019_102X_mcRun2_asymptotic_v7-v1/30000/257DED4F-279F-5847-92FD-C9CCA89C9860.root
-root://cmsxrootd.fnal.gov//store/mc/RunIISummer16NanoAODv5/ZJetsToNuNu_HT-800To1200_13TeV-madgraph/NANOAODSIM/PUMoriond17_Nano1June2019_102X_mcRun2_asymptotic_v7-v1/30000/BEEF17C5-C823-DF4C-B010-5D6642F3BA61.root
-root://cmsxrootd.fnal.gov//store/mc/RunIISummer16NanoAODv5/ZJetsToNuNu_HT-800To1200_13TeV-madgraph/NANOAODSIM/PUMoriond17_Nano1June2019_102X_mcRun2_asymptotic_v7-v1/30000/047791E6-CE6B-4D42-AA69-4DFC647A15B0.root
-root://cmsxrootd.fnal.gov//store/mc/RunIISummer16NanoAODv5/ZJetsToNuNu_HT-800To1200_13TeV-madgraph/NANOAODSIM/PUMoriond17_Nano1June2019_102X_mcRun2_asymptotic_v7-v1/30000/37F3059E-371F-D74A-ABE9-15D48F50EFD5.root
-root://cmsxrootd.fnal.gov//store/mc/RunIISummer16NanoAODv5/ZJetsToNuNu_HT-800To1200_13TeV-madgraph/NANOAODSIM/PUMoriond17_Nano1June2019_102X_mcRun2_asymptotic_v7-v1/30000/65857440-0320-2247-89CA-3C5AC6716182.root

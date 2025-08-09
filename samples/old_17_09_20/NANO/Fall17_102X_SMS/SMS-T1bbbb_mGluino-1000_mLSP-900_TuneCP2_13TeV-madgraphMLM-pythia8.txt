@@ -1,1 +1,0 @@
-root://cmsxrootd.fnal.gov//store/mc/RunIIFall17NanoAODv5/SMS-T1bbbb_mGluino-1000_mLSP-900_TuneCP2_13TeV-madgraphMLM-pythia8/NANOAODSIM/PU2017_12Apr2018_Nano1June2019_102X_mc2017_realistic_v7-v1/250000/3FDB14B3-2C70-8847-9583-93B2BFDE9966.root

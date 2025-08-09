@@ -1,3 +1,0 @@
-root://cmsxrootd.fnal.gov//store/data/Run2016B/DoubleMuon/NANOAOD/02Apr2020_ver1-v1/240000/49C594FD-51BF-7E4F-89F8-B7E220565530.root
-root://cmsxrootd.fnal.gov//store/data/Run2016B/DoubleMuon/NANOAOD/02Apr2020_ver1-v1/240000/8DDEE431-BD44-FE43-AE7E-A230CB536EFF.root
-root://cmsxrootd.fnal.gov//store/data/Run2016B/DoubleMuon/NANOAOD/02Apr2020_ver1-v1/240000/102B30FB-A294-B144-969C-D0231958CD6F.root

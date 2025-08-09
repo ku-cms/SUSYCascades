@@ -1,2 +1,0 @@
-root://cmsxrootd.fnal.gov//store/mc/RunIIFall17NanoAODv7/ZJetsToNuNu_HT-1200To2500_13TeV-madgraph/NANOAODSIM/PU2017_12Apr2018_Nano02Apr2020_102X_mc2017_realistic_v8-v1/100000/672B6F4D-E383-F849-80F4-CA183A2A2E21.root
-root://cmsxrootd.fnal.gov//store/mc/RunIIFall17NanoAODv7/ZJetsToNuNu_HT-1200To2500_13TeV-madgraph/NANOAODSIM/PU2017_12Apr2018_Nano02Apr2020_new_pmx_102X_mc2017_realistic_v8-v1/60000/F47F8AB0-E75A-584D-A21D-6CC45F18EB97.root

@@ -1,1 +1,0 @@
-root://cmsxrootd.fnal.gov//store/data/Run2016B/DoubleMuonLowMass/NANOAOD/02Apr2020_ver1-v1/10000/BA31CC64-6BBA-2443-A821-A61A245A0DF7.root

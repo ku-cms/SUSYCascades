@@ -1,5 +1,0 @@
-root://cmsxrootd.fnal.gov//store/mc/RunIISummer16NanoAODv7/WWTo2L2Nu_13TeV-powheg/NANOAODSIM/PUMoriond17_Nano02Apr2020_102X_mcRun2_asymptotic_v8-v1/110000/95F7DF57-A4DE-0F4C-85C0-C08457BDB345.root
-root://cmsxrootd.fnal.gov//store/mc/RunIISummer16NanoAODv7/WWTo2L2Nu_13TeV-powheg/NANOAODSIM/PUMoriond17_Nano02Apr2020_102X_mcRun2_asymptotic_v8-v1/130000/777A696F-454F-8A48-B9E4-0EA950833BC8.root
-root://cmsxrootd.fnal.gov//store/mc/RunIISummer16NanoAODv7/WWTo2L2Nu_13TeV-powheg/NANOAODSIM/PUMoriond17_Nano02Apr2020_102X_mcRun2_asymptotic_v8-v1/130000/8F643AC6-ABA0-8948-BE7D-9D3D4D9A8159.root
-root://cmsxrootd.fnal.gov//store/mc/RunIISummer16NanoAODv7/WWTo2L2Nu_13TeV-powheg/NANOAODSIM/PUMoriond17_Nano02Apr2020_102X_mcRun2_asymptotic_v8-v1/130000/E12F4187-A906-2A49-B3F9-5F28B2972D6D.root
-root://cmsxrootd.fnal.gov//store/mc/RunIISummer16NanoAODv7/WWTo2L2Nu_13TeV-powheg/NANOAODSIM/PUMoriond17_Nano02Apr2020_102X_mcRun2_asymptotic_v8-v1/110000/AC80F305-D513-9F4E-8B48-C407F096916E.root

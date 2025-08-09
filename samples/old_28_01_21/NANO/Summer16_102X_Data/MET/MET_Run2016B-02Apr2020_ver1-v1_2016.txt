@@ -1,2 +1,0 @@
-root://cmsxrootd.fnal.gov//store/data/Run2016B/MET/NANOAOD/02Apr2020_ver1-v1/20000/E5BDBB58-DC87-C14F-A322-BD5B2D79169C.root
-root://cmsxrootd.fnal.gov//store/data/Run2016B/MET/NANOAOD/02Apr2020_ver1-v1/20000/C3227768-6B42-4D45-AB70-2EE39983A305.root

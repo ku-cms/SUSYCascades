@@ -1,9 +1,0 @@
-root://cmsxrootd.fnal.gov//store/data/Run2017B/DoubleMuonLowMass/NANOAOD/02Apr2020-v1/20000/5EF4117A-3119-EC4B-885F-0DAE86E5D2B4.root
-root://cmsxrootd.fnal.gov//store/data/Run2017B/DoubleMuonLowMass/NANOAOD/02Apr2020-v1/20000/F2A54AE5-9CDE-9B46-9607-A2D9C0D80699.root
-root://cmsxrootd.fnal.gov//store/data/Run2017B/DoubleMuonLowMass/NANOAOD/02Apr2020-v1/20000/8A3E7F17-0B79-1B48-B577-FCF83F880D71.root
-root://cmsxrootd.fnal.gov//store/data/Run2017B/DoubleMuonLowMass/NANOAOD/02Apr2020-v1/20000/C48E61B8-CEA2-A146-A3E4-6237850AB8E9.root
-root://cmsxrootd.fnal.gov//store/data/Run2017B/DoubleMuonLowMass/NANOAOD/02Apr2020-v1/20000/A6197CFA-6BA0-D14C-9507-75A2627D3B10.root
-root://cmsxrootd.fnal.gov//store/data/Run2017B/DoubleMuonLowMass/NANOAOD/02Apr2020-v1/20000/66374B09-A396-534C-A78A-09D4C8D33B39.root
-root://cmsxrootd.fnal.gov//store/data/Run2017B/DoubleMuonLowMass/NANOAOD/02Apr2020-v1/20000/4CD2EAF4-23A6-3740-9BFB-F034ED647FEB.root
-root://cmsxrootd.fnal.gov//store/data/Run2017B/DoubleMuonLowMass/NANOAOD/02Apr2020-v1/20000/F6E55804-AC50-6C4A-A657-5A893A3D93D1.root
-root://cmsxrootd.fnal.gov//store/data/Run2017B/DoubleMuonLowMass/NANOAOD/02Apr2020-v1/20000/CF89C591-64D0-3F4C-8741-13DFF3AA4421.root

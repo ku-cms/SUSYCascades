@@ -1,2 +1,0 @@
-root://cmsxrootd.fnal.gov//store/mc/RunIIAutumn18NanoAODv5/WZTo1L3Nu_13TeV_amcatnloFXFX_madspin_pythia8/NANOAODSIM/Nano1June2019_102X_upgrade2018_realistic_v19-v1/60000/C8346F56-7BC8-7F48-99C9-C34541CAD2D1.root
-root://cmsxrootd.fnal.gov//store/mc/RunIIAutumn18NanoAODv5/WZTo1L3Nu_13TeV_amcatnloFXFX_madspin_pythia8/NANOAODSIM/Nano1June2019_102X_upgrade2018_realistic_v19-v1/60000/FAD17823-989D-764F-8195-112CF31CC8A1.root

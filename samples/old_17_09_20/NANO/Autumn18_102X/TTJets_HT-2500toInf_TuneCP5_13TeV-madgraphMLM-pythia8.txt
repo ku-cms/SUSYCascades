@@ -1,3 +1,0 @@
-root://cmsxrootd.fnal.gov//store/mc/RunIIAutumn18NanoAODv5/TTJets_HT-2500toInf_TuneCP5_13TeV-madgraphMLM-pythia8/NANOAODSIM/Nano1June2019_102X_upgrade2018_realistic_v19-v1/70000/D57D6620-E16F-C84D-A3CC-EE8A5B289ED0.root
-root://cmsxrootd.fnal.gov//store/mc/RunIIAutumn18NanoAODv5/TTJets_HT-2500toInf_TuneCP5_13TeV-madgraphMLM-pythia8/NANOAODSIM/Nano1June2019_102X_upgrade2018_realistic_v19-v1/70000/83CF2351-B90F-324C-8285-F4CE625FD5EB.root
-root://cmsxrootd.fnal.gov//store/mc/RunIIAutumn18NanoAODv5/TTJets_HT-2500toInf_TuneCP5_13TeV-madgraphMLM-pythia8/NANOAODSIM/Nano1June2019_102X_upgrade2018_realistic_v19-v1/70000/A19B09D9-6D3D-BA4E-9792-53AB20F91782.root

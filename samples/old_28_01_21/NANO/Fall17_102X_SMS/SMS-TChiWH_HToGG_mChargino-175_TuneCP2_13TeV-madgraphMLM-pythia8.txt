@@ -1,1 +1,0 @@
-root://cmsxrootd.fnal.gov//store/mc/RunIIFall17NanoAODv7/SMS-TChiWH_HToGG_mChargino-175_TuneCP2_13TeV-madgraphMLM-pythia8/NANOAODSIM/PUFall17Fast_Nano02Apr2020_102X_mc2017_realistic_v8-v1/110000/E1C50CAD-F626-9B43-B332-6820A7F14B2C.root
