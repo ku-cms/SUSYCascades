@@ -7,7 +7,7 @@ void Plot_Advanced(){
   InitRJRtree();
   //DrawRJRtree(false); gApplication->Terminate(0); // end macro if making tree plot
 
-  string NtuplePath = "/local-scratch/zflowers/NTUPLES/HADD/";
+  string NtuplePath = "/local-scratch/zflowers/NTUPLES/HADD_NTUPLES_v3/";
 
   // 10 is Summer23BPix
   SampleTool ST(NtuplePath, 10);
@@ -25,10 +25,10 @@ void Plot_Advanced(){
   if(CandSameHemi) output_root_file += "SameHemi_";
 
   //g_Label = "TESTING";
-  //g_Label = "Jets";
-  //g_Label = "Graham";
+  //g_Label = "Jets RISR0.5";
+  //g_Label = "Plotting";
   //g_Label = "NoMET BL";
-  g_Label = "3L !Bronze maxSIP3D<3.5 MS>300 4<MVa<65 LepPtTrig Cos";
+  g_Label = "3L !Bronze maxSIP3D<3.5 MS>300 4<MVa<65 LepPtTrig Cos2";
   //g_Label = "=3L !Bronze MET150 PTISR150 RISR0.5";
   //g_Label = "=3L !Bronze !0J S";
   //g_Label = "2L PreSelection 0JS";
@@ -71,9 +71,9 @@ void Plot_Advanced(){
   //map_vsignals.insert(std::make_pair("Cascades_220_SMS", VS({"Cascades_SMS_*_220_*"})));
   //map_vsignals.insert(std::make_pair("Cascades_260_SMS", VS({"Cascades_SMS_*_260_*"})));
   //map_vsignals.insert(std::make_pair("Cascades_270_SMS", VS({"Cascades_SMS_*_270_*"})));
-  //map_vsignals.insert(std::make_pair("T1bbbb_1500_SMS", VS({"T1bbbb_2000_1500_*"})));
-  //map_vsignals.insert(std::make_pair("T1bbbb_1900_SMS", VS({"T1bbbb_2000_1900_*"})));
-  //map_vsignals.insert(std::make_pair("T1bbbb_1752_SMS", VS({"T1bbbb_2000_1752_*"})));
+  //map_vsignals.insert(std::make_pair("T1bbbb_900_SMS", VS({"T1bbbb_1200_900_*"})));
+  //map_vsignals.insert(std::make_pair("T1bbbb_1000_SMS", VS({"T1bbbb_1200_1000_*"})));
+  //map_vsignals.insert(std::make_pair("T1bbbb_1175_SMS", VS({"T1bbbb_1200_1176_*"})));
   // loop over signals and add to map
   for(auto p = map_vsignals.begin(); p != map_vsignals.end(); p++){
     ProcessList signals;
@@ -186,6 +186,16 @@ void Plot_Advanced(){
   hist_stacks.push_back(&hist_stack_RZParaM);
   vector<TH1*> hist_stack_RZParaDivRISR;
   hist_stacks.push_back(&hist_stack_RZParaDivRISR);
+  vector<TH1*> hist_stack_MCosDecayAngleM;
+  hist_stacks.push_back(&hist_stack_MCosDecayAngleM);
+  vector<TH1*> hist_stack_MCosDecayAngleP;
+  hist_stacks.push_back(&hist_stack_MCosDecayAngleP);
+  vector<TH1*> hist_stack_AbsMCosDecayAngleM;
+  hist_stacks.push_back(&hist_stack_AbsMCosDecayAngleM);
+  vector<TH1*> hist_stack_AbsMCosDecayAngleP;
+  hist_stacks.push_back(&hist_stack_AbsMCosDecayAngleP);
+  vector<TH1*> hist_stack_SCosDecayAngleP;
+  hist_stacks.push_back(&hist_stack_SCosDecayAngleP);
 
   // hists for holding number of events
   const int EC_bins = vec_samples.size() + 1;
@@ -344,9 +354,24 @@ void Plot_Advanced(){
     TH1D* hist_RZParaDivRISR = new TH1D((title+"_RZParaDivRISR").c_str(), (title+"_RZParaDivRISR;RZPara/RISR").c_str(), g_NX, 0., 2.);
     hists1.push_back(hist_RZParaDivRISR);
     hist_stack_RZParaDivRISR.push_back(hist_RZParaDivRISR);
-
-    TH1D* hist_DeltaRLeptonMatching = new TH1D((title+"_DeltaRLeptonMatching").c_str(), (title+"_DeltaRLeptonMatching; #Delta R Matched Leptons").c_str(), g_NX, 0., 0.01);
+    TH1D* hist_DeltaRLeptonMatching = new TH1D((title+"_DeltaRLeptonMatching").c_str(), (title+"_DeltaRLeptonMatching;#Delta R Matched Leptons").c_str(), g_NX, 0., 0.01);
     hists1.push_back(hist_DeltaRLeptonMatching);
+    TH1D* hist_MCosDecayAngleM = new TH1D((title+"_MCosDecayAngleM").c_str(), (title+"_MCosDecayAngleM;cos#theta_{Pa}^{LEP}*cos#theta_{Pb}^{LEP}").c_str(), g_NX, -1., 1.);
+    hists1.push_back(hist_MCosDecayAngleM);
+    hist_stack_MCosDecayAngleM.push_back(hist_MCosDecayAngleM);
+    TH1D* hist_MCosDecayAngleP = new TH1D((title+"_MCosDecayAngleP").c_str(), (title+"_MCosDecayAngleP;cos#theta_{Pa}^{LEP}-cos#theta_{Pb}^{LEP}").c_str(), g_NX, -2., 2.);
+    hists1.push_back(hist_MCosDecayAngleP);
+    hist_stack_MCosDecayAngleP.push_back(hist_MCosDecayAngleP);
+
+    TH1D* hist_AbsMCosDecayAngleM = new TH1D((title+"_AbsMCosDecayAngleM").c_str(), (title+"_AbsMCosDecayAngleM;|cos#theta_{Pa}^{LEP}*cos#theta_{Pb}^{LEP}|").c_str(), g_NX, 0., 1.);
+    hists1.push_back(hist_AbsMCosDecayAngleM);
+    hist_stack_AbsMCosDecayAngleM.push_back(hist_AbsMCosDecayAngleM);
+    TH1D* hist_AbsMCosDecayAngleP = new TH1D((title+"_AbsMCosDecayAngleP").c_str(), (title+"_AbsMCosDecayAngleP;|cos#theta_{Pa}^{LEP}-cos#theta_{Pb}^{LEP}|").c_str(), g_NX, 0., 2.);
+    hists1.push_back(hist_AbsMCosDecayAngleP);
+    hist_stack_AbsMCosDecayAngleP.push_back(hist_AbsMCosDecayAngleP);
+    TH1D* hist_SCosDecayAngleP = new TH1D((title+"_SCosDecayAngleP").c_str(), (title+"_SCosDecayAngleP;cos#theta_{Pa}^{LEP}+cos#theta_{Pb}^{LEP}").c_str(), g_NX, 0., 2.);
+    hists1.push_back(hist_SCosDecayAngleP);
+    hist_stack_SCosDecayAngleP.push_back(hist_SCosDecayAngleP);
 
     TH2D* hist_RISR_PTISR = new TH2D((title+"_RISR_PTISR").c_str(), (title+"_RISR_PTISR;R_{ISR};p_{T}^{ISR} [GeV]").c_str(), g_NX, 0., 1., g_NX, 0., 1000.);
     hists2.push_back(hist_RISR_PTISR);
@@ -1136,11 +1161,14 @@ void Plot_Advanced(){
     hists2.push_back(hist_CosDecayAnglePbLEP_MS);
     TH2D* hist_MPb_MVa = new TH2D((title+"_MPb_MVa").c_str(), (title+"_MPb_MVa;M_{Pb}^{LEP};M_{Va}^{LEP}").c_str(), g_NX, 0., 300., g_NX, 0., 200.);
     hists2.push_back(hist_MPb_MVa); 
-
     TH2D* hist_MPa_MCosDecayAngleM = new TH2D((title+"_MPa_MCosDecayAngleM").c_str(), (title+"_MPa_MCosDecayAngleM;M_{Pa}^{LEP};cos#theta_{Pa}^{LEP}*cos#theta_{Pb}^{LEP}").c_str(), g_NX, 0., 300., g_NX, -1., 1.);
     hists2.push_back(hist_MPa_MCosDecayAngleM);
     TH2D* hist_MPb_MCosDecayAngleM = new TH2D((title+"_MPb_MCosDecayAngleM").c_str(), (title+"_MPb_MCosDecayAngleM;M_{Pb}^{LEP};cos#theta_{Pb}^{LEP}*cos#theta_{Pb}^{LEP}").c_str(), g_NX, 0., 300., g_NX, -1., 1.);
     hists2.push_back(hist_MPb_MCosDecayAngleM);
+    TH2D* hist_MPa_SCosDecayAngleP = new TH2D((title+"_MPa_SCosDecayAngleP").c_str(), (title+"_MPa_SCosDecayAngleP;M_{Pa}^{LEP};cos#theta_{Pa}^{LEP}+cos#theta_{Pb}^{LEP}").c_str(), g_NX, 0., 300., g_NX, 0., 2.);
+    hists2.push_back(hist_MPa_SCosDecayAngleP);
+    TH2D* hist_MPb_SCosDecayAngleP = new TH2D((title+"_MPb_SCosDecayAngleP").c_str(), (title+"_MPb_SCosDecayAngleP;M_{Pb}^{LEP};cos#theta_{Pb}^{LEP}*cos#theta_{Pb}^{LEP}").c_str(), g_NX, 0., 300., g_NX, 0., 2.);
+    hists2.push_back(hist_MPb_SCosDecayAngleP);
 
     TEfficiency* eff_METtrig = new TEfficiency((title+"_eff_METtrig").c_str(), "Efficiency of MET trigger;Eff;MET [GeV]", g_NX, 0., 500.);
     effs.push_back(eff_METtrig);
@@ -1240,8 +1268,8 @@ void Plot_Advanced(){
           double PTISR = base->PTISR;
           double PISR = base->PISR;
           // JET
-          //RISR = base->RISR_JET;
-          //PTISR = base->PTISR_JET;
+          //RISR = base->RISR_JET_ISR;
+          //PTISR = base->PTISR_JET_ISR;
 
           double MSperpCM0 = base->MSperpCM0;
           double MQperpCM0 = base->MQperpCM0;
@@ -1261,17 +1289,25 @@ void Plot_Advanced(){
           //vect_str_cutflow_labels[CF_bin] = "MET > 150";
           
           // apply trigger to data and FullSim events
-          if(!base->SingleElectrontrigger && !base->SingleMuontrigger && !is_FastSim) // ATLAS
+          if(!base->SingleElectrontrigger && !base->SingleMuontrigger && !base->DoubleElectrontrigger && !base->DoubleMuontrigger && !base->EMutrigger && !is_FastSim) // ATLAS
             continue;
           CF_bin++; hist_CutFlow->SetBinContent(CF_bin, hist_CutFlow->GetBinContent(CF_bin)+weight); 
-          vect_str_cutflow_labels[CF_bin] = "Lepton trigger";
+          vect_str_cutflow_labels[CF_bin] = "Lepton triggers";
+          //if(!base->SingleElectrontrigger && !base->SingleMuontrigger && !is_FastSim) // ATLAS
+          //  continue;
+          //CF_bin++; hist_CutFlow->SetBinContent(CF_bin, hist_CutFlow->GetBinContent(CF_bin)+weight); 
+          //vect_str_cutflow_labels[CF_bin] = "1L Lepton trigger";
+          //if(!base->DoubleElectrontrigger && !base->DoubleMuontrigger && !base->EMutrigger && !is_FastSim) // ATLAS
+          //  continue;
+          //CF_bin++; hist_CutFlow->SetBinContent(CF_bin, hist_CutFlow->GetBinContent(CF_bin)+weight); 
+          //vect_str_cutflow_labels[CF_bin] = "2L Lepton trigger";
 
           //if(!base->METORtrigger && !is_FastSim) // PreSelection
           //  continue;
           //CF_bin++; hist_CutFlow->SetBinContent(CF_bin, hist_CutFlow->GetBinContent(CF_bin)+weight); 
           //vect_str_cutflow_labels[CF_bin] = "MET trigger";
 
-          //if(base->PTISR_JET < 250.) // PreSelection
+          //if(PTISR < 250.) // PreSelection
 	  //  continue;
           //CF_bin++; hist_CutFlow->SetBinContent(CF_bin, hist_CutFlow->GetBinContent(CF_bin)+weight); 
           //vect_str_cutflow_labels[CF_bin] = "PTISR > 250";
@@ -1302,7 +1338,7 @@ void Plot_Advanced(){
           //if(RISR < 0.4 || RISR > 0.7) // CR
           //if(RISR < 0.7 || RISR > 1.0)
           //if(RISR < 0.5 || RISR > 1.0) // PreSelection
-          //if(base->RISR_JET < 0.5 || base->RISR_JET > 1.0) // PreSelection
+          //if(RISR < 0.5 || RISR > 1.0) // PreSelection
           //  continue;
           //CF_bin++; hist_CutFlow->SetBinContent(CF_bin, hist_CutFlow->GetBinContent(CF_bin)+weight); 
           //vect_str_cutflow_labels[CF_bin] = "R_{ISR} > 0.5";
@@ -1325,10 +1361,6 @@ void Plot_Advanced(){
           //if(Nlep + NjetS < 3) continue; // min 3 objects in S
           //CF_bin++; hist_CutFlow->SetBinContent(CF_bin, hist_CutFlow->GetBinContent(CF_bin)+weight); 
           //vect_str_cutflow_labels[CF_bin] = "3 Obj S";
-
-          //if(Nlep < 3) continue;
-          //CF_bin++; hist_CutFlow->SetBinContent(CF_bin, hist_CutFlow->GetBinContent(CF_bin)+weight); 
-          //vect_str_cutflow_labels[CF_bin] = ">= 3L";
 
           LepList list_a;
           LepList list_b;
@@ -2123,6 +2155,14 @@ void Plot_Advanced(){
           CF_bin++; hist_CutFlow->SetBinContent(CF_bin, hist_CutFlow->GetBinContent(CF_bin)+weight); 
           vect_str_cutflow_labels[CF_bin] = "MS^{LEP} > 300";
 
+          if(CosDecayAngle_Pa_LEP+CosDecayAngle_Pb_LEP > 0.19) continue;
+          CF_bin++; hist_CutFlow->SetBinContent(CF_bin, hist_CutFlow->GetBinContent(CF_bin)+weight); 
+          vect_str_cutflow_labels[CF_bin] = "cos#theta^{Pa}+cos#theta^{Pb} < 0.19";
+
+          if(CosDecayAngle_S_LEP > 0.8) continue;
+          CF_bin++; hist_CutFlow->SetBinContent(CF_bin, hist_CutFlow->GetBinContent(CF_bin)+weight); 
+          vect_str_cutflow_labels[CF_bin] = "cos#theta^{S} < 0.8";
+
           //if(MQ_LEP > 150.) continue;
           //CF_bin++; hist_CutFlow->SetBinContent(CF_bin, hist_CutFlow->GetBinContent(CF_bin)+weight); 
           //vect_str_cutflow_labels[CF_bin] = "MQ^{LEP} < 150";
@@ -2213,9 +2253,16 @@ void Plot_Advanced(){
           hist_MS_CosDecayAngleVaLEP->Fill(MS_LEP, CosDecayAngle_Va_LEP, weight);
           hist_MSLEP_MCosDecayAngleP->Fill(MS_LEP, CosDecayAngle_Pa_LEP-CosDecayAngle_Pb_LEP, weight);
           hist_MQLEP_MCosDecayAngleP->Fill(MQ_LEP, CosDecayAngle_Pa_LEP-CosDecayAngle_Pb_LEP, weight);
-
           hist_MPa_MCosDecayAngleM->Fill(MPa, CosDecayAngle_Pa_LEP*CosDecayAngle_Pb_LEP, weight);
           hist_MPb_MCosDecayAngleM->Fill(MPb, CosDecayAngle_Pa_LEP*CosDecayAngle_Pb_LEP, weight);
+          hist_MPa_SCosDecayAngleP->Fill(MPa, CosDecayAngle_Pa_LEP+CosDecayAngle_Pb_LEP, weight);
+          hist_MPb_SCosDecayAngleP->Fill(MPb, CosDecayAngle_Pa_LEP+CosDecayAngle_Pb_LEP, weight);
+
+          hist_MCosDecayAngleP->Fill(CosDecayAngle_Pa_LEP-CosDecayAngle_Pb_LEP, weight);
+          hist_MCosDecayAngleM->Fill(CosDecayAngle_Pa_LEP*CosDecayAngle_Pb_LEP, weight);
+          hist_AbsMCosDecayAngleP->Fill(fabs(CosDecayAngle_Pa_LEP-CosDecayAngle_Pb_LEP), weight);
+          hist_AbsMCosDecayAngleM->Fill(fabs(CosDecayAngle_Pa_LEP*CosDecayAngle_Pb_LEP), weight);
+          hist_SCosDecayAngleP->Fill(CosDecayAngle_Pa_LEP+CosDecayAngle_Pb_LEP, weight);
 
           hist_MET_RISRLEP->Fill(MET, RISR_LEP, weight);
           hist_MET_PTISRLEP->Fill(MET, PTISR_LEP, weight);
@@ -2445,6 +2492,8 @@ void Plot_Advanced(){
       Zbi_samples_index++;
 
   } // for (auto p = vec_samples.begin(); p != vec_samples.end(); p++){
+
+  std::cout << "Finished looping over all events. Making plots..." << std::endl;
 
   int index = 0;
   for (auto p = vec_samples.begin(); p != vec_samples.end(); p++){

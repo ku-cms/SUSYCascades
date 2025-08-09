@@ -47,12 +47,18 @@ double g_NX = 64.;
 string g_Yname;
 double g_Ymin;
 double g_Ymax;
-double g_NY;
+double g_NY = 64.;
+string g_dm_Yname;
+double g_dm_Ymin;
+double g_dm_Ymax;
+double g_dm_YN;
 string g_Label;
 // root file to store output of plots
 string output_root_file = "output_Plot_";
 bool SavePDF = true; // whether or not to save pdfs of plots
 string folder_name = "";
+
+using namespace RestFrames;
 
 FitPlotter FP("","","");
 
@@ -977,23 +983,23 @@ void Plot_CutFlow(vector<TH1*> vect_h, bool Scale, double Scale_Val, double sign
 LabRecoFrame LAB("LAB","lab");
 DecayRecoFrame CM("CM","CM");
 DecayRecoFrame S("S","S");
-DecayRecoFrame Pa("Pa","Pa");
-DecayRecoFrame Pb("Pb","Pb");
-VisibleRecoFrame Ja("Ja","J_{a}");
-VisibleRecoFrame Jb("Jb","J_{b}");
-VisibleRecoFrame Va("Va","V_{a}");
-VisibleRecoFrame Vb("Vb","V_{b}");
-VisibleRecoFrame La("La","L_{a}");
-VisibleRecoFrame Lb("Lb","L_{b}");
+DecayRecoFrame Pa("Pa","P_{#it{a}}");
+DecayRecoFrame Pb("Pb","P_{#it{b}}");
+VisibleRecoFrame Ja("Ja","J_{#it{a}}");
+VisibleRecoFrame Jb("Jb","J_{#it{b}}");
+VisibleRecoFrame Va("Va","V_{#it{a}}");
+VisibleRecoFrame Vb("Vb","V_{#it{b}}");
+VisibleRecoFrame La("La","L_{#it{a}}");
+VisibleRecoFrame Lb("Lb","L_{#it{b}}");
 VisibleRecoFrame ISR("ISR","ISR");
-InvisibleRecoFrame Ia("Ia","I_{a}");
-InvisibleRecoFrame Ib("Ib","I_{b}");
+InvisibleRecoFrame Ia("Ia","I_{#it{a}}");
+InvisibleRecoFrame Ib("Ib","I_{#it{b}}");
 SelfAssemblingRecoFrame sLa("sLa","sLa");
 SelfAssemblingRecoFrame sLb("sLb","sLb");
 InvisibleGroup INV("INV","Invisible System");
 SetMassInvJigsaw InvM("InvM", "Set inv. system mass");
 SetRapidityInvJigsaw InvEta("InvEta", "Set inv. system rapidity");
-MinMassesSqInvJigsaw InvSplit("InvSplit", "INV -> I_{a} + I_{b}", 2);
+MinMassesSqInvJigsaw InvSplit("InvSplit", "INV -> I_{#it{a}} + I_{#it{b}}", 2);
 CombinatoricGroup COMB_L("COMB_L","Lepton Jigsaws");
 MinMassesSqCombJigsaw CombSplitSq_L("CombSplitSq_L", "Minimize M_{Sa}^{2} + M_{Sb}^{2}",2,2);
 
@@ -1036,7 +1042,6 @@ void InitRJRtree(){
   InvSplit.AddInvisibleFrame(Ib, 1);
 
   LAB.InitializeAnalysis();
-
 }
 
 void DrawRJRtree(bool treeplot_INV = true){ // treeplot_INV: whether to flip treeplots to dark mode
