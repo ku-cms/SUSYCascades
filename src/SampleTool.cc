@@ -41,17 +41,6 @@ double SampleTool::HEMLumi(bool HEM_Veto){
 	}
 }
 
-/*
-ProcessList SampleTool::Get(const string& name) const {
-  ProcessList list;
-  for(auto p = m_Proc[m_iYear].begin(); p != m_Proc[m_iYear].end(); p++){
-    if(p->first.Name().find(name) != std::string::npos)
-      list += p->first;
-  }
-  return list;
-}
-*/
-
 ProcessList SampleTool::Get(const string& name) const {
   ProcessList list;
 
@@ -1633,8 +1622,8 @@ void SampleTool::InitProcMap(){
     
     Process data_obs("data_obs", kData);
     list.clear();
-    list += m_Path + "Summer23_130X_Data/JetMET0_Run2023D-22Sep2023_v2-v1_Summer23_130X_Data_Summer23_130X.root";
-    list += m_Path + "Summer23_130X_Data/JetMET1_Run2023D-22Sep2023_v2-v1_Summer23_130X_Data_Summer23_130X.root";
+    list += m_Path + "Summer23BPix_130X_Data/JetMET0_Run2023D-22Sep2023_v2-v1_Summer23BPix_130X_Data_Summer23BPix_130X.root";
+    list += m_Path + "Summer23BPix_130X_Data/JetMET1_Run2023D-22Sep2023_v2-v1_Summer23BPix_130X_Data_Summer23BPix_130X.root";
     m_Proc[m_iYear][data_obs] = pair<vector<string>,string>(list, "KUAnalysis");
 
   }
