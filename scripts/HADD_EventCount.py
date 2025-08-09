@@ -1,5 +1,7 @@
-import os, argparse, glob, time
-from GitHelpers import collect_unique_git_hashes, overwrite_meta_git_hashes
+#! /usr/bin/env python
+import os, sys, argparse, glob, time
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'python')))
+from GitHelpers import *
 
 def run_command(command,dryrun):
     if not dryrun:
