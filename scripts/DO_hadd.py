@@ -1,13 +1,54 @@
-import os, sys, time
 from glob import glob as glob
 from subprocess import Popen as pop
-import subprocess, psutil, shutil
+import os, sys, time, subprocess, psutil, shutil, ROOT, tempfile
 
 # Example submission:
 #    nohup python3 scripts/DO_hadd.py -idir /ospool/cms-user/zflowers/NTUPLES/Processing/Summer23BPix_130X/ -odir /local-scratch/zflowers/NTUPLES/HADD/Summer23BPix_130X/ > HADD_logs/HADD_Summer23BPix_130X.debug 2>&1 &
 
 # After hadd finishes and ready to copy to LPC example command:
 #    nohup xrdcp --parallel 4 -f /local-scratch/zflowers/NTUPLES/HADD/Summer23BPix_130X/*.root root://cmseos.fnal.gov//store/user/lpcsusylep/NTUPLES_Cascades_v0/Summer23BPix_130X/ > xrdcp_Summer23BPix_130X.debug 2>&1 &
+
+def strip_meta(in_path, out_path):
+    fin = ROOT.TFile.Open(in_path)
+    fout = ROOT.TFile.Open(out_path, "RECREATE")
+
+    for key in fin.GetListOfKeys():
+        name = key.GetName()
+        if name == "meta":
+            continue
+
+        obj = key.ReadObj()
+
+        if obj.InheritsFrom("TTree"):
+            fout.cd()
+            obj.CloneTree(-1).Write(name)
+        else:
+            fout.cd()
+            obj.Write(name)
+
+    fout.Close()
+    fin.Close()
+
+def collect_unique_hashes(input_files):
+    hashes = set()
+    for f in input_files:
+        tf = ROOT.TFile.Open(f)
+        meta = tf.GetDirectory("meta")
+        if meta:
+            tag = meta.Get("GitCommitHash")
+            if tag:
+                hashes.add(tag.GetTitle())
+        tf.Close()
+    return sorted(hashes)
+
+def write_git_hashes_to_output(output_path, hashes):
+    tf = ROOT.TFile.Open(output_path, "UPDATE")
+    if not tf.GetDirectory("meta"):
+        tf.mkdir("meta")
+    tf.cd("meta")
+    for h in hashes:
+        ROOT.TNamed(f"GitHash_{h[:8]}", h).Write()
+    tf.Close()
 
 def find_hadd_procs():
     current_user = psutil.Process().username()
@@ -29,7 +70,6 @@ def is_target_running(target):
     return False
 
 def main():
-    # start time
     start_time = time.time()
     print("DO_hadd.py: Start... go go go!")
     print("------------------------------")
@@ -118,7 +158,8 @@ def main():
             os.system("mkdir -p "+OUT_DIR+"/"+target+"/"+target+"_"+str(i))
             if not DRY_RUN and not SKIP_COPY:
                 for f in glob(os.path.join(IN_DIR, target, f"{target}_*{i}.root")):
-                    os.system(f"rsync -aq {f} {OUT_DIR}/{target}/{target}_{i}/")
+                    tmpfile = os.path.join(OUT_DIR, target, f"{target}_{i}", os.path.basename(f))
+                    strip_meta(f, tmpfile)
             command = ["hadd", "-f", f"{OUT_DIR}/{target}/{target}_{str(i)}.root"] + glob(f"{OUT_DIR}/{target}/{target}_{str(i)}/*.root")
             if SKIP_BAD_FILES:
                 command.insert(2, "-k")
@@ -193,6 +234,11 @@ def main():
                             shutil.rmtree(current_target_path)
                 del hadd_big_processes[target]  # Remove finished process
 
+    # Collect unique hashes and write them to final output ROOT file
+    input_files = glob(os.path.join(IN_DIR, target, "*.root"))
+    merged_output = f"{OUT_DIR}/{target}.root"
+    unique_hashes = collect_unique_hashes(input_files)
+    write_git_hashes_to_output(merged_output, unique_hashes)
 
     print("Finished Merging Files")    
     print("------------------------------")

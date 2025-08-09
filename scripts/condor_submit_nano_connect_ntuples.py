@@ -1,13 +1,13 @@
 #! /usr/bin/env python
-import os, sys, time, subprocess, re
+import os, sys, time, subprocess, re, glob
 from colorama import Fore, Back, Style
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'python')))
 from CondorJobCountMonitor import CondorJobCountMonitor
 from GitHashTool import GitHashTool
+from GitHelpers import *
 
 # Example submission: 
-# nohup python3 scripts/condor_submit_nano_connect_ntuples.py -split 25 -list samples/NANO/Lists/Summer23BPix_130X.list --verbose --csv > submit_bkg.debug 2>&1 &
-#
+# nohup python3 scripts/condor_submit_nano_connect_ntuples.py -split 25 -list samples/NANO/Lists/Summer23BPix_130X.list --verbose > submit_bkg.debug 2>&1 &
 
 # ----------------------------------------------------------- #
 # Parameters
@@ -263,6 +263,7 @@ if __name__ == "__main__":
     SYS          = 0
     FASTSIM      = 0
     SLIM         = 0
+    FORCE_SUB    = 0
   
     if '-q' in sys.argv:
         p = sys.argv.index('-q')
@@ -316,6 +317,9 @@ if __name__ == "__main__":
         argv_pos += 1
     if '--slim' in sys.argv:
         SLIM = 1
+        argv_pos += 1
+    if '--force' in sys.argv:
+        FORCE_SUB = 1
         argv_pos += 1
         
     if SPLIT <= 1:
@@ -389,11 +393,18 @@ if __name__ == "__main__":
     # https://github.com/root-project/root/pull/3914
 
     if not COUNT:
+        if has_uncommitted_changes(sub_dir="src/") or has_uncommitted_changes(sub_dir="include/"):
+            if not FORCE_SUB:
+                print("You have uncommitted changes you may want to commit!")
+                print("If you do not want to commit your changes, please rerun with --force")
+                sys.exit()
 
         # make EventCount file
         if VERBOSE:
             print("making EventCount file")
         os.system("hadd "+config+"EventCount.root root/EventCount/*.root > /dev/null")
+        unique_hashes = collect_unique_git_hashes(glob.glob("root/EventCount/*.root"))
+        overwrite_meta_git_hashes(config+"EventCount.root", unique_hashes)
         EVTCNT = "./config/EventCount.root"
 
         # make FilterEff file 
