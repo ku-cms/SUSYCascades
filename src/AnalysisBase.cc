@@ -1516,19 +1516,19 @@ bool AnalysisBase<SUSYNANOBase>::GetMETORtrigger(){
   if(m_year == 2016)
     return (HLT_PFMETNoMu90_PFMHTNoMu90_IDTight ||
 	    HLT_PFMETNoMu100_PFMHTNoMu100_IDTight ||
-	    HLT_PFMETNoMu110_PFMHTNoMu110_IDTight ||
+	    //HLT_PFMETNoMu110_PFMHTNoMu110_IDTight ||
 	    HLT_PFMETNoMu120_PFMHTNoMu120_IDTight ||
 	    HLT_PFMET90_PFMHT90_IDTight ||
 	    HLT_PFMET100_PFMHT100_IDTight ||
 	    HLT_PFMET100_PFMHT100_IDTight_BeamHaloCleaned ||
-	    HLT_PFMET110_PFMHT110_IDTight ||
+	    //HLT_PFMET110_PFMHT110_IDTight ||
 	    HLT_PFMET120_PFMHT120_IDTight);
   if(m_year == 2017 || m_year == 2018)
-    return (HLT_PFMET110_PFMHT110_IDTight ||
+    return (//HLT_PFMET110_PFMHT110_IDTight ||
 	    HLT_PFMET120_PFMHT120_IDTight ||
 	    HLT_PFMET130_PFMHT130_IDTight ||
 	    HLT_PFMET140_PFMHT140_IDTight ||
-	    HLT_PFMETNoMu110_PFMHTNoMu110_IDTight ||
+	    //HLT_PFMETNoMu110_PFMHTNoMu110_IDTight ||
 	    HLT_PFMETNoMu120_PFMHTNoMu120_IDTight ||
 	    HLT_PFMETNoMu130_PFMHTNoMu130_IDTight ||
 	    HLT_PFMETNoMu140_PFMHTNoMu140_IDTight ||
@@ -3011,19 +3011,19 @@ bool AnalysisBase<NANOULBase>::GetMETORtrigger(){
   if(m_year == 2016)
     return (HLT_PFMETNoMu90_PFMHTNoMu90_IDTight ||
 	    HLT_PFMETNoMu100_PFMHTNoMu100_IDTight ||
-	    HLT_PFMETNoMu110_PFMHTNoMu110_IDTight ||
+	    //HLT_PFMETNoMu110_PFMHTNoMu110_IDTight ||
 	    HLT_PFMETNoMu120_PFMHTNoMu120_IDTight ||
 	    HLT_PFMET90_PFMHT90_IDTight ||
 	    HLT_PFMET100_PFMHT100_IDTight ||
-	    HLT_PFMET110_PFMHT110_IDTight ||
+	    //HLT_PFMET110_PFMHT110_IDTight ||
 	    HLT_PFMET120_PFMHT120_IDTight);
   if(m_year == 2017 ||
      m_year == 2018)
-    return (HLT_PFMET110_PFMHT110_IDTight ||
+    return (//HLT_PFMET110_PFMHT110_IDTight ||
 	    HLT_PFMET120_PFMHT120_IDTight ||
 	    HLT_PFMET130_PFMHT130_IDTight ||
 	    HLT_PFMET140_PFMHT140_IDTight ||
-	    HLT_PFMETNoMu110_PFMHTNoMu110_IDTight ||
+	    //HLT_PFMETNoMu110_PFMHTNoMu110_IDTight ||
 	    HLT_PFMETNoMu120_PFMHTNoMu120_IDTight ||
 	    HLT_PFMETNoMu130_PFMHTNoMu130_IDTight ||
 	    HLT_PFMETNoMu140_PFMHTNoMu140_IDTight ||
@@ -4501,11 +4501,11 @@ bool AnalysisBase<NANORun3>::GetMETtrigger(){
 
 template <>
 bool AnalysisBase<NANORun3>::GetMETORtrigger(){
-  return (HLT_PFMET110_PFMHT110_IDTight ||
+  return (//HLT_PFMET110_PFMHT110_IDTight ||
     HLT_PFMET120_PFMHT120_IDTight ||
     HLT_PFMET130_PFMHT130_IDTight ||
     HLT_PFMET140_PFMHT140_IDTight ||
-    HLT_PFMETNoMu110_PFMHTNoMu110_IDTight ||
+    //HLT_PFMETNoMu110_PFMHTNoMu110_IDTight ||
     HLT_PFMETNoMu120_PFMHTNoMu120_IDTight ||
     HLT_PFMETNoMu130_PFMHTNoMu130_IDTight ||
     HLT_PFMETNoMu140_PFMHTNoMu140_IDTight ||
