@@ -264,6 +264,7 @@ if __name__ == "__main__":
     FASTSIM      = 0
     SLIM         = 0
     FORCE_SUB    = 0
+    DO_SINGLE    = 0
   
     if '-q' in sys.argv:
         p = sys.argv.index('-q')
@@ -321,6 +322,9 @@ if __name__ == "__main__":
     if '--force' in sys.argv:
         FORCE_SUB = 1
         argv_pos += 1
+    if '--single' in sys.argv:
+        DO_SINGLE = 1
+        argv_pos += 1
         
     if SPLIT <= 1:
         SPLIT = 1
@@ -354,6 +358,9 @@ if __name__ == "__main__":
 
     if SLIM:
         print (" --- Processing Slim")
+
+    if DO_SINGLE:
+        print (" --- Submitting Single Test Jobs")
 
     if COUNT:
         print (" --- Only Counting (No Processing)")
@@ -612,8 +619,13 @@ if __name__ == "__main__":
         if VERBOSE:
             print("Created tar ball")
 
-    submit_dir  = srcdir        
-    submit_list = [os.path.join(submit_dir, f) for f in os.listdir(submit_dir) if (os.path.isfile(os.path.join(submit_dir, f)) and ('.submit' in f) and ('_single' not in f))]
+    submit_dir  = srcdir 
+    filter_condition = lambda f: os.path.isfile(os.path.join(submit_dir, f)) and '.submit' in f
+    submit_list = [
+        os.path.join(submit_dir, f)
+        for f in os.listdir(submit_dir)
+        if filter_condition(f) and ('_single' in f if DO_SINGLE else '_single' not in f)
+    ]
 
     # Prep csv file
     if CSV:
@@ -629,6 +641,8 @@ if __name__ == "__main__":
             sample_handle = f.split("/")
             sample_handle = sample_handle[-1]
             sample_handle = sample_handle.replace(".submit",'')
+            if DO_SINGLE:
+                sample_handle = sample_handle.replace("_single",'')
             print (f"submitting: {f}")
             submit_jobs = input_info[sample_handle]["n_jobs"]
             condor_monitor.set_threshold(THRESHOLD-submit_jobs)
