@@ -338,7 +338,9 @@ def main():
             if filename.endswith(".root") and os.path.isfile(full_path):
                 totalEvents = event_count.countTotalEvents(full_path)
                 DAS_events = event_count.getEventsFromDASDatasetNames(full_path)
-                if totalEvents != DAS_events:
+                if DAS_events == 0:
+                    print("Something wrong with DAS events in",full_path)
+                elif totalEvents != DAS_events:
                     comp_percent = 100.*math.floor(totalEvents/DAS_events * 1000) / 1000
                     print(f'{full_path} failed the DAS check! ({comp_percent}%) Use other options to investigate')
                 else:
