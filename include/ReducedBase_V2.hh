@@ -347,6 +347,11 @@ public :
    vector<int>     *genPDGID_susy;
    vector<int>     *genMomPDGID_susy;
    Double_t        MT2;
+   Double_t        CosDecayAngle_Pa;
+   Double_t        CosDecayAngle_Pb;
+   Double_t        CosDecayAngle_S;
+   Double_t        CosDecayAngle_Va;
+   Double_t        CosDecayAngle_Vb;
    Double_t        RISR_LEP;
    Double_t        PTISR_LEP;
    Double_t        MS_LEP;
@@ -764,6 +769,11 @@ public :
    TBranch        *b_genPDGID_susy;   //!
    TBranch        *b_genMomPDGID_susy;   //!
    TBranch        *b_MT2;   //!
+   TBranch        *b_CosDecayAngle_Pa;   //!
+   TBranch        *b_CosDecayAngle_Pb;   //!
+   TBranch        *b_CosDecayAngle_S;   //!
+   TBranch        *b_CosDecayAngle_Va;   //!
+   TBranch        *b_CosDecayAngle_Vb;   //!
    TBranch        *b_RISR_LEP;   //!
    TBranch        *b_PTISR_LEP;   //!
    TBranch        *b_MS_LEP;   //!
@@ -1352,6 +1362,11 @@ inline void ReducedBase_V2::Init(TTree *tree)
    fChain->SetBranchAddress("Nweight", &Nweight, &b_Nweight);
    fChain->SetBranchAddress("Nevent", &Nevent, &b_Nevent);
    fChain->SetBranchAddress("MT2", &MT2, &b_MT2);
+   fChain->SetBranchAddress("CosDecayAngle_Pa", &CosDecayAngle_Pa, &b_CosDecayAngle_Pa);
+   fChain->SetBranchAddress("CosDecayAngle_Pb", &CosDecayAngle_Pb, &b_CosDecayAngle_Pb);
+   fChain->SetBranchAddress("CosDecayAngle_S", &CosDecayAngle_S, &b_CosDecayAngle_S);
+   fChain->SetBranchAddress("CosDecayAngle_Va", &CosDecayAngle_Va, &b_CosDecayAngle_Va);
+   fChain->SetBranchAddress("CosDecayAngle_Vb", &CosDecayAngle_Vb, &b_CosDecayAngle_Vb);
    fChain->SetBranchAddress("RISR_LEP", &RISR_LEP, &b_RISR_LEP);
    fChain->SetBranchAddress("PTISR_LEP", &PTISR_LEP, &b_PTISR_LEP);
    fChain->SetBranchAddress("MS_LEP", &MS_LEP, &b_MS_LEP);
