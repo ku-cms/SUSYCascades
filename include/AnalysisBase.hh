@@ -25,6 +25,7 @@
 #include "Particle.hh"
 #include "Systematics.hh"
 #include "CascadesTreeEncoder.hh"
+#include "L_Cand.hh"
 
 #include "correction.h"
 #include "mt2_bisect.hh"

@@ -20,6 +20,7 @@ void L_Cand::init(ParticleList PL){
   m_hemi = false;
   m_PL = PL;
   m_TLV.SetPtEtaPhiM(0.,0.,0.,0.);
+  m_N = int(PL.size());
   for(int i = 0; i < int(PL.size()); i++){
     TLorentzVector dummy_TLV;
     dummy_TLV.SetPtEtaPhiM(PL[i].Pt(),PL[i].Eta(),PL[i].Phi(),PL[i].M());
@@ -42,6 +43,11 @@ const ParticleList L_Cand::PL(){
 
 const ConstRestFrameList L_Cand::RL(){
   return m_pair.second;
+}
+
+int L_Cand::GetN(){
+  m_N = int(PL().size());
+  return m_N;
 }
 
 TLorentzVector L_Cand::TLV(int index){

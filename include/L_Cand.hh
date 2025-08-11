@@ -22,6 +22,7 @@ class L_Cand {
     ParticleList m_PL;
     //const ConstRestFrameList m_RL;
     bool m_hemi;
+    int m_N = 0;
   
   public:
     L_Cand();
@@ -53,6 +54,7 @@ class L_Cand {
     TLorentzVector TLV_Part(int index);
     TLorentzVector Cand_TLVPlus();
     TLorentzVector Cand_TLVMinus();
+    int GetN();
   
     double Pt();
     double Eta();

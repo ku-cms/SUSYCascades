@@ -23,6 +23,10 @@ ReducedNtuple<Base>::ReducedNtuple(TTree* tree)
     X2a[t] = new DecayRecoFrame("X2a","#tilde{#chi}_{2a}");
     X2b[t] = new DecayRecoFrame("X2b","#tilde{#chi}_{2b}");
     ISR[t] = new VisibleRecoFrame("ISR","ISR");
+    sJa[t] = new SelfAssemblingRecoFrame("sJa","jets_{a}");
+    sJb[t] = new SelfAssemblingRecoFrame("sJb","jets_{b}");
+    sLa[t] = new SelfAssemblingRecoFrame("sLa","leps_{a}");
+    sLb[t] = new SelfAssemblingRecoFrame("sLb","leps_{b}");
     Ja[t] = new VisibleRecoFrame("Ja","jets_{a}");
     Jb[t] = new VisibleRecoFrame("Jb","jets_{b}");
     La[t] = new VisibleRecoFrame("La","leps_{a}");
@@ -36,10 +40,14 @@ ReducedNtuple<Base>::ReducedNtuple(TTree* tree)
       CM[t]->AddChildFrame(*ISR[t]);
       S[t]->AddChildFrame(*X2a[t]);
       S[t]->AddChildFrame(*X2b[t]);
-      X2a[t]->AddChildFrame(*Ja[t]);
-      X2b[t]->AddChildFrame(*Jb[t]);
-      X2a[t]->AddChildFrame(*La[t]);
-      X2b[t]->AddChildFrame(*Lb[t]);
+      X2a[t]->AddChildFrame(*sJa[t]);
+      X2b[t]->AddChildFrame(*sJb[t]);
+      X2a[t]->AddChildFrame(*sLa[t]);
+      X2b[t]->AddChildFrame(*sLb[t]);
+      sJa[t]->AddChildFrame(*Ja[t]);
+      sJb[t]->AddChildFrame(*Jb[t]);
+      sLa[t]->AddChildFrame(*La[t]);
+      sLb[t]->AddChildFrame(*Lb[t]);
       X2a[t]->AddChildFrame(*X1a[t]);
       X2b[t]->AddChildFrame(*X1b[t]);
     }
@@ -50,8 +58,10 @@ ReducedNtuple<Base>::ReducedNtuple(TTree* tree)
       CM[t]->AddChildFrame(*ISR[t]);
       S[t]->AddChildFrame(*X2a[t]);
       S[t]->AddChildFrame(*X2b[t]);
-      X2a[t]->AddChildFrame(*La[t]);
-      X2b[t]->AddChildFrame(*Lb[t]);
+      X2a[t]->AddChildFrame(*sLa[t]);
+      X2b[t]->AddChildFrame(*sLb[t]);
+      sLa[t]->AddChildFrame(*La[t]);
+      sLb[t]->AddChildFrame(*Lb[t]);
       X2a[t]->AddChildFrame(*X1a[t]);
       X2b[t]->AddChildFrame(*X1b[t]);
     }
@@ -62,8 +72,10 @@ ReducedNtuple<Base>::ReducedNtuple(TTree* tree)
       CM[t]->AddChildFrame(*ISR[t]);
       S[t]->AddChildFrame(*X2a[t]);
       S[t]->AddChildFrame(*X2b[t]);
-      X2a[t]->AddChildFrame(*Ja[t]);
-      X2b[t]->AddChildFrame(*Jb[t]);
+      X2a[t]->AddChildFrame(*sJa[t]);
+      X2b[t]->AddChildFrame(*sJb[t]);
+      sJa[t]->AddChildFrame(*Ja[t]);
+      sJb[t]->AddChildFrame(*Jb[t]);
       X2a[t]->AddChildFrame(*X1a[t]);
       X2b[t]->AddChildFrame(*X1b[t]);
     }
@@ -72,8 +84,10 @@ ReducedNtuple<Base>::ReducedNtuple(TTree* tree)
       LAB[t]->SetChildFrame(*S[t]);
       S[t]->AddChildFrame(*X2a[t]);
       S[t]->AddChildFrame(*X2b[t]);
-      X2a[t]->AddChildFrame(*Ja[t]);
-      X2b[t]->AddChildFrame(*Jb[t]);
+      X2a[t]->AddChildFrame(*sJa[t]);
+      X2b[t]->AddChildFrame(*sJb[t]);
+      sJa[t]->AddChildFrame(*Ja[t]);
+      sJb[t]->AddChildFrame(*Jb[t]);
       X2a[t]->AddChildFrame(*X1a[t]);
       X2b[t]->AddChildFrame(*X1b[t]);
     }
@@ -198,6 +212,10 @@ ReducedNtuple<Base>::~ReducedNtuple() {
     delete X2a[t];
     delete X2b[t];
     delete ISR[t];
+    delete sJa[t];
+    delete sJb[t];
+    delete sLa[t];
+    delete sLb[t];
     delete Ja[t];
     delete Jb[t];
     delete La[t];
@@ -448,6 +466,12 @@ TTree* ReducedNtuple<Base>::InitOutputTree(const string& sample, bool do_slim){
   tree->Branch("dphiCM", &m_dphiCM);
   tree->Branch("dphiCMI", &m_dphiCMI);
   tree->Branch("dphiMET_V", &m_dphiMET_V);
+
+  tree->Branch("CosDecayAngle_Pa", &m_CosDecayAngle_Pa);
+  tree->Branch("CosDecayAngle_Pb", &m_CosDecayAngle_Pb);
+  tree->Branch("CosDecayAngle_Va", &m_CosDecayAngle_Va);
+  tree->Branch("CosDecayAngle_Vb", &m_CosDecayAngle_Vb);
+  tree->Branch("CosDecayAngle_S", &m_CosDecayAngle_S);
 
   tree->Branch("PTCM_LEP", &m_PTCM_LEP);
   tree->Branch("PzCM_LEP", &m_PzCM_LEP);
@@ -1017,6 +1041,10 @@ void ReducedNtuple<Base>::FillOutputTree(TTree* tree, const Systematic& sys, boo
       }
       if(!LAB[t]->AnalyzeEvent())
         cout << "Something went wrong with tree event analysis" << endl;
+
+      bool BSideIsA = false;
+      if((Lb[t]->GetFourVector() + Jb[t]->GetFourVector()).M() > (La[t]->GetFourVector() + Ja[t]->GetFourVector()).M()) BSideIsA = true;
+
       // jet counting in ISR/S, hemispheres
       for(int i = 0; i < m_Njet; i++){
         if(COMB_J[t]->GetFrame(jetID[i]) == *ISR[t]){
@@ -1026,24 +1054,48 @@ void ReducedNtuple<Base>::FillOutputTree(TTree* tree, const Systematic& sys, boo
           m_index_jet_ISR.push_back(i);
         }
         if(COMB_J[t]->GetFrame(jetID[i]) == *Ja[t]){
-          m_Njet_S++;
-          m_Njet_a++;
-          if(Jets[i].BtagID() >= kMedium){
-            m_Nbjet_S++;
-            m_Nbjet_a++;
+          if(!BSideIsA){
+            m_Njet_S++;
+            m_Njet_a++;
+            if(Jets[i].BtagID() >= kMedium){
+              m_Nbjet_S++;
+              m_Nbjet_a++;
+            }
+            m_index_jet_S.push_back(i);
+            m_index_jet_a.push_back(i);
           }
-          m_index_jet_S.push_back(i);
-          m_index_jet_a.push_back(i);
+          else{
+            m_Njet_S++;
+            m_Njet_b++;
+            if(Jets[i].BtagID() >= kMedium){
+              m_Nbjet_S++;
+              m_Nbjet_b++;
+            }
+            m_index_jet_S.push_back(i);
+            m_index_jet_b.push_back(i);
+          }
         }
         if(COMB_J[t]->GetFrame(jetID[i]) == *Jb[t]){
-          m_Njet_S++;
-          m_Njet_b++;
-          if(Jets[i].BtagID() >= kMedium){
-            m_Nbjet_S++;
-            m_Nbjet_b++;
+          if(!BSideIsA){
+            m_Njet_S++;
+            m_Njet_b++;
+            if(Jets[i].BtagID() >= kMedium){
+              m_Nbjet_S++;
+              m_Nbjet_b++;
+            }
+            m_index_jet_S.push_back(i);
+            m_index_jet_b.push_back(i);
           }
-          m_index_jet_S.push_back(i);
-          m_index_jet_b.push_back(i);
+          else{
+            m_Njet_S++;
+            m_Njet_a++;
+            if(Jets[i].BtagID() >= kMedium){
+              m_Nbjet_S++;
+              m_Nbjet_a++;
+            }
+            m_index_jet_S.push_back(i);
+            m_index_jet_a.push_back(i);
+          }
         }
       }
           
@@ -1051,14 +1103,28 @@ void ReducedNtuple<Base>::FillOutputTree(TTree* tree, const Systematic& sys, boo
       for(int i = 0; i < m_Nlep; i++){
         m_Nlep_S++;
         if(COMB_L[t]->GetFrame(lepID[i]) == *La[t]){
-          m_Nlep_a++;
-          m_index_lep_S.push_back(i);
-          m_index_lep_a.push_back(i);
+          if(!BSideIsA){
+            m_Nlep_a++;
+            m_index_lep_a.push_back(i);
+            m_index_lep_S.push_back(i);
+          }
+          else{
+            m_Nlep_b++;
+            m_index_lep_b.push_back(i);
+            m_index_lep_S.push_back(i);
+          }
         }
         if(COMB_L[t]->GetFrame(lepID[i]) == *Lb[t]){
-          m_Nlep_b++;
-          m_index_lep_S.push_back(i);
-          m_index_lep_b.push_back(i);
+          if(!BSideIsA){
+            m_Nlep_b++;
+            m_index_lep_b.push_back(i);
+            m_index_lep_S.push_back(i);
+          }
+          else{
+            m_Nlep_a++;
+            m_index_lep_a.push_back(i);
+            m_index_lep_S.push_back(i);
+          }
         }
       }
 
@@ -1097,9 +1163,20 @@ void ReducedNtuple<Base>::FillOutputTree(TTree* tree, const Systematic& sys, boo
       m_PVa = X2a[t]->GetListVisibleFrames().GetFourVector(*X2a[t]).P();
       m_PVb = X2b[t]->GetListVisibleFrames().GetFourVector(*X2b[t]).P();
       m_EJa = Ja[t]->GetFourVector(*X2a[t]).E();
-      m_EJb = Jb[t]->GetFourVector(*X2b[t]).E();;
+      m_EJb = Jb[t]->GetFourVector(*X2b[t]).E();
       m_PJa = Ja[t]->GetFourVector(*X2a[t]).P();
       m_PJb = Jb[t]->GetFourVector(*X2b[t]).P();
+
+      if(BSideIsA){
+        m_EVa = X2b[t]->GetListVisibleFrames().GetFourVector(*X2b[t]).E();
+        m_EVb = X2a[t]->GetListVisibleFrames().GetFourVector(*X2a[t]).E();
+        m_PVa = X2b[t]->GetListVisibleFrames().GetFourVector(*X2b[t]).P();
+        m_PVb = X2a[t]->GetListVisibleFrames().GetFourVector(*X2a[t]).P();
+        m_EJa = Jb[t]->GetFourVector(*X2b[t]).E();
+        m_EJb = Ja[t]->GetFourVector(*X2a[t]).E();
+        m_PJa = Jb[t]->GetFourVector(*X2b[t]).P();
+        m_PJb = Ja[t]->GetFourVector(*X2a[t]).P();
+      }
       
       m_MX2a = X2a[t]->GetMass();
       //m_cosX2a = X2a[t]->GetCosDecayAngle();
@@ -1109,11 +1186,26 @@ void ReducedNtuple<Base>::FillOutputTree(TTree* tree, const Systematic& sys, boo
       m_ELb = Lb[t]->GetFourVector(*X2b[t]).E();;
       m_PLa = La[t]->GetFourVector(*X2a[t]).P();
       m_PLb = Lb[t]->GetFourVector(*X2b[t]).P();
+
+      if(BSideIsA){
+        m_MX2a = X2b[t]->GetMass();
+        //m_cosX2a = X2b[t]->GetCosDecayAngle();
+        m_MX2b = X2a[t]->GetMass();
+        //m_cosX2b = X2a[t]->GetCosDecayAngle();
+        m_ELa = Lb[t]->GetFourVector(*X2b[t]).E();
+        m_ELb = La[t]->GetFourVector(*X2a[t]).E();;
+        m_PLa = Lb[t]->GetFourVector(*X2b[t]).P();
+        m_PLb = La[t]->GetFourVector(*X2a[t]).P();
+      }
       
       m_MV = S[t]->GetListVisibleFrames().GetMass();
       m_PV = S[t]->GetListVisibleFrames().GetFourVector(*S[t]).P();
       m_MVa = X2a[t]->GetListVisibleFrames().GetMass();
       m_MVb = X2b[t]->GetListVisibleFrames().GetMass();
+      if(BSideIsA){
+        m_MVa = X2b[t]->GetListVisibleFrames().GetMass();
+        m_MVb = X2a[t]->GetListVisibleFrames().GetMass();
+      }
 
       m_PV_lab    = S[t]->GetListVisibleFrames().GetFourVector().P();
       m_dphiMET_V = S[t]->GetListVisibleFrames().GetFourVector().Vect().DeltaPhi(ETMiss);
@@ -1122,10 +1214,21 @@ void ReducedNtuple<Base>::FillOutputTree(TTree* tree, const Systematic& sys, boo
       m_MJb = Jb[t]->GetMass();
       m_MLa = La[t]->GetMass();
       m_MLb = Lb[t]->GetMass();
-      m_cosJa = Ja[t]->GetCosDecayAngle();
-      m_cosJb = Jb[t]->GetCosDecayAngle();
-      m_cosLa = La[t]->GetCosDecayAngle();
-      m_cosLb = Lb[t]->GetCosDecayAngle();
+      m_cosJa = sJa[t]->GetCosDecayAngle(*LAB[t]);
+      m_cosJb = sJb[t]->GetCosDecayAngle(*LAB[t]);
+      m_cosLa = sLa[t]->GetCosDecayAngle(*LAB[t]);
+      m_cosLb = sLb[t]->GetCosDecayAngle(*LAB[t]);
+
+      if(BSideIsA){
+        m_MJa = Jb[t]->GetMass();
+        m_MJb = Ja[t]->GetMass();
+        m_MLa = Lb[t]->GetMass();
+        m_MLb = La[t]->GetMass();
+        m_cosJa = sJb[t]->GetCosDecayAngle(*LAB[t]);
+        m_cosJb = sJa[t]->GetCosDecayAngle(*LAB[t]);
+        m_cosLa = sLb[t]->GetCosDecayAngle(*LAB[t]);
+        m_cosLb = sLa[t]->GetCosDecayAngle(*LAB[t]);
+      }
       
       TLorentzVector vP_S_CM  = S[t]->GetFourVector(*CM[t]);
       TLorentzVector vP_Ja_S  = Ja[t]->GetFourVector(*S[t]);
@@ -1186,6 +1289,10 @@ void ReducedNtuple<Base>::FillOutputTree(TTree* tree, const Systematic& sys, boo
       m_PX2_BoostT = (vP_Ja_S+vP_La_S+vP_Ia_S).P();
       m_MX2a_BoostT = (vP_Ja_S+vP_La_S+vP_Ia_S).M();
       m_MX2b_BoostT = (vP_Jb_S+vP_Lb_S+vP_Ib_S).M();
+      if(BSideIsA){
+        m_MX2a_BoostT = (vP_Jb_S+vP_Lb_S+vP_Ib_S).M();
+        m_MX2b_BoostT = (vP_Ja_S+vP_La_S+vP_Ia_S).M();
+      }
       m_Mperp = sqrt(m_MX2a_BoostT*m_MX2a_BoostT+m_MX2b_BoostT*m_MX2b_BoostT)/sqrt(2.);
       m_gammaT = 2*m_Mperp/(sqrt(m_MX2a_BoostT*m_MX2a_BoostT+m_PX2_BoostT*m_PX2_BoostT) +
             		sqrt(m_MX2b_BoostT*m_MX2b_BoostT+m_PX2_BoostT*m_PX2_BoostT));
@@ -1196,6 +1303,13 @@ void ReducedNtuple<Base>::FillOutputTree(TTree* tree, const Systematic& sys, boo
       m_EVb_BoostT = (vP_Jb_S+vP_Lb_S).E();
       m_PVa_BoostT = (vP_Ja_S+vP_La_S).P();
       m_PVb_BoostT = (vP_Jb_S+vP_Lb_S).P();
+
+      if(BSideIsA){
+        m_EVa_BoostT = (vP_Jb_S+vP_Lb_S).E();
+        m_EVb_BoostT = (vP_Ja_S+vP_La_S).E();
+        m_PVa_BoostT = (vP_Jb_S+vP_Lb_S).P();
+        m_PVb_BoostT = (vP_Ja_S+vP_La_S).P();
+      }
 
       m_EJ_BoostT = (vP_Ja_S+vP_Jb_S).E();
       m_EL_BoostT = (vP_La_S+vP_Lb_S).E();
@@ -1294,9 +1408,15 @@ void ReducedNtuple<Base>::FillOutputTree(TTree* tree, const Systematic& sys, boo
 
       m_MSperpCM0 = (vP_Ja_CM_PerpM0_TLV + vP_Jb_CM_PerpM0_TLV + vP_La_CM_PerpM0_TLV + vP_Lb_CM_PerpM0_TLV + vP_Ia_CM_PerpM0_TLV + vP_Ib_CM_PerpM0_TLV).Mag();
       m_MaPerpCM0 = (vP_Ja_CM_PerpM0_TLV + vP_La_CM_PerpM0_TLV + vP_Ia_CM_PerpM0_TLV).Mag();
-      m_MbPerpCM0 = (vP_Ja_CM_PerpM0_TLV + vP_Lb_CM_PerpM0_TLV + vP_Ib_CM_PerpM0_TLV).Mag();
       m_MaVPerpCM0 = (vP_Ja_CM_PerpM0_TLV + vP_La_CM_PerpM0_TLV).Mag();
+      m_MbPerpCM0 = (vP_Jb_CM_PerpM0_TLV + vP_Lb_CM_PerpM0_TLV + vP_Ib_CM_PerpM0_TLV).Mag();
       m_MbVPerpCM0 = (vP_Jb_CM_PerpM0_TLV + vP_Lb_CM_PerpM0_TLV).Mag();
+      if(BSideIsA){
+        m_MaPerpCM0 = (vP_Jb_CM_PerpM0_TLV + vP_Lb_CM_PerpM0_TLV + vP_Ib_CM_PerpM0_TLV).Mag();
+        m_MaVPerpCM0 = (vP_Jb_CM_PerpM0_TLV + vP_Lb_CM_PerpM0_TLV).Mag();
+        m_MbPerpCM0 = (vP_Ja_CM_PerpM0_TLV + vP_La_CM_PerpM0_TLV + vP_Ia_CM_PerpM0_TLV).Mag();
+        m_MbVPerpCM0 = (vP_Ja_CM_PerpM0_TLV + vP_La_CM_PerpM0_TLV).Mag();
+      }
       m_MQperpCM0 = sqrt((m_MaPerpCM0*m_MaPerpCM0 + m_MbPerpCM0*m_MbPerpCM0)/2.); 
       m_gammaPerpCM0 = 2*m_MQperpCM0/m_MSperpCM0;
       // variables using 4-vects constructed by evaluating in CM frame
@@ -1319,10 +1439,62 @@ void ReducedNtuple<Base>::FillOutputTree(TTree* tree, const Systematic& sys, boo
       m_MbCM0 = (vP_Jb_CM0 + vP_Lb_CM0 + vP_Ib_CM0).Mag();
       m_MaVCM0 = (vP_Ja_CM0 + vP_La_CM0).Mag();
       m_MbVCM0 = (vP_Jb_CM0 + vP_Lb_CM0).Mag();
+      if(BSideIsA){
+        m_MaCM0 = (vP_Jb_CM0 + vP_Lb_CM0 + vP_Ib_CM0).Mag();
+        m_MbCM0 = (vP_Ja_CM0 + vP_La_CM0 + vP_Ia_CM0).Mag();
+        m_MaVCM0 = (vP_Jb_CM0 + vP_Lb_CM0).Mag();
+        m_MbVCM0 = (vP_Ja_CM0 + vP_La_CM0).Mag();
+      }
       m_MQCM0 = sqrt((m_MaCM0*m_MaCM0 + m_MbCM0*m_MbCM0)/2.); 
       m_gammaCM0 = 2.*m_MQCM0/m_MSCM0; // this is 'R' in the LLP analysis
       m_MQV = sqrt(((Ja[t]->GetFourVector()+La[t]->GetFourVector()).M2() + (Jb[t]->GetFourVector()+Lb[t]->GetFourVector()).M2())/2.);
       m_gammaV = 2.*m_MQV/m_MSCM0; // this is 'Rv' in the LLP analysis
+
+      m_CosDecayAngle_S = S[t]->GetCosDecayAngle();
+      m_CosDecayAngle_Pa = X2a[t]->GetCosDecayAngle();
+      m_CosDecayAngle_Pb = X2b[t]->GetCosDecayAngle();
+      if(BSideIsA){
+        m_CosDecayAngle_Pa = X2b[t]->GetCosDecayAngle();
+        m_CosDecayAngle_Pb = X2a[t]->GetCosDecayAngle();
+      }
+
+      ParticleList cand_list_parts_a;
+      for(int i = 0; i < m_Nlep_a; i++){
+        Particle part = Leptons[m_index_lep_a[i]];
+        cand_list_parts_a.push_back(part);
+      }
+      for(int i = 0; i < m_Njet_a; i++){
+        Particle part = Jets[m_index_lep_a[i]];
+        cand_list_parts_a.push_back(part);
+      }
+      L_Cand cand_a(cand_list_parts_a);
+
+      ParticleList cand_list_parts_b;
+      for(int i = 0; i < m_Nlep_b; i++){
+        Particle part = Leptons[m_index_lep_b[i]];
+        cand_list_parts_b.push_back(part);
+      }
+      for(int i = 0; i < m_Njet_b; i++){
+        Particle part = Jets[m_index_lep_b[i]];
+        cand_list_parts_b.push_back(part);
+      }
+      L_Cand cand_b(cand_list_parts_b);
+
+      if(cand_a.GetN() + cand_b.GetN() < 3){
+        ParticleList dum_cand_list_parts = cand_a.PL() + cand_b.PL();
+        cand_a = L_Cand(dum_cand_list_parts);
+      }
+      
+      else{
+        if(cand_a.GetN() > 1)
+          m_CosDecayAngle_Va = cand_a.CosDecayAngle();
+        else
+          m_CosDecayAngle_Va = 0.;
+        if(cand_b.GetN() > 1)
+          m_CosDecayAngle_Vb = cand_b.CosDecayAngle();
+        else
+          m_CosDecayAngle_Vb = 0.;
+      }
 
     }
     if(t==1){
@@ -1394,10 +1566,38 @@ void ReducedNtuple<Base>::FillOutputTree(TTree* tree, const Systematic& sys, boo
       m_CosDecayAngle_S_LEP = S[t]->GetCosDecayAngle();
       m_CosDecayAngle_Pa_LEP = X2a[t]->GetCosDecayAngle();
       m_CosDecayAngle_Pb_LEP = X2b[t]->GetCosDecayAngle();
-      m_CosDecayAngle_Va_LEP = La[t]->GetCosDecayAngle();
-      m_CosDecayAngle_Vb_LEP = Lb[t]->GetCosDecayAngle();
-      if(BSideIsA){ m_CosDecayAngle_Pa_LEP = X2b[t]->GetCosDecayAngle(); m_CosDecayAngle_Pb_LEP = X2a[t]->GetCosDecayAngle(); 
-                    m_CosDecayAngle_Va_LEP = Lb[t]->GetCosDecayAngle(); m_CosDecayAngle_Vb_LEP = La[t]->GetCosDecayAngle(); }
+      if(BSideIsA){ m_CosDecayAngle_Pa_LEP = X2b[t]->GetCosDecayAngle(); m_CosDecayAngle_Pb_LEP = X2a[t]->GetCosDecayAngle(); } 
+
+      ParticleList cand_list_parts_a;
+      for(int i = 0; i < m_Nlep_a_LEP; i++){
+        Particle part = Leptons[m_index_lep_a_LEP[i]];
+        cand_list_parts_a.push_back(part);
+      }
+      L_Cand cand_a(cand_list_parts_a);
+
+      ParticleList cand_list_parts_b;
+      for(int i = 0; i < m_Nlep_b_LEP; i++){
+        Particle part = Leptons[m_index_lep_b_LEP[i]];
+        cand_list_parts_b.push_back(part);
+      }
+      L_Cand cand_b(cand_list_parts_b);
+
+      if(cand_a.GetN() + cand_b.GetN() < 3){
+        ParticleList dum_cand_list_parts = cand_a.PL() + cand_b.PL();
+        cand_a = L_Cand(dum_cand_list_parts);
+      }
+      
+      else{
+        if(cand_a.GetN() > 1)
+          m_CosDecayAngle_Va_LEP = cand_a.CosDecayAngle();
+        else
+          m_CosDecayAngle_Va_LEP = 0.;
+        if(cand_b.GetN() > 1)
+          m_CosDecayAngle_Vb_LEP = cand_b.CosDecayAngle();
+        else
+          m_CosDecayAngle_Vb_LEP = 0.;
+      }
+
       m_MVa_LEP = La[t]->GetFourVector().M();
       m_MVb_LEP = Lb[t]->GetFourVector().M();
       if(BSideIsA){ m_MVa = Lb[t]->GetFourVector().M(); m_MVb = La[t]->GetFourVector().M(); }
@@ -1523,10 +1723,36 @@ void ReducedNtuple<Base>::FillOutputTree(TTree* tree, const Systematic& sys, boo
       m_CosDecayAngle_S_JET_ISR = S[t]->GetCosDecayAngle();
       m_CosDecayAngle_Pa_JET_ISR = X2a[t]->GetCosDecayAngle();
       m_CosDecayAngle_Pb_JET_ISR = X2b[t]->GetCosDecayAngle();
-      m_CosDecayAngle_Va_JET_ISR = Ja[t]->GetCosDecayAngle();
-      m_CosDecayAngle_Vb_JET_ISR = Jb[t]->GetCosDecayAngle();
-      if(BSideIsA){ m_CosDecayAngle_Pa_JET_ISR = X2b[t]->GetCosDecayAngle(); m_CosDecayAngle_Pb_JET_ISR = X2a[t]->GetCosDecayAngle(); 
-                    m_CosDecayAngle_Va_JET_ISR = Jb[t]->GetCosDecayAngle(); m_CosDecayAngle_Vb_JET_ISR = Ja[t]->GetCosDecayAngle(); }
+      if(BSideIsA){ m_CosDecayAngle_Pa_JET_ISR = X2b[t]->GetCosDecayAngle(); m_CosDecayAngle_Pb_JET_ISR = X2a[t]->GetCosDecayAngle(); }
+
+      ParticleList cand_list_parts_a;
+      for(int i = 0; i < m_Njet_a_JET_ISR; i++){
+        Particle part = Jets[m_index_jet_a_JET_ISR[i]];
+        cand_list_parts_a.push_back(part);
+      }
+      L_Cand cand_a(cand_list_parts_a);
+
+      ParticleList cand_list_parts_b;
+      for(int i = 0; i < m_Njet_b_JET_ISR; i++){
+        Particle part = Jets[m_index_jet_b_JET_ISR[i]];
+        cand_list_parts_b.push_back(part);
+      }
+      L_Cand cand_b(cand_list_parts_b);
+
+      if(cand_a.GetN() + cand_b.GetN() < 3){
+        ParticleList dum_cand_list_parts = cand_a.PL() + cand_b.PL();
+        cand_a = L_Cand(dum_cand_list_parts);
+      }
+
+      if(cand_a.GetN() > 1)
+        m_CosDecayAngle_Va_JET_ISR = cand_a.CosDecayAngle();
+      else
+        m_CosDecayAngle_Va_JET_ISR = 0.;
+      if(cand_b.GetN() > 1)
+        m_CosDecayAngle_Vb_JET_ISR = cand_b.CosDecayAngle();
+      else
+        m_CosDecayAngle_Vb_JET_ISR = 0.;
+
       m_MVa_JET_ISR = Ja[t]->GetFourVector().M();
       m_MVb_JET_ISR = Jb[t]->GetFourVector().M();
       if(BSideIsA){ m_MVa = Jb[t]->GetFourVector().M(); m_MVb = Ja[t]->GetFourVector().M(); }
@@ -1676,10 +1902,36 @@ void ReducedNtuple<Base>::FillOutputTree(TTree* tree, const Systematic& sys, boo
       m_CosDecayAngle_S_JET = S[t]->GetCosDecayAngle();
       m_CosDecayAngle_Pa_JET = X2a[t]->GetCosDecayAngle();
       m_CosDecayAngle_Pb_JET = X2b[t]->GetCosDecayAngle();
-      m_CosDecayAngle_Va_JET = Ja[t]->GetCosDecayAngle();
-      m_CosDecayAngle_Vb_JET = Jb[t]->GetCosDecayAngle();
-      if(BSideIsA){ m_CosDecayAngle_Pa_JET = X2b[t]->GetCosDecayAngle(); m_CosDecayAngle_Pb_JET = X2a[t]->GetCosDecayAngle(); 
-                    m_CosDecayAngle_Va_JET = Jb[t]->GetCosDecayAngle(); m_CosDecayAngle_Vb_JET = Ja[t]->GetCosDecayAngle(); }
+      if(BSideIsA){ m_CosDecayAngle_Pa_JET = X2b[t]->GetCosDecayAngle(); m_CosDecayAngle_Pb_JET = X2a[t]->GetCosDecayAngle(); }
+
+      ParticleList cand_list_parts_a;
+      for(int i = 0; i < m_Njet_a_JET; i++){
+        Particle part = Jets[m_index_jet_a_JET[i]];
+        cand_list_parts_a.push_back(part);
+      }
+      L_Cand cand_a(cand_list_parts_a);
+
+      ParticleList cand_list_parts_b;
+      for(int i = 0; i < m_Njet_b_JET; i++){
+        Particle part = Jets[m_index_jet_b_JET[i]];
+        cand_list_parts_b.push_back(part);
+      }
+      L_Cand cand_b(cand_list_parts_b);
+
+      if(cand_a.GetN() + cand_b.GetN() < 3){
+        ParticleList dum_cand_list_parts = cand_a.PL() + cand_b.PL();
+        cand_a = L_Cand(dum_cand_list_parts);
+      }
+
+      if(cand_a.GetN() > 1)
+        m_CosDecayAngle_Va_JET = cand_a.CosDecayAngle();
+      else
+        m_CosDecayAngle_Va_JET = 0.;
+      if(cand_b.GetN() > 1)
+        m_CosDecayAngle_Vb_JET = cand_b.CosDecayAngle();
+      else
+        m_CosDecayAngle_Vb_JET = 0.;
+
       m_MVa_JET = Ja[t]->GetFourVector().M();
       m_MVb_JET = Jb[t]->GetFourVector().M();
       if(BSideIsA){ m_MVa = Jb[t]->GetFourVector().M(); m_MVb = Ja[t]->GetFourVector().M(); }

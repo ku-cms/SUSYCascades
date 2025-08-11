@@ -435,6 +435,11 @@ private:
   double m_MbVCM0;
   double m_MQCM0; // sqrt(Ma*Ma + Mb*Mb)/sqrt(2)
   double m_gammaCM0; // 2*MQ/MS
+  double m_CosDecayAngle_Pa;
+  double m_CosDecayAngle_Pb;
+  double m_CosDecayAngle_Va;
+  double m_CosDecayAngle_Vb;
+  double m_CosDecayAngle_S;
 
   // New info for RJR 'LEP' tree
   double m_RISR_LEP;
@@ -552,6 +557,10 @@ private:
   DecayRecoFrame*   X2a[m_aTrees];
   DecayRecoFrame*   X2b[m_aTrees];
   VisibleRecoFrame*   ISR[m_aTrees];
+  SelfAssemblingRecoFrame*   sJa[m_aTrees];
+  SelfAssemblingRecoFrame*   sJb[m_aTrees];
+  SelfAssemblingRecoFrame*   sLa[m_aTrees];
+  SelfAssemblingRecoFrame*   sLb[m_aTrees];
   VisibleRecoFrame*   Ja[m_aTrees];
   VisibleRecoFrame*   Jb[m_aTrees];
   VisibleRecoFrame*   La[m_aTrees];
