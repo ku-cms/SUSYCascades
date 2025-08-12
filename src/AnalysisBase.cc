@@ -1539,11 +1539,9 @@ bool AnalysisBase<SUSYNANOBase>::GetMETORtrigger(){
 
 template <>
 bool AnalysisBase<SUSYNANOBase>::GetMETDoubleMutrigger(){
-  if(m_year == 2016 ||
-     m_year == 2017 ||
-     m_year == 2018  )
-     return 0; //?
-  return 0;
+  if(m_year == 2016)
+     return HLT_DoubleMu3_PFMET50;
+  else return HLT_DoubleMu3_DZ_PFMET50_PFMHT60;
 }
 
 template <>
@@ -1586,22 +1584,30 @@ bool AnalysisBase<SUSYNANOBase>::GetDoubleMuontrigger(){
 
 template <>
 bool AnalysisBase<SUSYNANOBase>::GetTripleElectrontrigger(){
-  if(m_year == 2016)
-    return (false); //?
-  if(m_year == 2017 ||
-     m_year == 2018)
-    return (false); //?
-  return 0;
+  return HLT_Ele16_Ele12_Ele8_CaloIdL_TrackIdL;
 }
 
 template <>
 bool AnalysisBase<SUSYNANOBase>::GetTripleMuontrigger(){
   if(m_year == 2016)
-    return (false); //?
-  if(m_year == 2017 ||
-     m_year == 2018)
-    return (false); //?
-  return 0;
+    return (HLT_TripleMu_12_10_5 ||
+            HLT_TripleMu_5_3_3_DZ_Mass3p8
+           );
+  else if(m_year == 2017)
+    return (HLT_TripleMu_12_10_5 ||
+            HLT_TripleMu_10_5_5_DZ ||
+            HLT_TripleMu_5_3_3_Mass3p8to60_DZ ||
+            HLT_TripleMu_5_3_3_Mass3p8to60_DCA
+           );
+  else if(m_year == 2018)
+    return (HLT_TripleMu_12_10_5 ||
+            HLT_TripleMu_10_5_5_DZ ||
+            HLT_TripleMu_5_3_3_Mass3p8to60_DZ ||
+            HLT_TripleMu_5_3_3_Mass3p8to60_DCA ||
+            HLT_TripleMu_5_3_3_Mass3p8_DZ ||
+            HLT_TripleMu_5_3_3_Mass3p8_DCA
+           );
+  else return 0;
 }
 
 template <>
@@ -3034,7 +3040,9 @@ bool AnalysisBase<NANOULBase>::GetMETORtrigger(){
 
 template <>
 bool AnalysisBase<NANOULBase>::GetMETDoubleMutrigger(){
-   return 0; //?
+  if(m_year == 2016)
+     return HLT_DoubleMu3_PFMET50;
+  else return HLT_DoubleMu3_DZ_PFMET50_PFMHT60;
 }
 
 template <>
@@ -3065,12 +3073,30 @@ bool AnalysisBase<NANOULBase>::GetDoubleMuontrigger(){
 
 template <>
 bool AnalysisBase<NANOULBase>::GetTripleElectrontrigger(){
-  return 0; //?
+  return HLT_Ele16_Ele12_Ele8_CaloIdL_TrackIdL;
 }
 
 template <>
 bool AnalysisBase<NANOULBase>::GetTripleMuontrigger(){
-  return 0; //?
+  if(m_year == 2016)
+    return (HLT_TripleMu_12_10_5 ||
+            HLT_TripleMu_5_3_3_DZ_Mass3p8
+           );
+  else if(m_year == 2017)
+    return (HLT_TripleMu_12_10_5 ||
+            HLT_TripleMu_10_5_5_DZ ||
+            HLT_TripleMu_5_3_3_Mass3p8to60_DZ ||
+            HLT_TripleMu_5_3_3_Mass3p8to60_DCA
+           );
+  else if(m_year == 2018)
+    return (HLT_TripleMu_12_10_5 ||
+            HLT_TripleMu_10_5_5_DZ ||
+            HLT_TripleMu_5_3_3_Mass3p8to60_DZ ||
+            HLT_TripleMu_5_3_3_Mass3p8to60_DCA ||
+            HLT_TripleMu_5_3_3_Mass3p8_DZ ||
+            HLT_TripleMu_5_3_3_Mass3p8_DCA
+           );
+  else return 0;
 }
 
 template <>
@@ -4515,7 +4541,7 @@ bool AnalysisBase<NANORun3>::GetMETORtrigger(){
 
 template <>
 bool AnalysisBase<NANORun3>::GetMETDoubleMutrigger(){
-  return 0; //?
+  return HLT_DoubleMu3_DZ_PFMET50_PFMHT60;
 }
 
 template <>
@@ -4540,12 +4566,16 @@ bool AnalysisBase<NANORun3>::GetDoubleMuontrigger(){
 
 template <>
 bool AnalysisBase<NANORun3>::GetTripleElectrontrigger(){
-  return 0; //?
+  return HLT_Ele16_Ele12_Ele8_CaloIdL_TrackIdL;
 }
 
 template <>
 bool AnalysisBase<NANORun3>::GetTripleMuontrigger(){
-  return 0; //?
+  return (HLT_TripleMu_12_10_5 ||
+          HLT_TripleMu_10_5_5_DZ ||
+          HLT_TripleMu_5_3_3_Mass3p8_DZ ||
+          HLT_TripleMu_5_3_3_Mass3p8_DCA
+         );
 }
 
 template <>
