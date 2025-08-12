@@ -42,8 +42,8 @@ def process_event_count_dirs(input_dir, output_dir, dryrun):
         command = f"hadd -v 1 -f {output_path} {input_path}"
         run_command(command,dryrun)
         if not dryrun:
-            unique_hashes = collect_unique_git_hashes(glob.glob(input_path))
-            overwrite_meta_git_hashes(output_path, unique_hashes)
+            unique_hashes = collect_unique_hashes(glob.glob(input_path))
+            write_git_hashes_to_output(output_path, unique_hashes)
 
 if __name__ == "__main__":
     start_time = time.time()
