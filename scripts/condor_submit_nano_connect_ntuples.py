@@ -410,8 +410,8 @@ if __name__ == "__main__":
         if VERBOSE:
             print("making EventCount file")
         os.system("hadd "+config+"EventCount.root root/EventCount/*.root > /dev/null")
-        unique_hashes = collect_unique_git_hashes(glob.glob("root/EventCount/*.root"))
-        overwrite_meta_git_hashes(config+"EventCount.root", unique_hashes)
+        unique_hashes = collect_unique_hashes(glob.glob("root/EventCount/*.root"))
+        write_git_hashes_to_output(config+"EventCount.root", unique_hashes)
         EVTCNT = "./config/EventCount.root"
 
         # make FilterEff file 

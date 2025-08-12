@@ -1,6 +1,8 @@
 from glob import glob as glob
 from subprocess import Popen as pop
 import os, sys, time, subprocess, psutil, shutil, ROOT, tempfile
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'python')))
+from GitHelpers import *
 
 # Example submission:
 #    nohup python3 scripts/DO_hadd.py -idir /ospool/cms-user/zflowers/NTUPLES/Processing/Summer23BPix_130X/ -odir /local-scratch/zflowers/NTUPLES/HADD/Summer23BPix_130X/ > HADD_logs/HADD_Summer23BPix_130X.debug 2>&1 &
@@ -28,27 +30,6 @@ def strip_meta(in_path, out_path):
 
     fout.Close()
     fin.Close()
-
-def collect_unique_hashes(input_files):
-    hashes = set()
-    for f in input_files:
-        tf = ROOT.TFile.Open(f)
-        meta = tf.GetDirectory("meta")
-        if meta:
-            tag = meta.Get("GitCommitHash")
-            if tag:
-                hashes.add(tag.GetTitle())
-        tf.Close()
-    return sorted(hashes)
-
-def write_git_hashes_to_output(output_path, hashes):
-    tf = ROOT.TFile.Open(output_path, "UPDATE")
-    if not tf.GetDirectory("meta"):
-        tf.mkdir("meta")
-    tf.cd("meta")
-    for h in hashes:
-        ROOT.TNamed(f"GitHash_{h[:8]}", h).Write()
-    tf.Close()
 
 def find_hadd_procs():
     current_user = psutil.Process().username()

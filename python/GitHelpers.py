@@ -1,50 +1,26 @@
 import ROOT, os, subprocess
 from collections import OrderedDict
 
-def collect_unique_git_hashes(input_files):
-    unique_hashes = OrderedDict()
-    for fpath in input_files:
-        tf = ROOT.TFile.Open(fpath, "READ")
-        if not tf or tf.IsZombie():
-            continue
-        tree = tf.Get("meta/gitHash")
-        if not tree:
-            tf.Close()
-            continue
-        for entry in tree:
-            h = entry.gitHash
-            if h not in unique_hashes:
-                unique_hashes[h] = True
+def collect_unique_hashes(input_files):
+    hashes = set()
+    for f in input_files:
+        tf = ROOT.TFile.Open(f)
+        meta = tf.GetDirectory("meta")
+        if meta:
+            tag = meta.Get("GitCommitHash")
+            if tag:
+                hashes.add(tag.GetTitle())
         tf.Close()
-    return list(unique_hashes.keys())
+    return sorted(hashes)
 
-def overwrite_meta_git_hashes(output_path, unique_hashes):
-    fout = ROOT.TFile.Open(output_path, "UPDATE")
-    if not fout:
-        raise RuntimeError(f"Cannot open {output_path} for update")
-
-    # Remove old meta/gitHashes tree if exists
-    meta_dir = fout.Get("meta")
-    if not meta_dir:
-        meta_dir = fout.mkdir("meta")
-    else:
-        meta_dir.Delete("gitHashes;*")
-    meta_dir.cd()
-
-    # Create new gitHashes tree
-    tree = ROOT.TTree("gitHashes", "Git commit hashes")
-    from ctypes import create_string_buffer, c_char_p, c_char
-
-    # Use ROOT std::string branch to store hashes
-    str_var = ROOT.std.string()
-    tree.Branch("gitHash", str_var)
-
-    for h in unique_hashes:
-        str_var.replace(0, ROOT.std.string.npos, h)
-        tree.Fill()
-
-    tree.Write("", ROOT.TObject.kOverwrite)
-    fout.Close()
+def write_git_hashes_to_output(output_path, hashes):
+    tf = ROOT.TFile.Open(output_path, "UPDATE")
+    if not tf.GetDirectory("meta"):
+        tf.mkdir("meta")
+    tf.cd("meta")
+    for h in hashes:
+        ROOT.TNamed(f"GitHash_{h[:8]}", h).Write()
+    tf.Close()
 
 def has_uncommitted_changes(repo_dir=".", sub_dir=None):
     """
