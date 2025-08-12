@@ -1437,9 +1437,14 @@ public :
    Bool_t          HLT_Dimuon0_LowMass_L1_TM530;
    Bool_t          HLT_Dimuon0_Upsilon_Muon_L1_TM0;
    Bool_t          HLT_Dimuon0_Upsilon_Muon_NoL1Mass;
-   Bool_t          HLT_TripleMu_5_3_3_Mass3p8to60_DZ;
-   Bool_t          HLT_TripleMu_10_5_5_DZ;
+   Bool_t          HLT_TripleMu_5_3_3;
    Bool_t          HLT_TripleMu_12_10_5;
+   Bool_t          HLT_TripleMu_5_3_3_DZ_Mass3p8;
+   Bool_t          HLT_TripleMu_10_5_5_DZ;
+   Bool_t          HLT_TripleMu_5_3_3_Mass3p8to60_DZ;
+   Bool_t          HLT_TripleMu_5_3_3_Mass3p8to60_DCA;
+   Bool_t          HLT_TripleMu_5_3_3_Mass3p8_DZ;
+   Bool_t          HLT_TripleMu_5_3_3_Mass3p8_DCA;
    Bool_t          HLT_Tau3Mu_Mu7_Mu1_TkMu1_Tau15;
    Bool_t          HLT_Tau3Mu_Mu7_Mu1_TkMu1_Tau15_Charge1;
    Bool_t          HLT_Tau3Mu_Mu7_Mu1_TkMu1_IsoTau15;
@@ -1673,7 +1678,6 @@ public :
    Bool_t          HLT_DoubleMu2_Jpsi_DoubleTrk1_Phi;
    Bool_t          HLT_DoubleMu2_Jpsi_DoubleTkMu0_Phi;
    Bool_t          HLT_DoubleMu3_DCA_PFMET50_PFMHT60;
-   Bool_t          HLT_TripleMu_5_3_3_Mass3p8to60_DCA;
    Bool_t          HLT_QuadPFJet98_83_71_15_DoubleBTagCSV_p013_p08_VBF1;
    Bool_t          HLT_QuadPFJet103_88_75_15_DoubleBTagCSV_p013_p08_VBF1;
    Bool_t          HLT_QuadPFJet105_90_76_15_DoubleBTagCSV_p013_p08_VBF1;
@@ -1693,6 +1697,7 @@ public :
    Bool_t          HLTriggerFinalPath;
    Bool_t          L1simulation_step;
 
+   Bool_t          HLT_DoubleMu3_PFMET50;
    Bool_t          HLT_PFHT300_PFMET100;
    Bool_t          HLT_PFHT300_PFMET110;
 
@@ -3112,9 +3117,14 @@ public :
    TBranch        *b_HLT_Dimuon0_LowMass_L1_TM530;   //!
    TBranch        *b_HLT_Dimuon0_Upsilon_Muon_L1_TM0;   //!
    TBranch        *b_HLT_Dimuon0_Upsilon_Muon_NoL1Mass;   //!
-   TBranch        *b_HLT_TripleMu_5_3_3_Mass3p8to60_DZ;   //!
-   TBranch        *b_HLT_TripleMu_10_5_5_DZ;   //!
+   TBranch        *b_HLT_TripleMu_5_3_3;   //!
    TBranch        *b_HLT_TripleMu_12_10_5;   //!
+   TBranch        *b_HLT_TripleMu_5_3_3_DZ_Mass3p8;   //!
+   TBranch        *b_HLT_TripleMu_10_5_5_DZ;   //!
+   TBranch        *b_HLT_TripleMu_5_3_3_Mass3p8to60_DZ;   //!
+   TBranch        *b_HLT_TripleMu_5_3_3_Mass3p8to60_DCA;   //!
+   TBranch        *b_HLT_TripleMu_5_3_3_Mass3p8_DZ;   //!
+   TBranch        *b_HLT_TripleMu_5_3_3_Mass3p8_DCA;   //!
    TBranch        *b_HLT_Tau3Mu_Mu7_Mu1_TkMu1_Tau15;   //!
    TBranch        *b_HLT_Tau3Mu_Mu7_Mu1_TkMu1_Tau15_Charge1;   //!
    TBranch        *b_HLT_Tau3Mu_Mu7_Mu1_TkMu1_IsoTau15;   //!
@@ -3348,7 +3358,6 @@ public :
    TBranch        *b_HLT_DoubleMu2_Jpsi_DoubleTrk1_Phi;   //!
    TBranch        *b_HLT_DoubleMu2_Jpsi_DoubleTkMu0_Phi;   //!
    TBranch        *b_HLT_DoubleMu3_DCA_PFMET50_PFMHT60;   //!
-   TBranch        *b_HLT_TripleMu_5_3_3_Mass3p8to60_DCA;   //!
    TBranch        *b_HLT_QuadPFJet98_83_71_15_DoubleBTagCSV_p013_p08_VBF1;   //!
    TBranch        *b_HLT_QuadPFJet103_88_75_15_DoubleBTagCSV_p013_p08_VBF1;   //!
    TBranch        *b_HLT_QuadPFJet105_90_76_15_DoubleBTagCSV_p013_p08_VBF1;   //!
@@ -3368,6 +3377,7 @@ public :
    TBranch        *b_HLTriggerFinalPath;   //!
    TBranch        *b_L1simulation_step;   //!
 
+   TBranch        *b_HLT_DoubleMu3_PFMET50;   //!
    TBranch        *b_HLT_PFHT300_PFMET100;   //!
    TBranch        *b_HLT_PFHT300_PFMET110;   //!
 
@@ -4855,9 +4865,14 @@ inline void NANOULBase::Init(TTree *tree)
    fChain->SetBranchAddress("HLT_Dimuon0_LowMass_L1_TM530", &HLT_Dimuon0_LowMass_L1_TM530, &b_HLT_Dimuon0_LowMass_L1_TM530);
    fChain->SetBranchAddress("HLT_Dimuon0_Upsilon_Muon_L1_TM0", &HLT_Dimuon0_Upsilon_Muon_L1_TM0, &b_HLT_Dimuon0_Upsilon_Muon_L1_TM0);
    fChain->SetBranchAddress("HLT_Dimuon0_Upsilon_Muon_NoL1Mass", &HLT_Dimuon0_Upsilon_Muon_NoL1Mass, &b_HLT_Dimuon0_Upsilon_Muon_NoL1Mass);
-   fChain->SetBranchAddress("HLT_TripleMu_5_3_3_Mass3p8to60_DZ", &HLT_TripleMu_5_3_3_Mass3p8to60_DZ, &b_HLT_TripleMu_5_3_3_Mass3p8to60_DZ);
-   fChain->SetBranchAddress("HLT_TripleMu_10_5_5_DZ", &HLT_TripleMu_10_5_5_DZ, &b_HLT_TripleMu_10_5_5_DZ);
+   fChain->SetBranchAddress("HLT_TripleMu_5_3_3", &HLT_TripleMu_5_3_3, &b_HLT_TripleMu_5_3_3);
    fChain->SetBranchAddress("HLT_TripleMu_12_10_5", &HLT_TripleMu_12_10_5, &b_HLT_TripleMu_12_10_5);
+   fChain->SetBranchAddress("HLT_TripleMu_5_3_3_DZ_Mass3p8", &HLT_TripleMu_5_3_3_DZ_Mass3p8, &b_HLT_TripleMu_5_3_3_DZ_Mass3p8);
+   fChain->SetBranchAddress("HLT_TripleMu_10_5_5_DZ", &HLT_TripleMu_10_5_5_DZ, &b_HLT_TripleMu_10_5_5_DZ);
+   fChain->SetBranchAddress("HLT_TripleMu_5_3_3_Mass3p8to60_DZ", &HLT_TripleMu_5_3_3_Mass3p8to60_DZ, &b_HLT_TripleMu_5_3_3_Mass3p8to60_DZ);
+   fChain->SetBranchAddress("HLT_TripleMu_5_3_3_Mass3p8to60_DCA", &HLT_TripleMu_5_3_3_Mass3p8to60_DCA, &b_HLT_TripleMu_5_3_3_Mass3p8to60_DCA);
+   fChain->SetBranchAddress("HLT_TripleMu_5_3_3_Mass3p8_DZ", &HLT_TripleMu_5_3_3_Mass3p8_DZ, &b_HLT_TripleMu_5_3_3_Mass3p8_DZ);
+   fChain->SetBranchAddress("HLT_TripleMu_5_3_3_Mass3p8_DCA", &HLT_TripleMu_5_3_3_Mass3p8_DCA, &b_HLT_TripleMu_5_3_3_Mass3p8_DCA);
    fChain->SetBranchAddress("HLT_Tau3Mu_Mu7_Mu1_TkMu1_Tau15", &HLT_Tau3Mu_Mu7_Mu1_TkMu1_Tau15, &b_HLT_Tau3Mu_Mu7_Mu1_TkMu1_Tau15);
    fChain->SetBranchAddress("HLT_Tau3Mu_Mu7_Mu1_TkMu1_Tau15_Charge1", &HLT_Tau3Mu_Mu7_Mu1_TkMu1_Tau15_Charge1, &b_HLT_Tau3Mu_Mu7_Mu1_TkMu1_Tau15_Charge1);
    fChain->SetBranchAddress("HLT_Tau3Mu_Mu7_Mu1_TkMu1_IsoTau15", &HLT_Tau3Mu_Mu7_Mu1_TkMu1_IsoTau15, &b_HLT_Tau3Mu_Mu7_Mu1_TkMu1_IsoTau15);
@@ -5091,7 +5106,6 @@ inline void NANOULBase::Init(TTree *tree)
    fChain->SetBranchAddress("HLT_DoubleMu2_Jpsi_DoubleTrk1_Phi", &HLT_DoubleMu2_Jpsi_DoubleTrk1_Phi, &b_HLT_DoubleMu2_Jpsi_DoubleTrk1_Phi);
    fChain->SetBranchAddress("HLT_DoubleMu2_Jpsi_DoubleTkMu0_Phi", &HLT_DoubleMu2_Jpsi_DoubleTkMu0_Phi, &b_HLT_DoubleMu2_Jpsi_DoubleTkMu0_Phi);
    fChain->SetBranchAddress("HLT_DoubleMu3_DCA_PFMET50_PFMHT60", &HLT_DoubleMu3_DCA_PFMET50_PFMHT60, &b_HLT_DoubleMu3_DCA_PFMET50_PFMHT60);
-   fChain->SetBranchAddress("HLT_TripleMu_5_3_3_Mass3p8to60_DCA", &HLT_TripleMu_5_3_3_Mass3p8to60_DCA, &b_HLT_TripleMu_5_3_3_Mass3p8to60_DCA);
    fChain->SetBranchAddress("HLT_QuadPFJet98_83_71_15_DoubleBTagCSV_p013_p08_VBF1", &HLT_QuadPFJet98_83_71_15_DoubleBTagCSV_p013_p08_VBF1, &b_HLT_QuadPFJet98_83_71_15_DoubleBTagCSV_p013_p08_VBF1);
    fChain->SetBranchAddress("HLT_QuadPFJet103_88_75_15_DoubleBTagCSV_p013_p08_VBF1", &HLT_QuadPFJet103_88_75_15_DoubleBTagCSV_p013_p08_VBF1, &b_HLT_QuadPFJet103_88_75_15_DoubleBTagCSV_p013_p08_VBF1);
    fChain->SetBranchAddress("HLT_QuadPFJet105_90_76_15_DoubleBTagCSV_p013_p08_VBF1", &HLT_QuadPFJet105_90_76_15_DoubleBTagCSV_p013_p08_VBF1, &b_HLT_QuadPFJet105_90_76_15_DoubleBTagCSV_p013_p08_VBF1);
@@ -5111,6 +5125,7 @@ inline void NANOULBase::Init(TTree *tree)
    fChain->SetBranchAddress("HLTriggerFinalPath", &HLTriggerFinalPath, &b_HLTriggerFinalPath);
    fChain->SetBranchAddress("L1simulation_step", &L1simulation_step, &b_L1simulation_step);
 
+   fChain->SetBranchAddress("HLT_DoubleMu3_PFMET50", &HLT_DoubleMu3_PFMET50, &b_HLT_DoubleMu3_PFMET50);
    fChain->SetBranchAddress("HLT_PFHT300_PFMET100", &HLT_PFHT300_PFMET100, &b_HLT_PFHT300_PFMET100);
    fChain->SetBranchAddress("HLT_PFHT300_PFMET110", &HLT_PFHT300_PFMET110, &b_HLT_PFHT300_PFMET110);
 
