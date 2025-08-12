@@ -1020,10 +1020,6 @@ void ReducedNtuple<Base>::FillOutputTree(TTree* tree, const Systematic& sys, boo
   
   // Sparticle pair-production trees analysis
   for(int t = 0; t < m_aTrees; t++){
-
-    if(m_Njet == 0) continue; // can't do ISR analysis without at least one jet
-    // first tree is ISR Boosted tree
-    // can add more trees if needed
     
     LAB[t]->ClearEvent(); 
 
@@ -1031,6 +1027,10 @@ void ReducedNtuple<Base>::FillOutputTree(TTree* tree, const Systematic& sys, boo
     
     // ISR analysis    
     if(t==0){
+      if(m_Njet == 0){ // can't do ISR analysis without at least one jet
+        m_treeSkipped[t] = true;
+        continue;
+      }
       std::vector<RFKey> lepID;
       for(int i = 0; i < m_Nlep; i++){
         lepID.push_back(COMB_L[t]->AddLabFrameFourVector(Leptons[i]));
@@ -1464,7 +1464,7 @@ void ReducedNtuple<Base>::FillOutputTree(TTree* tree, const Systematic& sys, boo
         cand_list_parts_a.push_back(part);
       }
       for(int i = 0; i < m_Njet_a; i++){
-        Particle part = Jets[m_index_lep_a[i]];
+        Particle part = Jets[m_index_jet_a[i]];
         cand_list_parts_a.push_back(part);
       }
       L_Cand cand_a(cand_list_parts_a);
@@ -1475,7 +1475,7 @@ void ReducedNtuple<Base>::FillOutputTree(TTree* tree, const Systematic& sys, boo
         cand_list_parts_b.push_back(part);
       }
       for(int i = 0; i < m_Njet_b; i++){
-        Particle part = Jets[m_index_lep_b[i]];
+        Particle part = Jets[m_index_jet_b[i]];
         cand_list_parts_b.push_back(part);
       }
       L_Cand cand_b(cand_list_parts_b);
@@ -1485,16 +1485,14 @@ void ReducedNtuple<Base>::FillOutputTree(TTree* tree, const Systematic& sys, boo
         cand_a = L_Cand(dum_cand_list_parts);
       }
       
-      else{
-        if(cand_a.GetN() > 1)
-          m_CosDecayAngle_Va = cand_a.CosDecayAngle();
-        else
-          m_CosDecayAngle_Va = 0.;
-        if(cand_b.GetN() > 1)
-          m_CosDecayAngle_Vb = cand_b.CosDecayAngle();
-        else
-          m_CosDecayAngle_Vb = 0.;
-      }
+      if(cand_a.GetN() > 1)
+        m_CosDecayAngle_Va = cand_a.CosDecayAngle();
+      else
+        m_CosDecayAngle_Va = 0.;
+      if(cand_b.GetN() > 1)
+        m_CosDecayAngle_Vb = cand_b.CosDecayAngle();
+      else
+        m_CosDecayAngle_Vb = 0.;
 
     }
     if(t==1){
@@ -1587,16 +1585,14 @@ void ReducedNtuple<Base>::FillOutputTree(TTree* tree, const Systematic& sys, boo
         cand_a = L_Cand(dum_cand_list_parts);
       }
       
-      else{
-        if(cand_a.GetN() > 1)
-          m_CosDecayAngle_Va_LEP = cand_a.CosDecayAngle();
-        else
-          m_CosDecayAngle_Va_LEP = 0.;
-        if(cand_b.GetN() > 1)
-          m_CosDecayAngle_Vb_LEP = cand_b.CosDecayAngle();
-        else
-          m_CosDecayAngle_Vb_LEP = 0.;
-      }
+      if(cand_a.GetN() > 1)
+        m_CosDecayAngle_Va_LEP = cand_a.CosDecayAngle();
+      else
+        m_CosDecayAngle_Va_LEP = 0.;
+      if(cand_b.GetN() > 1)
+        m_CosDecayAngle_Vb_LEP = cand_b.CosDecayAngle();
+      else
+        m_CosDecayAngle_Vb_LEP = 0.;
 
       m_MVa_LEP = La[t]->GetFourVector().M();
       m_MVb_LEP = Lb[t]->GetFourVector().M();
