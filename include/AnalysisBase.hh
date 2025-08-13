@@ -97,7 +97,11 @@ public:
   virtual bool GetDoubleElectrontrigger();
   virtual bool GetDoubleMuontrigger();
   virtual bool GetTripleElectrontrigger();
-  virtual bool GetTripleMuontrigger();
+  virtual bool GetTripleMuonLowPTtrigger();
+  virtual bool GetTripleMuonHighPTtrigger();
+  virtual bool GetDiMuEleLowPTtrigger();
+  virtual bool GetDiMuEleHighPTtrigger();
+  virtual bool GetDiEleMutrigger();
   virtual bool GetEMutrigger(); 
   
   virtual TVector3 GetPV(bool& good);

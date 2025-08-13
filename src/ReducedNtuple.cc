@@ -330,7 +330,11 @@ TTree* ReducedNtuple<Base>::InitOutputTree(const string& sample, bool do_slim){
   tree->Branch("DoubleElectrontrigger", &m_DoubleElectrontrigger);
   tree->Branch("DoubleMuontrigger", &m_DoubleMuontrigger);
   tree->Branch("TripleElectrontrigger", &m_TripleElectrontrigger);
-  tree->Branch("TripleMuontrigger", &m_TripleMuontrigger);
+  tree->Branch("TripleMuonLowPTtrigger", &m_TripleMuonLowPTtrigger);
+  tree->Branch("TripleMuonHighPTtrigger", &m_TripleMuonHighPTtrigger);
+  tree->Branch("DiMuEleLowPTtrigger", &m_DiMuEleLowPTtrigger);
+  tree->Branch("DiMuEleHighPTtrigger", &m_DiMuEleHighPTtrigger);
+  tree->Branch("DiEleMutrigger", &m_DiEleMutrigger);
   
   tree->Branch("MET", &m_MET);
   tree->Branch("MET_phi", &m_MET_phi);
@@ -2113,7 +2117,11 @@ void ReducedNtuple<Base>::FillOutputTree(TTree* tree, const Systematic& sys, boo
   m_DoubleElectrontrigger = AnalysisBase<Base>::GetDoubleElectrontrigger();
   m_DoubleMuontrigger = AnalysisBase<Base>::GetDoubleMuontrigger();
   m_TripleElectrontrigger = AnalysisBase<Base>::GetTripleElectrontrigger();
-  m_TripleMuontrigger = AnalysisBase<Base>::GetTripleMuontrigger();
+  m_TripleMuonLowPTtrigger = AnalysisBase<Base>::GetTripleMuonLowPTtrigger();
+  m_TripleMuonHighPTtrigger = AnalysisBase<Base>::GetTripleMuonHighPTtrigger();
+  m_DiMuEleLowPTtrigger = AnalysisBase<Base>::GetDiMuEleLowPTtrigger();
+  m_DiMuEleHighPTtrigger = AnalysisBase<Base>::GetDiMuEleHighPTtrigger();
+  m_DiEleMutrigger = AnalysisBase<Base>::GetDiEleMutrigger();
   m_EMutrigger = AnalysisBase<Base>::GetEMutrigger(); 
   
   m_MET     = ETMiss.Pt();

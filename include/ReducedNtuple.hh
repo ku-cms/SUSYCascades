@@ -151,8 +151,12 @@ private:
   bool m_DoubleElectrontrigger;
   bool m_DoubleMuontrigger;
   bool m_TripleElectrontrigger;
-  bool m_TripleMuontrigger;
+  bool m_TripleMuonLowPTtrigger;
+  bool m_TripleMuonHighPTtrigger;
   bool m_EMutrigger;  
+  bool m_DiMuEleLowPTtrigger;
+  bool m_DiMuEleHighPTtrigger;
+  bool m_DiEleMutrigger;
   
   int m_Nele;
   int m_Nlele;
