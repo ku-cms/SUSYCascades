@@ -29,7 +29,9 @@ for subdir in os.listdir(base_dir):
                     tree.SetBranchStatus("*", 0)  # Disable all branches to start
                     for branch in branches_to_check:
                         tree.SetBranchStatus(branch, 1)  # Enable the branches we want to check
-                    if tree.GetEntries() == 0: continue
+                    if tree.GetEntries() == 0: 
+                        print(root_file_path,"is empty")
+                        continue
                     # Get the first entry (event) and check the values
                     tree.GetEntry(0)
                     
