@@ -88,7 +88,11 @@ public :
    Bool_t          DoubleElectrontrigger;
    Bool_t          DoubleMuontrigger;
    Bool_t          TripleElectrontrigger;
-   Bool_t          TripleMuontrigger;
+   Bool_t          TripleMuonHighPTtrigger;
+   Bool_t          TripleMuonLowPTtrigger;
+   Bool_t          DiEleMutrigger;
+   Bool_t          DiMuEleHighPTtrigger;
+   Bool_t          DiMuEleLowPTtrigger;
    Bool_t          EventFlag_FailJetID;
    Bool_t          EventFlag_JetInHEM;
    Bool_t          EventFlag_JetInHEM_Pt20;
@@ -442,6 +446,7 @@ public :
    vector<int>     *LSPParents;
    Int_t           Npartons;
    Double_t        XSec;
+   Double_t        FilterEff;
    Double_t        Nweight;
    Double_t        Nevent;
 
@@ -510,7 +515,11 @@ public :
    TBranch        *b_DoubleElectrontrigger;   //!
    TBranch        *b_DoubleMuontrigger;   //!
    TBranch        *b_TripleElectrontrigger;   //!
-   TBranch        *b_TripleMuontrigger;   //!
+   TBranch        *b_DiEleMutrigger;   //!
+   TBranch        *b_DiMuEleHighPTtrigger;   //!
+   TBranch        *b_DiMuEleLowPTtrigger;   //!
+   TBranch        *b_TripleMuonHighPTtrigger;   //!
+   TBranch        *b_TripleMuonLowPTtrigger;   //!
    TBranch        *b_EventFlag_FailJetID;   //!
    TBranch        *b_EventFlag_JetInHEM;   //!
    TBranch        *b_EventFlag_JetInHEM_Pt20;   //!
@@ -864,6 +873,7 @@ public :
    TBranch        *b_LSPParents;   //!
    TBranch        *b_Npartons;   //!
    TBranch        *b_XSec;   //!
+   TBranch        *b_FilterEff;   //!
    TBranch        *b_Nweight;   //!
    TBranch        *b_Nevent;   //!
 
@@ -1082,7 +1092,11 @@ inline void ReducedBase_V2::Init(TTree *tree)
    fChain->SetBranchAddress("DoubleElectrontrigger", &DoubleElectrontrigger, &b_DoubleElectrontrigger);
    fChain->SetBranchAddress("DoubleMuontrigger", &DoubleMuontrigger, &b_DoubleMuontrigger);
    fChain->SetBranchAddress("TripleElectrontrigger", &TripleElectrontrigger, &b_TripleElectrontrigger);
-   fChain->SetBranchAddress("TripleMuontrigger", &TripleMuontrigger, &b_TripleMuontrigger);
+   fChain->SetBranchAddress("DiEleMutrigger", &DiEleMutrigger, &b_DiEleMutrigger);
+   fChain->SetBranchAddress("DiMuEleHighPTtrigger", &DiMuEleHighPTtrigger, &b_DiMuEleHighPTtrigger);
+   fChain->SetBranchAddress("DiMuEleLowPTtrigger", &DiMuEleLowPTtrigger, &b_DiMuEleLowPTtrigger);
+   fChain->SetBranchAddress("TripleMuonHighPTtrigger", &TripleMuonHighPTtrigger, &b_TripleMuonHighPTtrigger);
+   fChain->SetBranchAddress("TripleMuonLowPTtrigger", &TripleMuonLowPTtrigger, &b_TripleMuonLowPTtrigger);
    fChain->SetBranchAddress("EventFlag_FailJetID", &EventFlag_FailJetID, &b_EventFlag_FailJetID);
    fChain->SetBranchAddress("EventFlag_JetInHEM", &EventFlag_JetInHEM, &b_EventFlag_JetInHEM);
    fChain->SetBranchAddress("EventFlag_JetInHEM_Pt20", &EventFlag_JetInHEM_Pt20, &b_EventFlag_JetInHEM_Pt20);
@@ -1359,6 +1373,7 @@ inline void ReducedBase_V2::Init(TTree *tree)
    fChain->SetBranchAddress("LSPParents", &LSPParents, &b_LSPParents);
    fChain->SetBranchAddress("Npartons", &Npartons, &b_Npartons);
    fChain->SetBranchAddress("XSec", &XSec, &b_XSec);
+   fChain->SetBranchAddress("FilterEff", &FilterEff, &b_FilterEff);
    fChain->SetBranchAddress("Nweight", &Nweight, &b_Nweight);
    fChain->SetBranchAddress("Nevent", &Nevent, &b_Nevent);
    fChain->SetBranchAddress("MT2", &MT2, &b_MT2);

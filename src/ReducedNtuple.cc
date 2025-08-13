@@ -755,6 +755,7 @@ TTree* ReducedNtuple<Base>::InitOutputTree(const string& sample, bool do_slim){
     tree->Branch("Npartons", &m_Npartons);
     tree->Branch("genweight", &m_genweight);
     tree->Branch("XSec", &m_XSec);
+    tree->Branch("FilterEff", &m_FilterEff);
     tree->Branch("Nweight", &m_Nweight);
     tree->Branch("Nevent", &m_Nevent);
   }
@@ -1970,6 +1971,7 @@ void ReducedNtuple<Base>::FillOutputTree(TTree* tree, const Systematic& sys, boo
     //if(m_weight == 0.) { cout << "Event Weight: " << tree->GetName() << " " << m_weight << endl; } // debug statement
     m_genweight = AnalysisBase<Base>::GetGenEventWeight();
     m_XSec = AnalysisBase<Base>::GetXsec();
+    m_FilterEff = AnalysisBase<Base>::GetFilterEff();
     m_Nevent = AnalysisBase<Base>::GetNevent();
     m_Nweight = AnalysisBase<Base>::GetNweight();
     m_Npartons = AnalysisBase<Base>::GetNpartons();
@@ -2099,6 +2101,7 @@ void ReducedNtuple<Base>::FillOutputTree(TTree* tree, const Systematic& sys, boo
     m_NSparticlePhoton = 0;
     m_Npartons = 0;
     m_XSec = 0;
+    m_FilterEff = 1;
     m_Nweight = 0;
     m_Nevent = 0;
   }

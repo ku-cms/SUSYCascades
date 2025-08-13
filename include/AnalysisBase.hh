@@ -180,6 +180,7 @@ protected:
   virtual double GetMETTriggerSFWeight(double MET, double HT, int Nele, int Nmu, int updown = 0);
   virtual int GetMETTriggerSFCurve(double HT, int Nele, int Nmu);
   virtual double GetXsec();
+  virtual double GetFilterEff();
   virtual double GetNevent();
   virtual double GetNweight();
   virtual bool   IsGoodEvent();

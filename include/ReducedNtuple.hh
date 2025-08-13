@@ -104,6 +104,7 @@ private:
 
   // Additional vars for gen weighting
   double m_XSec;
+  double m_FilterEff;
   double m_genweight;
   double m_Nweight;
   double m_Nevent;

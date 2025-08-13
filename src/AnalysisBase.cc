@@ -138,6 +138,14 @@ double AnalysisBase<Base>::GetNweight(){
   else
     return 0.;
 }
+
+template <class Base>
+double AnalysisBase<Base>::GetFilterEff(){
+  if(m_IsSMS && std::is_member_object_pointer<decltype(&Base::luminosityBlock)>::value)
+    return m_NeventTool.GetFilterEff(m_DataSet,m_FileTag,this->luminosityBlock);
+  else
+    return 1.;
+}
   
 template <class Base>
 void AnalysisBase<Base>::AddLabels(const string& dataset, const string& filetag){
