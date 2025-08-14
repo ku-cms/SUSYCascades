@@ -1649,17 +1649,20 @@ bool AnalysisBase<SUSYNANOBase>::GetTripleMuonHighPTtrigger(){
 
 template <>
 bool AnalysisBase<SUSYNANOBase>::GetDiMuEleLowPTtrigger(){
-  return HLT_DiMu4_Ele9_CaloIdL_TrackIdL_DZ_Mass3p8;
+  if(m_year == 2018) return HLT_DiMu4_Ele9_CaloIdL_TrackIdL_DZ_Mass3p8;
+  else return false;
 }
 
 template <>
 bool AnalysisBase<SUSYNANOBase>::GetDiMuEleHighPTtrigger(){
-  return HLT_DiMu9_Ele9_CaloIdL_TrackIdL || HLT_DiMu9_Ele9_CaloIdL_TrackIdL_DZ;
+  if(m_year == 2016) return HLT_DiMu9_Ele9_CaloIdL_TrackIdL;
+  else return HLT_DiMu9_Ele9_CaloIdL_TrackIdL || HLT_DiMu9_Ele9_CaloIdL_TrackIdL_DZ;
 }
 
 template <>
 bool AnalysisBase<SUSYNANOBase>::GetDiEleMutrigger(){
-  return HLT_Mu8_DiEle12_CaloIdL_TrackIdL_DZ || HLT_Mu8_DiEle12_CaloIdL_TrackIdL;
+  if(m_year == 2016) return HLT_Mu8_DiEle12_CaloIdL_TrackIdL;
+  else return HLT_Mu8_DiEle12_CaloIdL_TrackIdL_DZ || HLT_Mu8_DiEle12_CaloIdL_TrackIdL;
 }
 
 template <>
@@ -3162,17 +3165,20 @@ bool AnalysisBase<NANOULBase>::GetTripleMuonHighPTtrigger(){
 
 template <>
 bool AnalysisBase<NANOULBase>::GetDiMuEleLowPTtrigger(){
-  return HLT_DiMu4_Ele9_CaloIdL_TrackIdL_DZ_Mass3p8;
+  if(m_year == 2018) return HLT_DiMu4_Ele9_CaloIdL_TrackIdL_DZ_Mass3p8;
+  else return false;
 }
 
 template <>
 bool AnalysisBase<NANOULBase>::GetDiMuEleHighPTtrigger(){
-  return HLT_DiMu9_Ele9_CaloIdL_TrackIdL || HLT_DiMu9_Ele9_CaloIdL_TrackIdL_DZ;
+  if(m_year == 2016) return HLT_DiMu9_Ele9_CaloIdL_TrackIdL;
+  else return HLT_DiMu9_Ele9_CaloIdL_TrackIdL || HLT_DiMu9_Ele9_CaloIdL_TrackIdL_DZ;
 }
 
 template <>
 bool AnalysisBase<NANOULBase>::GetDiEleMutrigger(){
-  return HLT_Mu8_DiEle12_CaloIdL_TrackIdL_DZ || HLT_Mu8_DiEle12_CaloIdL_TrackIdL;
+  if(m_year == 2016) return HLT_Mu8_DiEle12_CaloIdL_TrackIdL;
+  else return HLT_Mu8_DiEle12_CaloIdL_TrackIdL_DZ || HLT_Mu8_DiEle12_CaloIdL_TrackIdL;
 }
 
 template <>
