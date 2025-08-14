@@ -27,6 +27,7 @@ public :
    Bool_t          event_skipped;
    vector<bool>    *treeSkipped;
    Double_t        weight;
+   Double_t        weight2;
    Double_t        genweight;
    Double_t        PUweight;
    Double_t        PUweight_up;
@@ -454,6 +455,7 @@ public :
    TBranch        *b_event_skipped;   //!
    TBranch        *b_treeSkipped;   //!
    TBranch        *b_weight;   //!
+   TBranch        *b_weight2;   //!
    TBranch        *b_genweight;   //!
    TBranch        *b_PUweight;   //!
    TBranch        *b_PUweight_up;   //!
@@ -1032,6 +1034,7 @@ inline void ReducedBase_V2::Init(TTree *tree)
    fChain->SetBranchAddress("event_skipped", &event_skipped, &b_event_skipped);
    fChain->SetBranchAddress("treeSkipped", &treeSkipped, &b_treeSkipped);
    fChain->SetBranchAddress("weight", &weight, &b_weight);
+   fChain->SetBranchAddress("weight2", &weight2, &b_weight2);
    fChain->SetBranchAddress("PUweight", &PUweight, &b_PUweight);
    fChain->SetBranchAddress("PUweight_up", &PUweight_up, &b_PUweight_up);
    fChain->SetBranchAddress("PUweight_down", &PUweight_down, &b_PUweight_down);
