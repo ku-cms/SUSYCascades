@@ -102,6 +102,8 @@ public :
    Bool_t          SingleElectrontrigger;
    Bool_t          SingleMuontrigger;
    Bool_t          EMutrigger;
+   Bool_t          EMuEtrigger;
+   Bool_t          EMuMutrigger;
    Double_t        MET;
    Double_t        MET_phi;
    Double_t        altMET;
@@ -530,6 +532,8 @@ public :
    TBranch        *b_SingleElectrontrigger;   //!
    TBranch        *b_SingleMuontrigger;   //!
    TBranch        *b_EMutrigger;   //!
+   TBranch        *b_EMuEtrigger;   //!
+   TBranch        *b_EMuMutrigger;   //!
    TBranch        *b_MET;   //!
    TBranch        *b_MET_phi;   //!
    TBranch        *b_altMET;   //!
@@ -1108,6 +1112,8 @@ inline void ReducedBase_V2::Init(TTree *tree)
    fChain->SetBranchAddress("SingleElectrontrigger", &SingleElectrontrigger, &b_SingleElectrontrigger);
    fChain->SetBranchAddress("SingleMuontrigger", &SingleMuontrigger, &b_SingleMuontrigger);
    fChain->SetBranchAddress("EMutrigger", &EMutrigger, &b_EMutrigger);
+   fChain->SetBranchAddress("EMuEtrigger", &EMuEtrigger, &b_EMuEtrigger);
+   fChain->SetBranchAddress("EMuMutrigger", &EMuMutrigger, &b_EMuMutrigger);
    fChain->SetBranchAddress("MET", &MET, &b_MET);
    fChain->SetBranchAddress("MET_phi", &MET_phi, &b_MET_phi);
    fChain->SetBranchAddress("altMET", &altMET, &b_altMET);
