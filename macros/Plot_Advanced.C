@@ -26,15 +26,9 @@ void Plot_Advanced(){
 
   //g_Label = "TESTING";
   //g_Label = "Jets RISR0.5";
-  //g_Label = "Plotting";
-  //g_Label = "NoMET BL";
-  g_Label = "3L !Bronze maxSIP3D<3.5 MS>300 4<MVa<65 LepPtTrig Cos2";
-  //g_Label = "=3L !Bronze MET150 PTISR150 RISR0.5";
-  //g_Label = "=3L !Bronze !0J S";
-  //g_Label = "2L PreSelection 0JS";
-  //g_Label = "PreSelection 3ObjS HighMass CandCos<0.8 PZPara+ BetaZ<0.9 Exclusive";
+  //g_Label = "3L !Bronze maxSIP3D<3.5 MS>300 4<MVa<65 LepPtTrig Cos2";
+  g_Label = "3L ISR BL";
   //g_Label = "No_Cuts";
-  //g_Label = "ATLAS Cuts";
 
   bool OSSF = false;
   bool OSOF = false;
@@ -375,8 +369,8 @@ void Plot_Advanced(){
 
     TH2D* hist_RISR_PTISR = new TH2D((title+"_RISR_PTISR").c_str(), (title+"_RISR_PTISR;R_{ISR};p_{T}^{ISR} [GeV]").c_str(), g_NX, 0., 1., g_NX, 0., 1000.);
     hists2.push_back(hist_RISR_PTISR);
-    TH2D* hist_RISR_Mperp = new TH2D((title+"_RISR_Mperp").c_str(), (title+"_RISR_Mperp;R_{ISR};M_{#perp} [GeV]").c_str(), g_NX, 0., 1., g_NX, 0., 100.);
-    //hists2.push_back(hist_RISR_Mperp);
+    TH2D* hist_RISR_Mperp = new TH2D((title+"_RISR_Mperp").c_str(), (title+"_RISR_Mperp;R_{ISR};M_{#perp} [GeV]").c_str(), g_NX, 0., 1., g_NX, 0., 200.);
+    hists2.push_back(hist_RISR_Mperp);
     TH2D* hist_dphiCMI_PTCM = new TH2D((title+"_dphiCMI_PTCM").c_str(), (title+"_dphiCMI_PTCM;#Delta #phi_{(CM,I)};p_{T}^{CM}").c_str(), g_NX, 0., 3.15, g_NX, 0., 500.);
     //hists2.push_back(hist_dphiCMI_PTCM);
     TH2D* hist_dphiMETV_PTISR = new TH2D((title+"_dphiMETV_PTISR").c_str(), (title+"_dphiMETV_PTISR;#Delta #phi_{(I,V)};p_{T}^{ISR}").c_str(), g_NX, 0., 3.15, g_NX, 200., 800.);
@@ -1249,9 +1243,9 @@ void Plot_Advanced(){
           int NbjetISR = base->Nbjet_ISR;
 
           // Apply PreSelection
-          //if(base->Njet == 0) continue;
-          //CF_bin++; hist_CutFlow->SetBinContent(CF_bin, hist_CutFlow->GetBinContent(CF_bin)+weight); 
-          //vect_str_cutflow_labels[CF_bin] = "Njet > 0";
+          if(base->Njet == 0) continue;
+          CF_bin++; hist_CutFlow->SetBinContent(CF_bin, hist_CutFlow->GetBinContent(CF_bin)+weight); 
+          vect_str_cutflow_labels[CF_bin] = "Njet > 0";
 
           if(Nlep != 3) continue;
           CF_bin++; hist_CutFlow->SetBinContent(CF_bin, hist_CutFlow->GetBinContent(CF_bin)+weight); 
@@ -1281,18 +1275,45 @@ void Plot_Advanced(){
           double MSCM0 = base->MSCM0;
           double MQCM0 = base->MQCM0;
           double gammaCM0 = base->gammaCM0;
+          double dphiMET_V = base->dphiMET_V;
+          double dphiCMI = base->dphiCMI;
+          double PTCM = base->PTCM;
+          double x = fabs(dphiCMI);
+          double PTISR_LEP = base->PTISR_LEP;
+          double MPa = base->MPa_LEP;
+          double MPb = base->MPb_LEP;
+          double RISR_LEP = base->RISR_LEP;
+          double MQ_LEP = base->MQ_LEP;
+          double MS_LEP = base->MS_LEP;
+          double gamma_LEP = base->gamma_LEP;
+          double CosDecayAngle_S_LEP = base->CosDecayAngle_S_LEP;
+          double CosDecayAngle_Va_LEP = 0.;//sLa.GetCosDecayAngle();
+          double CosDecayAngle_Vb_LEP = 0.;//sLb.GetCosDecayAngle();
+          double CosDecayAngle_Pa_LEP = base->CosDecayAngle_Pa_LEP;
+          double CosDecayAngle_Pb_LEP = base->CosDecayAngle_Pb_LEP;
+          double MVa = base->MVa;
+          double MVb = base->MVb;
+          double PTS_CM = base->PTS_CM_LEP;
+          double MINV_LEP = base->MINV_LEP;
+          double MS_S0 = base->MS_S0_LEP;
+          double MV_S0 = base->MV_S0_LEP;
+          double MQ_S0 = base->MQ_S0_LEP;
+          double gamma_S0 = base->gamma_S0_LEP;
+          double MPTilde = base->MPTilde_LEP;
+          double MSTilde = base->MSTilde_LEP;
+          double gammaTilde = base->gammaTilde_LEP;
 
           //if(MET < 50.) // ATLAS
-          //if(MET < 150.) // PreSelection
-          //  continue;
-          //CF_bin++; hist_CutFlow->SetBinContent(CF_bin, hist_CutFlow->GetBinContent(CF_bin)+weight); 
-          //vect_str_cutflow_labels[CF_bin] = "MET > 150";
-          
-          // apply trigger to data and FullSim events
-          if(!base->SingleElectrontrigger && !base->SingleMuontrigger && !base->DoubleElectrontrigger && !base->DoubleMuontrigger && !base->EMutrigger && !is_FastSim) // ATLAS
+          if(MET <= 150.) // PreSelection
             continue;
           CF_bin++; hist_CutFlow->SetBinContent(CF_bin, hist_CutFlow->GetBinContent(CF_bin)+weight); 
-          vect_str_cutflow_labels[CF_bin] = "Lepton triggers";
+          vect_str_cutflow_labels[CF_bin] = "MET > 150";
+          
+          // apply trigger to data and FullSim events
+          //if(!base->SingleElectrontrigger && !base->SingleMuontrigger && !base->DoubleElectrontrigger && !base->DoubleMuontrigger && !base->EMutrigger && !is_FastSim) // ATLAS
+          //  continue;
+          //CF_bin++; hist_CutFlow->SetBinContent(CF_bin, hist_CutFlow->GetBinContent(CF_bin)+weight); 
+          //vect_str_cutflow_labels[CF_bin] = "Lepton triggers";
           //if(!base->SingleElectrontrigger && !base->SingleMuontrigger && !is_FastSim) // ATLAS
           //  continue;
           //CF_bin++; hist_CutFlow->SetBinContent(CF_bin, hist_CutFlow->GetBinContent(CF_bin)+weight); 
@@ -1302,46 +1323,40 @@ void Plot_Advanced(){
           //CF_bin++; hist_CutFlow->SetBinContent(CF_bin, hist_CutFlow->GetBinContent(CF_bin)+weight); 
           //vect_str_cutflow_labels[CF_bin] = "2L Lepton trigger";
 
-          //if(!base->METORtrigger && !is_FastSim) // PreSelection
-          //  continue;
-          //CF_bin++; hist_CutFlow->SetBinContent(CF_bin, hist_CutFlow->GetBinContent(CF_bin)+weight); 
-          //vect_str_cutflow_labels[CF_bin] = "MET trigger";
-
-          //if(PTISR < 250.) // PreSelection
-	  //  continue;
-          //CF_bin++; hist_CutFlow->SetBinContent(CF_bin, hist_CutFlow->GetBinContent(CF_bin)+weight); 
-          //vect_str_cutflow_labels[CF_bin] = "PTISR > 250";
+          if(!base->METORtrigger && !is_FastSim) // PreSelection
+            continue;
+          CF_bin++; hist_CutFlow->SetBinContent(CF_bin, hist_CutFlow->GetBinContent(CF_bin)+weight); 
+          vect_str_cutflow_labels[CF_bin] = "MET trigger";
 
           // Cleaning cuts...
-          double dphiCMI = base->dphiCMI;
-          double PTCM = base->PTCM;
-          double x = fabs(dphiCMI);
-          
           // PreSelection
-          //if(PTCM > 200.)
-          //  continue;
-          //if(PTCM > -500.*sqrt(std::max(0.,-2.777*x*x+1.388*x+0.8264))+575. &&
-          //   -2.777*x*x+1.388*x+0.8264 > 0.)
-          //  continue;
-          //if(PTCM > -500.*sqrt(std::max(0.,-1.5625*x*x+7.8125*x-8.766))+600. &&
-          //   -1.5625*x*x+7.8125*x-8.766 > 0.)
-          //  continue;
-          //CF_bin++; hist_CutFlow->SetBinContent(CF_bin, hist_CutFlow->GetBinContent(CF_bin)+weight); 
-          //vect_str_cutflow_labels[CF_bin] = "Cleaning Cuts";
+          if(PTCM > 200.)
+            continue;
+          if(PTCM > -500.*sqrt(std::max(0.,-2.777*x*x+1.388*x+0.8264))+575. &&
+             -2.777*x*x+1.388*x+0.8264 > 0.)
+            continue;
+          if(PTCM > -500.*sqrt(std::max(0.,-1.5625*x*x+7.8125*x-8.766))+600. &&
+             -1.5625*x*x+7.8125*x-8.766 > 0.)
+            continue;
+          CF_bin++; hist_CutFlow->SetBinContent(CF_bin, hist_CutFlow->GetBinContent(CF_bin)+weight); 
+          vect_str_cutflow_labels[CF_bin] = "Cleaning Cuts";
           // End of Cleaning cuts...
             
-          double dphiMET_V = base->dphiMET_V;
-          //if(fabs(base->dphiMET_V) > acos(-1.)/2.) continue; // PreSelection
-          //CF_bin++; hist_CutFlow->SetBinContent(CF_bin, hist_CutFlow->GetBinContent(CF_bin)+weight); 
-          //vect_str_cutflow_labels[CF_bin] = "#Delta#phi(MET, V) < #frac{#pi}{2}";
+          if(fabs(base->dphiMET_V) > acos(-1.)/2.) continue; // PreSelection
+          CF_bin++; hist_CutFlow->SetBinContent(CF_bin, hist_CutFlow->GetBinContent(CF_bin)+weight); 
+          vect_str_cutflow_labels[CF_bin] = "#Delta#phi(MET, V) < #frac{#pi}{2}";
+
+          if(PTISR <= 250.) // PreSelection
+	    continue;
+          CF_bin++; hist_CutFlow->SetBinContent(CF_bin, hist_CutFlow->GetBinContent(CF_bin)+weight); 
+          vect_str_cutflow_labels[CF_bin] = "PTISR > 250";
             
           //if(RISR < 0.4 || RISR > 0.7) // CR
           //if(RISR < 0.7 || RISR > 1.0)
-          //if(RISR < 0.5 || RISR > 1.0) // PreSelection
-          //if(RISR < 0.5 || RISR > 1.0) // PreSelection
-          //  continue;
-          //CF_bin++; hist_CutFlow->SetBinContent(CF_bin, hist_CutFlow->GetBinContent(CF_bin)+weight); 
-          //vect_str_cutflow_labels[CF_bin] = "R_{ISR} > 0.5";
+          if(RISR_LEP < 0.5 || RISR_LEP > 1.0) // PreSelection
+            continue;
+          CF_bin++; hist_CutFlow->SetBinContent(CF_bin, hist_CutFlow->GetBinContent(CF_bin)+weight); 
+          vect_str_cutflow_labels[CF_bin] = "R_{ISR} > 0.5";
 
           //if(base->RISR_JET < 0.7) // PreSelection
           //  continue;
@@ -1425,9 +1440,9 @@ void Plot_Advanced(){
           //if(nSL > 0) continue; // no silver leps
           //if(nGL > 0) continue; // no gold leps
           //if(nSL > 3) continue; // no more than N silver leps
-          if((abs(base->PDGID_lep->at(0)) == 13 && base->PT_lep->at(0) < 26.) || (abs(base->PDGID_lep->at(0)) == 11 && base->PT_lep->at(0) < 30.)) continue;
-          CF_bin++; hist_CutFlow->SetBinContent(CF_bin, hist_CutFlow->GetBinContent(CF_bin)+weight); 
-          vect_str_cutflow_labels[CF_bin] = "p_{T}^{1} > trig";
+          //if((abs(base->PDGID_lep->at(0)) == 13 && base->PT_lep->at(0) < 26.) || (abs(base->PDGID_lep->at(0)) == 11 && base->PT_lep->at(0) < 30.)) continue;
+          //CF_bin++; hist_CutFlow->SetBinContent(CF_bin, hist_CutFlow->GetBinContent(CF_bin)+weight); 
+          //vect_str_cutflow_labels[CF_bin] = "p_{T}^{1} > trig";
           //if(base->PT_lep->at(1) < 12.5) continue;
           //CF_bin++; hist_CutFlow->SetBinContent(CF_bin, hist_CutFlow->GetBinContent(CF_bin)+weight); 
           //vect_str_cutflow_labels[CF_bin] = "p_{T}^{2} > 12.5";
@@ -1436,15 +1451,20 @@ void Plot_Advanced(){
           //CF_bin++; hist_CutFlow->SetBinContent(CF_bin, hist_CutFlow->GetBinContent(CF_bin)+weight); 
           //vect_str_cutflow_labels[CF_bin] = "p_{T}^{3} > 7.5";
 
-          //if(NbjetISR + NbjetS != 2) continue; // CR
-          if(NbjetISR + NbjetS > 1) continue; // SR & ATLAS 'B-Veto'
+          if(NbjetISR + NbjetS > 0) continue; // SR & ATLAS 'B-Veto'
           CF_bin++; hist_CutFlow->SetBinContent(CF_bin, hist_CutFlow->GetBinContent(CF_bin)+weight); 
           vect_str_cutflow_labels[CF_bin] = "B-Veto";
 
-          double maxSIP3D = std::max({base->SIP3D_lep->at(0), base->SIP3D_lep->at(1), base->SIP3D_lep->at(2)});
-          if(maxSIP3D > 3.5) continue;
-          CF_bin++; hist_CutFlow->SetBinContent(CF_bin, hist_CutFlow->GetBinContent(CF_bin)+weight); 
-          vect_str_cutflow_labels[CF_bin] = "SIP3DMax < 3.5";
+          double maxSIP3D = 0;
+          //maxSIP3D = std::max({
+          //, base->SIP3D_lep->at(0), 
+          //, base->SIP3D_lep->at(1)
+          //, base->SIP3D_lep->at(2)
+          //, base->SIP3D_lep->at(3)
+          //});
+          //if(maxSIP3D > 3.) continue;
+          //CF_bin++; hist_CutFlow->SetBinContent(CF_bin, hist_CutFlow->GetBinContent(CF_bin)+weight); 
+          //vect_str_cutflow_labels[CF_bin] = "SIP3DMax < 3";
 
           //if(nGL < 1) continue; // at least N gold leps
           //CF_bin++; hist_CutFlow->SetBinContent(CF_bin, hist_CutFlow->GetBinContent(CF_bin)+weight); 
@@ -1456,9 +1476,9 @@ void Plot_Advanced(){
           //CF_bin++; hist_CutFlow->SetBinContent(CF_bin, hist_CutFlow->GetBinContent(CF_bin)+weight); 
           //vect_str_cutflow_labels[CF_bin] = "Lep Qual: GGG";
 
-          //if(NjetS != 0) continue; // SR
-          //CF_bin++; hist_CutFlow->SetBinContent(CF_bin, hist_CutFlow->GetBinContent(CF_bin)+weight); 
-          //vect_str_cutflow_labels[CF_bin] = "0J S";
+          if(NjetS != 0) continue; // SR
+          CF_bin++; hist_CutFlow->SetBinContent(CF_bin, hist_CutFlow->GetBinContent(CF_bin)+weight); 
+          vect_str_cutflow_labels[CF_bin] = "0J S";
 
           //if(NjetS == 0) continue; // SR
           //CF_bin++; hist_CutFlow->SetBinContent(CF_bin, hist_CutFlow->GetBinContent(CF_bin)+weight); 
@@ -2053,92 +2073,6 @@ void Plot_Advanced(){
             hist_MAXCandML_MAXCosDecayAngle->Fill(MAXcandML, MAXCosDecayAngle, weight);
           } // at least one lep cand
 
-          // Implement new RJR tree
-          //LAB.ClearEvent();
-          //vector<RFKey> lep_RJR_keys;
-          //INV.SetLabFrameThreeVector(TV3_MET);
-          //TLorentzVector TLV_RJR_Jets;
-          //for(int i = 0; i < Njet; i++){
-          //  TLorentzVector jet; jet.SetPtEtaPhiM( base->PT_jet->at(i),
-          //                          base->Eta_jet->at(i),
-          //                          base->Phi_jet->at(i),
-          //                          std::max(0.,base->M_jet->at(i)) );
-          //  TLV_RJR_Jets += jet;
-          //}
-          //ISR.SetLabFrameFourVector(TLV_RJR_Jets);
-          //for(int i = 0; i < Nlep; i++){
-          //  TLorentzVector lep; lep.SetPtEtaPhiM( base->PT_lep->at(i),
-          //                          base->Eta_lep->at(i),
-          //                          base->Phi_lep->at(i),
-          //                          std::max(0.,base->M_lep->at(i)) );
-          //  RFKey key = COMB_L.AddLabFrameFourVector(lep);
-          //  lep_RJR_keys.push_back(key);
-          //}
-          //if(!LAB.AnalyzeEvent()) cout << "Problem with RJR Analyze Event \n";
-          //bool BSideIsA = false;
-          //if(Lb.GetFourVector().M() > La.GetFourVector().M()) BSideIsA = true;
-
-          //TVector3 vPISR = S.GetFourVector(CM).Vect();
-          double PTISR_LEP = base->PTISR_LEP;//vPISR.Pt();
-          //TVector3 vPINV = (Ia.GetFourVector(CM)+Ib.GetFourVector(CM)).Vect();
-
-          //double MPa = Pa.GetFourVector().M();
-          //double MPb = Pb.GetFourVector().M();
-          //if(BSideIsA){ MPa = Pb.GetFourVector().M(); MPb = Pa.GetFourVector().M(); }
-          double MPa = base->MPa_LEP;
-          double MPb = base->MPb_LEP;
-          double RISR_LEP = base->RISR_LEP;//fabs(vPINV.Dot(vPISR.Unit())) / vPISR.Mag();
-          double MQ_LEP = base->MQ_LEP;//sqrt(MPa*MPa+MPb*MPb)/sqrt(2.);
-          double MS_LEP = base->MS_LEP;//S.GetFourVector().M();
-          double gamma_LEP = base->gamma_LEP;//2.*MQ_LEP/MS_LEP;
-          double CosDecayAngle_S_LEP = base->CosDecayAngle_S_LEP;//S.GetCosDecayAngle();
-          //double CosDecayAngle_Pa_LEP = Pa.GetCosDecayAngle();
-          //double CosDecayAngle_Pb_LEP = Pb.GetCosDecayAngle();
-          double CosDecayAngle_Va_LEP = 0.;//sLa.GetCosDecayAngle();
-          double CosDecayAngle_Vb_LEP = 0.;//sLb.GetCosDecayAngle();
-          //if(BSideIsA){ CosDecayAngle_Pa_LEP = Pb.GetCosDecayAngle(); CosDecayAngle_Pb_LEP = Pa.GetCosDecayAngle(); }
-          double CosDecayAngle_Pa_LEP = base->CosDecayAngle_Pa_LEP;
-          double CosDecayAngle_Pb_LEP = base->CosDecayAngle_Pb_LEP;
-          //double MVa = La.GetFourVector().M();
-          //double MVb = Lb.GetFourVector().M();
-          //if(BSideIsA){ MVa = Lb.GetFourVector().M(); MVb = La.GetFourVector().M(); }
-          double MVa = base->MVa;
-          double MVb = base->MVb;
-          //double PTS_CM = S.GetFourVector(CM).Pt();
-          double PTS_CM = base->PTS_CM_LEP;
-          //TLorentzVector TLV_L_CMLEP = La.GetFourVector(CM) + Lb.GetFourVector(CM);
-          //double RZPara_LEP = TLV_L_CMLEP.Vect().Dot(S.GetFourVector(CM).Vect().Unit())/S.GetFourVector(CM).Vect().Mag();
-          //double MINV_LEP = TLV_L_CMLEP.M()*RISR_LEP/RZPara_LEP;
-          double MINV_LEP = base->MINV_LEP;
-
-          //TLorentzVector Ia_S = Ia.GetFourVector(S);
-          //TLorentzVector Ib_S = Ib.GetFourVector(S);
-          //TLorentzVector La_S = La.GetFourVector(S);
-          //TLorentzVector Lb_S = Lb.GetFourVector(S);
-          //TLorentzVector Ia_S0;
-          //TLorentzVector Ib_S0;
-          //TLorentzVector La_S0;
-          //TLorentzVector Lb_S0;
-          //Ia_S0.SetPtEtaPhiM(Ia_S.Pt(), Ia_S.Eta(), Ia_S.Phi(), 0.);
-          //Ib_S0.SetPtEtaPhiM(Ib_S.Pt(), Ib_S.Eta(), Ib_S.Phi(), 0.);
-          //La_S0.SetPtEtaPhiM(La_S.Pt(), La_S.Eta(), La_S.Phi(), 0.);
-          //Lb_S0.SetPtEtaPhiM(Lb_S.Pt(), Lb_S.Eta(), Lb_S.Phi(), 0.);
-          //double MS_S0 = (Ia_S0+Ib_S0+La_S0+Lb_S0).M();
-          //double MV_S0 = (La_S0+Lb_S0).M();
-          //double MQ_S0 = sqrt(((Ia_S0+La_S0).M2()+(Ib_S0+Lb_S0).M2())/2.);
-          //double gamma_S0 = 2.*MQ_S0/MS_S0;
-          double MS_S0 = base->MS_S0_LEP;
-          double MV_S0 = base->MV_S0_LEP;
-          double MQ_S0 = base->MQ_S0_LEP;
-          double gamma_S0 = base->gamma_S0_LEP;
-
-          //TLorentzVector Ia_Pa = Ia.GetFourVector(Pa);
-          //TLorentzVector Ib_Pb = Ib.GetFourVector(Pb);
-          double MPTilde = base->MPTilde_LEP;//Ia_Pa.Vect().Mag() + Ib_Pb.Vect().Mag();
-          //TLorentzVector Pa_S = Pa.GetFourVector(S);
-          double MSTilde = base->MSTilde_LEP;//sqrt(MPTilde*MPTilde+Pa_S.Vect().Mag2());
-          double gammaTilde = base->gammaTilde_LEP;//MPTilde/MSTilde;
-
           //if(RISR_LEP < 0.5) continue;
           //CF_bin++; hist_CutFlow->SetBinContent(CF_bin, hist_CutFlow->GetBinContent(CF_bin)+weight); 
           //vect_str_cutflow_labels[CF_bin] = "R_{ISR}^{LEP} > 0.5";
@@ -2147,21 +2081,21 @@ void Plot_Advanced(){
           //CF_bin++; hist_CutFlow->SetBinContent(CF_bin, hist_CutFlow->GetBinContent(CF_bin)+weight); 
           //vect_str_cutflow_labels[CF_bin] = "PT_{ISR}^{LEP} > 150";
 
-          if(MVa < 4 || MVa > 65.) continue;
-          CF_bin++; hist_CutFlow->SetBinContent(CF_bin, hist_CutFlow->GetBinContent(CF_bin)+weight); 
-          vect_str_cutflow_labels[CF_bin] = "4 < M_{Va}^{LEP} < 65";
+          //if(MVa < 4 || MVa > 65.) continue;
+          //CF_bin++; hist_CutFlow->SetBinContent(CF_bin, hist_CutFlow->GetBinContent(CF_bin)+weight); 
+          //vect_str_cutflow_labels[CF_bin] = "4 < M_{Va}^{LEP} < 65";
 
-          if(MS_LEP < 300.) continue;
-          CF_bin++; hist_CutFlow->SetBinContent(CF_bin, hist_CutFlow->GetBinContent(CF_bin)+weight); 
-          vect_str_cutflow_labels[CF_bin] = "MS^{LEP} > 300";
+          //if(MS_LEP < 300.) continue;
+          //CF_bin++; hist_CutFlow->SetBinContent(CF_bin, hist_CutFlow->GetBinContent(CF_bin)+weight); 
+          //vect_str_cutflow_labels[CF_bin] = "MS^{LEP} > 300";
 
-          if(CosDecayAngle_Pa_LEP+CosDecayAngle_Pb_LEP > 0.19) continue;
-          CF_bin++; hist_CutFlow->SetBinContent(CF_bin, hist_CutFlow->GetBinContent(CF_bin)+weight); 
-          vect_str_cutflow_labels[CF_bin] = "cos#theta^{Pa}+cos#theta^{Pb} < 0.19";
+          //if(CosDecayAngle_Pa_LEP+CosDecayAngle_Pb_LEP > 0.19) continue;
+          //CF_bin++; hist_CutFlow->SetBinContent(CF_bin, hist_CutFlow->GetBinContent(CF_bin)+weight); 
+          //vect_str_cutflow_labels[CF_bin] = "cos#theta^{Pa}+cos#theta^{Pb} < 0.19";
 
-          if(CosDecayAngle_S_LEP > 0.8) continue;
-          CF_bin++; hist_CutFlow->SetBinContent(CF_bin, hist_CutFlow->GetBinContent(CF_bin)+weight); 
-          vect_str_cutflow_labels[CF_bin] = "cos#theta^{S} < 0.8";
+          //if(CosDecayAngle_S_LEP > 0.8) continue;
+          //CF_bin++; hist_CutFlow->SetBinContent(CF_bin, hist_CutFlow->GetBinContent(CF_bin)+weight); 
+          //vect_str_cutflow_labels[CF_bin] = "cos#theta^{S} < 0.8";
 
           //if(MQ_LEP > 150.) continue;
           //CF_bin++; hist_CutFlow->SetBinContent(CF_bin, hist_CutFlow->GetBinContent(CF_bin)+weight); 

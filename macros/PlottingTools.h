@@ -983,23 +983,23 @@ void Plot_CutFlow(vector<TH1*> vect_h, bool Scale, double Scale_Val, double sign
 LabRecoFrame LAB("LAB","lab");
 DecayRecoFrame CM("CM","CM");
 DecayRecoFrame S("S","S");
-DecayRecoFrame Pa("Pa","P_{#it{a}}");
-DecayRecoFrame Pb("Pb","P_{#it{b}}");
-VisibleRecoFrame Ja("Ja","J_{#it{a}}");
-VisibleRecoFrame Jb("Jb","J_{#it{b}}");
-VisibleRecoFrame Va("Va","V_{#it{a}}");
-VisibleRecoFrame Vb("Vb","V_{#it{b}}");
-VisibleRecoFrame La("La","L_{#it{a}}");
-VisibleRecoFrame Lb("Lb","L_{#it{b}}");
+DecayRecoFrame Pa("Pa","P_{a}");
+DecayRecoFrame Pb("Pb","P_{b}");
+VisibleRecoFrame Ja("Ja","J_{a}");
+VisibleRecoFrame Jb("Jb","J_{b}");
+VisibleRecoFrame Va("Va","V_{a}");
+VisibleRecoFrame Vb("Vb","V_{b}");
+VisibleRecoFrame La("La","L_{a}");
+VisibleRecoFrame Lb("Lb","L_{b}");
 VisibleRecoFrame ISR("ISR","ISR");
-InvisibleRecoFrame Ia("Ia","I_{#it{a}}");
-InvisibleRecoFrame Ib("Ib","I_{#it{b}}");
+InvisibleRecoFrame Ia("Ia","I_{a}");
+InvisibleRecoFrame Ib("Ib","I_{b}");
 SelfAssemblingRecoFrame sLa("sLa","sLa");
 SelfAssemblingRecoFrame sLb("sLb","sLb");
 InvisibleGroup INV("INV","Invisible System");
 SetMassInvJigsaw InvM("InvM", "Set inv. system mass");
 SetRapidityInvJigsaw InvEta("InvEta", "Set inv. system rapidity");
-MinMassesSqInvJigsaw InvSplit("InvSplit", "INV -> I_{#it{a}} + I_{#it{b}}", 2);
+MinMassesSqInvJigsaw InvSplit("InvSplit", "INV -> I_{a} + I_{b}", 2);
 CombinatoricGroup COMB_L("COMB_L","Lepton Jigsaws");
 MinMassesSqCombJigsaw CombSplitSq_L("CombSplitSq_L", "Minimize M_{Sa}^{2} + M_{Sb}^{2}",2,2);
 
@@ -1010,12 +1010,12 @@ void InitRJRtree(){
   CM.AddChildFrame(ISR);
   S.AddChildFrame(Pa);
   S.AddChildFrame(Pb);
+  Pa.AddChildFrame(Ia);
+  Pb.AddChildFrame(Ib);
   Pa.AddChildFrame(sLa);
   Pb.AddChildFrame(sLb);
   sLa.AddChildFrame(La);
   sLb.AddChildFrame(Lb);
-  Pa.AddChildFrame(Ia);
-  Pb.AddChildFrame(Ib);
 
   LAB.InitializeTree();
 
