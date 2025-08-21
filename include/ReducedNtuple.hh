@@ -156,6 +156,8 @@ private:
   bool m_TripleMuonLowPTtrigger;
   bool m_TripleMuonHighPTtrigger;
   bool m_EMutrigger;  
+  bool m_EMuMutrigger;  
+  bool m_EMuEtrigger;  
   bool m_DiMuEleLowPTtrigger;
   bool m_DiMuEleHighPTtrigger;
   bool m_DiEleMutrigger;

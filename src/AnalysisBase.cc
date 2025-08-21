@@ -428,6 +428,16 @@ bool AnalysisBase<Base>::GetEMutrigger(){
 }
 
 template <class Base>
+bool AnalysisBase<Base>::GetEMuMutrigger(){
+  return false;
+}
+
+template <class Base>
+bool AnalysisBase<Base>::GetEMuEtrigger(){
+  return false;
+}
+
+template <class Base>
 ParticleList AnalysisBase<Base>::GetJetsMET(TVector3& MET, int id){
   return ParticleList();
 }
@@ -1667,12 +1677,17 @@ bool AnalysisBase<SUSYNANOBase>::GetDiEleMutrigger(){
 
 template <>
 bool AnalysisBase<SUSYNANOBase>::GetEMutrigger(){
-  if(m_year == 2016)
-    return (HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ);
-  if(m_year == 2017 ||
-     m_year == 2018)
-    return (HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ);
-  return 0;
+  return HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ || HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ;
+}
+
+template <>
+bool AnalysisBase<SUSYNANOBase>::GetEMuMutrigger(){
+  return HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ;
+}
+
+template <>
+bool AnalysisBase<SUSYNANOBase>::GetEMuEtrigger(){
+  return HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ;
 }
 
 template <>
@@ -3183,7 +3198,17 @@ bool AnalysisBase<NANOULBase>::GetDiEleMutrigger(){
 
 template <>
 bool AnalysisBase<NANOULBase>::GetEMutrigger(){
+  return HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ || HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ;
+}
+
+template <>
+bool AnalysisBase<NANOULBase>::GetEMuMutrigger(){
   return HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ;
+}
+
+template <>
+bool AnalysisBase<NANOULBase>::GetEMuEtrigger(){
+  return HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ;
 }
 
 template <>  
@@ -4682,7 +4707,17 @@ bool AnalysisBase<NANORun3>::GetDiEleMutrigger(){
 
 template <>
 bool AnalysisBase<NANORun3>::GetEMutrigger(){
+  return HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ || HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ;
+}
+
+template <>
+bool AnalysisBase<NANORun3>::GetEMuMutrigger(){
   return HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ;
+}
+
+template <>
+bool AnalysisBase<NANORun3>::GetEMuEtrigger(){
+  return HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ;
 }
 
 template <>  

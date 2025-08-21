@@ -328,6 +328,8 @@ TTree* ReducedNtuple<Base>::InitOutputTree(const string& sample, bool do_slim){
   tree->Branch("SingleElectrontrigger", &m_SingleElectrontrigger);
   tree->Branch("SingleMuontrigger", &m_SingleMuontrigger);
   tree->Branch("EMutrigger", &m_EMutrigger);
+  tree->Branch("EMuMutrigger", &m_EMuMutrigger);
+  tree->Branch("EMuEtrigger", &m_EMuEtrigger);
   tree->Branch("DoubleElectrontrigger", &m_DoubleElectrontrigger);
   tree->Branch("DoubleMuontrigger", &m_DoubleMuontrigger);
   tree->Branch("TripleElectrontrigger", &m_TripleElectrontrigger);
@@ -2128,6 +2130,8 @@ void ReducedNtuple<Base>::FillOutputTree(TTree* tree, const Systematic& sys, boo
   m_DiMuEleHighPTtrigger = AnalysisBase<Base>::GetDiMuEleHighPTtrigger();
   m_DiEleMutrigger = AnalysisBase<Base>::GetDiEleMutrigger();
   m_EMutrigger = AnalysisBase<Base>::GetEMutrigger(); 
+  m_EMuMutrigger = AnalysisBase<Base>::GetEMuMutrigger(); 
+  m_EMuEtrigger = AnalysisBase<Base>::GetEMuEtrigger(); 
   
   m_MET     = ETMiss.Pt();
   m_MET_phi = ETMiss.Phi();

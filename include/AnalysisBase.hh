@@ -103,6 +103,8 @@ public:
   virtual bool GetDiMuEleHighPTtrigger();
   virtual bool GetDiEleMutrigger();
   virtual bool GetEMutrigger(); 
+  virtual bool GetEMuMutrigger(); // High MuPt Low ElePt
+  virtual bool GetEMuEtrigger(); // Low MuPt High ElePt
   
   virtual TVector3 GetPV(bool& good);
   virtual TVector3 GetMET();
