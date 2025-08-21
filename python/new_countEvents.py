@@ -106,6 +106,7 @@ class EventCount:
         file = ROOT.TFile(u_file, "READ")
         tree = file.Get("EventCount")
         dataset_dict = {}
+        if not tree: return dataset_dict
         for entry in tree:
             key = f"{str(entry.dataset)}_{str(entry.filetag)}"
             das_name = str(entry.DAS_datasetname)
