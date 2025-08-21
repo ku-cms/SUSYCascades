@@ -3,7 +3,6 @@ import os, sys, time, subprocess, re, glob
 from colorama import Fore, Back, Style
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'python')))
 from CondorJobCountMonitor import CondorJobCountMonitor
-from GitHashTool import GitHashTool
 from GitHelpers import *
 
 # Example submission: 
@@ -121,7 +120,6 @@ def write_sh_single(srcfile,ifile,ofile,logfile,outfile,errfile,dataset,filetag,
     fsrc.write('-metfile='+METFILE+" ")
     fsrc.write('-prefirefile='+PREFIREFILE+" ")
     fsrc.write('-xsjsonfile='+XSJSONFILE+" ")
-    fsrc.write('-githash='+GITHASH+" ")
     fsrc.write('-split=1,'+str(n)+'\n')
 
     outlog = outfile+".out"
@@ -199,7 +197,6 @@ def write_sh(srcfile,ifile,ofile,logfile,outfile,errfile,dataset,filetag,n,NAME,
     fsrc.write('-metfile='+METFILE+" ")
     fsrc.write('-prefirefile='+PREFIREFILE+" ")
     fsrc.write('-xsjsonfile='+XSJSONFILE+" ")
-    fsrc.write('-githash='+GITHASH+" ")
     splitstring = '-split=%s,%d\n' % ('$$([$(Step)+1])', n)
     fsrc.write(splitstring)
 
@@ -334,8 +331,6 @@ if __name__ == "__main__":
         MAX_JOBS_SUB = 10000
 
     THRESHOLD = 0.99*get_auto_THRESHOLD()
-    gitHashTool = GitHashTool()
-    GITHASH = gitHashTool.getHash()
     
     print (" --- Preparing condor submission to create ntuples.")
     if DO_DATA:

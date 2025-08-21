@@ -30,7 +30,7 @@ def process_event_count_dirs(input_dir, output_dir, dryrun):
         
         # Construct and execute hadd command
         # First hadd intermediate datasets (reduce arg list for final hadd)
-        command = f"python3 scripts/DO_hadd.py -idir {input_dir}{subdir} -odir {input_dir}../HADD/{subdir} | tee HADD_logs/HADD_{subdir}.debug"
+        command = f"python3 scripts/DO_hadd_Meta.py -idir {input_dir}{subdir} -odir {input_dir}../HADD/{subdir} | tee HADD_logs/HADD_{subdir}.debug"
         run_command(command,dryrun)
         
         # Construct input and output paths
