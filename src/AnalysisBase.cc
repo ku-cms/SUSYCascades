@@ -5621,6 +5621,8 @@ ParticleList AnalysisBase<NANORun3>::GetElectrons(){
       continue;
     if(Electron_lostHits[i] != 0)
       continue;
+    if(Electron_convVeto[i] == 0)
+      continue;
 
     Particle lep;
     lep.SetPtEtaPhiM(Electron_pt[i], Electron_eta[i],
