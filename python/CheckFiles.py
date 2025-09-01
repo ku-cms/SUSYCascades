@@ -330,21 +330,45 @@ def main():
     threshold      = int(options.threshold)
     sleep_time     = int(options.sleep)
 
+    # quick strictly das check from root file (useful for after final hadd test)
     if directory is None:
-        # quick strictly das check from root file (useful for final hadd test)
+        file_list = []
         event_count = EventCount()
-        for filename in os.listdir(output):
-            full_path = os.path.join(output, filename)
-            if filename.endswith(".root") and os.path.isfile(full_path):
-                totalEvents = event_count.countTotalEvents(full_path)
-                DAS_events = event_count.getEventsFromDASDatasetNames(full_path)
-                if DAS_events == 0:
-                    print("Something wrong with DAS events in",full_path)
-                elif totalEvents != DAS_events:
-                    comp_percent = 100.*math.floor(totalEvents/DAS_events * 1000) / 1000
-                    print(f'{full_path} failed the DAS check! ({comp_percent}%) Use other options to investigate')
-                else:
-                    print(f'{full_path} passed the DAS check!')
+
+        if "root://cmseos.fnal.gov/" in output:
+            eos_path = output.split("root://cmseos.fnal.gov/")[1]
+            # Run xrdfs and capture stdout
+            result = subprocess.run(
+                ["xrdfs", "root://cmseos.fnal.gov", "ls", eos_path],
+                check=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True
+            )
+            file_list = [
+                f"root://cmseos.fnal.gov/{line.strip()}"
+                for line in result.stdout.splitlines()
+                if line.strip().endswith(".root")
+            ]
+        else:
+            # Local directory
+            file_list = [
+                os.path.join(output, f)
+                for f in os.listdir(output)
+                if f.endswith(".root") and os.path.isfile(os.path.join(output, f))
+            ]
+
+        for full_path in file_list:
+            totalEvents = event_count.countTotalEvents(full_path)
+            DAS_events = event_count.getEventsFromDASDatasetNames(full_path)
+        
+            if DAS_events == 0:
+                print("Something wrong with DAS events in", full_path)
+            elif totalEvents != DAS_events:
+                comp_percent = 100. * math.floor(totalEvents / DAS_events * 1000) / 1000
+                print(f'{full_path} failed the DAS check! ({comp_percent}%) Use other options to investigate')
+            else:
+                print(f'{full_path} passed the DAS check!')
 
     else:
         # default checking that's robust
@@ -366,7 +390,7 @@ def main():
         nJobs = checkJobs(directory,output,skipEC,skipDAS,skipMissing,skipSmall,skipErr,skipOut,skipZombie,resubmit,maxResub,filter_list,threshold,skipDASDataset)
         if resubmit and nJobs > 0:
             print(f"Resubmitted a total of {nJobs} jobs!")
-        print("Checker Complete!")
+    print("Checker Complete!")
 
 if __name__ == "__main__":
     main()

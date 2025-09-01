@@ -437,7 +437,7 @@ std::string NeventTool::Get_DASfilename(const std::string& u_file)
  TString das_output = gSystem->GetFromPipe(("dasgoclient -query=\"file="+filename+"\"").c_str());
  return std::string(das_output.Data());
 }
-
+/*
 int NeventTool::EventsInDAS(const std::string& u_file)
 {
  int Events = 0;
@@ -451,6 +451,36 @@ int NeventTool::EventsInDAS(const std::string& u_file)
   Events = std::stoi(events_string);
  }
  return Events;
+}
+*/
+
+int NeventTool::EventsInDAS(const std::string& u_file)
+{
+    std::string filename = u_file;
+    size_t pos = filename.find("/store/");
+    if (pos != std::string::npos)
+        filename = filename.substr(pos);
+
+    std::string cmd = "dasgoclient -query=\"file=" + filename + " | grep file.nevents\" -format plain";
+    TString das_output = gSystem->GetFromPipe(cmd.c_str());
+    std::string out = das_output.Data();
+
+    // trim
+    out.erase(0, out.find_first_not_of(" \n\r\t"));
+    out.erase(out.find_last_not_of(" \n\r\t") + 1);
+
+    // check for error or empty
+    if (out.empty() || out.rfind("ERROR", 0) == 0) {
+        std::cerr << "DAS query failed for file: " << filename << std::endl;
+        return 0;
+    }
+
+    try {
+        return std::stoi(out);
+    } catch (const std::exception& e) {
+        std::cerr << "Failed to parse nevents from DAS output: " << out << std::endl;
+        return 0;
+    }
 }
 
 std::map<std::string,std::map<int,double> > NeventTool::InitMap_FilterEff(){
