@@ -325,6 +325,7 @@ TTree* ReducedNtuple<Base>::InitOutputTree(const string& sample, bool do_slim){
 
   tree->Branch("METtrigger", &m_METtrigger);
   tree->Branch("METORtrigger", &m_METORtrigger);
+  tree->Branch("METDoubleMutrigger", &m_METDoubleMutrigger);
   tree->Branch("SingleElectrontrigger", &m_SingleElectrontrigger);
   tree->Branch("SingleMuontrigger", &m_SingleMuontrigger);
   tree->Branch("EMutrigger", &m_EMutrigger);
@@ -2118,6 +2119,7 @@ void ReducedNtuple<Base>::FillOutputTree(TTree* tree, const Systematic& sys, boo
 
   m_METtrigger   = AnalysisBase<Base>::GetMETtrigger();
   m_METORtrigger = AnalysisBase<Base>::GetMETORtrigger();
+  m_METDoubleMutrigger = AnalysisBase<Base>::GetMETDoubleMutrigger();
 
   m_SingleElectrontrigger = AnalysisBase<Base>::GetSingleElectrontrigger();
   m_SingleMuontrigger = AnalysisBase<Base>::GetSingleMuontrigger();

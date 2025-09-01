@@ -147,6 +147,7 @@ private:
   
   bool m_METtrigger;
   bool m_METORtrigger;
+  bool m_METDoubleMutrigger;
 
   bool m_SingleElectrontrigger;
   bool m_SingleMuontrigger;

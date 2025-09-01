@@ -5608,8 +5608,6 @@ ParticleList AnalysisBase<NANORun3>::GetElectrons(){
     // baseline lepton definition
     if(Electron_pt[i] < 7. || fabs(Electron_eta[i]) > 2.5)
       continue;
-    if(Electron_pt[i] < 10. && fabs(Electron_eta[i]) > 1.4442) // remove low pt endcap ele
-      continue;
     if(fabs(Electron_eta[i]) >= 1.4442 && fabs(Electron_eta[i]) <= 1.566)
       continue;
     if(fabs(Electron_dxy[i]) >= 0.05 || fabs(Electron_dz[i]) >= 0.1 ||
@@ -5683,7 +5681,7 @@ ParticleList AnalysisBase<NANORun3>::GetLowPtElectrons(){
       continue;
     if(fabs(LowPtElectron_eta[i]) >= 1.4442 && fabs(LowPtElectron_eta[i]) <= 1.566)
       continue;
-    if(LowPtElectron_pt[i] < 10. && fabs(LowPtElectron_eta[i]) > 1.4442) // remove low pt endcap ele
+    if(LowPtElectron_pt[i] < 5. && fabs(LowPtElectron_eta[i]) > 1.4442) // remove low pt endcap ele
       continue;
     if(LowPtElectron_convVeto[i] == 0)
       continue;
