@@ -548,6 +548,7 @@ TTree* ReducedNtuple<Base>::InitOutputTree(const string& sample, bool do_slim){
   tree->Branch("MPb_LEP", &m_MPb_LEP);
   tree->Branch("MVa_LEP", &m_MVa_LEP);
   tree->Branch("MVb_LEP", &m_MVb_LEP);
+  tree->Branch("MaRatio_LEP", &m_MaRatio_LEP);
   tree->Branch("PTS_CM_LEP", &m_PTS_CM_LEP);
   tree->Branch("MS_S0_LEP", &m_MS_S0_LEP);
   tree->Branch("MV_S0_LEP", &m_MV_S0_LEP);
@@ -563,6 +564,8 @@ TTree* ReducedNtuple<Base>::InitOutputTree(const string& sample, bool do_slim){
   tree->Branch("CosDecayAngle_S_LEP", &m_CosDecayAngle_S_LEP);
   tree->Branch("RZPara_LEP", &m_RZPara_LEP);
   tree->Branch("MINV_LEP", &m_MINV_LEP);
+  tree->Branch("Mperp_LEP", &m_Mperp_LEP);
+  tree->Branch("gammaT_LEP", &m_gammaT_LEP);
 
   tree->Branch("Mperp_JET_ISR", &m_Mperp_JET_ISR);
   tree->Branch("gammaT_JET_ISR", &m_gammaT_JET_ISR);
@@ -1610,6 +1613,11 @@ void ReducedNtuple<Base>::FillOutputTree(TTree* tree, const Systematic& sys, boo
       TLorentzVector TLV_L_CMLEP = La[t]->GetFourVector(*CM[t]) + Lb[t]->GetFourVector(*CM[t]);
       m_RZPara_LEP = TLV_L_CMLEP.Vect().Dot(S[t]->GetFourVector(*CM[t]).Vect().Unit())/S[t]->GetFourVector(*CM[t]).Vect().Mag();
       m_MINV_LEP = TLV_L_CMLEP.M()*m_RISR_LEP/m_RZPara_LEP;
+      if(m_Nlep == 2) {
+        m_MVa_LEP = (La[t]->GetFourVector() + Lb[t]->GetFourVector()).M();
+        m_MPa_LEP = (X2a[t]->GetFourVector() + X2b[t]->GetFourVector()).M();
+      }
+      m_MaRatio_LEP = m_MVa_LEP/m_MPa_LEP;
 
       TLorentzVector X1a_S = X1a[t]->GetFourVector(*S[t]);
       TLorentzVector X1b_S = X1b[t]->GetFourVector(*S[t]);
@@ -1636,6 +1644,49 @@ void ReducedNtuple<Base>::FillOutputTree(TTree* tree, const Systematic& sys, boo
       m_MPTilde_LEP = X1a_X2a.Vect().Mag() + X1b_X2b.Vect().Mag();
       m_MSTilde_LEP = sqrt(m_MPTilde_LEP*m_MPTilde_LEP+X2a_S.Vect().Mag2());
       m_gammaTilde_LEP = m_MPTilde_LEP/m_MSTilde_LEP;
+
+      // removing momentum components parallel to CM->S boost
+      TLorentzVector vP_S_CM  = S[t]->GetFourVector(*CM[t]);
+      TLorentzVector vP_La_S  = La[t]->GetFourVector(*S[t]);
+      TLorentzVector vP_Lb_S  = Lb[t]->GetFourVector(*S[t]);
+      TLorentzVector vP_Ia_S  = X1a[t]->GetFourVector(*S[t]);
+      TLorentzVector vP_Ib_S  = X1b[t]->GetFourVector(*S[t]);
+
+      TVector3 boostVis = (vP_La_S+vP_Lb_S).BoostVector();
+      TVector3 boostInv = (vP_Ia_S+vP_Ib_S).BoostVector();
+      TVector3 daBoost = vP_S_CM.Vect().Unit();
+      
+      boostVis = (boostVis.Dot(daBoost))*daBoost;
+      boostInv = (boostInv.Dot(daBoost))*daBoost;
+
+      if((!std::isnan(boostVis.Mag())) &&
+         (boostVis.Mag() < 1)){
+        vP_La_S.Boost(-boostVis);
+        vP_Lb_S.Boost(-boostVis);
+      } else {
+        vP_La_S.SetVectM(TVector3(0.,0.,0.),std::max(0.,vP_La_S.M()));
+        vP_Lb_S.SetVectM(TVector3(0.,0.,0.),std::max(0.,vP_Lb_S.M()));
+      }
+      if((!std::isnan(boostInv.Mag())) &&
+         (boostInv.Mag() < 1)){
+        vP_Ia_S.Boost(-boostInv);
+        vP_Ib_S.Boost(-boostInv);
+      } else {
+        vP_Ia_S.SetVectM(TVector3(0.,0.,0.),std::max(0.,vP_Ia_S.M()));
+        vP_Ib_S.SetVectM(TVector3(0.,0.,0.),std::max(0.,vP_Ib_S.M()));
+      }
+        
+      double PX2_BoostT = (vP_La_S+vP_Ia_S).P();
+      double MX2a_BoostT = (vP_La_S+vP_Ia_S).M();
+      double MX2b_BoostT = (vP_Lb_S+vP_Ib_S).M();
+      if(BSideIsA){
+        MX2a_BoostT = (vP_Lb_S+vP_Ib_S).M();
+        MX2b_BoostT = (vP_La_S+vP_Ia_S).M();
+      }
+      m_Mperp_LEP = sqrt(MX2a_BoostT*MX2a_BoostT+MX2b_BoostT*MX2b_BoostT)/sqrt(2.);
+      m_gammaT_LEP = 2*m_Mperp_LEP/(sqrt(MX2a_BoostT*MX2a_BoostT+PX2_BoostT*PX2_BoostT) +
+            		sqrt(MX2b_BoostT*MX2b_BoostT+PX2_BoostT*PX2_BoostT));
+
     }
     if(t==2){ // JET + ISR tree
       if(m_Njet < 2){

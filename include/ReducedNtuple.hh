@@ -396,6 +396,9 @@ private:
   double m_Mperp;
   double m_gammaT;
 
+  double m_Mperp_LEP;
+  double m_gammaT_LEP;
+
   double m_PV_BoostT;
   
   double m_EVa_BoostT;
@@ -461,6 +464,7 @@ private:
   double m_MPb_LEP;
   double m_MVa_LEP;
   double m_MVb_LEP;
+  double m_MaRatio_LEP;
   double m_PTS_CM_LEP;
   double m_MS_S0_LEP;
   double m_MV_S0_LEP;

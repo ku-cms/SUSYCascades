@@ -79,7 +79,6 @@ cmssw : CXX   += -D_CMSSW_
 locallib : GLIBS += -L/Users/christopherrogan/GitHub/lwtnn/lib -llwtnn
 locallib : CXX   += -I/Users/christopherrogan/GitHub/lwtnn/include
 
-
 all: alltargets lib
 
 #cmssw: alltargets lib BuildFit.x
@@ -91,8 +90,7 @@ locallib: lib
 
 lib: lib/libKUEWKino.so
 
-#alltargets: MakeReducedNtuple_NANO.x EventCountPlot.x MakeEventCount_NANO.x BuildFitInput.x Condor_Plot_1D_NANO.x BuildPlotInput.x BuildFitShapes.x BuildFitInputCondor.x BuildPlotInputCondor.x BuildFitCondor.x
-alltargets: MakeReducedNtuple_NANO.x MakeEventCount_NANO.x Condor_Plot_1D_NANO.x Submit_Plot_1D_NANO.x BuildFitInput.x BuildFitInputCondor.x
+alltargets: MakeReducedNtuple_NANO.x MakeEventCount_NANO.x Condor_Plot_1D_NANO.x Submit_Plot_1D_NANO.x
 
 EventCountPlot.x:  $(SRCDIR)EventCountPlot.C $(OBJ_FILES) $(HH_FILES)
 	$(CXX) $(CXXFLAGS) -o EventCountPlot.x $(OUTOBJ)/*.o $(GLIBS) $ $<
