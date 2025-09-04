@@ -5608,10 +5608,12 @@ ParticleList AnalysisBase<NANORun3>::GetElectrons(){
     // baseline lepton definition
     if(Electron_pt[i] < 7. || fabs(Electron_eta[i]) > 2.5)
       continue;
+    if(Electron_pt[i] < 10. && fabs(Electron_eta[i]) > 1.4442) // remove low pt endcap ele
+      continue;
     if(fabs(Electron_eta[i]) >= 1.4442 && fabs(Electron_eta[i]) <= 1.566)
       continue;
     if(fabs(Electron_dxy[i]) >= 0.05 || fabs(Electron_dz[i]) >= 0.1 ||
-       Electron_sip3d[i] >= 8)
+       Electron_sip3d[i] >= 6.)
       continue;
     if(Electron_pfRelIso03_all[i]*Electron_pt[i] >= 20. + 300./Electron_pt[i])
       continue;
@@ -5681,7 +5683,7 @@ ParticleList AnalysisBase<NANORun3>::GetLowPtElectrons(){
       continue;
     if(fabs(LowPtElectron_eta[i]) >= 1.4442 && fabs(LowPtElectron_eta[i]) <= 1.566)
       continue;
-    if(LowPtElectron_pt[i] < 5. && fabs(LowPtElectron_eta[i]) > 1.4442) // remove low pt endcap ele
+    if(LowPtElectron_pt[i] < 10. && fabs(LowPtElectron_eta[i]) > 1.4442) // remove low pt endcap ele
       continue;
     if(LowPtElectron_convVeto[i] == 0)
       continue;
@@ -5709,7 +5711,7 @@ ParticleList AnalysisBase<NANORun3>::GetLowPtElectrons(){
     float IP_3D     = sqrt(dxy*dxy + dz*dz);
     float SIP_3D    = sqrt(sigma_xy*sigma_xy + sigma_z*sigma_z);
 
-    if (SIP_3D >= 8.)
+    if (SIP_3D >= 6.)
       continue;
 
     if(LowPtElectron_miniPFRelIso_all[i]*LowPtElectron_pt[i] >= 20. + 300./LowPtElectron_pt[i])
