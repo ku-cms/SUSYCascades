@@ -136,8 +136,8 @@ ReducedNtuple<Base>::ReducedNtuple(TTree* tree)
       CombSplit_ISR[t]->AddCombFrame(*ISR[t], 0);
       CombSplit_ISR[t]->AddCombFrame(*Ja[t], 1);
       CombSplit_ISR[t]->AddCombFrame(*Jb[t], 1);
-      CombSplit_ISR[t]->AddObjectFrames(ISR[t]->GetListVisibleFrames(), 0);
-      CombSplit_ISR[t]->AddObjectFrames(S[t]->GetListVisibleFrames(), 1);
+      CombSplit_ISR[t]->AddObjectFrame(*ISR[t], 0);
+      CombSplit_ISR[t]->AddObjectFrame(*S[t], 1);
       
       COMB_J[t]->AddJigsaw(*CombSplit_J[t]);
       CombSplit_J[t]->AddCombFrame(*Ja[t], 0);
@@ -445,28 +445,6 @@ TTree* ReducedNtuple<Base>::InitOutputTree(const string& sample, bool do_slim){
   tree->Branch("index_lep_a_LEP", &m_index_lep_a_LEP);
   tree->Branch("index_lep_b_LEP", &m_index_lep_b_LEP);
 
-  // ISR+JET tree
-  tree->Branch("Njet_ISR_JET_ISR", &m_Njet_ISR_JET_ISR);
-  tree->Branch("Njet_S_JET_ISR", &m_Njet_S_JET_ISR);
-  tree->Branch("Nbjet_ISR_JET_ISR", &m_Nbjet_ISR_JET_ISR);
-  tree->Branch("Nbjet_S_JET_ISR", &m_Nbjet_S_JET_ISR);
-  tree->Branch("Njet_a_JET_ISR", &m_Njet_a_JET_ISR);
-  tree->Branch("Njet_b_JET_ISR", &m_Njet_b_JET_ISR);
-  tree->Branch("Nbjet_a_JET_ISR", &m_Nbjet_a_JET_ISR);
-  tree->Branch("Nbjet_b_JET_ISR", &m_Nbjet_b_JET_ISR);
-  tree->Branch("index_jet_a_JET_ISR", &m_index_jet_a_JET_ISR);
-  tree->Branch("index_jet_b_JET_ISR", &m_index_jet_b_JET_ISR);
-  tree->Branch("index_jet_ISR_JET_ISR", &m_index_jet_ISR_JET_ISR);
-  tree->Branch("index_jet_S_JET_ISR", &m_index_jet_S_JET_ISR);
-
-  // JET tree
-  tree->Branch("Njet_a_JET", &m_Njet_a_JET);
-  tree->Branch("Njet_b_JET", &m_Njet_b_JET);
-  tree->Branch("Nbjet_a_JET", &m_Nbjet_a_JET);
-  tree->Branch("Nbjet_b_JET", &m_Nbjet_b_JET);
-  tree->Branch("index_jet_a_JET", &m_index_jet_a_JET);
-  tree->Branch("index_jet_b_JET", &m_index_jet_b_JET);
-
   // Kinematics
   tree->Branch("PTCM", &m_PTCM);
   tree->Branch("PzCM", &m_PzCM);
@@ -487,20 +465,6 @@ TTree* ReducedNtuple<Base>::InitOutputTree(const string& sample, bool do_slim){
   tree->Branch("dphiCM_LEP", &m_dphiCM_LEP);
   tree->Branch("dphiCMI_LEP", &m_dphiCMI_LEP);
   tree->Branch("dphiMET_V_LEP", &m_dphiMET_V_LEP);
-
-  tree->Branch("PTCM_JET_ISR", &m_PTCM_JET_ISR);
-  tree->Branch("PzCM_JET_ISR", &m_PzCM_JET_ISR);
-  tree->Branch("cosCM_JET_ISR", &m_cosCM_JET_ISR);
-  tree->Branch("dphiCM_JET_ISR", &m_dphiCM_JET_ISR);
-  tree->Branch("dphiCMI_JET_ISR", &m_dphiCMI_JET_ISR);
-  tree->Branch("dphiMET_V_JET_ISR", &m_dphiMET_V_JET_ISR);
-
-  tree->Branch("PTCM_JET", &m_PTCM_JET);
-  tree->Branch("PzCM_JET", &m_PzCM_JET);
-  tree->Branch("cosCM_JET", &m_cosCM_JET);
-  tree->Branch("dphiCM_JET", &m_dphiCM_JET);
-  tree->Branch("dphiCMI_JET", &m_dphiCMI_JET);
-  tree->Branch("dphiMET_V_JET", &m_dphiMET_V_JET);
 
   tree->Branch("Mperp", &m_Mperp);
   tree->Branch("gammaT", &m_gammaT);
@@ -536,6 +500,8 @@ TTree* ReducedNtuple<Base>::InitOutputTree(const string& sample, bool do_slim){
   tree->Branch("MbVCM0", &m_MbVCM0);
   tree->Branch("MQCM0", &m_MQCM0); // sqrt(Ma*Ma + Mb*Mb)/sqrt(2)
   tree->Branch("gammaCM0", &m_gammaCM0); // 2*MQ/MS
+  tree->Branch("MQV", &m_MQV);
+  tree->Branch("gammaV", &m_gammaV);
 
   tree->Branch("MT2", &m_MT2);
   tree->Branch("RISR_LEP", &m_RISR_LEP);
@@ -566,64 +532,108 @@ TTree* ReducedNtuple<Base>::InitOutputTree(const string& sample, bool do_slim){
   tree->Branch("MINV_LEP", &m_MINV_LEP);
   tree->Branch("Mperp_LEP", &m_Mperp_LEP);
   tree->Branch("gammaT_LEP", &m_gammaT_LEP);
-
-  tree->Branch("Mperp_JET_ISR", &m_Mperp_JET_ISR);
-  tree->Branch("gammaT_JET_ISR", &m_gammaT_JET_ISR);
-  tree->Branch("RISR_JET_ISR", &m_RISR_JET_ISR);
-  tree->Branch("PTISR_JET_ISR", &m_PTISR_JET_ISR);
-  tree->Branch("MS_JET_ISR", &m_MS_JET_ISR);
-  tree->Branch("MSV_JET_ISR", &m_MSV_JET_ISR);
-  tree->Branch("MQ_JET_ISR", &m_MQ_JET_ISR);
-  tree->Branch("gamma_JET_ISR", &m_gamma_JET_ISR);
-  tree->Branch("MPa_JET_ISR", &m_MPa_JET_ISR);
-  tree->Branch("MPb_JET_ISR", &m_MPb_JET_ISR);
-  tree->Branch("MVa_JET_ISR", &m_MVa_JET_ISR);
-  tree->Branch("MVb_JET_ISR", &m_MVb_JET_ISR);
-  tree->Branch("PTS_CM_JET_ISR", &m_PTS_CM_JET_ISR);
-  tree->Branch("MS_S0_JET_ISR", &m_MS_S0_JET_ISR);
-  tree->Branch("MV_S0_JET_ISR", &m_MV_S0_JET_ISR);
-  tree->Branch("MQ_S0_JET_ISR", &m_MQ_S0_JET_ISR);
-  tree->Branch("gamma_S0_JET_ISR", &m_gamma_S0_JET_ISR);
-  tree->Branch("MPTilde_JET_ISR", &m_MPTilde_JET_ISR);
-  tree->Branch("MSTilde_JET_ISR", &m_MSTilde_JET_ISR);
-  tree->Branch("gammaTilde_JET_ISR", &m_gammaTilde_JET_ISR);
-  tree->Branch("CosDecayAngle_Pa_JET_ISR", &m_CosDecayAngle_Pa_JET_ISR);
-  tree->Branch("CosDecayAngle_Pb_JET_ISR", &m_CosDecayAngle_Pb_JET_ISR);
-  tree->Branch("CosDecayAngle_Va_JET_ISR", &m_CosDecayAngle_Va_JET_ISR);
-  tree->Branch("CosDecayAngle_Vb_JET_ISR", &m_CosDecayAngle_Vb_JET_ISR);
-  tree->Branch("CosDecayAngle_S_JET_ISR", &m_CosDecayAngle_S_JET_ISR);
-  tree->Branch("RZPara_JET_ISR", &m_RZPara_JET_ISR);
-  tree->Branch("MINV_JET_ISR", &m_MINV_JET_ISR);
-
-  tree->Branch("MS_JET", &m_MS_JET);
-  tree->Branch("MSV_JET", &m_MSV_JET);
-  tree->Branch("MQ_JET", &m_MQ_JET);
-  tree->Branch("gamma_JET", &m_gamma_JET);
-  tree->Branch("MPa_JET", &m_MPa_JET);
-  tree->Branch("MPb_JET", &m_MPb_JET);
-  tree->Branch("MVa_JET", &m_MVa_JET);
-  tree->Branch("MVb_JET", &m_MVb_JET);
-  tree->Branch("MS_S0_JET", &m_MS_S0_JET);
-  tree->Branch("MV_S0_JET", &m_MV_S0_JET);
-  tree->Branch("MQ_S0_JET", &m_MQ_S0_JET);
-  tree->Branch("gamma_S0_JET", &m_gamma_S0_JET);
-  tree->Branch("MPTilde_JET", &m_MPTilde_JET);
-  tree->Branch("MSTilde_JET", &m_MSTilde_JET);
-  tree->Branch("gammaTilde_JET", &m_gammaTilde_JET);
-  tree->Branch("CosDecayAngle_Pa_JET", &m_CosDecayAngle_Pa_JET);
-  tree->Branch("CosDecayAngle_Pb_JET", &m_CosDecayAngle_Pb_JET);
-  tree->Branch("CosDecayAngle_Va_JET", &m_CosDecayAngle_Va_JET);
-  tree->Branch("CosDecayAngle_Vb_JET", &m_CosDecayAngle_Vb_JET);
-  tree->Branch("CosDecayAngle_S_JET", &m_CosDecayAngle_S_JET);
-
-  tree->Branch("MQV", &m_MQV);
-  tree->Branch("gammaV", &m_gammaV);
   tree->Branch("MQV_LEP", &m_MQV_LEP);
   tree->Branch("gammaV_LEP", &m_gammaV_LEP);
-  tree->Branch("MQV_JET_ISR", &m_MQV_JET_ISR);
-  tree->Branch("gammaV_JET_ISR", &m_gammaV_JET_ISR);
-  tree->Branch("MQV_JET", &m_MQV_JET);
-  tree->Branch("gammaV_JET", &m_gammaV_JET);
+
+  tree->Branch("PX2_BoostT_LEP", &m_PX2_BoostT_LEP);
+  tree->Branch("MX2a_BoostT_LEP", &m_MX2a_BoostT_LEP);
+  tree->Branch("MX2b_BoostT_LEP", &m_MX2b_BoostT_LEP);
+  tree->Branch("RatioPerpA", &m_RatioPerpA);
+  tree->Branch("RatioPerpB", &m_RatioPerpB);
+  tree->Branch("PX20_BoostT_LEP", &m_PX20_BoostT_LEP);
+  tree->Branch("MX2a0_BoostT_LEP", &m_MX2a0_BoostT_LEP);
+  tree->Branch("MX2b0_BoostT_LEP", &m_MX2b0_BoostT_LEP);
+  tree->Branch("RatioPerp0A", &m_RatioPerp0A);
+  tree->Branch("RatioPerp0B", &m_RatioPerp0B);
+  tree->Branch("Mperp0_LEP", &m_Mperp0_LEP);
+  tree->Branch("gammaT0_LEP", &m_gammaT0_LEP);
+
+  if(m_aTrees >= 3){
+    tree->Branch("Mperp_JET_ISR", &m_Mperp_JET_ISR);
+    tree->Branch("gammaT_JET_ISR", &m_gammaT_JET_ISR);
+    tree->Branch("RISR_JET_ISR", &m_RISR_JET_ISR);
+    tree->Branch("PTISR_JET_ISR", &m_PTISR_JET_ISR);
+    tree->Branch("MS_JET_ISR", &m_MS_JET_ISR);
+    tree->Branch("MSV_JET_ISR", &m_MSV_JET_ISR);
+    tree->Branch("MQ_JET_ISR", &m_MQ_JET_ISR);
+    tree->Branch("gamma_JET_ISR", &m_gamma_JET_ISR);
+    tree->Branch("MPa_JET_ISR", &m_MPa_JET_ISR);
+    tree->Branch("MPb_JET_ISR", &m_MPb_JET_ISR);
+    tree->Branch("MVa_JET_ISR", &m_MVa_JET_ISR);
+    tree->Branch("MVb_JET_ISR", &m_MVb_JET_ISR);
+    tree->Branch("PTS_CM_JET_ISR", &m_PTS_CM_JET_ISR);
+    tree->Branch("MS_S0_JET_ISR", &m_MS_S0_JET_ISR);
+    tree->Branch("MV_S0_JET_ISR", &m_MV_S0_JET_ISR);
+    tree->Branch("MQ_S0_JET_ISR", &m_MQ_S0_JET_ISR);
+    tree->Branch("gamma_S0_JET_ISR", &m_gamma_S0_JET_ISR);
+    tree->Branch("MPTilde_JET_ISR", &m_MPTilde_JET_ISR);
+    tree->Branch("MSTilde_JET_ISR", &m_MSTilde_JET_ISR);
+    tree->Branch("gammaTilde_JET_ISR", &m_gammaTilde_JET_ISR);
+    tree->Branch("CosDecayAngle_Pa_JET_ISR", &m_CosDecayAngle_Pa_JET_ISR);
+    tree->Branch("CosDecayAngle_Pb_JET_ISR", &m_CosDecayAngle_Pb_JET_ISR);
+    tree->Branch("CosDecayAngle_Va_JET_ISR", &m_CosDecayAngle_Va_JET_ISR);
+    tree->Branch("CosDecayAngle_Vb_JET_ISR", &m_CosDecayAngle_Vb_JET_ISR);
+    tree->Branch("CosDecayAngle_S_JET_ISR", &m_CosDecayAngle_S_JET_ISR);
+    tree->Branch("RZPara_JET_ISR", &m_RZPara_JET_ISR);
+    tree->Branch("MINV_JET_ISR", &m_MINV_JET_ISR);
+    tree->Branch("MQV_JET_ISR", &m_MQV_JET_ISR);
+    tree->Branch("gammaV_JET_ISR", &m_gammaV_JET_ISR);
+    tree->Branch("PTCM_JET_ISR", &m_PTCM_JET_ISR);
+    tree->Branch("PzCM_JET_ISR", &m_PzCM_JET_ISR);
+    tree->Branch("cosCM_JET_ISR", &m_cosCM_JET_ISR);
+    tree->Branch("dphiCM_JET_ISR", &m_dphiCM_JET_ISR);
+    tree->Branch("dphiCMI_JET_ISR", &m_dphiCMI_JET_ISR);
+    tree->Branch("dphiMET_V_JET_ISR", &m_dphiMET_V_JET_ISR);
+    tree->Branch("Njet_ISR_JET_ISR", &m_Njet_ISR_JET_ISR);
+    tree->Branch("Njet_S_JET_ISR", &m_Njet_S_JET_ISR);
+    tree->Branch("Nbjet_ISR_JET_ISR", &m_Nbjet_ISR_JET_ISR);
+    tree->Branch("Nbjet_S_JET_ISR", &m_Nbjet_S_JET_ISR);
+    tree->Branch("Njet_a_JET_ISR", &m_Njet_a_JET_ISR);
+    tree->Branch("Njet_b_JET_ISR", &m_Njet_b_JET_ISR);
+    tree->Branch("Nbjet_a_JET_ISR", &m_Nbjet_a_JET_ISR);
+    tree->Branch("Nbjet_b_JET_ISR", &m_Nbjet_b_JET_ISR);
+    tree->Branch("index_jet_a_JET_ISR", &m_index_jet_a_JET_ISR);
+    tree->Branch("index_jet_b_JET_ISR", &m_index_jet_b_JET_ISR);
+    tree->Branch("index_jet_ISR_JET_ISR", &m_index_jet_ISR_JET_ISR);
+    tree->Branch("index_jet_S_JET_ISR", &m_index_jet_S_JET_ISR);
+  }
+
+  if(m_aTrees >= 4){
+    tree->Branch("MS_JET", &m_MS_JET);
+    tree->Branch("MSV_JET", &m_MSV_JET);
+    tree->Branch("MQ_JET", &m_MQ_JET);
+    tree->Branch("gamma_JET", &m_gamma_JET);
+    tree->Branch("MPa_JET", &m_MPa_JET);
+    tree->Branch("MPb_JET", &m_MPb_JET);
+    tree->Branch("MVa_JET", &m_MVa_JET);
+    tree->Branch("MVb_JET", &m_MVb_JET);
+    tree->Branch("MS_S0_JET", &m_MS_S0_JET);
+    tree->Branch("MV_S0_JET", &m_MV_S0_JET);
+    tree->Branch("MQ_S0_JET", &m_MQ_S0_JET);
+    tree->Branch("gamma_S0_JET", &m_gamma_S0_JET);
+    tree->Branch("MPTilde_JET", &m_MPTilde_JET);
+    tree->Branch("MSTilde_JET", &m_MSTilde_JET);
+    tree->Branch("gammaTilde_JET", &m_gammaTilde_JET);
+    tree->Branch("CosDecayAngle_Pa_JET", &m_CosDecayAngle_Pa_JET);
+    tree->Branch("CosDecayAngle_Pb_JET", &m_CosDecayAngle_Pb_JET);
+    tree->Branch("CosDecayAngle_Va_JET", &m_CosDecayAngle_Va_JET);
+    tree->Branch("CosDecayAngle_Vb_JET", &m_CosDecayAngle_Vb_JET);
+    tree->Branch("CosDecayAngle_S_JET", &m_CosDecayAngle_S_JET);
+    tree->Branch("MQV_JET", &m_MQV_JET);
+    tree->Branch("gammaV_JET", &m_gammaV_JET);
+    tree->Branch("PTCM_JET", &m_PTCM_JET);
+    tree->Branch("PzCM_JET", &m_PzCM_JET);
+    tree->Branch("cosCM_JET", &m_cosCM_JET);
+    tree->Branch("dphiCM_JET", &m_dphiCM_JET);
+    tree->Branch("dphiCMI_JET", &m_dphiCMI_JET);
+    tree->Branch("dphiMET_V_JET", &m_dphiMET_V_JET);
+    tree->Branch("Njet_a_JET", &m_Njet_a_JET);
+    tree->Branch("Njet_b_JET", &m_Njet_b_JET);
+    tree->Branch("Nbjet_a_JET", &m_Nbjet_a_JET);
+    tree->Branch("Nbjet_b_JET", &m_Nbjet_b_JET);
+    tree->Branch("index_jet_a_JET", &m_index_jet_a_JET);
+    tree->Branch("index_jet_b_JET", &m_index_jet_b_JET);
+  }
 
   if(!do_slim){
     tree->Branch("MS", &m_MS);
@@ -1003,6 +1013,7 @@ void ReducedNtuple<Base>::FillOutputTree(TTree* tree, const Systematic& sys, boo
   // NTUPLE Selection
   if(m_Nlep < 2 && ETMiss.Mag() < 150)
     return;
+  if(m_Nlep == 0) return;
   if(AnalysisBase<Base>::IsCascades() || AnalysisBase<Base>::IsSMS()){
     std::pair<int,int> temp_masses = AnalysisBase<Base>::GetSUSYMasses();
     m_MP = temp_masses.first;
@@ -1574,6 +1585,7 @@ void ReducedNtuple<Base>::FillOutputTree(TTree* tree, const Systematic& sys, boo
       m_MQ_LEP = sqrt(m_MPa_LEP*m_MPa_LEP+m_MPb_LEP*m_MPb_LEP)/sqrt(2.);
       m_gamma_LEP = 2.*m_MQ_LEP/m_MS_LEP;
       m_CosDecayAngle_S_LEP = S[t]->GetCosDecayAngle();
+      if(BSideIsA) m_CosDecayAngle_S_LEP *= -1.;
       m_CosDecayAngle_Pa_LEP = X2a[t]->GetCosDecayAngle();
       m_CosDecayAngle_Pb_LEP = X2b[t]->GetCosDecayAngle();
       if(BSideIsA){ m_CosDecayAngle_Pa_LEP = X2b[t]->GetCosDecayAngle(); m_CosDecayAngle_Pb_LEP = X2a[t]->GetCosDecayAngle(); } 
@@ -1618,6 +1630,7 @@ void ReducedNtuple<Base>::FillOutputTree(TTree* tree, const Systematic& sys, boo
         m_MPa_LEP = (X2a[t]->GetFourVector() + X2b[t]->GetFourVector()).M();
       }
       m_MaRatio_LEP = m_MVa_LEP/m_MPa_LEP;
+// NOTE: ADD MbRatio_LEP
 
       TLorentzVector X1a_S = X1a[t]->GetFourVector(*S[t]);
       TLorentzVector X1b_S = X1b[t]->GetFourVector(*S[t]);
@@ -1651,6 +1664,12 @@ void ReducedNtuple<Base>::FillOutputTree(TTree* tree, const Systematic& sys, boo
       TLorentzVector vP_Lb_S  = Lb[t]->GetFourVector(*S[t]);
       TLorentzVector vP_Ia_S  = X1a[t]->GetFourVector(*S[t]);
       TLorentzVector vP_Ib_S  = X1b[t]->GetFourVector(*S[t]);
+      if(BSideIsA){
+        vP_La_S = Lb[t]->GetFourVector(*S[t]); 
+        vP_Lb_S = La[t]->GetFourVector(*S[t]);
+        vP_Ia_S = X1b[t]->GetFourVector(*S[t]);
+        vP_Ib_S = X1a[t]->GetFourVector(*S[t]);
+      }
 
       TVector3 boostVis = (vP_La_S+vP_Lb_S).BoostVector();
       TVector3 boostInv = (vP_Ia_S+vP_Ib_S).BoostVector();
@@ -1676,16 +1695,37 @@ void ReducedNtuple<Base>::FillOutputTree(TTree* tree, const Systematic& sys, boo
         vP_Ib_S.SetVectM(TVector3(0.,0.,0.),std::max(0.,vP_Ib_S.M()));
       }
         
-      double PX2_BoostT = (vP_La_S+vP_Ia_S).P();
-      double MX2a_BoostT = (vP_La_S+vP_Ia_S).M();
-      double MX2b_BoostT = (vP_Lb_S+vP_Ib_S).M();
+      m_PX2_BoostT_LEP = (vP_La_S+vP_Ia_S).P();
+      m_MX2a_BoostT_LEP = (vP_La_S+vP_Ia_S).M();
+      m_MX2b_BoostT_LEP = (vP_Lb_S+vP_Ib_S).M();
       if(BSideIsA){
-        MX2a_BoostT = (vP_Lb_S+vP_Ib_S).M();
-        MX2b_BoostT = (vP_La_S+vP_Ia_S).M();
+        m_MX2a_BoostT_LEP = (vP_Lb_S+vP_Ib_S).M();
+        m_MX2b_BoostT_LEP = (vP_La_S+vP_Ia_S).M();
       }
-      m_Mperp_LEP = sqrt(MX2a_BoostT*MX2a_BoostT+MX2b_BoostT*MX2b_BoostT)/sqrt(2.);
-      m_gammaT_LEP = 2*m_Mperp_LEP/(sqrt(MX2a_BoostT*MX2a_BoostT+PX2_BoostT*PX2_BoostT) +
-            		sqrt(MX2b_BoostT*MX2b_BoostT+PX2_BoostT*PX2_BoostT));
+      m_Mperp_LEP = sqrt(m_MX2a_BoostT_LEP*m_MX2a_BoostT_LEP+m_MX2b_BoostT_LEP*m_MX2b_BoostT_LEP)/sqrt(2.);
+      m_gammaT_LEP = 2*m_Mperp_LEP/(sqrt(m_MX2a_BoostT_LEP*m_MX2a_BoostT_LEP+m_PX2_BoostT_LEP*m_PX2_BoostT_LEP) +
+            		sqrt(m_MX2b_BoostT_LEP*m_MX2b_BoostT_LEP+m_PX2_BoostT_LEP*m_PX2_BoostT_LEP));
+      m_RatioPerpA = m_MVa_LEP / m_MX2a_BoostT_LEP;
+      m_RatioPerpB = m_MVb_LEP / m_MX2b_BoostT_LEP;
+      
+      // Zero out masses of perp vectors
+      TLorentzVector vP_La_S0 = vP_La_S;
+      vP_La_S0.SetPtEtaPhiM(vP_La_S.Pt(),vP_La_S.Eta(),vP_La_S.Phi(),0.);
+      TLorentzVector vP_Lb_S0 = vP_Lb_S;
+      vP_Lb_S0.SetPtEtaPhiM(vP_Lb_S.Pt(),vP_Lb_S.Eta(),vP_Lb_S.Phi(),0.);
+      TLorentzVector vP_Ia_S0 = vP_Ia_S;
+      vP_Ia_S0.SetPtEtaPhiM(vP_Ia_S.Pt(),vP_Ia_S.Eta(),vP_Ia_S.Phi(),0.);
+      TLorentzVector vP_Ib_S0 = vP_Ib_S;
+      vP_Ib_S0.SetPtEtaPhiM(vP_Ib_S.Pt(),vP_Ib_S.Eta(),vP_Ib_S.Phi(),0.);
+
+      m_PX20_BoostT_LEP = (vP_La_S0+vP_Ia_S0).P();
+      m_MX2a0_BoostT_LEP = (vP_La_S0+vP_Ia_S0).M();
+      m_MX2b0_BoostT_LEP = (vP_Lb_S0+vP_Ib_S0).M();
+      m_Mperp0_LEP = sqrt(m_MX2a0_BoostT_LEP*m_MX2a0_BoostT_LEP+m_MX2b0_BoostT_LEP*m_MX2b0_BoostT_LEP)/sqrt(2.);
+      m_gammaT0_LEP = 2*m_Mperp0_LEP/(sqrt(m_MX2a0_BoostT_LEP*m_MX2a0_BoostT_LEP+m_PX20_BoostT_LEP*m_PX20_BoostT_LEP) +
+            		sqrt(m_MX2b0_BoostT_LEP*m_MX2b0_BoostT_LEP+m_PX20_BoostT_LEP*m_PX20_BoostT_LEP));
+      m_RatioPerp0A = m_MVa_LEP / m_MX2a0_BoostT_LEP;
+      m_RatioPerp0B = m_MVb_LEP / m_MX2b0_BoostT_LEP;
 
     }
     if(t==2){ // JET + ISR tree

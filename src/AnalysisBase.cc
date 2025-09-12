@@ -5662,7 +5662,7 @@ ParticleList AnalysisBase<NANORun3>::GetElectrons(){
         ))
       )
     { 
-      if(lep.SIP3D() >= 2)
+      if(lep.SIP3D() >= 3.)
         lep.SetLepQual(kSilver);
       else
         lep.SetLepQual(kGold);
@@ -5764,7 +5764,7 @@ ParticleList AnalysisBase<NANORun3>::GetLowPtElectrons(){
 
       if (!passesID) {
         lep.SetLepQual(kBronze);
-      } else if (lep.SIP3D() >= 2.) {
+      } else if (lep.SIP3D() >= 3.) {
         lep.SetLepQual(kSilver);
       } else {
         lep.SetLepQual(kGold);
@@ -5819,7 +5819,7 @@ ParticleList AnalysisBase<NANORun3>::GetMuons(){
       lep.SetParticleID(kMedium);
     if(lep.ParticleID() < kTight || lep.MiniIso()*lep.Pt() >= 4. || lep.RelIso()*lep.Pt() >= 4.)
       lep.SetLepQual(kBronze);
-    else if(lep.SIP3D() >= 2.)
+    else if(lep.SIP3D() >= 3.)
       lep.SetLepQual(kSilver);
     else
       lep.SetLepQual(kGold);

@@ -17,7 +17,7 @@ public:
 
 private:
   // Number of RJR analysis trees
-  const static int m_aTrees=4; // [JetsLeps_ISR, Leps_ISR, Jets_ISR, Jets]
+  const static int m_aTrees=2; // [JetsLeps_ISR, Leps_ISR, Jets_ISR, Jets]
 
   vector<bool> m_treeSkipped;
   bool m_library_generated;
@@ -487,6 +487,19 @@ private:
   double m_dphiCM_LEP;
   double m_dphiCMI_LEP;
   double m_dphiMET_V_LEP;
+
+  double m_PX2_BoostT_LEP;
+  double m_MX2a_BoostT_LEP;
+  double m_MX2b_BoostT_LEP;
+  double m_RatioPerpA;
+  double m_RatioPerpB;
+  double m_PX20_BoostT_LEP;
+  double m_MX2a0_BoostT_LEP;
+  double m_MX2b0_BoostT_LEP;
+  double m_RatioPerp0A;
+  double m_RatioPerp0B;
+  double m_Mperp0_LEP;
+  double m_gammaT0_LEP;
 
   // New info for RJR 'JET ISR' tree
   double m_gammaT_JET_ISR;
