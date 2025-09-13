@@ -207,6 +207,7 @@ class EventCount:
                 stderr=subprocess.STDOUT
             ).strip()
             das_output = das_output.split('/')
+            if(len(das_output) < 4): return []
             dataset_name = das_output[1]
             campaign_tags = das_output[2]
             aod_version = das_output[3]

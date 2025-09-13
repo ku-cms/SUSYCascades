@@ -26,7 +26,7 @@ LIST         = "default.list"
 QUEUE        = ""
 SPLIT        = 100
 THRESHOLD    = 85000
-MAX_JOBS_SUB = 15000 # Max jobs/submission (Connect max is 20000)
+MAX_JOBS_SUB = 12000 # Max jobs/submission (Connect max is 20000)
 MIN_JOBS_SUB = 5000 # Min jobs/submission
 GITHASH      = ""
 # ----------------------------------------------------------- #
@@ -526,7 +526,7 @@ if __name__ == "__main__":
             total_root_files    += n_root_files
             dataset_split[dataset+"_"+filetag] = SPLIT
             while (n_jobs > MAX_JOBS_SUB or n_jobs < MIN_JOBS_SUB):
-                if dataset_split[dataset + "_" + filetag] > 250: # avoid too large of split
+                if dataset_split[dataset + "_" + filetag] > 200: # avoid too large of split
                     break
                 if n_jobs > MAX_JOBS_SUB and dataset_split[dataset + "_" + filetag] > 1:
                     dataset_split[dataset + "_" + filetag] -= 1

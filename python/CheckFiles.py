@@ -161,6 +161,8 @@ def checkJobs(workingDir,outputDir,skipEC,skipDAS,skipMissing,skipSmall,skipErr,
                     with open(os.path.join(listDir,lFile),'r') as input_root_files:
                         input_root_filename = input_root_files.readline().strip()
                         dataset = event_count.GetDatasetFromFile(input_root_filename)
+                        if dataset == []:
+                            continue
                         NDAS_true = event_count.EventsInDAS(dataset, False)
                         break
                         # Can get total per file if needed
@@ -169,7 +171,9 @@ def checkJobs(workingDir,outputDir,skipEC,skipDAS,skipMissing,skipSmall,skipErr,
             for outfile in outfiles:
                 NDAS += event_count.GetDASCount(os.path.join(outputDir+'/'+DataSetName,outfile))
             if NDAS != NDAS_true:
-                comp_percent = 100.*math.floor(NDAS/NDAS_true * 1000) / 1000
+                comp_percent = 0
+                if NDAS_true > 0:
+                    comp_percent = 100.*math.floor(NDAS/NDAS_true * 1000) / 1000
                 print(f'{DataSetName} failed the DAS check! ({comp_percent}%) Use other options to investigate')
                 if(not skipDASDataset and dataset):
                     files_datasets = set()
