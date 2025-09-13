@@ -103,9 +103,15 @@ class EventCount:
         return NDAS == Nevent
 
     def getDASDatasetsHelper(self, u_file):
-        file = ROOT.TFile.Open(u_file, "READ")
-        tree = file.Get("EventCount")
         dataset_dict = {}
+        if os.path.exists(u_file):
+            try:
+                file = ROOT.TFile.Open(u_file, "READ")
+            except Exception:
+                return dataset_dict
+        else:
+            return dataset_dict
+        tree = file.Get("EventCount")
         if not tree: return dataset_dict
         for entry in tree:
             key = f"{str(entry.dataset)}_{str(entry.filetag)}"
