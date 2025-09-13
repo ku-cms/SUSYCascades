@@ -465,6 +465,7 @@ private:
   double m_MVa_LEP;
   double m_MVb_LEP;
   double m_MaRatio_LEP;
+  double m_MbRatio_LEP;
   double m_PTS_CM_LEP;
   double m_MS_S0_LEP;
   double m_MV_S0_LEP;

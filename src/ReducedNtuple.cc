@@ -515,6 +515,7 @@ TTree* ReducedNtuple<Base>::InitOutputTree(const string& sample, bool do_slim){
   tree->Branch("MVa_LEP", &m_MVa_LEP);
   tree->Branch("MVb_LEP", &m_MVb_LEP);
   tree->Branch("MaRatio_LEP", &m_MaRatio_LEP);
+  tree->Branch("MbRatio_LEP", &m_MbRatio_LEP);
   tree->Branch("PTS_CM_LEP", &m_PTS_CM_LEP);
   tree->Branch("MS_S0_LEP", &m_MS_S0_LEP);
   tree->Branch("MV_S0_LEP", &m_MV_S0_LEP);
@@ -1620,7 +1621,7 @@ void ReducedNtuple<Base>::FillOutputTree(TTree* tree, const Systematic& sys, boo
 
       m_MVa_LEP = La[t]->GetFourVector().M();
       m_MVb_LEP = Lb[t]->GetFourVector().M();
-      if(BSideIsA){ m_MVa = Lb[t]->GetFourVector().M(); m_MVb = La[t]->GetFourVector().M(); }
+      if(BSideIsA){ m_MVa_LEP = Lb[t]->GetFourVector().M(); m_MVb_LEP = La[t]->GetFourVector().M(); }
       m_PTS_CM_LEP = S[t]->GetFourVector(*CM[t]).Pt();
       TLorentzVector TLV_L_CMLEP = La[t]->GetFourVector(*CM[t]) + Lb[t]->GetFourVector(*CM[t]);
       m_RZPara_LEP = TLV_L_CMLEP.Vect().Dot(S[t]->GetFourVector(*CM[t]).Vect().Unit())/S[t]->GetFourVector(*CM[t]).Vect().Mag();
@@ -1630,7 +1631,7 @@ void ReducedNtuple<Base>::FillOutputTree(TTree* tree, const Systematic& sys, boo
         m_MPa_LEP = (X2a[t]->GetFourVector() + X2b[t]->GetFourVector()).M();
       }
       m_MaRatio_LEP = m_MVa_LEP/m_MPa_LEP;
-// NOTE: ADD MbRatio_LEP
+      m_MbRatio_LEP = m_MVb_LEP/m_MPb_LEP;
 
       TLorentzVector X1a_S = X1a[t]->GetFourVector(*S[t]);
       TLorentzVector X1b_S = X1b[t]->GetFourVector(*S[t]);
