@@ -193,6 +193,14 @@ class EventCount:
             events += self.EventsInDASDataset(dataset)
         return events
 
+    def CleanDASDatasetOutputParsing(self, das_output):
+        das_output = das_output.split('\n')
+        das_output = [dataset for dataset in das_output if 'JME' not in dataset and 'PUFor' not in dataset and 'PU35ForTRK' not in dataset and 'LowPU' not in dataset]
+        is_fs_only = all("FS" in dataset for dataset in das_output)
+        if not is_fs_only:
+            das_output = [dataset for dataset in das_output if "FS" not in dataset]
+        return das_output
+
     def GetDatasetFromFile(self, u_file):
         """Get dataset name from file"""
         pos = u_file.find("/store/")
@@ -220,11 +228,15 @@ class EventCount:
                 text=True,
                 stderr=subprocess.STDOUT
             ).strip()
-            das_output = das_output.split('\n')
-            das_output = [dataset for dataset in das_output if 'JME' not in dataset and 'PUFor' not in dataset and 'PU35ForTRK' not in dataset and 'LowPU' not in dataset]
-            is_fs_only = all("FS" in dataset for dataset in das_output)
-            if not is_fs_only:
-                das_output = [dataset for dataset in das_output if "FS" not in dataset]
+            das_output = self.CleanDASDatasetOutputParsing(das_output)
+            if das_output == []:
+                query = f'dataset status=* dataset=/{dataset_name}/{campaign_tags}/{aod_version}'
+                das_output = subprocess.check_output(
+                    ["dasgoclient", "-query", query],
+                    text=True,
+                    stderr=subprocess.STDOUT
+                ).strip()
+                das_output = self.CleanDASDatasetOutputParsing(das_output)
             return das_output
         except subprocess.CalledProcessError as e:
             print(f"Error querying DAS: {e.output.strip()}")
