@@ -56,11 +56,10 @@ def has_uncommitted_changes(repo_dir=".", sub_dir=None):
     changed_files = [line.split(maxsplit=1)[1] for line in result.stdout.strip().splitlines() if line]
 
     if changed_files:
-        print("Changed files:")
+        print("Changed files in:",sub_dir)
         for f in changed_files:
             print(f"  {f}")
         return True
     else:
-        print("Working directory is clean.")
         return False
 
