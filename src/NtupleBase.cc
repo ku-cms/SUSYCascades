@@ -25,19 +25,17 @@ NtupleBase<Base>::~NtupleBase(){
 
 template <class Base>
 void NtupleBase<Base>::GetChunks(const Long64_t& u_NTOT, Long64_t& N0, Long64_t& N1, int ichunk, int nchunk){
-  Long64_t NTOT = u_NTOT;
-  if(NTOT == 0) // PrivateMC
-    NTOT = Base::fChain->GetEntries();
-  if(nchunk >= NTOT){
-    N1 = ichunk;
-    N0 = ichunk-1;
-  } else {
-    N1 = NTOT/nchunk;
-    if(NTOT%nchunk > 0)
-      N1++;
-    N0 = (ichunk-1)*N1;
-    N1 = N0 + N1;
-  }
+    if(u_NTOT == 0) return;
+    Long64_t base = u_NTOT / nchunk;
+    Long64_t rem  = u_NTOT % nchunk;
+    if(ichunk <= rem){
+        N0 = (ichunk - 1) * (base + 1);
+        N1 = N0 + (base + 1);
+    } else {
+        N0 = rem * (base + 1) + (ichunk - rem - 1) * base;
+        N1 = N0 + base;
+    }
+    if(N1 > u_NTOT) N1 = u_NTOT;
 }
 
 template <class Base>
