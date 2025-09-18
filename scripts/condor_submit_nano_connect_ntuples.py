@@ -1,5 +1,5 @@
 #! /usr/bin/env python
-import os, sys, time, subprocess, re, glob
+import os, sys, time, subprocess, re, glob, math
 from colorama import Fore, Back, Style
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'python')))
 from CondorJobCountMonitor import CondorJobCountMonitor
@@ -562,8 +562,10 @@ if __name__ == "__main__":
             if dataset_jobs < MIN_JOBS_SUB:
                 dataset_jobs = 0
                 for root_index, split, max_split in file_splits:
-                    new_split = min(max_split, max(1, int(split * (MIN_JOBS_SUB // dataset_jobs + 1))))
-                    dataset_split[dataset+"_"+filetag+"_"+str(root_index)] = new_split
+                    current_jobs = max(1, split)
+                    factor = math.ceil(MIN_JOBS_SUB / max(1, dataset_jobs or current_jobs))
+                    new_split = min(max_split, max(1, split * factor))
+                    dataset_split[f"{dataset}_{filetag}_{root_index}"] = new_split
                     dataset_jobs += new_split
             
             input_info[dataset+'_'+filetag]["n_jobs"] = dataset_jobs
@@ -675,7 +677,6 @@ if __name__ == "__main__":
         for f in clean_inputlist:
             n_root_files    = input_info[f]["n_root_files"] 
             n_jobs          = input_info[f]["n_jobs"] 
-            n_jobs = dataset_split[f.split("/")[-1]] * n_root_files
             print(f"sample: {f}")
             print(f" - number of root files  = {n_root_files}")
             print(f" - number of jobs        = {n_jobs}")
