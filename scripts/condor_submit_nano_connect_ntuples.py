@@ -4,6 +4,8 @@ from colorama import Fore, Back, Style
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'python')))
 from CondorJobCountMonitor import CondorJobCountMonitor
 from GitHelpers import *
+from new_countEvents import EventCount as EventCount
+event_count = EventCount()
 
 # Example submission: 
 # nohup python3 scripts/condor_submit_nano_connect_ntuples.py -split 25 -list samples/NANO/Lists/Summer23BPix_130X.list --verbose > submit_bkg.debug 2>&1 &
@@ -28,7 +30,6 @@ SPLIT        = 100
 THRESHOLD    = 85000
 MAX_JOBS_SUB = 12000 # Max jobs/submission (Connect max is 20000)
 MIN_JOBS_SUB = 5000 # Min jobs/submission
-GITHASH      = ""
 # ----------------------------------------------------------- #
 
 def get_auto_THRESHOLD():
@@ -73,12 +74,12 @@ def create_filelist(rootlist, dataset, filetag):
 
     return listlist
 
-def write_sh_single(srcfile,ifile,ofile,logfile,outfile,errfile,dataset,filetag,n,NAME,GITHASH):
+def write_sh_single(srcfile,ifile,ofile,logfile,outfile,errfile,dataset,filetag,n,NAME):
     srcfile = srcfile.replace('.submit','_single.submit')
-    ofile = ofile.replace('_$(ItemIndex)_$(Step)','_0_0')
-    outfile = outfile.replace('_$(ItemIndex)_$(Step)','_0_0')
-    errfile = errfile.replace('_$(ItemIndex)_$(Step)','_0_0')
-    logfile = logfile.replace('_$(ItemIndex)_$(Step)','_0_0')
+    ofile = ofile.replace('_$(listIndex)_$(SplitStep)','_0_0')
+    outfile = outfile.replace('_$(listIndex)_$(SplitStep)','_0_0')
+    errfile = errfile.replace('_$(listIndex)_$(SplitStep)','_0_0')
+    logfile = logfile.replace('_$(listIndex)_$(SplitStep)','_0_0')
     list_name = os.path.basename(ifile).replace('_list', '_0')
     ifile = os.path.join('./config/list', dataset+'_'+filetag, list_name)
 
@@ -153,16 +154,16 @@ def write_sh_single(srcfile,ifile,ofile,logfile,outfile,errfile,dataset,filetag,
     fsrc.write('+ProjectName="cms.org.ku"\n')
     fsrc.write('Requirements = HAS_SINGULARITY == True\n')
     fsrc.write('MY.SingularityImage = "/cvmfs/singularity.opensciencegrid.org/cmssw/cms:rhel9"\n')
-    fsrc.write('queue')
+    fsrc.write('queue\n')
     fsrc.close()
 
-def write_sh(srcfile,ifile,ofile,logfile,outfile,errfile,dataset,filetag,n,NAME,GITHASH):
+def write_sh(srcfile,ifile,ofile,logfile,outfile,errfile,dataset,filetag,NAME):
     fsrc = open(srcfile,'w')
     fsrc.write('universe = vanilla \n')
     fsrc.write('executable = '+jobEXE+" \n")
     fsrc.write('use_x509userproxy = true \n')
     fsrc.write('Arguments = ');
-    fsrc.write('-ilist=$(Item) ')
+    fsrc.write('-ilist=$(ilist) ')
     fsrc.write('-ofile='+ofile.split('/')[-1]+" ")
     fsrc.write('-tree='+TREE+" ")
     if DO_SMS == 1:
@@ -191,7 +192,7 @@ def write_sh(srcfile,ifile,ofile,logfile,outfile,errfile,dataset,filetag,n,NAME,
     fsrc.write('-metfile='+METFILE+" ")
     fsrc.write('-prefirefile='+PREFIREFILE+" ")
     fsrc.write('-xsjsonfile='+XSJSONFILE+" ")
-    splitstring = '-split=%s,%d\n' % ('$$([$(Step)+1])', n)
+    splitstring = '-split=$$([$(SplitStep)+1]),$(SplitTotal)\n'
     fsrc.write(splitstring)
 
     outlog = outfile+".out"
@@ -226,14 +227,14 @@ def write_sh(srcfile,ifile,ofile,logfile,outfile,errfile,dataset,filetag,n,NAME,
     fsrc.write('+RequiresCVMFS = True \n')
     fsrc.write('Requirements = HAS_SINGULARITY == True\n')
     fsrc.write('MY.SingularityImage = "/cvmfs/singularity.opensciencegrid.org/cmssw/cms:rhel9"\n')
-    fsrc.write('queue '+str(n)+' from '+ifile)
+    queuestr = 'queue ilist, listIndex, SplitStep, SplitTotal from ' + ifile + '\n'
+    fsrc.write(queuestr)
     fsrc.close()
 
 if __name__ == "__main__":
     if not len(sys.argv) > 1 or '-h' in sys.argv or '--help' in sys.argv:
         print (f"Usage: {sys.argv(0)} [-q queue] [-tree treename] [-list listfile.list] [-split S] [--sms] [--data] [--sys] [--fastsim] [--slim] [--dry-run] [--verbose] [--count] [--csv]")
         sys.exit(1)
-
 
     argv_pos     = 1
     DO_SMS       = 0
@@ -512,35 +513,61 @@ if __name__ == "__main__":
                 if ktag in flist:
                     filetag = ktag
 
-            # get list of ROOT files 
+            # get list of ROOT files
             rootlist = []
             with open(flist,'r') as myflist:
                 inputfilelist = myflist.readlines()
-
                 for afile in inputfilelist:
-                    afile = afile.strip('\n\r')
-                    rootlist.append(afile);
+                    rootlist.append(afile.strip())
             
             n_root_files = len(rootlist)
-            n_jobs       = SPLIT * n_root_files
-            total_root_files    += n_root_files
-            dataset_split[dataset+"_"+filetag] = SPLIT
-            while (n_jobs > MAX_JOBS_SUB or n_jobs < MIN_JOBS_SUB):
-                if dataset_split[dataset + "_" + filetag] > 200: # avoid too large of split
-                    break
-                if n_jobs > MAX_JOBS_SUB and dataset_split[dataset + "_" + filetag] > 1:
-                    dataset_split[dataset + "_" + filetag] -= 1
-                elif n_jobs < MIN_JOBS_SUB:
-                    dataset_split[dataset + "_" + filetag] += 1
-                else:
-                    break
-                n_jobs = dataset_split[dataset + "_" + filetag] * n_root_files
-            total_jobs += n_jobs
+            total_root_files += n_root_files
             
+            # initialize input info
             input_info[dataset+'_'+filetag] = {}
+            input_info[dataset+'_'+filetag]["n_root_files"] = n_root_files
+            input_info[dataset+'_'+filetag]["n_jobs"] = 0
             clean_inputlist.append(dataset+'_'+filetag)
-            input_info[dataset+'_'+filetag]["n_root_files"]   = n_root_files
-            input_info[dataset+'_'+filetag]["n_jobs"]         = n_jobs
+            
+            # assign tentative splits per file
+            file_splits = []
+            dataset_jobs = 0
+            for root_index, root_file in enumerate(rootlist):
+                events = 0
+                file_SPLIT = SPLIT
+                if "cmseos.fnal.gov" not in root_file:
+                    try:
+                        events = event_count.EventsInDAS(root_file)
+                    except Exception:
+                        events = 0  # fallback if DAS fails
+            
+                max_split_by_events = max(1, events // 10)
+                if file_SPLIT > max_split_by_events and events != 0:
+                    file_SPLIT = max_split_by_events
+            
+                dataset_split[dataset+"_"+filetag+"_"+str(root_index)] = file_SPLIT
+                file_splits.append((root_index, file_SPLIT, max_split_by_events))
+                dataset_jobs += file_SPLIT
+            
+            # scale down if dataset_jobs exceeds MAX_JOBS_SUB
+            if dataset_jobs > MAX_JOBS_SUB:
+                scale = MAX_JOBS_SUB / dataset_jobs
+                dataset_jobs = 0
+                for root_index, split, max_split in file_splits:
+                    new_split = max(1, int(split * scale))
+                    dataset_split[dataset+"_"+filetag+"_"+str(root_index)] = new_split
+                    dataset_jobs += new_split
+            
+            # scale up if dataset_jobs is below MIN_JOBS_SUB
+            if dataset_jobs < MIN_JOBS_SUB:
+                dataset_jobs = 0
+                for root_index, split, max_split in file_splits:
+                    new_split = min(max_split, max(1, int(split * (MIN_JOBS_SUB // dataset_jobs + 1))))
+                    dataset_split[dataset+"_"+filetag+"_"+str(root_index)] = new_split
+                    dataset_jobs += new_split
+            
+            input_info[dataset+'_'+filetag]["n_jobs"] = dataset_jobs
+            total_jobs += dataset_jobs
 
             if len(datasetlist) == 0:
                 datasetlist.append((dataset,filetag,rootlist))
@@ -568,26 +595,27 @@ if __name__ == "__main__":
             os.system("mkdir -p "+os.path.join(listdir, dataset+'_'+filetag))
             listdir_sam = os.path.join(listdir, dataset+'_'+filetag)
             listlist = create_filelist(rootlist, dataset, filetag)
-            overlist_name = listdir_sam+'/'+dataset+'_'+filetag+'_list.list'
-            with open(overlist_name,'w') as overlist:
-                newlistlist = ['config/'+'/'.join(l.split('/')[-3:])+'\n' for l in listlist]
-                overlist.writelines(newlistlist)
-                overlist.close()
+            overlist_name = os.path.join(listdir_sam, f'{dataset}_{filetag}_list.list')
+            with open(overlist_name, 'w') as overlist:
+                for root_index, l in enumerate(listlist):
+                    split_total = dataset_split[f"{dataset}_{filetag}_{root_index}"]
+                    for split_step in range(split_total):
+                        overlist.write(f"config/{'/'.join(l.split('/')[-3:])} {root_index} {split_step} {split_total}\n")
 
         if not COUNT:
             os.system("mkdir -p "+os.path.join(logdir, dataset+'_'+filetag))
             os.system("mkdir -p "+os.path.join(outdir, dataset+'_'+filetag))
             os.system("mkdir -p "+os.path.join(errdir, dataset+'_'+filetag))
 
-            file_name = os.path.join(OUT_DIR, dataset+'_'+filetag, overlist_name.split('/')[-1].replace('_list.list', '_$(ItemIndex)_$(Step)'))
+            file_name = os.path.join(OUT_DIR, dataset+'_'+filetag, overlist_name.split('/')[-1].replace('_list.list', '_$(listIndex)_$(SplitStep)'))
 
             logfile = os.path.join(logdir, dataset+'_'+filetag, file_name.split('/')[-1])
             outfile = os.path.join(outdir, dataset+'_'+filetag, file_name.split('/')[-1])
             errfile = os.path.join(errdir, dataset+'_'+filetag, file_name.split('/')[-1])
 
             script_name = srcdir+'_'.join([dataset, filetag])+'.submit'
-            write_sh(script_name, overlist_name, file_name+'.root', logfile, outfile, errfile, dataset, filetag, dataset_split[dataset+"_"+filetag], NAME, GITHASH)
-            write_sh_single(script_name, overlist_name, file_name+'.root', logfile, outfile, errfile, dataset, filetag, dataset_split[dataset+"_"+filetag], NAME, GITHASH)
+            write_sh(script_name, overlist_name, file_name+'.root', logfile, outfile, errfile, dataset, filetag, NAME)
+            write_sh_single(script_name, overlist_name, file_name+'.root', logfile, outfile, errfile, dataset, filetag, dataset_split[dataset+"_"+filetag+"_0"], NAME)
     
     if VERBOSE and not COUNT:
         print("Created area for log files")
@@ -677,5 +705,5 @@ if __name__ == "__main__":
         # os.system(f'nohup python3 python/CheckFiles.py -d {TARGET}/ -o {OUT_DIR} -e > /dev/null 2>&1 &')
         print(Fore.GREEN + "Congrats... your jobs were submitted!" + Fore.RESET)
         print('Run this after jobs have finished to check for failed jobs (and resubmit them):')
-        print(f'nohup python3 python/CheckFiles.py -d {TARGET} -o {OUT_DIR} > CheckFiles_{filetag}_0.debug 2>&1 &')
+        print(f'nohup python3 python/CheckFiles.py -d {TARGET} -o {OUT_DIR} > CheckFiles_{os.path.basename(OUT_DIR.rstrip("/"))}_0.debug 2>&1 &')
 
