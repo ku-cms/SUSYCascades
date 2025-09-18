@@ -3,7 +3,8 @@
 # Example call of script from SUSYCascades:
 #    python3 python/CheckFiles.py -d Summer23_130X/ -o ../../../NTUPLES/Processing/Summer23_130X/ -e -r
 # ------------------------------------------------------------------------------------------------
-import os, argparse, subprocess, itertools, ROOT, time, math
+import os, argparse, subprocess, itertools, ROOT, time, math, re
+from collections import defaultdict
 from new_countEvents import EventCount as EventCount
 from CondorJobCountMonitor import CondorJobCountMonitor
 USER = os.environ['USER']
@@ -19,51 +20,197 @@ def getMissingFilesEC(outputDir,nList):
             baseIndexList.remove(file_index)
     return baseIndexList
 
-def getMissingFiles(outputDir,nSplit,nList):
-    if DO_EVENTCOUNT:
-        return getMissingFilesEC(outputDir,nList)
-    baseTupleList = list(itertools.product(range(nList), range(nSplit)))
-    for filename in os.listdir(outputDir):
-        if not filename.endswith('root'): continue;
-        filename_str = filename.split(".")[0]
-        Tuple = (int(filename_str.split("_")[-2]),int(filename_str.split("_")[-1]))
-        if Tuple in baseTupleList:
-            baseTupleList.remove(Tuple)
-    return baseTupleList
+def getMissingFiles(outputDir, listFile):
+    """
+    Returns a sorted list of missing (fileIndex, splitIndex) tuples
+    using the master list as truth and checking the outputDir.
+    """
+    # Build a map: fileIndex -> set of expected splitIndices
+    expectedMap = defaultdict(set)
+    with open(listFile) as f:
+        for line in f:
+            parts = line.strip().split()
+            if len(parts) < 3:
+                continue
+            try:
+                fileIndex = int(parts[1])
+                splitIndex = int(parts[2])
+                expectedMap[fileIndex].add(splitIndex)
+            except ValueError:
+                continue
 
-def makeSubmitScript(tuple_pairs,submitName,resubmit,maxResub,DataSetName,threshold):
+    # Remove found splitIndices from the map
+    for filename in os.listdir(outputDir):
+        if not filename.endswith('.root'):
+            continue
+        parts = filename.split(".")[0].split("_")
+        try:
+            fileIndex = int(parts[-2])
+            splitIndex = int(parts[-1])
+            if fileIndex in expectedMap:
+                expectedMap[fileIndex].discard(splitIndex)
+                if not expectedMap[fileIndex]:
+                    # Remove fileIndex if all splits are accounted for
+                    del expectedMap[fileIndex]
+        except (IndexError, ValueError):
+            continue
+
+    # Flatten the map into a sorted list of tuples
+    missingTuples = []
+    for fileIndex, splits in expectedMap.items():
+        for splitIndex in splits:
+            missingTuples.append((fileIndex, splitIndex))
+
+    return sorted(missingTuples)
+
+# helper to find the master expanded list file line that matches (iFile, SplitStep)
+def find_ilist_and_total(master_list_dir, iFile, splitStep):
+    """
+    Return (ilist, SplitTotal) by scanning master lists under master_list_dir.
+    Each master list line format is:
+        ilist iFile SplitStep SplitTotal
+    """
+    if not os.path.isdir(master_list_dir):
+        raise FileNotFoundError(f"Master list dir not found: {master_list_dir}")
+
+    for fname in os.listdir(master_list_dir):
+        if not fname.endswith('_list.list'):
+            continue
+        path = os.path.join(master_list_dir, fname)
+        with open(path, 'r') as ml:
+            for line in ml:
+                parts = line.strip().split()
+                if len(parts) < 4:
+                    continue
+                try:
+                    file_ifile = int(parts[1])
+                    file_step = int(parts[2])
+                except ValueError:
+                    continue
+                if file_ifile == iFile and file_step == splitStep:
+                    ilist = parts[0]
+                    split_total = int(parts[3])
+                    return ilist, split_total
+    # Not found in expanded master lists: try to guess ilist via config/list filename
+    # and conservatively return None so caller can decide.
+    # attempt to find a per-root list file that ends with f'_{iFile}.list'
+    if os.path.isdir(config_list_dir):
+        for fname in os.listdir(config_list_dir):
+            if fname.endswith(f'_{iFile}.list'):
+                ilist_guess = os.path.join('config', 'list', DataSetName, fname)
+                # We do not know split_total from this file alone - caller should handle
+                return ilist_guess, None
+    raise ValueError(f"Could not find ilist+SplitTotal for iFile={iFile}, splitStep={splitStep} in {master_list_dir}")
+
+def makeSubmitScript(tuple_pairs, submitName, resubmit, maxResub, DataSetName, threshold):
+    """
+    Create a tuple submit file for resubmitting failed (iFile, SplitStep) jobs.
+    Writes tuple_filelist with columns:
+       ilist iFile SplitStep SplitTotal
+    Then copies submitName_single.submit -> submitName_tuple.submit and replaces
+    placeholders so the new submit reads the tuple file and submits the exact chunks.
+    """
+    tuple_pairs = sorted(tuple_pairs)
     tuple_filelist = f"{submitName}_tuple.txt"
     resubmitFiles = 0
     if tuple_pairs == []:
-        return resubmitFiles # Have no jobs to resubmit
-    tuple_pairs = list(set(tuple_pairs)) # remove potential dupes
-    with open(tuple_filelist,'w') as tuple_file:
+        return resubmitFiles  # nothing to do
+
+    # derive workingDir from submitName (submitName == workingDir+"/src/"+DataSetName)
+    workingDir = os.path.dirname(os.path.dirname(submitName))
+    # location where the dataset master lists should live
+    master_list_dir = os.path.join(workingDir, "list", DataSetName)
+    # fallback config list location (per-root-list files)
+    config_list_dir = os.path.join(workingDir, "config", "list", DataSetName)
+
+    # Build tuple file containing ilist, iFile, SplitStep, SplitTotal
+    with open(tuple_filelist, 'w') as tuple_file:
         for tuple_pair in tuple_pairs:
-            resubmitFiles = resubmitFiles+1
-            if DO_EVENTCOUNT: tuple_file.write(f"{tuple_pair}\n")
-            else: tuple_file.write(f"{tuple_pair[0]},{tuple_pair[1]}\n")
+            resubmitFiles += 1
+            if DO_EVENTCOUNT:
+                tuple_file.write(f"{tuple_pair}\n")
+                continue
+
+            # tuple_pair assumed to be (iFile, splitStep)
+            try:
+                iFile, splitStep = tuple_pair
+            except Exception:
+                raise ValueError("tuple_pairs must contain (iFile, splitStep) pairs in non-eventcount mode")
+
+            ilist, split_total = find_ilist_and_total(master_list_dir, iFile, splitStep)
+            if split_total is None:
+                # fallback for couldn't find SplitTotal, try to get it from the master lists by matching ilist
+                # scan master lists for ilist match and take split_total from matching lines
+                found = False
+                for fname in os.listdir(master_list_dir):
+                    if not fname.endswith('_list.list'):
+                        continue
+                    path = os.path.join(master_list_dir, fname)
+                    with open(path, 'r') as ml:
+                        for line in ml:
+                            parts = line.strip().split()
+                            if len(parts) >= 4 and parts[0].endswith(ilist.split('/')[-1]):
+                                try:
+                                    split_total = int(parts[3])
+                                    found = True
+                                    break
+                                except Exception:
+                                    continue
+                    if found:
+                        break
+                if split_total is None:
+                    raise ValueError(f"Could not determine SplitTotal for ilist {ilist}, iFile {iFile}, splitStep {splitStep}")
+
+            # write the 4-column line: ilist iFile SplitStep SplitTotal
+            tuple_file.write(f"{ilist} {iFile} {splitStep} {split_total}\n")
+
+    # Prepare the tuple submit based on the single template
     newFileName = f"{submitName}_tuple.submit"
     os.system(f"cp {submitName}_single.submit {newFileName}")
-    with open(newFileName,'r') as file:
-        file_content = file.read()
+
+    # Read the single submit and do safe, robust replacements
+    with open(newFileName, 'r') as fh:
+        file_content = fh.read()
+
     if DO_EVENTCOUNT:
-        file_content = file_content.replace("0.list","$(list).list")
-        file_content = file_content.replace("0.root","$(list).root")
-        file_content = file_content.replace("0.out","$(list).out")
-        file_content = file_content.replace("0.err","$(list).err")
-        file_content = file_content.replace("0.log","$(list).log")
-        file_content = file_content.replace("queue",f"queue list from {tuple_filelist}")
+        file_content = file_content.replace("0.list", "$(list).list")
+        file_content = file_content.replace("0.root", "$(list).root")
+        file_content = file_content.replace("0.out", "$(list).out")
+        file_content = file_content.replace("0.err", "$(list).err")
+        file_content = file_content.replace("0.log", "$(list).log")
+        file_content = file_content.replace("queue", f"queue list from {tuple_filelist}")
     else:
-        file_content = file_content.replace("0_0","$(list)_$(split)")
-        file_content = file_content.replace("-split=1","-split=$$([$(split)+1])")
-        file_content = file_content.replace("X_0.list","X_$(list).list")
-        file_content = file_content.replace("queue",f"queue list,split from {tuple_filelist}")
-    file_content = file_content.replace('RequestCpus = 1','RequestCpus = 4')
-    file_content = file_content.replace('priority = 10','priority = 20')
-    with open(newFileName, 'w') as file:
-        file.write(file_content)
-    # Check number of resubmitFiles
-    print('total resubmit:',resubmitFiles)
+        # replace the hard-coded single ifile path (the -ilist=...) with $(ilist)
+        m = re.search(r'-ilist=([^\s]+)', file_content)
+        if m:
+            single_ifile = m.group(1)
+            file_content = file_content.replace(single_ifile, '$(ilist)')
+        else:
+            # fallback: nothing found; assume single template used './config/list/..._0.list' literal 'X_0.list'
+            file_content = file_content.replace("X_0.list", "$(ilist)")
+
+        # 2) replace the literal 0_0 pattern in filenames with macro form $(iFile)_$(SplitStep)
+        #    and ensure any other occurrences (output/error/log/transfer remap) follow suite
+        file_content = file_content.replace("0_0", "$(iFile)_$(SplitStep)")
+        # also handle older placeholder 0 (if present)
+        file_content = file_content.replace("_0.list", "_$(iFile).list")
+
+        # 3) replace the -split=1,<N> single-job spec with the macroized split spec
+        #    find occurrences like '-split=1,123' and replace with '-split=$$([$(SplitStep)+1]),$(SplitTotal)'
+        file_content = re.sub(r'-split=1,\s*\d+', '-split=$$([$(SplitStep)+1]),$(SplitTotal)', file_content)
+
+        # 4) replace the queue line to include all four variables reading from tuple_filelist
+        file_content = re.sub(r'\bqueue\b.*', f'queue ilist, iFile, SplitStep, SplitTotal from {tuple_filelist}', file_content, count=1)
+
+    file_content = file_content.replace('RequestCpus = 1', 'RequestCpus = 2')
+    file_content = file_content.replace('priority = 10', 'priority = 20')
+
+    # write the new tuple submit
+    with open(newFileName, 'w') as fh:
+        fh.write(file_content)
+
+    # Print and optionally submit
+    print('total resubmit:', resubmitFiles)
     if resubmit:
         if resubmitFiles > maxResub:
             print(f"You are about to make {resubmitFiles} and resubmit {resubmitFiles} jobs for dataset: {DataSetName}!")
@@ -71,9 +218,10 @@ def makeSubmitScript(tuple_pairs,submitName,resubmit,maxResub,DataSetName,thresh
             print(f"If you are confident you want to resubmit, then you should rerun this script with '-l {resubmitFiles}'.")
             print(f"Or run condor_submit {newFileName}")
         else:
-            condor_monitor = CondorJobCountMonitor(threshold=min(threshold+resubmitFiles,100000),verbose=False)
+            condor_monitor = CondorJobCountMonitor(threshold=min(threshold+resubmitFiles,100000), verbose=False)
             condor_monitor.wait_until_jobs_below()
             os.system(f"condor_submit {newFileName}")
+
     return resubmitFiles
 
 def testRootFile(root_file):
@@ -130,169 +278,263 @@ def UpdateFilterList(DataSetName, filterlist_filename, add):
         filterlist.write("\n".join(sorted(dataset_list)) + "\n")  # Sort for consistency
 
 # Check condor jobs
-def checkJobs(workingDir,outputDir,skipEC,skipDAS,skipMissing,skipSmall,skipErr,skipOut,skipZombie,resubmit,maxResub,filter_list,threshold,skipDASDataset):
+def checkJobs(workingDir, outputDir, skipEC, skipDAS, skipMissing, skipSmall,
+              skipErr, skipOut, skipZombie, resubmit, maxResub,
+              filter_list, threshold, skipDASDataset):
     print("Running over the directory '{0}'.".format(workingDir))
     print("------------------------------------------------------------")
     grep_ignore = "-e \"Warning\" -e \"WARNING\" -e \"TTree::SetBranchStatus\" -e \"libXrdSecztn.so\" -e \"Phi_mpi_pi\" -e \"tar: stdout: write error\" -e \"INFO\""
     grep_ignore += " -e \"SetBranchAddress\""
-    srcDir = os.listdir(workingDir+"/src/")
+
+    srcDir = os.listdir(os.path.join(workingDir, "src"))
     total_resubmit = 0
+
+    # helper to parse tuples from a file path (base filename without extension)
+    def path_to_tuple(path):
+        """Return Tuple or int depending on DO_EVENTCOUNT. Safe parsing of basename."""
+        base = os.path.basename(path)
+        # remove common extensions if present
+        for ext in (".err", ".out", ".root", ".list"):
+            if base.endswith(ext):
+                base = base[: -len(ext)]
+        parts = base.split("_")
+        try:
+            if DO_EVENTCOUNT:
+                return int(parts[-1])
+            else:
+                return (int(parts[-2]), int(parts[-1]))
+        except Exception:
+            # If parsing fails, return None so caller can ignore it.
+            return None
+
     for file in srcDir:
         if "X.submit" not in file:
             continue
-        do_name = False
+
+        # filter_list handling
         if filter_list:
-            for name in filter_list:
-                if name in file:
-                    do_name = True
-                    break
-        if filter_list and not do_name:
-            continue
+            do_name = any(name in file for name in filter_list)
+            if not do_name:
+                continue
+
         DataSetName = file.split(".")[0]
-        resubmitFiles = []
-        if(not skipDAS):
+        resubmit_set = set()
+
+        # --- DAS check ---
+        if not skipDAS:
             NDAS_true = 0
             NDAS = 0
             event_count = EventCount()
-            listDir = os.path.join(workingDir, "config/list", DataSetName)
+            listDir = os.path.join(workingDir, "config", "list", DataSetName)
             dataset = []
-            for lFile in os.listdir(listDir):
-                if lFile.endswith('.list') and not lFile.endswith('_list.list'):
-                    with open(os.path.join(listDir,lFile),'r') as input_root_files:
-                        input_root_filename = input_root_files.readline().strip()
-                        dataset = event_count.GetDatasetFromFile(input_root_filename)
-                        if dataset == []:
-                            continue
-                        NDAS_true = event_count.EventsInDAS(dataset, False)
-                        break
-                        # Can get total per file if needed
-                        #NDAS_true += event_count.EventsInDAS(input_root_filename) # get true total events from DAS
-            outfiles = os.listdir(outputDir+'/'+DataSetName)
-            for outfile in outfiles:
-                NDAS += event_count.GetDASCount(os.path.join(outputDir+'/'+DataSetName,outfile))
+            try:
+                for lFile in os.listdir(listDir):
+                    if lFile.endswith('.list') and not lFile.endswith('_list.list'):
+                        with open(os.path.join(listDir, lFile), 'r') as input_root_files:
+                            input_root_filename = input_root_files.readline().strip()
+                            dataset = event_count.GetDatasetFromFile(input_root_filename)
+                            if dataset == []:
+                                continue
+                            NDAS_true = event_count.EventsInDAS(dataset, False)
+                            break
+            except Exception:
+                dataset = []
+
+            # sum counts from outputs
+            outfiles_dir = os.path.join(outputDir, DataSetName)
+            try:
+                outfiles = os.listdir(outfiles_dir)
+                for outfile in outfiles:
+                    NDAS += event_count.GetDASCount(os.path.join(outfiles_dir, outfile))
+            except Exception:
+                NDAS = 0
+
             if NDAS != NDAS_true:
                 comp_percent = 0
                 if NDAS_true > 0:
-                    comp_percent = 100.*math.floor(NDAS/NDAS_true * 1000) / 1000
+                    comp_percent = 100. * math.floor(NDAS / NDAS_true * 1000) / 1000
                 print(f'{DataSetName} failed the DAS check! ({comp_percent}%) Use other options to investigate')
-                if(not skipDASDataset and dataset):
+                if (not skipDASDataset) and dataset:
                     files_datasets = set()
-                    bash = "find "+outputDir+'/'+DataSetName+" -type f"
-                    files = subprocess.check_output(['bash','-c', bash]).decode()
-                    files = files.split("\n")
-                    files.remove('')
-                    for file in files:
-                        file_datasets = event_count.getFullDASDatasetNames(file)
-                        for ds in file_datasets:
-                            if ds not in files_datasets:
+                    try:
+                        bash = f"find {os.path.join(outputDir, DataSetName)} -type f"
+                        files = subprocess.check_output(['bash', '-c', bash], text=True).splitlines()
+                        for f in files:
+                            if not f:
+                                continue
+                            file_datasets = event_count.getFullDASDatasetNames(f)
+                            for ds in file_datasets:
                                 files_datasets.add(ds)
+                    except Exception:
+                        files_datasets = set()
+
                     dataset_set = set(dataset)
                     if files_datasets != dataset_set:
                         print(f'{DataSetName} dataset mismatch!')
                         print(f'From files:   {sorted(files_datasets)}')
                         print(f'From DAS: {sorted(dataset_set)}')
+
                 UpdateFilterList(DataSetName, f"{workingDir}/CheckFiles_FilterList.txt", True)
             else:
                 print(f'{DataSetName} passed the DAS check!')
                 UpdateFilterList(DataSetName, f"{workingDir}/CheckFiles_FilterList.txt", False)
-                continue # no need to do any more checks if passed DAS check
-        if(not skipMissing):
-            with open(workingDir+"/src/"+DataSetName+".submit") as file:
-                file.seek(0,2)
-                file.seek(file.tell()-2,0)
-                while file.read(1) != "\n" and file.tell() > 0:
-                    file.seek(file.tell()-2,0)
-                last_line = file.readline().strip()
-                nSplit = 1
-                if not DO_EVENTCOUNT:
-                    nSplit = int(last_line.split(" ")[1])
-            listDir = os.path.abspath(workingDir+"/list/"+DataSetName+"/")
-            listFiles = os.listdir(listDir)
-            numList = len([listFile for listFile in listFiles if os.path.isfile(os.path.join(listDir,listFile))])
-            numList = numList - 1 # remove master list file
-            nJobsSubmit = numList*nSplit
-            resubmitFiles.extend(getMissingFiles(outputDir+'/'+DataSetName,nSplit,numList))
-            print(f"Got {len(resubmitFiles)} missing files for dataset {DataSetName}")
-        if(not skipSmall):
-            # define size cutoff using -size: find will get all files below the cutoff
-            bash = "find "+outputDir+'/'+DataSetName+" -type f -size -1k"
-            smallFiles = subprocess.check_output(['bash','-c', bash]).decode()
-            smallFiles = smallFiles.split("\n")
-            smallFiles.remove('')
+                continue  # passed DAS -> skip other checks
+
+        # --- missing files check ---
+        if not skipMissing:
+            listDir = os.path.abspath(os.path.join(workingDir, "list", DataSetName))
+            listFiles = []
+            try:
+                listFiles = os.listdir(listDir)
+            except Exception:
+                listFiles = []
+            added_missing = 0
+            if DO_EVENTCOUNT:
+                numList = len([lf for lf in listFiles if os.path.isfile(os.path.join(listDir, lf))]) - 1
+                missing = getMissingFilesEC(outputDir, numList)
+                for t in missing:
+                    if t not in resubmit_set:
+                        resubmit_set.add(t)
+                        added_missing += 1
+            else:
+                try:
+                    missing = getMissingFiles(os.path.join(outputDir, DataSetName),
+                                              os.path.abspath(os.path.join(workingDir, "list", DataSetName, DataSetName + "_list.list")))
+                except Exception:
+                    missing = []
+                for t in missing:
+                    if t not in resubmit_set:
+                        resubmit_set.add(t)
+                        added_missing += 1
+            print(f"Got {added_missing} missing files for dataset {DataSetName}")
+
+        # --- small files check ---
+        if not skipSmall:
+            bash = f"find {os.path.join(outputDir, DataSetName)} -type f -size -1k"
+            try:
+                smallFiles_out = subprocess.check_output(['bash', '-c', bash], text=True).splitlines()
+            except subprocess.CalledProcessError:
+                smallFiles_out = []
+            except Exception:
+                smallFiles_out = []
+
             num_small = 0
-            for smallFile in smallFiles:
-                smallFile = smallFile.split(".root")[0]
-                Tuple = None
-                if DO_EVENTCOUNT: Tuple = int(smallFile.split("_")[-1])
-                else: Tuple = (int(smallFile.split("_")[-2]),int(smallFile.split("_")[-1]))
-                resubmitFiles.append(Tuple)
-                num_small = num_small+1
-            print(f"Got {num_small} small files for dataset {DataSetName}")
-        if(not skipErr):
-            errorFiles = []
-            bash = "grep -r -v "+grep_ignore+" "+workingDir+"/err/"+DataSetName+"/"
-            # "errorFiles" is actually all lines with errors that we don't ignore
-            # thus, the number of "errorFiles" is often much greater than number of files with an actual error
-            try:
-                errorFiles = subprocess.check_output(['bash','-c',bash]).decode()
-                errorFiles = errorFiles.split("\n")
-                errorFiles.remove('')
-            except subprocess.CalledProcessError as e:
-                pass # exception means no err files have issues so just keep going
-            num_error = 0
-            # loop over all lines with errors
-            for errorFile in errorFiles:
-                errorFile = errorFile.split(".err")[0]
-                Tuple = None
-                if DO_EVENTCOUNT: Tuple = int(errorFile.split("_")[-1])
-                else: Tuple = (int(errorFile.split("_")[-2]),int(errorFile.split("_")[-1]))
-                if Tuple not in resubmitFiles:
-                    # count number of files with an error
-                    num_error = num_error+1
-                    resubmitFiles.append(Tuple)
-            print(f"Got {num_error} error files for dataset",DataSetName)
-        if(not skipOut):
-            outFiles = []
-            bash = "grep -r \"Ntree 0\" "+ workingDir +"/out/"+DataSetName+"/"
-            try:
-                outFiles = subprocess.check_output(['bash','-c',bash]).decode()
-                outFiles = outFiles.split("\n")
-                outFiles.remove('')
-            except subprocess.CalledProcessError as e:
-                pass # exception means no out files have issues so just keep going
-            num_out = 0
-            for outFile in outFiles:
-                num_out = num_out+1
-                outFile = outFile.split(".out")[0]
-                Tuple = None
-                if DO_EVENTCOUNT: Tuple = int(outFile.split("_")[-1])
-                else: Tuple = (int(outFile.split("_")[-2]),int(outFile.split("_")[-1]))
-                if Tuple not in resubmitFiles:
-                    resubmitFiles.append(Tuple)
-            print(f"Got {num_out} out files for dataset",DataSetName)
-        if(not skipZombie):
-            num_zomb = 0
-            bash = "find "+outputDir+'/'+DataSetName+" -type f"
-            zombFiles = subprocess.check_output(['bash','-c', bash]).decode()
-            zombFiles = zombFiles.split("\n")
-            zombFiles.remove('')
-            for zombFile in zombFiles:
-                if testRootFile(zombFile) is True:
+            for smallFile in smallFiles_out:
+                if not smallFile:
                     continue
-                os.remove(zombFile)
-                zombFile = zombFile.split(".root")[0]
-                Tuple = None
-                if DO_EVENTCOUNT: Tuple = int(zombFile.split("_")[-1])
-                else: Tuple = (int(zombFile.split("_")[-2]),int(zombFile.split("_")[-1]))
-                resubmitFiles.append(Tuple)
-                num_zomb = num_zomb+1
-            print(f"Got {num_zomb} zombie root files for dataset",DataSetName)
-        if(not skipEC):
-            failedEC = eventCountCheck(outputDir+'/'+DataSetName)
-            resubmitFiles.extend(failedEC)
-            print(f"Got {len(failedEC)} files failed EventCount check for dataset",DataSetName)
-        nJobs = makeSubmitScript(resubmitFiles,workingDir+"/src/"+DataSetName,resubmit,maxResub,DataSetName,threshold)
+                tup = path_to_tuple(smallFile)
+                if tup is None:
+                    continue
+                if tup not in resubmit_set:
+                    resubmit_set.add(tup)
+                    num_small += 1
+            print(f"Got {num_small} small files for dataset {DataSetName}")
+
+        # --- .err files check (use awk to only check after marker, then grep -v for ignore) ---
+        if not skipErr:
+            marker = "WARNING: In non-interactive mode release checks e.g. deprecated releases, production architectures are disabled.\n"
+            awk_cmd = (
+                f"awk -v marker='{marker}' "
+                "'{ if (found) { print FILENAME \":\" $0 } } "
+                "$0 ~ marker { found=1 }' "
+                f"{os.path.join(workingDir, 'err', DataSetName)}/*.err"
+            )
+            bash = f"{awk_cmd} | grep -v {grep_ignore}"
+
+
+            try:
+                output = subprocess.check_output(['bash', '-c', bash], text=True).splitlines()
+            except subprocess.CalledProcessError:
+                output = []
+            except Exception:
+                output = []
+
+            num_error = 0
+            for line in output:
+                if not line:
+                    continue
+                # line expected as "/path/to/file.err:the rest of the matching line"
+                filename_part = line.split(":", 1)[0]
+                tup = path_to_tuple(filename_part)
+                if tup is None:
+                    continue
+                if tup not in resubmit_set:
+                    resubmit_set.add(tup)
+                    num_error += 1
+            print(f"Got {num_error} error files for dataset {DataSetName}")
+
+        # --- .out files check ---
+        if not skipOut:
+            bash = f"grep -r \"Ntree 0\" {os.path.join(workingDir, 'out', DataSetName)}"
+            try:
+                outLines = subprocess.check_output(['bash', '-c', bash], text=True).splitlines()
+            except subprocess.CalledProcessError:
+                outLines = []
+            except Exception:
+                outLines = []
+            num_out = 0
+            for outLine in outLines:
+                if not outLine:
+                    continue
+                filename_part = outLine.split(":", 1)[0]
+                tup = path_to_tuple(filename_part)
+                if tup is None:
+                    continue
+                if tup not in resubmit_set:
+                    resubmit_set.add(tup)
+                    num_out += 1
+            print(f"Got {num_out} out files for dataset {DataSetName}")
+
+        # --- zombie root files check ---
+        if not skipZombie:
+            num_zomb = 0
+            try:
+                bash = f"find {os.path.join(outputDir, DataSetName)} -type f"
+                zombFiles = subprocess.check_output(['bash', '-c', bash], text=True).splitlines()
+            except subprocess.CalledProcessError:
+                zombFiles = []
+            except Exception:
+                zombFiles = []
+            for zombFile in zombFiles:
+                if not zombFile:
+                    continue
+                try:
+                    if testRootFile(zombFile) is True:
+                        continue
+                except Exception:
+                    # If testRootFile fails, treat as zombie and attempt to remove
+                    pass
+                # attempt to remove the bad file
+                try:
+                    os.remove(zombFile)
+                except Exception:
+                    pass
+                tup = path_to_tuple(zombFile)
+                if tup is None:
+                    continue
+                if tup not in resubmit_set:
+                    resubmit_set.add(tup)
+                    num_zomb += 1
+            print(f"Got {num_zomb} zombie root files for dataset {DataSetName}")
+
+        # --- EventCount check (EC) ---
+        if not skipEC:
+            try:
+                failedEC = eventCountCheck(os.path.join(outputDir, DataSetName))
+            except Exception:
+                failedEC = []
+            added_ec = 0
+            for t in failedEC:
+                if t not in resubmit_set:
+                    resubmit_set.add(t)
+                    added_ec += 1
+            print(f"Got {len(failedEC)} files failed EventCount check for dataset {DataSetName}")
+
+        # create submit script(s) and count new jobs
+        nJobs = makeSubmitScript(resubmit_set, os.path.join(workingDir, "src", DataSetName),
+                                 resubmit, maxResub, DataSetName, threshold)
         total_resubmit += nJobs
+
     return total_resubmit
 
 def main():
