@@ -556,19 +556,15 @@ if __name__ == "__main__":
             for root_index, root_file in enumerate(rootlist):
                 events = 0
                 file_SPLIT = SPLIT
-            
                 # normalize the file path to match the keys in file_events_map
                 pos = root_file.find("/store/")
                 norm_file = root_file[pos:] if pos != -1 else root_file
-            
                 # skip EOS files for DAS query
                 if "cmseos.fnal.gov" not in root_file:
                     events = file_events_map.get(norm_file, 0)
-            
                 max_split_by_events = max(1, events // 10)
                 if file_SPLIT > max_split_by_events and events != 0:
                     file_SPLIT = max_split_by_events
-            
                 dataset_split[f"{dataset}_{filetag}_{root_index}"] = file_SPLIT
                 file_splits.append((root_index, file_SPLIT, max_split_by_events))
                 dataset_jobs += file_SPLIT
@@ -588,7 +584,7 @@ if __name__ == "__main__":
                 for root_index, split, max_split in file_splits:
                     current_jobs = max(1, split)
                     factor = math.ceil(MIN_JOBS_SUB / max(1, dataset_jobs or current_jobs))
-                    new_split = min(max_split, max(1, split * factor))
+                    new_split = min(max_split, max(1, split * factor), 200)
                     dataset_split[f"{dataset}_{filetag}_{root_index}"] = new_split
                     dataset_jobs += new_split
             
