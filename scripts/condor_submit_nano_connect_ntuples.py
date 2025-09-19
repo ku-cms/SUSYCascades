@@ -532,20 +532,44 @@ if __name__ == "__main__":
             # assign tentative splits per file
             file_splits = []
             dataset_jobs = 0
+            
+            # --- get all DAS events for this dataset at once ---
+            file_events_map = {}
+            non_eos_files = [f for f in rootlist if "cmseos.fnal.gov" not in f]
+            
+            if non_eos_files:
+                try:
+                    # resolve full dataset
+                    full_datasets = event_count.GetDatasetFromFile(non_eos_files[0])
+                    if full_datasets:
+                        dataset_name_for_das = full_datasets[0]  # usually only one DAS dataset
+                        try:
+                            file_events_map = event_count.EventsInDASDatasetFiles(dataset_name_for_das)
+                        except Exception:
+                            # fallback if DAS fails
+                            file_events_map = {f: 0 for f in non_eos_files}
+                    else:
+                        file_events_map = {f: 0 for f in non_eos_files}
+                except Exception:
+                    file_events_map = {f: 0 for f in non_eos_files}  # fallback if DAS fails
+            
             for root_index, root_file in enumerate(rootlist):
                 events = 0
                 file_SPLIT = SPLIT
+            
+                # normalize the file path to match the keys in file_events_map
+                pos = root_file.find("/store/")
+                norm_file = root_file[pos:] if pos != -1 else root_file
+            
+                # skip EOS files for DAS query
                 if "cmseos.fnal.gov" not in root_file:
-                    try:
-                        events = event_count.EventsInDAS(root_file)
-                    except Exception:
-                        events = 0  # fallback if DAS fails
+                    events = file_events_map.get(norm_file, 0)
             
                 max_split_by_events = max(1, events // 10)
                 if file_SPLIT > max_split_by_events and events != 0:
                     file_SPLIT = max_split_by_events
             
-                dataset_split[dataset+"_"+filetag+"_"+str(root_index)] = file_SPLIT
+                dataset_split[f"{dataset}_{filetag}_{root_index}"] = file_SPLIT
                 file_splits.append((root_index, file_SPLIT, max_split_by_events))
                 dataset_jobs += file_SPLIT
             

@@ -193,6 +193,35 @@ class EventCount:
             events += self.EventsInDASDataset(dataset)
         return events
 
+    def EventsInDASDatasetFiles(self, u_dataset):
+        """
+        Return a dict {filename: nevents} for all files in the dataset.
+        """
+        def _query(q):
+            try:
+                das_output = subprocess.check_output(
+                    ["dasgoclient", "-query", q, "-json"],
+                    text=True
+                )
+                return json.loads(das_output)
+            except (subprocess.CalledProcessError, ValueError, json.JSONDecodeError) as e:
+                print(f"Error querying DAS: {e}")
+                return []
+        file_events = {}
+        query = f"file dataset={u_dataset}"
+        das_data = _query(query)
+        # fallback if no files to check status
+        if not das_data:
+            query = f"status=* file dataset={u_dataset}"
+            das_data = _query(query)
+        for block in das_data:
+            for file_info in block.get("file", []):
+                fname = file_info.get("name")
+                nevents = file_info.get("nevents", 0)
+                if fname:
+                    file_events[fname] = nevents
+        return file_events
+
     def CleanDASDatasetOutputParsing(self, das_output):
         das_output = das_output.split('\n')
         das_output = [dataset for dataset in das_output if 'JME' not in dataset and 'PUFor' not in dataset and 'PU35ForTRK' not in dataset and 'LowPU' not in dataset]
