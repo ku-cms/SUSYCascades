@@ -391,15 +391,14 @@ def checkJobs(workingDir, outputDir, skipEC, skipDAS, skipMissing, skipSmall,
             added_missing = 0
             if DO_EVENTCOUNT:
                 numList = len([lf for lf in listFiles if os.path.isfile(os.path.join(listDir, lf))]) - 1
-                missing = getMissingFilesEC(outputDir, numList)
+                missing = getMissingFilesEC(outputDir+'/'+DataSetName, numList)
                 for t in missing:
                     if t not in resubmit_set:
                         resubmit_set.add(t)
                         added_missing += 1
             else:
                 try:
-                    missing = getMissingFiles(os.path.join(outputDir, DataSetName),
-                                              os.path.abspath(os.path.join(workingDir, "list", DataSetName, DataSetName + "_list.list")))
+                    missing = getMissingFiles(os.path.join(outputDir, DataSetName), os.path.abspath(os.path.join(workingDir, "list", DataSetName, DataSetName + "_list.list")))
                 except Exception:
                     missing = []
                 for t in missing:
