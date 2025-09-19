@@ -151,6 +151,10 @@ After EC jobs finish. Need to check for failed jobs.
 ```
 nohup python3 python/DASCheck_EventCount.py -d > /dev/null 2>&1 &
 ```
+Final check for EC jobs:
+```
+nohup python3 python/DASCheck_EventCount.py -d -a > /dev/null 2>&1 &
+```
 Run HADD script to update final EC files used by ntuple jobs.
 ```
 nohup python3 scripts/HADD_EventCount.py > HADD_EventCount.debug 2>&1 &

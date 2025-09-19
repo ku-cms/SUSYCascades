@@ -229,8 +229,8 @@ class EventCount:
                 stderr=subprocess.STDOUT
             ).strip()
             das_output = self.CleanDASDatasetOutputParsing(das_output)
-            if das_output == []:
-                query = f'dataset status=* dataset=/{dataset_name}/{campaign_tags}/{aod_version}'
+            if das_output == ['']:
+                query = f'status=* dataset=/{dataset_name}/{campaign_tags}/{aod_version}'
                 das_output = subprocess.check_output(
                     ["dasgoclient", "-query", query],
                     text=True,

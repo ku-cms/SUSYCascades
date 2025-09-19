@@ -1,6 +1,6 @@
 import os, argparse, subprocess, time
 
-def process_DASCheck_event_count(input_dir, working_dir, output_dir, dryrun, file, directory, threshold):
+def process_DASCheck_event_count(input_dir, working_dir, output_dir, dryrun, file, directory, threshold, check_all):
     processes = []
     if dryrun:
         print("Doing dryrun")
@@ -23,7 +23,8 @@ def process_DASCheck_event_count(input_dir, working_dir, output_dir, dryrun, fil
         dirs = os.listdir(working_dir)
         for EC_dir in dirs:
             if EC_dir.endswith('_EventCount'):
-                command = f"python3 python/CheckFiles.py -d {EC_dir} -o {output_dir}{EC_dir} --eventCount -t {threshold} -a"
+                command = f"python3 python/CheckFiles.py -d {EC_dir} -o {output_dir}{EC_dir} --eventCount -t {threshold}"
+                if check_all: command += " -a"
                 submitFiles = [f for f in os.listdir(f'{EC_dir}/src/') if f.endswith('.submit') and os.path.isfile(os.path.join(f'{EC_dir}/src/',f))]
                 firstsubmitFile = sorted(submitFiles)[0] if submitFiles else None
                 with open(os.path.join(f'{EC_dir}/src/',firstsubmitFile)) as f:
@@ -56,6 +57,7 @@ if __name__ == "__main__":
     parser.add_argument("--dryrun", action='store_true', help="Do not run countEvents check")
     parser.add_argument("-d", action='store_true', help="Check directory of output root files from condor jobs")
     parser.add_argument("-f", action='store_true', help="Check final hadded root files")
+    parser.add_argument("-a", "--check_all", action='store_true', help="Check all condor job datasets (passes -a to CheckFiles.py)")
     parser.add_argument("--threshold", "-t", default=1000, help="min number of jobs running before starting checker")
     parser.add_argument("--sleep", "-p", default=1, help="time to sleep before starting checker")
     
@@ -65,6 +67,6 @@ if __name__ == "__main__":
     if not args.d and not args.f:
         print("NEED TO SPECIFY WHETHER RUNNING OVER FILES OR DIRECTORY OF FILES")
     else:
-        process_DASCheck_event_count(args.input, args.working, args.output, args.dryrun, args.f, args.d, args.threshold)
+        process_DASCheck_event_count(args.input, args.working, args.output, args.dryrun, args.f, args.d, args.threshold, args.check_all)
 
 

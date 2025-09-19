@@ -334,9 +334,10 @@ def checkJobs(workingDir, outputDir, skipEC, skipDAS, skipMissing, skipSmall,
                             input_root_filename = input_root_files.readline().strip()
                             dataset = event_count.GetDatasetFromFile(input_root_filename)
                             if dataset == []:
-                                continue
-                            NDAS_true = event_count.EventsInDAS(dataset, False)
-                            break
+                                NDAS_true += event_count.EventsInDAS(input_root_filename, True)
+                            else:
+                                NDAS_true = event_count.EventsInDAS(dataset, False)
+                                break
             except Exception:
                 dataset = []
 
@@ -606,7 +607,6 @@ def main():
         for full_path in file_list:
             totalEvents = event_count.countTotalEvents(full_path)
             DAS_events = event_count.getEventsFromDASDatasetNames(full_path)
-        
             if DAS_events == 0:
                 print("Something wrong with DAS events in", full_path)
             elif totalEvents != DAS_events:
