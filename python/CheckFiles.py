@@ -210,13 +210,13 @@ def makeSubmitScript(tuple_pairs, submitName, resubmit, maxResub, DataSetName, t
         fh.write(file_content)
 
     # Print and optionally submit
-    print('total resubmit:', resubmitFiles)
+    print('total resubmit:', resubmitFiles, flush=True)
     if resubmit:
         if resubmitFiles > maxResub:
-            print(f"You are about to make {resubmitFiles} and resubmit {resubmitFiles} jobs for dataset: {DataSetName}!")
-            print(f"You should double check there are no issues with your condor submissions.")
-            print(f"If you are confident you want to resubmit, then you should rerun this script with '-l {resubmitFiles}'.")
-            print(f"Or run condor_submit {newFileName}")
+            print(f"You are about to make {resubmitFiles} and resubmit {resubmitFiles} jobs for dataset: {DataSetName}!", flush=True)
+            print(f"You should double check there are no issues with your condor submissions.", flush=True)
+            print(f"If you are confident you want to resubmit, then you should rerun this script with '-l {resubmitFiles}'.", flush=True)
+            print(f"Or run condor_submit {newFileName}", flush=True)
         else:
             condor_monitor = CondorJobCountMonitor(threshold=min(threshold+resubmitFiles,100000), verbose=False)
             condor_monitor.wait_until_jobs_below()
@@ -281,8 +281,8 @@ def UpdateFilterList(DataSetName, filterlist_filename, add):
 def checkJobs(workingDir, outputDir, skipEC, skipDAS, skipMissing, skipSmall,
               skipErr, skipOut, skipZombie, resubmit, maxResub,
               filter_list, threshold, skipDASDataset):
-    print("Running over the directory '{0}'.".format(workingDir))
-    print("------------------------------------------------------------")
+    print("Running over the directory '{0}'.".format(workingDir), flush=True)
+    print("------------------------------------------------------------", flush=True)
     grep_ignore = "-e \"Warning\" -e \"WARNING\" -e \"TTree::SetBranchStatus\" -e \"libXrdSecztn.so\" -e \"Phi_mpi_pi\" -e \"tar: stdout: write error\" -e \"INFO\""
     grep_ignore += " -e \"SetBranchAddress\""
 
@@ -354,7 +354,7 @@ def checkJobs(workingDir, outputDir, skipEC, skipDAS, skipMissing, skipSmall,
                 comp_percent = 0
                 if NDAS_true > 0:
                     comp_percent = 100. * math.floor(NDAS / NDAS_true * 1000) / 1000
-                print(f'{DataSetName} failed the DAS check! ({comp_percent}%) Use other options to investigate')
+                print(f'{DataSetName} failed the DAS check! ({comp_percent}%) Use other options to investigate', flush=True)
                 if (not skipDASDataset) and dataset:
                     files_datasets = set()
                     try:
@@ -371,13 +371,13 @@ def checkJobs(workingDir, outputDir, skipEC, skipDAS, skipMissing, skipSmall,
 
                     dataset_set = set(dataset)
                     if files_datasets != dataset_set:
-                        print(f'{DataSetName} dataset mismatch!')
-                        print(f'From files:   {sorted(files_datasets)}')
-                        print(f'From DAS: {sorted(dataset_set)}')
+                        print(f'{DataSetName} dataset mismatch!', flush=True)
+                        print(f'From files:   {sorted(files_datasets)}', flush=True)
+                        print(f'From DAS: {sorted(dataset_set)}', flush=True)
 
                 UpdateFilterList(DataSetName, f"{workingDir}/CheckFiles_FilterList.txt", True)
             else:
-                print(f'{DataSetName} passed the DAS check!')
+                print(f'{DataSetName} passed the DAS check!', flush=True)
                 UpdateFilterList(DataSetName, f"{workingDir}/CheckFiles_FilterList.txt", False)
                 continue  # passed DAS -> skip other checks
 
@@ -406,7 +406,7 @@ def checkJobs(workingDir, outputDir, skipEC, skipDAS, skipMissing, skipSmall,
                     if t not in resubmit_set:
                         resubmit_set.add(t)
                         added_missing += 1
-            print(f"Got {added_missing} missing files for dataset {DataSetName}")
+            print(f"Got {added_missing} missing files for dataset {DataSetName}", flush=True)
 
         # --- small files check ---
         if not skipSmall:
@@ -428,40 +428,43 @@ def checkJobs(workingDir, outputDir, skipEC, skipDAS, skipMissing, skipSmall,
                 if tup not in resubmit_set:
                     resubmit_set.add(tup)
                     num_small += 1
-            print(f"Got {num_small} small files for dataset {DataSetName}")
+            print(f"Got {num_small} small files for dataset {DataSetName}", flush=True)
 
-        # --- .err files check (use awk to only check after marker, then grep -v for ignore) ---
+        # --- .err files check ---
         if not skipErr:
-            marker = "WARNING: In non-interactive mode release checks e.g. deprecated releases, production architectures are disabled.\n"
-            awk_cmd = (
-                f"awk -v marker='{marker}' "
-                "'{ if (found) { print FILENAME \":\" $0 } } "
-                "$0 ~ marker { found=1 }' "
-                f"{os.path.join(workingDir, 'err', DataSetName)}/*.err"
-            )
-            bash = f"{awk_cmd} | grep -v {grep_ignore}"
-
-
-            try:
-                output = subprocess.check_output(['bash', '-c', bash], text=True).splitlines()
-            except subprocess.CalledProcessError:
-                output = []
-            except Exception:
-                output = []
-
+            marker = "WARNING: In non-interactive mode release checks e.g. deprecated releases, production architectures are disabled."
             num_error = 0
-            for line in output:
-                if not line:
-                    continue
-                # line expected as "/path/to/file.err:the rest of the matching line"
-                filename_part = line.split(":", 1)[0]
-                tup = path_to_tuple(filename_part)
-                if tup is None:
-                    continue
-                if tup not in resubmit_set:
-                    resubmit_set.add(tup)
-                    num_error += 1
-            print(f"Got {num_error} error files for dataset {DataSetName}")
+
+            for digit in range(10):
+                pattern = os.path.join(workingDir, "err", DataSetName, f"*{digit}.err")
+                awk_cmd = (
+                    f"awk -v marker='{marker}' "
+                    "'{ if (found) { print FILENAME \":\" $0 } } "
+                    "$0 ~ marker { found=1 }' "
+                    f"{pattern}"
+                )
+                bash = f"{awk_cmd} | grep -v {grep_ignore}"
+
+                try:
+                    output = subprocess.check_output(['bash', '-c', bash], text=True).splitlines()
+                except subprocess.CalledProcessError:
+                    output = []
+                except Exception:
+                    output = []
+
+                for line in output:
+                    if not line:
+                        continue
+                    # line expected as "/path/to/file.err:the rest of the matching line"
+                    filename_part = line.split(":", 1)[0]
+                    tup = path_to_tuple(filename_part)
+                    if tup is None:
+                        continue
+                    if tup not in resubmit_set:
+                        resubmit_set.add(tup)
+                        num_error += 1
+
+            print(f"Got {num_error} error files for dataset {DataSetName}", flush=True)
 
         # --- .out files check ---
         if not skipOut:
@@ -483,7 +486,7 @@ def checkJobs(workingDir, outputDir, skipEC, skipDAS, skipMissing, skipSmall,
                 if tup not in resubmit_set:
                     resubmit_set.add(tup)
                     num_out += 1
-            print(f"Got {num_out} out files for dataset {DataSetName}")
+            print(f"Got {num_out} out files for dataset {DataSetName}", flush=True)
 
         # --- zombie root files check ---
         if not skipZombie:
@@ -515,7 +518,7 @@ def checkJobs(workingDir, outputDir, skipEC, skipDAS, skipMissing, skipSmall,
                 if tup not in resubmit_set:
                     resubmit_set.add(tup)
                     num_zomb += 1
-            print(f"Got {num_zomb} zombie root files for dataset {DataSetName}")
+            print(f"Got {num_zomb} zombie root files for dataset {DataSetName}", flush=True)
 
         # --- EventCount check (EC) ---
         if not skipEC:
@@ -528,7 +531,7 @@ def checkJobs(workingDir, outputDir, skipEC, skipDAS, skipMissing, skipSmall,
                 if t not in resubmit_set:
                     resubmit_set.add(t)
                     added_ec += 1
-            print(f"Got {len(failedEC)} files failed EventCount check for dataset {DataSetName}")
+            print(f"Got {len(failedEC)} files failed EventCount check for dataset {DataSetName}", flush=True)
 
         # create submit script(s) and count new jobs
         nJobs = makeSubmitScript(resubmit_set, os.path.join(workingDir, "src", DataSetName),
@@ -608,12 +611,12 @@ def main():
             totalEvents = event_count.countTotalEvents(full_path)
             DAS_events = event_count.getEventsFromDASDatasetNames(full_path)
             if DAS_events == 0:
-                print("Something wrong with DAS events in", full_path)
+                print("Something wrong with DAS events in", full_path, flush=True)
             elif totalEvents != DAS_events:
                 comp_percent = 100. * math.floor(totalEvents / DAS_events * 1000) / 1000
-                print(f'{full_path} failed the DAS check! ({comp_percent}%) Use other options to investigate')
+                print(f'{full_path} failed the DAS check! ({comp_percent}%) Use other options to investigate', flush=True)
             else:
-                print(f'{full_path} passed the DAS check!')
+                print(f'{full_path} passed the DAS check!', flush=True)
 
     else:
         # default checking that's robust
@@ -623,19 +626,19 @@ def main():
         fileFilterList = ReadFilterList(f"{directory}/CheckFiles_FilterList.txt")
         if fileFilterList is not None: filter_list.extend(fileFilterList)
         if fileFilterList == [] and not checkAll:
-            print("All datasets passed DAS check!")
+            print("All datasets passed DAS check!", flush=True)
             return
         if checkAll: filter_list.clear()
 
         time.sleep(sleep_time)
         condor_monitor = CondorJobCountMonitor(threshold=threshold,verbose=False)
-        print(f"Waiting until minumum of {threshold} jobs in the queue")
+        print(f"Waiting until minumum of {threshold} jobs in the queue", flush=True)
         condor_monitor.wait_until_jobs_below()
-        print("Running checker...")
+        print("Running checker...", flush=True)
         nJobs = checkJobs(directory,output,skipEC,skipDAS,skipMissing,skipSmall,skipErr,skipOut,skipZombie,resubmit,maxResub,filter_list,threshold,skipDASDataset)
         if resubmit and nJobs > 0:
-            print(f"Resubmitted a total of {nJobs} jobs!")
-    print("Checker Complete!")
+            print(f"Resubmitted a total of {nJobs} jobs!", flush=True)
+    print("Checker Complete!", flush=True)
 
 if __name__ == "__main__":
     main()
