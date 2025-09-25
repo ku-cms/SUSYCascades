@@ -310,18 +310,17 @@ def checkJobs(workingDir, outputDir, skipEC, skipDAS, skipMissing, skipSmall,
     for file in srcDir:
         if "X.submit" not in file:
             continue
-
         # filter_list handling
         if filter_list:
             do_name = any(name in file for name in filter_list)
             if not do_name:
                 continue
-
         DataSetName = file.split(".")[0]
         resubmit_set = set()
 
         # --- DAS check ---
         if not skipDAS:
+            nDAS_fail = 0
             NDAS_true = 0
             NDAS = 0
             event_count = EventCount()
@@ -365,6 +364,13 @@ def checkJobs(workingDir, outputDir, skipEC, skipDAS, skipMissing, skipSmall,
                                 continue
                             file_datasets = event_count.getFullDASDatasetNames(f)
                             for ds in file_datasets:
+                                if "jsonparser" in ds:
+                                    tup = path_to_tuple(f)
+                                    if tup is None:
+                                        continue
+                                    if tup not in resubmit_set:
+                                        resubmit_set.add(tup)
+                                        nDAS_fail += 1
                                 files_datasets.add(ds)
                     except Exception:
                         files_datasets = set()
@@ -380,6 +386,7 @@ def checkJobs(workingDir, outputDir, skipEC, skipDAS, skipMissing, skipSmall,
                 print(f'{DataSetName} passed the DAS check!', flush=True)
                 UpdateFilterList(DataSetName, f"{workingDir}/CheckFiles_FilterList.txt", False)
                 continue  # passed DAS -> skip other checks
+            print(f"Got {nDAS_fail} DAS fail files for dataset {DataSetName}", flush=True)
 
         # --- missing files check ---
         if not skipMissing:
