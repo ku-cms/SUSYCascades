@@ -60,9 +60,9 @@ bool NtupleBase<Base>::WriteNtuple(const string& filename, int ichunk, int nchun
   Long64_t N1, N0;
   GetChunks(NTOT, N0, N1, ichunk, nchunk);
   // Initialize Histogram Booking
-  vector<TH1D*> histos;
-  if(!AnalysisBase<Base>::IsData())
-    AnalysisBase<Base>::InitializeHistograms(histos);
+  //vector<TH1D*> histos;
+  //if(!AnalysisBase<Base>::IsData())
+  //  AnalysisBase<Base>::InitializeHistograms(histos);
 
   int Nsys = AnalysisBase<Base>::m_Systematics.GetN();
 
@@ -116,8 +116,8 @@ bool NtupleBase<Base>::WriteNtuple(const string& filename, int ichunk, int nchun
       }
     }
 
-    if(!AnalysisBase<Base>::IsData())
-      AnalysisBase<Base>::BookHistograms(histos);
+    //if(!AnalysisBase<Base>::IsData())
+    //  AnalysisBase<Base>::BookHistograms(histos);
 
     // event count bookkeeping
     if(AnalysisBase<Base>::IsSMS())
@@ -180,21 +180,18 @@ bool NtupleBase<Base>::WriteNtuple(const string& filename, int ichunk, int nchun
   tout->Write("",TObject::kOverwrite);
   delete tout;
 
-  if(!AnalysisBase<Base>::IsData()){
-    outfile->mkdir("Histograms");
-    outfile->cd("Histograms");
-    int Nhisto = histos.size();
-    for(int i = 0; i < Nhisto; i++)
-      histos[i]->Write("", TObject::kOverwrite);
-  }
+  //if(!AnalysisBase<Base>::IsData()){
+  //  outfile->mkdir("Histograms");
+  //  outfile->cd("Histograms");
+  //  int Nhisto = histos.size();
+  //  for(int i = 0; i < Nhisto; i++)
+  //    histos[i]->Write("", TObject::kOverwrite);
+  //}
 
   TParameter<bool> isData("IsData", AnalysisBase<Base>::IsData()); isData.Write();
   TParameter<bool> isSMS("IsSMS", AnalysisBase<Base>::IsSMS()); isSMS.Write();
   TParameter<bool> isCascades("IsCascades", AnalysisBase<Base>::IsCascades()); isCascades.Write();
   TParameter<bool> isPrivateMC("IsPrivateMC", AnalysisBase<Base>::IsPrivateMC()); isPrivateMC.Write();
-  // Example read back from output:
-  // auto b = (TParameter<bool>*) f.Get("someBool");
-  // bool flag = b->GetVal();
   
   outfile->Close();
   delete outfile;
