@@ -4189,7 +4189,7 @@ ParticleList AnalysisBase<NANOULBase>::GetLowPtElectrons(){
       continue;
     if(fabs(LowPtElectron_dxy[i]) >= 0.05 || fabs(LowPtElectron_dz[i]) >= 0.1)
       continue;
-    if(LowPtElectron_ID[i] < 1.5)
+    if(LowPtElectron_ID[i] < 2.)
       continue;
     if(LowPtElectron_lostHits[i] != 0)
       continue;
