@@ -4098,6 +4098,7 @@ ParticleList AnalysisBase<NANOULBase>::GetJets(int id){
   return GetJetsMET(dum, id);
 }
 
+
 template <>
 ParticleList AnalysisBase<NANOULBase>::GetElectrons(){
   ParticleList list;
@@ -4107,10 +4108,20 @@ ParticleList AnalysisBase<NANOULBase>::GetElectrons(){
     // baseline lepton definition
     if(Electron_pt[i] < 7. || fabs(Electron_eta[i]) > 2.5)
       continue;
+    if(Electron_pt[i] < 10. && fabs(Electron_eta[i]) > 1.4442) // remove low pt endcap ele
+      continue;
+    if(fabs(Electron_eta[i]) >= 1.4442 && fabs(Electron_eta[i]) <= 1.566)
+      continue;
     if(fabs(Electron_dxy[i]) >= 0.05 || fabs(Electron_dz[i]) >= 0.1 ||
-       Electron_sip3d[i] >= 8)
+       Electron_sip3d[i] >= 6.)
       continue;
     if(Electron_pfRelIso03_all[i]*Electron_pt[i] >= 20. + 300./Electron_pt[i])
+      continue;
+    if(!minus_iso_hoe(Electron_vidNestedWPBitmap[i], 2, std::greater_equal<int>()))
+      continue;
+    if(Electron_lostHits[i] != 0)
+      continue;
+    if(Electron_convVeto[i] == 0)
       continue;
 
     Particle lep;
@@ -4127,372 +4138,38 @@ ParticleList AnalysisBase<NANOULBase>::GetElectrons(){
     lep.SetSIP3D(Electron_sip3d[i]);
     lep.SetIsLowPt(false);
     lep.SetTightCharge(Electron_tightCharge[i]);
+    lep.SetParticleID(kVeryLoose); // need to set to something
 
     lep.SetRelIso(Electron_pfRelIso03_all[i]);
     lep.SetMiniIso(Electron_miniPFRelIso_all[i]);
-
-    // FO baseline criteria
-    if(Electron_lostHits[i] == 0 && Electron_convVeto[i]){
-
-      double mva = Electron_mvaFall17V2noIso[i];
-      // convert to raw MVA output
-      if(mva == -1.)
-	mva = -999.;
-      else if(mva == 1.)
-	mva = 999.;
+    if( ( Electron_pt[i] < 20. && (
+          lep.MiniIso()*lep.Pt() >= 4. || 
+          lep.RelIso()*lep.Pt() >= 4. ||
+          !minus_iso_hoe(Electron_vidNestedWPBitmap[i], 4, std::greater_equal<int>())
+        )) ||
+        ( Electron_pt[i] >= 20. && (
+          !Electron_mvaFall17V2Iso_WP90[i]
+        ))
+      ) 
+        lep.SetLepQual(kBronze);
+    else if(( Electron_pt[i] < 20. && (
+          lep.MiniIso()*lep.Pt() < 4. && 
+          lep.RelIso()*lep.Pt() < 4. &&
+          minus_iso_hoe(Electron_vidNestedWPBitmap[i], 4, std::greater_equal<int>())
+        )) ||
+        ( Electron_pt[i] >= 20. && (
+          Electron_mvaFall17V2Iso_WP90[i]
+        ))
+      )
+    { 
+      if(lep.SIP3D() >= 3.)
+        lep.SetLepQual(kSilver);
       else
-	mva = -0.5*log((1.-mva)/(1.+mva));
-      
-      // FO VLoose
-      if(m_year == 2016){ // Summer16_94X legacy
-	if(fabs(lep.Eta()) < 0.8){ // eta < 0.8
-	  if(lep.Pt() < 10.){
-	    if(mva > -0.259)
-	      lep.SetParticleID(kVeryLoose);
-	  } else if(lep.Pt() < 25.) {
-	    if(mva > -0.388 + 0.109*(lep.Pt() - 25.))
-	      lep.SetParticleID(kVeryLoose);
-	  } else {
-	    if(mva > -0.388)
-	      lep.SetParticleID(kVeryLoose);
-	  }
-	} else if(fabs(lep.Eta()) < 1.479){ // eta < 1.479
-	  if(lep.Pt() < 10.){
-	    if(mva > -0.256)
-	      lep.SetParticleID(kVeryLoose);
-	  } else if(lep.Pt() < 25.) {
-	    if(mva > -0.696 + 0.106*(lep.Pt() - 25.))
-	      lep.SetParticleID(kVeryLoose);
-	  } else {
-	    if(mva > -0.696)
-	      lep.SetParticleID(kVeryLoose);
-	  }
-	} else { // eta < 2.5
-	  if(lep.Pt() < 10.){
-	    if(mva > -1.630)
-	      lep.SetParticleID(kVeryLoose);
-	  } else if(lep.Pt() < 25.) {
-	    if(mva > -1.219 + 0.148*(lep.Pt() - 25.))
-	      lep.SetParticleID(kVeryLoose);
-	  } else {
-	    if(mva > -1.219)
-	      lep.SetParticleID(kVeryLoose);
-	  }
-	}
-      }
-
-      if(m_year == 2017){ // Fall17_94X
-	if(fabs(lep.Eta()) < 0.8){ // eta < 0.8
-	  if(lep.Pt() < 10.){
-	    if(mva > -0.135)
-	      lep.SetParticleID(kVeryLoose);
-	  } else if(lep.Pt() < 25.) {
-	    if(mva > (-0.93 + (0.043/15.)*(lep.Pt()-10.)))
-	      lep.SetParticleID(kVeryLoose);
-	  } else {
-	    if(mva > -0.887)
-	      lep.SetParticleID(kVeryLoose);
-	  }
-	} else if(fabs(lep.Eta()) < 1.479){ // eta < 1.479
-	  if(lep.Pt() < 10.){
-	    if(mva > -0.417)
-	      lep.SetParticleID(kVeryLoose);
-	  } else if(lep.Pt() < 25.) {
-	    if(mva > (-0.93 + (0.04/15.)*(lep.Pt()-10.)))
-	      lep.SetParticleID(kVeryLoose);
-	  } else {
-	    if(mva > -0.89)
-	      lep.SetParticleID(kVeryLoose);
-	  }
-	} else { // eta < 2.5
-	  if(lep.Pt() < 10.){
-	    if(mva > -0.470)
-	      lep.SetParticleID(kVeryLoose);
-	  } else if(lep.Pt() < 25.) {
-	    if(mva > (-0.942 + (0.032/15.)*(lep.Pt()-10.)))
-	      lep.SetParticleID(kVeryLoose);
-	  } else {
-	    if(mva > -0.91)
-	      lep.SetParticleID(kVeryLoose);
-	  }
-	}
-      }
-
-      if(m_year == 2018){ // Autumn18_102X
-	if(fabs(lep.Eta()) < 0.8){ // eta < 0.8
-	  if(lep.Pt() < 10.){
-	    if(mva > 0.053)
-	      lep.SetParticleID(kVeryLoose);
-	  } else if(lep.Pt() < 25.) {
-	    if(mva > -0.106 + 0.062*(lep.Pt() - 25.))
-	      lep.SetParticleID(kVeryLoose);
-	  } else {
-	    if(mva > -0.106)
-	      lep.SetParticleID(kVeryLoose);
-	  }
-	} else if(fabs(lep.Eta()) < 1.479){ // eta < 1.479
-	  if(lep.Pt() < 10.){
-	    if(mva > -0.434)
-	      lep.SetParticleID(kVeryLoose);
-	  } else if(lep.Pt() < 25.) {
-	    if(mva > -0.769 + 0.038*(lep.Pt() - 25.))
-	      lep.SetParticleID(kVeryLoose);
-	  } else {
-	    if(mva > -0.769)
-	      lep.SetParticleID(kVeryLoose);
-	  }
-	} else { // eta < 2.5
-	  if(lep.Pt() < 10.){
-	    if(mva > -0.956)
-	      lep.SetParticleID(kVeryLoose);
-	  } else if(lep.Pt() < 25.) {
-	    if(mva > -1.461 + 0.042*(lep.Pt() - 25.))
-	      lep.SetParticleID(kVeryLoose);
-	  } else {
-	    if(mva > -1.461)
-	      lep.SetParticleID(kVeryLoose);
-	  }
-	}
-      }
-
-      // VLoose electron
-      if(m_year == 2016){ // Summer16_94X legacy
-	if(fabs(lep.Eta()) < 0.8){ // eta < 0.8
-	  if(lep.Pt() < 10.){
-	    if(mva > 1.309)
-	      lep.SetParticleID(kLoose);
-	  } else if(lep.Pt() < 25.) {
-	    if(mva > 0.887 + 0.088*(lep.Pt() - 25.))
-	      lep.SetParticleID(kLoose);
-	  } else {
-	    if(mva > 0.887)
-	      lep.SetParticleID(kLoose);
-	  }
-	} else if(fabs(lep.Eta()) < 1.479){ // eta < 1.479
-	  if(lep.Pt() < 10.){
-	    if(mva > 0.373)
-	      lep.SetParticleID(kLoose);
-	  } else if(lep.Pt() < 25.) {
-	    if(mva > 0.112 + 0.099*(lep.Pt() - 25.))
-	      lep.SetParticleID(kLoose);
-	  } else {
-	    if(mva > 0.112)
-	      lep.SetParticleID(kLoose);
-	  }
-	} else { // eta < 2.5
-	  if(lep.Pt() < 10.){
-	    if(mva > 0.071)
-	      lep.SetParticleID(kLoose);
-	  } else if(lep.Pt() < 25.) {
-	    if(mva > -0.017 + 0.137*(lep.Pt() - 25.))
-	      lep.SetParticleID(kLoose);
-	  } else {
-	    if(mva > -0.017)
-	      lep.SetParticleID(kLoose);
-	  }
-	}
-      }
-
-      if(m_year == 2017){ // Fall17_94X
-	if(fabs(lep.Eta()) < 0.8){ // eta < 0.8
-	  if(lep.Pt() < 10.){
-	    if(mva > 0.488)
-	      lep.SetParticleID(kLoose);
-	  } else if(lep.Pt() < 25.) {
-	    if(mva > (-0.788 + (0.148/15.)*(lep.Pt()-10.)) )
-	      lep.SetParticleID(kLoose);
-	  } else {
-	    if(mva > -0.64)
-	      lep.SetParticleID(kLoose);
-	  }
-	} else if(fabs(lep.Eta()) < 1.479){ // eta < 1.479
-	  if(lep.Pt() < 10.){
-	    if(mva > -0.045)
-	      lep.SetParticleID(kLoose);
-	  } else if(lep.Pt() < 25.) {
-	    if(mva > (-0.85 + (0.075/15.)*(lep.Pt()-10.)))
-	      lep.SetParticleID(kLoose);
-	  } else {
-	    if(mva > -0.775)
-	      lep.SetParticleID(kLoose);
-	  }
-	} else { // eta < 2.5
-	  if(lep.Pt() < 10.){
-	    if(mva > 0.176)
-	      lep.SetParticleID(kLoose);
-	  } else if(lep.Pt() < 25.) {
-	    if(mva > (-0.81 + (0.077/15.)*(lep.Pt()-10.)))
-	      lep.SetParticleID(kLoose);
-	  } else {
-	    if(mva > -0.733)
-	      lep.SetParticleID(kLoose);
-	  }
-	}
-      }
-
-      if(m_year == 2018){ // Autumn18_102X
-	if(fabs(lep.Eta()) < 0.8){ // eta < 0.8
-	  if(lep.Pt() < 10.){
-	    if(mva > 1.320)
-	      lep.SetParticleID(kLoose);
-	  } else if(lep.Pt() < 25.) {
-	    if(mva > 1.204 + 0.066*(lep.Pt() - 25.))
-	      lep.SetParticleID(kLoose);
-	  } else {
-	    if(mva > 1.204)
-	      lep.SetParticleID(kLoose);
-	  }
-	} else if(fabs(lep.Eta()) < 1.479){ // eta < 1.479
-	  if(lep.Pt() < 10.){
-	    if(mva > 0.192)
-	      lep.SetParticleID(kLoose);
-	  } else if(lep.Pt() < 25.) {
-	    if(mva > 0.084 + 0.033*(lep.Pt() - 25.))
-	      lep.SetParticleID(kLoose);
-	  } else {
-	    if(mva > 0.084)
-	      lep.SetParticleID(kLoose);
-	  }
-	} else { // eta < 2.5
-	  if(lep.Pt() < 10.){
-	    if(mva > 0.362)
-	      lep.SetParticleID(kLoose);
-	  } else if(lep.Pt() < 25.) {
-	    if(mva > -0.123 + 0.053*(lep.Pt() - 25.))
-	      lep.SetParticleID(kLoose);
-	  } else {
-	    if(mva > -0.123)
-	      lep.SetParticleID(kLoose);
-	  }
-	}
-      }
-	    
-      // signal lepton IDs (only Tight for now) baseline criteria
-      if(true){
-	// Tight electron
-	if(m_year == 2016){ // Summer16_94X legacy
-	  if(fabs(lep.Eta()) < 0.8){ // eta < 0.8
-	    if(lep.Pt() < 10.){ // using VLoose ID for low pT
-	      if(mva > 1.309)
-		lep.SetParticleID(kTight);
-	    } else if(lep.Pt() < 40.) {
-	      if(mva > 3.447 + 0.063*(lep.Pt()- 25.))
-		lep.SetParticleID(kTight);
-	    } else {
-	      if(mva > 4.392)
-		lep.SetParticleID(kTight);
-	    }
-	  } else if(fabs(lep.Eta()) < 1.479){ // eta < 1.479
-	    if(lep.Pt() < 10.){ // using VLoose ID for low pT
-	      if(mva > 0.373)
-		lep.SetParticleID(kTight); // just changed me
-	    } else if(lep.Pt() < 40.) {
-	      if(mva > 2.522 + 0.058*(lep.Pt() - 25.))
-		lep.SetParticleID(kTight);
-	    } else {
-	      if(mva > 3.392)
-		lep.SetParticleID(kTight);
-	    }
-	  } else { // eta < 2.5
-	    if(lep.Pt() < 10.){ // using VLoose ID for low pT
-	      if(mva > 0.071)
-		lep.SetParticleID(kTight);
-	    } else if(lep.Pt() < 40.) {
-	      if(mva > 1.555 + 0.075*(lep.Pt() - 25.))
-		lep.SetParticleID(kTight);
-	    } else {
-	      if(mva > 2.680)
-		lep.SetParticleID(kTight);
-	    }
-	  }
-	}
-
-	if(m_year == 2017){ // Fall17_94X
-	  if(fabs(lep.Eta()) < 0.8){ // eta < 0.8
-	    if(lep.Pt() < 10.){ // using VLoose ID for low pT
-	      if(mva > 0.488)
-		lep.SetParticleID(kTight);
-	    } else if(lep.Pt() < 25.) {
-	      if(mva > 0.2+0.032*(lep.Pt() - 10.))
-		lep.SetParticleID(kTight);
-	    } else {
-	      if(mva > 0.68)
-		lep.SetParticleID(kTight);
-	    }
-	  } else if(fabs(lep.Eta()) < 1.479){ // eta < 1.479
-	    if(lep.Pt() < 10.){ // using VLoose ID for low pT
-	      if(mva > -0.045)
-		lep.SetParticleID(kTight);
-	    } else if(lep.Pt() < 25.) {
-	      if(mva > 0.1+0.025*(lep.Pt() - 10.))
-		lep.SetParticleID(kTight);
-	    } else {
-	      if(mva > 0.475)
-		lep.SetParticleID(kTight);
-	    }
-	  } else { // eta < 2.5
-	    if(lep.Pt() < 10.){ // using VLoose ID for low pT
-	      if(mva > 0.176)
-		lep.SetParticleID(kTight);
-	    } else if(lep.Pt() < 25.) {
-	      if(mva > -0.1+0.028*(lep.Pt() - 10.))
-		lep.SetParticleID(kTight);
-	    } else {
-	      if(mva > 0.32)
-		lep.SetParticleID(kTight);
-	    }
-	  }
-	}
-
-	if(m_year == 2018){ // Autumn18_102X
-	  if(fabs(lep.Eta()) < 0.8){ // eta < 0.8
-	    if(lep.Pt() < 10.){ // using VLoose ID for low pT
-	      if(mva > 1.320)
-		lep.SetParticleID(kTight);
-	    } else if(lep.Pt() < 25.) {
-	      if(mva > 4.277 + 0.112*(lep.Pt() - 25.))
-		lep.SetParticleID(kTight);
-	    } else {
-	      if(mva > 4.277)
-		lep.SetParticleID(kTight);
-	    }
-	  } else if(fabs(lep.Eta()) < 1.479){ // eta < 1.479
-	    if(lep.Pt() < 10.){ // using VLoose ID for low pT
-	      if(mva > 0.192)
-		lep.SetParticleID(kTight);
-	    } else if(lep.Pt() < 25.) {
-	      if(mva > 3.152 + 0.060*(lep.Pt() - 25.))
-		lep.SetParticleID(kTight);
-	    } else {
-	      if(mva > 3.152)
-		lep.SetParticleID(kTight);
-	    }
-	  } else { // eta < 2.5
-	    if(lep.Pt() < 10.){ // using VLoose ID for low pT
-	      if(mva > 0.362)
-		lep.SetParticleID(kTight);
-	    } else if(lep.Pt() < 25.) {
-	      if(mva > 2.359 + 0.087*(lep.Pt() - 25.))
-		lep.SetParticleID(kTight);
-	    } else {
-	      if(mva > 2.359)
-		lep.SetParticleID(kTight);
-	    }
-	  }
-	}
-	
-      } // end lepton id
-
-        if(lep.ParticleID() < kMedium || lep.MiniIso()*lep.Pt() >= 4. || lep.RelIso()*lep.Pt() >= 4.)
-	    lep.SetLepQual(kBronze);
-	  else if(lep.SIP3D() > 2.)
-	    lep.SetLepQual(kSilver);
-	  else
-	    lep.SetLepQual(kGold);
-
-        list.push_back(lep);
+        lep.SetLepQual(kGold);
     }
-  }
+    list.push_back(lep);
+
+  } // for(int i = 0; i < N; i++)
   return list;
 }
 
@@ -4504,11 +4181,17 @@ ParticleList AnalysisBase<NANOULBase>::GetLowPtElectrons(){
     // baseline lepton definition
     if(LowPtElectron_pt[i] < 2. || LowPtElectron_pt[i] >= 7. || fabs(LowPtElectron_eta[i]) > 2.5)
       continue;
+    if(fabs(LowPtElectron_eta[i]) >= 1.4442 && fabs(LowPtElectron_eta[i]) <= 1.566)
+      continue;
+    if(LowPtElectron_pt[i] < 10. && fabs(LowPtElectron_eta[i]) > 1.4442) // remove low pt endcap ele
+      continue;
     if(LowPtElectron_convVeto[i] == 0)
       continue;
     if(fabs(LowPtElectron_dxy[i]) >= 0.05 || fabs(LowPtElectron_dz[i]) >= 0.1)
       continue;
-    if(LowPtElectron_ID[i] < 1.)
+    if(LowPtElectron_ID[i] < 1.5)
+      continue;
+    if(LowPtElectron_lostHits[i] != 0)
       continue;
     
     if(LowPtElectron_dxyErr[i] < 1.e-8 || LowPtElectron_dzErr[i] < 1.e-8)
@@ -4528,7 +4211,7 @@ ParticleList AnalysisBase<NANOULBase>::GetLowPtElectrons(){
     float IP_3D     = sqrt(dxy*dxy + dz*dz);
     float SIP_3D    = sqrt(sigma_xy*sigma_xy + sigma_z*sigma_z);
 
-    if (SIP_3D > 8.)
+    if (SIP_3D >= 6.)
       continue;
 
     if(LowPtElectron_miniPFRelIso_all[i]*LowPtElectron_pt[i] >= 20. + 300./LowPtElectron_pt[i])
@@ -4553,43 +4236,36 @@ ParticleList AnalysisBase<NANOULBase>::GetLowPtElectrons(){
     lep.SetMiniIso(LowPtElectron_miniPFRelIso_all[i]);
     lep.SetParticleID(kVeryLoose); // need to set to something for later on
     
-    if(LowPtElectron_lostHits[i] == 0){
-      float pt = lep.Pt();
-      float absEta = std::abs(lep.Eta());
-      float id = LowPtElectron_ID[i];
+    float pt = lep.Pt();
+    float absEta = std::abs(lep.Eta());
+    float id = LowPtElectron_ID[i];
 
-      bool failsIso = lep.MiniIso() * pt >= 4. || lep.RelIso() * pt >= 4.;
-      if (failsIso) {
+    bool failsIso = lep.MiniIso() * pt >= 4. || lep.RelIso() * pt >= 4.;
+    if (failsIso) {
+      lep.SetLepQual(kBronze);
+    } else {
+      bool passesID = false;
+
+      if (pt >= 2. && pt < 4.) {
+        if (absEta >= 0.8 && absEta < 1.442)
+          passesID = id >= 3.;
+        else if (absEta < 0.8)
+          passesID = id >= 2.6;
+      } else if (pt >= 4. && pt < 7.) {
+        if (absEta >= 0.8 && absEta < 1.442)
+          passesID = id >= 3.2;
+        else if (absEta < 0.8)
+          passesID = id >= 2.8;
+      }
+
+      if (!passesID) {
         lep.SetLepQual(kBronze);
+      } else if (lep.SIP3D() >= 3.) {
+        lep.SetLepQual(kSilver);
       } else {
-        bool passesID = false;
-
-        if (pt >= 2. && pt < 5.) {
-          if (absEta >= 1.48 && absEta < 2.5)
-            passesID = false; // always Bronze
-          else if (absEta >= 0.8 && absEta < 1.48)
-            passesID = id >= 3;
-          else if (absEta < 0.8)
-            passesID = id >= 2.3;
-        } else if (pt >= 5. && pt < 8.) {
-          if (absEta >= 1.48 && absEta < 2.5)
-            passesID = id >= 3.5;
-          else if (absEta >= 0.8 && absEta < 1.48)
-            passesID = id >= 3;
-          else if (absEta < 0.8)
-            passesID = id >= 2.3;
-        }
-
-        if (!passesID) {
-          lep.SetLepQual(kBronze);
-        } else if (lep.SIP3D() > 2.) {
-          lep.SetLepQual(kSilver);
-        } else {
-          lep.SetLepQual(kGold);
-        }
-      } // else
-
-    } // if(Electron_lostHits[i] == 0)
+        lep.SetLepQual(kGold);
+      }
+    } // else
  
     list.push_back(lep);
   }
@@ -4606,7 +4282,7 @@ ParticleList AnalysisBase<NANOULBase>::GetMuons(){
     // baseline lepton definition
     if(Muon_pt[i] < 3. || fabs(Muon_eta[i]) > 2.4)
       continue;
-    if(fabs(Muon_dxy[i]) >= 0.05 || fabs(Muon_dz[i]) >= 0.1 || Muon_sip3d[i] >= 8.)
+    if(fabs(Muon_dxy[i]) >= 0.05 || fabs(Muon_dz[i]) >= 0.1 || Muon_sip3d[i] >= 6.)
       continue;
     if(Muon_pfRelIso03_all[i]*Muon_pt[i] >= 20. + 300./Muon_pt[i])
       continue;
@@ -4638,7 +4314,7 @@ ParticleList AnalysisBase<NANOULBase>::GetMuons(){
       lep.SetParticleID(kMedium);
     if(lep.ParticleID() < kTight || lep.MiniIso()*lep.Pt() >= 4. || lep.RelIso()*lep.Pt() >= 4.)
       lep.SetLepQual(kBronze);
-    else if(lep.SIP3D() > 2.)
+    else if(lep.SIP3D() >= 3.)
       lep.SetLepQual(kSilver);
     else
       lep.SetLepQual(kGold);
@@ -5792,16 +5468,12 @@ ParticleList AnalysisBase<NANORun3>::GetLowPtElectrons(){
       bool passesID = false;
 
       if (pt >= 2. && pt < 5.) {
-        if (absEta >= 1.48 && absEta < 2.5)
-          passesID = false; // always Bronze
-        else if (absEta >= 0.8 && absEta < 1.48)
+        if (absEta >= 0.8 && absEta < 1.442)
           passesID = id >= 3;
         else if (absEta < 0.8)
           passesID = id >= 2.3;
       } else if (pt >= 5. && pt < 7.) {
-        if (absEta >= 1.48 && absEta < 2.5)
-          passesID = id >= 3.5;
-        else if (absEta >= 0.8 && absEta < 1.48)
+        if (absEta >= 0.8 && absEta < 1.442)
           passesID = id >= 3;
         else if (absEta < 0.8)
           passesID = id >= 2.3;
@@ -5816,7 +5488,6 @@ ParticleList AnalysisBase<NANORun3>::GetLowPtElectrons(){
       }
     } // else
 
- 
     list.push_back(lep);
   }
   return list;
