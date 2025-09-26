@@ -435,7 +435,7 @@ if __name__ == "__main__":
             print("making BTAG file")
         os.system("cp -r root/BtagSF "+config+".")
         os.system("cp -r csv/BtagSF/* "+config+"BtagSF/.")
-        btag_pog_fold = '/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/BTV/'
+        btag_pog_fold = '/cvmfs/cms-griddata.cern.ch/cat/metadata/BTV/'
         os.system(f"cp -r {btag_pog_fold}* {config}BtagSF/")
         BTAGFOLD = "./config/BtagSF/"
 

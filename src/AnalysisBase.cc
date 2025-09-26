@@ -199,15 +199,7 @@ void AnalysisBase<Base>::AddBtagFolder(const string& btagfold, const string& pro
     clip_string(filetag, "_Data");
     clip_string(filetag, "_SMS");
     clip_string(filetag, "_Cascades");
-    std::string Btag_file;
-    if(!m_IsUL)
-      Btag_file = btagfold+std::to_string(m_year)+"_"+filetag.substr(0, filetag.size() - 5)+"/btagging.json.gz";
-    else if(m_year != 2016)
-      Btag_file = btagfold+std::to_string(m_year)+"_UL"+"/btagging.json.gz";
-    else if(m_IsAPV)
-      Btag_file = btagfold+"2016preVFP_UL"+"/btagging.json.gz";
-    else
-      Btag_file = btagfold+"2016postVFP_UL"+"/btagging.json.gz";
+    std::string Btag_file = find_btag_file(btagfold, filetag);
     m_cset_Btag = correction::CorrectionSet::from_file(Btag_file);
   }
 }
@@ -572,6 +564,59 @@ bool AnalysisBase<Base>::minus_iso_hoe(int WPBitMap, int threshold, std::functio
       return false;
   }
   return true; 
+}
+
+template <class Base>
+int AnalysisBase<Base>::extract_nano_version(const std::string& dirname) {
+    static const std::regex re("NanoAODv([0-9]+)");
+    std::smatch m;
+    if (std::regex_search(dirname, m, re)) {
+        return std::stoi(m[1]);
+    }
+    return -1; // if not found
+}
+
+template <class Base>
+std::string AnalysisBase<Base>::find_btag_file(const std::string& btagfold, const std::string& filetag) {
+    std::vector<std::pair<int, fs::path>> matches;
+    std::string needle = "-" + filetag + "-";
+
+    for (const auto& entry : fs::directory_iterator(btagfold)) {
+        if (!entry.is_directory()) continue;
+        const std::string dirname = entry.path().filename().string();
+
+        if (dirname.find(needle) != std::string::npos) {
+            int version = extract_nano_version(dirname);
+            fs::path candidate = entry.path() / "latest" / "btagging.json.gz";
+            if (fs::exists(candidate) && version > 0) {
+                matches.emplace_back(version, candidate);
+            }
+        }
+    }
+
+    if (matches.empty()) {
+        throw std::runtime_error("No matching btag file found for tag=" + filetag);
+    }
+
+    // Pick entry with highest NanoAOD version
+    auto best = std::max_element(matches.begin(), matches.end(),
+                                 [](auto& a, auto& b){ return a.first < b.first; });
+
+    // Check if multiple entries have the same highest version
+    int max_version = best->first;
+    int count = std::count_if(matches.begin(), matches.end(),
+                              [&](auto& p){ return p.first == max_version; });
+
+    if (count > 1) {
+        std::string err = "Multiple matches for tag=" + filetag +
+                          " with same NanoAODv" + std::to_string(max_version) + ":\n";
+        for (auto& m : matches) {
+            if (m.first == max_version) err += "  " + m.second.string() + "\n";
+        }
+        throw std::runtime_error(err);
+    }
+
+    return best->second.string();
 }
 
 /////////////////////////////////////////////////

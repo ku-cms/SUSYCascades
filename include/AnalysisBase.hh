@@ -2,6 +2,9 @@
 #define AnalysisBase_h
 
 #include <iostream>
+#include <filesystem>
+#include <regex>
+#include <stdexcept>
 
 #include <TTree.h>
 #include <TLorentzVector.h>
@@ -31,6 +34,7 @@
 #include "mt2_bisect.hh"
 
 using namespace std;
+namespace fs = std::filesystem;
 
 class ParticleList;
 
@@ -232,8 +236,9 @@ private:
       str.erase(pos, clip.length());
   }
   bool minus_iso_hoe(int WPBitMap, int value, std::function<bool(int, int)> comp);
-  
+  int extract_nano_version(const std::string& dirname);
+  std::string find_btag_file(const std::string& btagfold, const std::string& filetag);
+   
 };
-
 
 #endif
