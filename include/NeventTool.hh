@@ -5,10 +5,20 @@
 #include <string>
 #include <fstream>
 #include <map>
+#include <future>
+#include <chrono>
+#include <thread>
+#include <vector>
+#include <unistd.h>     // fork, pipe, read, write, close
+#include <sys/wait.h>   // waitpid
+#include <signal.h>     // kill
+#include <sys/select.h> // select()
 
 #include "TFile.h"
 #include "TTree.h"
 #include "TSystem.h"
+#include "TChain.h"
+#include "TError.h"
 
 bool check_dataset_file(std::string dataset_name);
 std::string get_str_between_two_str(const std::string &s, const std::string &start_delim, const std::string &stop_delim);
@@ -95,7 +105,94 @@ private:
   
 };
 
+// Helper: build a new TChain and add files, optionally replacing a src prefix with dstPrefix.
+inline TChain* buildChain(const std::vector<std::string>& filenames,
+                          const std::string& srcPrefix,
+                          const std::string& dstPrefix,
+                          const char* treeName,
+                          bool useTree)
+{
+    TChain* tmp = nullptr;
+    if (useTree) tmp = new TChain(treeName);
+    else tmp = new TChain("Events");
+
+    for (const auto& f : filenames) {
+        std::string fname = f;
+        if (!dstPrefix.empty() && !srcPrefix.empty()) {
+            auto pos = fname.find(srcPrefix);
+            if (pos != std::string::npos) {
+                fname.replace(pos, srcPrefix.size(), dstPrefix);
+            }
+        }
+        tmp->Add(fname.c_str());
+        std::cout << "   Added file " << fname << std::endl;
+    }
+    return tmp;
+}
+
+// Helper: run chain->GetEntries() in a subprocess with timeout (seconds).
+// Returns -1 on timeout or error, otherwise the entry count.
+inline Long64_t tryGetEntriesSubproc(TChain* chain, int timeoutSeconds = 60)
+{
+    int prevErrLevel = gErrorIgnoreLevel;
+    gErrorIgnoreLevel = kFatal;
+
+    int pipefd[2];
+    if (pipe(pipefd) != 0) {
+        perror("pipe");
+        gErrorIgnoreLevel = prevErrLevel;
+        return -1;
+    }
+
+    pid_t pid = fork();
+    if (pid < 0) {
+        perror("fork");
+        gErrorIgnoreLevel = prevErrLevel;
+        return -1;
+    }
+
+    if (pid == 0) {
+        // Child process
+        close(pipefd[0]); // close read end
+        Long64_t entries = chain->GetEntries();
+        if (write(pipefd[1], &entries, sizeof(entries)) < 0) {
+            // ignore write error
+        }
+        close(pipefd[1]);
+        _exit(0);
+    }
+
+    // Parent process
+    close(pipefd[1]); // close write end
+    Long64_t result = -1;
+
+    fd_set set;
+    FD_ZERO(&set);
+    FD_SET(pipefd[0], &set);
+
+    struct timeval tv;
+    tv.tv_sec = timeoutSeconds;
+    tv.tv_usec = 0;
+
+    int rv = select(pipefd[0] + 1, &set, nullptr, nullptr, &tv);
+    if (rv > 0) {
+        if (read(pipefd[0], &result, sizeof(result)) < 0) {
+            perror("read");
+            result = -1;
+        }
+        int status = 0;
+        waitpid(pid, &status, 0);
+    } else {
+        // timeout or error
+        kill(pid, SIGKILL);
+        int status = 0;
+        waitpid(pid, &status, 0);
+        result = -1;
+    }
+
+    close(pipefd[0]);
+    gErrorIgnoreLevel = prevErrLevel;
+    return result;
+}
+
 #endif
-
-
-

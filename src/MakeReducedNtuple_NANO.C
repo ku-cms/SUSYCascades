@@ -201,6 +201,59 @@ int main(int argc, char* argv[]) {
     DAS_filename = eventTool.Get_DASfilename(filenames[0]);
   }
 
+  std::cout << "Testing if input files are accessible" << std::endl;
+  
+  // configure redirectors to try: first entry = "" means "use filenames as-is (no replacement)"
+  // subsequent entries are replacements for the known srcPrefix
+  const std::string srcPrefix = "root://cmsxrootd.fnal.gov/";
+  std::vector<std::string> redirectors = {
+      "", // attempt 0: original redirector
+      "davs://xrootd-local.unl.edu:1094/", // T2_US_Nebraska
+      "root://cmsdcadisk.fnal.gov:1094//dcache/uscmsdisk/", // T1_US_FNAL_DISK
+      "davs://k8s-redir-stageout.ultralight.org:1094/", // T2_US_Caltech
+  };
+  
+  bool success = false;
+  Long64_t NTOT = -1;
+  int timeoutSeconds = 60;
+  
+  // save previous ROOT error level and then set to kFatal during GetEntries
+  int prevErrLevel = gErrorIgnoreLevel;
+  
+  for (size_t attempt = 0; attempt < redirectors.size(); ++attempt) {
+      if (attempt == 0) {
+          // reuse the chain that was built during the DAS loop above
+      } else {
+          std::cerr << "[attempt " << attempt << "] GetEntries timed out previously; retrying with redirector: "
+                    << redirectors[attempt] << std::endl;
+          // delete old chain and rebuild with the new redirector
+          if (chain) {
+              delete chain;
+              chain = nullptr;
+          }
+          chain = buildChain(filenames, srcPrefix, redirectors[attempt], TreeName, DO_TREE);
+      }
+  
+      // try GetEntries with timeout
+      NTOT = tryGetEntriesSubproc(chain, timeoutSeconds);
+  
+      if (NTOT >= 0) {
+          success = true;
+          std::cout << "Got entries with prefix: " << redirectors[attempt] << std::endl;
+          break;
+      } else {
+          std::cerr << "GetEntries() attempt " << attempt << " timed out after " << timeoutSeconds << " seconds." << std::endl;
+          // loop continues to next redirector
+      }
+  }
+  
+  if (!success) {
+      std::cerr << "All redirector attempts failed. Exiting with failure (return 1)." << std::endl;
+      // cleanup chain pointer
+      if (chain) { delete chain; chain = nullptr; }
+      return 1;
+  }
+
   using NtupleVariant = std::variant<std::unique_ptr<ReducedNtuple<SUSYNANOBase>>, std::unique_ptr<ReducedNtuple<NANOULBase>>, std::unique_ptr<ReducedNtuple<NANORun3>>>;
   NtupleVariant ntuple;
   if(string(FileTag).find("130X") != std::string::npos){ cout << "Using Run3 base" << endl; ntuple = std::make_unique<ReducedNtuple<NANORun3>>(chain); }
