@@ -239,7 +239,10 @@ int main(int argc, char* argv[]) {
   
       if (NTOT >= 0) {
           success = true;
-          std::cout << "Got entries with prefix: " << redirectors[attempt] << std::endl;
+          if (attempt != 0)
+              std::cout << "Got entries with prefix: " << redirectors[attempt] << std::endl;
+          else
+              std::cout << "Got entries with prefix: " << srcPrefix << std::endl;
           break;
       } else {
           std::cerr << "GetEntries() attempt " << attempt << " timed out after " << timeoutSeconds << " seconds." << std::endl;

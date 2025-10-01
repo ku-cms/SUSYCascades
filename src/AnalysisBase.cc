@@ -566,6 +566,38 @@ bool AnalysisBase<Base>::minus_iso_hoe(int WPBitMap, int threshold, std::functio
   return true; 
 }
 
+// Map UL campaign tokens to the Run2-style directory substrings
+template <class Base>
+std::string AnalysisBase<Base>::normalize_btag_tag(const std::string& filetag) {
+    if (filetag.find("Summer20UL16APV") != std::string::npos)
+        return "Run2-2016postVFP-UL";
+    if (filetag.find("Summer20UL16") != std::string::npos)
+        return "Run2-2016preVFP-UL";
+    if (filetag.find("Summer20UL17") != std::string::npos)
+        return "Run2-2017-UL";
+    if (filetag.find("Summer20UL18") != std::string::npos)
+        return "Run2-2018-UL";
+
+    // Keep as-is for Run 3 (Summer22, Summer23, etc.)
+    return filetag;
+}
+
+// Strip known build suffixes (_106X, _130X, _102X) then apply UL->Run2 mapping
+template <class Base>
+std::string AnalysisBase<Base>::normalize_filetag(const std::string& filetag_in) {
+    std::string tag = filetag_in;
+    static const std::vector<std::string> suffixes = {"_106X", "_130X", "_102X"};
+    for (const auto& suf : suffixes) {
+        if (tag.size() > suf.size() &&
+            tag.compare(tag.size() - suf.size(), suf.size(), suf) == 0) {
+            tag = tag.substr(0, tag.size() - suf.size());
+            break;
+        }
+    }
+    return normalize_btag_tag(tag);
+}
+
+// member function to extract NanoAOD version from a directory name
 template <class Base>
 int AnalysisBase<Base>::extract_nano_version(const std::string& dirname) {
     static const std::regex re("NanoAODv([0-9]+)");
@@ -576,20 +608,33 @@ int AnalysisBase<Base>::extract_nano_version(const std::string& dirname) {
     return -1; // if not found
 }
 
+// Full find_btag_file implementation
 template <class Base>
-std::string AnalysisBase<Base>::find_btag_file(const std::string& btagfold, const std::string& filetag) {
+std::string AnalysisBase<Base>::find_btag_file(const std::string& btagfold, const std::string& filetag_in) {
+    // normalize_filetag makes a modifiable copy and applies UL->Run2 mapping
+    std::string filetag = normalize_filetag(filetag_in);
     std::vector<std::pair<int, fs::path>> matches;
-    std::string needle = "-" + filetag + "-";
+
+    // Decide how to search to avoid accidental matches (e.g. Summer22 vs Summer22EE).
+    // For Run2-mapped tags (start with "Run2-"), search for the tag as-is.
+    // For campaign tokens like "Summer22", prefer "-Summer22-" to avoid "Summer22EE".
+    std::string needle;
+    if (filetag.rfind("Run2-", 0) == 0 || filetag.rfind("Run3-", 0) == 0 || filetag.rfind("Run4-", 0) == 0) {
+        needle = filetag; // match substring anywhere in dirname
+    } else {
+        needle = "-" + filetag + "-";
+    }
 
     for (const auto& entry : fs::directory_iterator(btagfold)) {
         if (!entry.is_directory()) continue;
         const std::string dirname = entry.path().filename().string();
-
         if (dirname.find(needle) != std::string::npos) {
             int version = extract_nano_version(dirname);
-            fs::path candidate = entry.path() / "latest" / "btagging.json.gz";
-            if (fs::exists(candidate) && version > 0) {
-                matches.emplace_back(version, candidate);
+            if (version > 0) {
+                fs::path candidate = entry.path() / "latest" / "btagging.json.gz";
+                if (fs::exists(candidate)) {
+                    matches.emplace_back(version, candidate);
+                }
             }
         }
     }
@@ -600,17 +645,17 @@ std::string AnalysisBase<Base>::find_btag_file(const std::string& btagfold, cons
 
     // Pick entry with highest NanoAOD version
     auto best = std::max_element(matches.begin(), matches.end(),
-                                 [](auto& a, auto& b){ return a.first < b.first; });
+                                 [](const auto& a, const auto& b){ return a.first < b.first; });
 
-    // Check if multiple entries have the same highest version
+    // Check if multiple entries have the same highest version (avoid silent ambiguity)
     int max_version = best->first;
     int count = std::count_if(matches.begin(), matches.end(),
-                              [&](auto& p){ return p.first == max_version; });
+                              [&](const auto& p){ return p.first == max_version; });
 
     if (count > 1) {
         std::string err = "Multiple matches for tag=" + filetag +
                           " with same NanoAODv" + std::to_string(max_version) + ":\n";
-        for (auto& m : matches) {
+        for (const auto& m : matches) {
             if (m.first == max_version) err += "  " + m.second.string() + "\n";
         }
         throw std::runtime_error(err);

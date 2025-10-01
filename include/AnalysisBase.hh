@@ -237,7 +237,9 @@ private:
   }
   bool minus_iso_hoe(int WPBitMap, int value, std::function<bool(int, int)> comp);
   int extract_nano_version(const std::string& dirname);
-  std::string find_btag_file(const std::string& btagfold, const std::string& filetag);
+  std::string normalize_btag_tag(const std::string& filetag);
+  std::string normalize_filetag(const std::string& tag);
+  std::string find_btag_file(const std::string& btagfold, const std::string& filetag_in);
    
 };
 
