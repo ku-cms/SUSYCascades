@@ -11,6 +11,6 @@ root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL16NanoAODAPVv9/DiPhotonJetsBo
 root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL16NanoAODAPVv9/DiPhotonJetsBox_MGG-0to40_13TeV-sherpa/NANOAODSIM/106X_mcRun2_asymptotic_preVFP_v11-v1/2810000/C81AFFC2-CA0C-B94E-9581-8E3C9732C00F.root
 root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL16NanoAODAPVv9/DiPhotonJetsBox_MGG-0to40_13TeV-sherpa/NANOAODSIM/106X_mcRun2_asymptotic_preVFP_v11-v1/2810000/998279A3-8360-0941-8F51-C9325032ABE1.root
 root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL16NanoAODAPVv9/DiPhotonJetsBox_MGG-0to40_13TeV-sherpa/NANOAODSIM/106X_mcRun2_asymptotic_preVFP_v11-v1/2820000/FD3C44CD-2985-0240-BC46-7B576193EF2C.root
-root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL16NanoAODAPVv9/DiPhotonJetsBox_MGG-0to40_13TeV-sherpa/NANOAODSIM/106X_mcRun2_asymptotic_preVFP_v11-v1/2820000/7F40C56F-BBBA-844F-83F2-88ED890D9B00.root
-root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL16NanoAODAPVv9/DiPhotonJetsBox_MGG-0to40_13TeV-sherpa/NANOAODSIM/106X_mcRun2_asymptotic_preVFP_v11-v1/2820000/D5951589-5E28-6D45-B3F0-A95BCB4956EA.root
 root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL16NanoAODAPVv9/DiPhotonJetsBox_MGG-0to40_13TeV-sherpa/NANOAODSIM/106X_mcRun2_asymptotic_preVFP_v11-v1/2810000/5E95C30A-777A-E049-8B4D-F09DDB434864.root
+root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL16NanoAODAPVv9/DiPhotonJetsBox_MGG-0to40_13TeV-sherpa/NANOAODSIM/106X_mcRun2_asymptotic_preVFP_v11-v1/2820000/D5951589-5E28-6D45-B3F0-A95BCB4956EA.root
+root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL16NanoAODAPVv9/DiPhotonJetsBox_MGG-0to40_13TeV-sherpa/NANOAODSIM/106X_mcRun2_asymptotic_preVFP_v11-v1/2820000/7F40C56F-BBBA-844F-83F2-88ED890D9B00.root

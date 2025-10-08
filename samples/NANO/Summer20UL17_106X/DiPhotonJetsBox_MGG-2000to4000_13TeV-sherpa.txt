@@ -9,15 +9,13 @@ root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/DiPhotonJetsBox_M
 root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/DiPhotonJetsBox_MGG-2000to4000_13TeV-sherpa/NANOAODSIM/106X_mc2017_realistic_v9-v2/2540000/4B4FF6D5-DA44-5147-99A0-6C73885F6DBD.root
 root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/DiPhotonJetsBox_MGG-2000to4000_13TeV-sherpa/NANOAODSIM/106X_mc2017_realistic_v9-v2/2540000/6FECC5AD-8ECE-4F45-8614-82AFCE1B66F7.root
 root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/DiPhotonJetsBox_MGG-2000to4000_13TeV-sherpa/NANOAODSIM/106X_mc2017_realistic_v9-v2/2540000/B05D829F-528D-274F-AC77-B48F50F85A74.root
+root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/DiPhotonJetsBox_MGG-2000to4000_13TeV-sherpa/NANOAODSIM/106X_mc2017_realistic_v9-v2/2540000/1D3DBB4B-A9D3-B04C-B15E-2F7B81666798.root
 root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/DiPhotonJetsBox_MGG-2000to4000_13TeV-sherpa/NANOAODSIM/106X_mc2017_realistic_v9-v2/2540000/D4B49445-8F85-6E4C-A5F0-E23B6CBC396A.root
 root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/DiPhotonJetsBox_MGG-2000to4000_13TeV-sherpa/NANOAODSIM/106X_mc2017_realistic_v9-v2/2540000/4CEE0F50-FC2C-0248-9CB8-64BD2C373247.root
 root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/DiPhotonJetsBox_MGG-2000to4000_13TeV-sherpa/NANOAODSIM/106X_mc2017_realistic_v9-v2/2540000/8BAFA000-7929-ED46-A1A8-842AAF7D1971.root
-root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/DiPhotonJetsBox_MGG-2000to4000_13TeV-sherpa/NANOAODSIM/106X_mc2017_realistic_v9-v2/2540000/1D3DBB4B-A9D3-B04C-B15E-2F7B81666798.root
 root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/DiPhotonJetsBox_MGG-2000to4000_13TeV-sherpa/NANOAODSIM/106X_mc2017_realistic_v9-v2/2540000/34621A13-2366-EB40-813C-F5CD35A942C5.root
 root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/DiPhotonJetsBox_MGG-2000to4000_13TeV-sherpa/NANOAODSIM/106X_mc2017_realistic_v9-v2/2540000/EE9E8C5C-39E1-7F48-BE5C-D5AD36A89A72.root
 root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/DiPhotonJetsBox_MGG-2000to4000_13TeV-sherpa/NANOAODSIM/106X_mc2017_realistic_v9-v2/2540000/74E256AC-B307-284B-A7E4-5F1389301817.root
-root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/DiPhotonJetsBox_MGG-2000to4000_13TeV-sherpa/NANOAODSIM/106X_mc2017_realistic_v9-v2/2540000/7DA0FC85-D889-AD45-8A3E-4C2A85670FF4.root
-root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/DiPhotonJetsBox_MGG-2000to4000_13TeV-sherpa/NANOAODSIM/106X_mc2017_realistic_v9-v2/2540000/4114E718-2E6B-2D41-978A-AA908063AA37.root
 root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/DiPhotonJetsBox_MGG-2000to4000_13TeV-sherpa/NANOAODSIM/106X_mc2017_realistic_v9-v2/2540000/1056E3FF-7CB3-304A-9D3D-69ED22E2A01D.root
 root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/DiPhotonJetsBox_MGG-2000to4000_13TeV-sherpa/NANOAODSIM/106X_mc2017_realistic_v9-v2/2540000/15FE0C97-0EA4-EA40-BC74-D24BE561E9B3.root
 root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/DiPhotonJetsBox_MGG-2000to4000_13TeV-sherpa/NANOAODSIM/106X_mc2017_realistic_v9-v2/2540000/6F2157AF-6947-C245-84CC-102D3C704D03.root
@@ -25,5 +23,7 @@ root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/DiPhotonJetsBox_M
 root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/DiPhotonJetsBox_MGG-2000to4000_13TeV-sherpa/NANOAODSIM/106X_mc2017_realistic_v9-v2/2540000/D55F5CC0-F822-7745-A03C-588354778451.root
 root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/DiPhotonJetsBox_MGG-2000to4000_13TeV-sherpa/NANOAODSIM/106X_mc2017_realistic_v9-v2/2540000/D6ED62EC-54ED-524B-AEE5-D1DB9ED0C977.root
 root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/DiPhotonJetsBox_MGG-2000to4000_13TeV-sherpa/NANOAODSIM/106X_mc2017_realistic_v9-v2/2540000/078E2D17-D88C-A74F-B408-9649B088C324.root
+root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/DiPhotonJetsBox_MGG-2000to4000_13TeV-sherpa/NANOAODSIM/106X_mc2017_realistic_v9-v2/2540000/7DA0FC85-D889-AD45-8A3E-4C2A85670FF4.root
+root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/DiPhotonJetsBox_MGG-2000to4000_13TeV-sherpa/NANOAODSIM/106X_mc2017_realistic_v9-v2/2540000/4114E718-2E6B-2D41-978A-AA908063AA37.root
 root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/DiPhotonJetsBox_MGG-2000to4000_13TeV-sherpa/NANOAODSIM/106X_mc2017_realistic_v9-v2/2540000/5B90F55E-3691-A84D-B1CE-4CCB0258BF1C.root
 root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/DiPhotonJetsBox_MGG-2000to4000_13TeV-sherpa/NANOAODSIM/106X_mc2017_realistic_v9-v2/2540000/B23FC37E-073D-DF45-871A-440071AA0E1B.root
