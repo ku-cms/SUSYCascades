@@ -221,7 +221,7 @@ private:
   int m_SampleIndex;
   virtual int GetSampleIndex();
   int m_Nsample;
-  std::map<long long,int>         m_HashToIndex;
+  std::map<long long,int>   m_HashToIndex;
   std::map<int,std::string> m_IndexToSample;
   std::map<int,double>      m_IndexToXsec;
   std::map<int,double>      m_IndexToNevent;
@@ -230,6 +230,7 @@ private:
   const Systematic* m_CurSys;
   const Systematic& CurrentSystematic() const;
   std::unique_ptr<correction::CorrectionSet> m_cset_Btag;
+  std::unique_ptr<correction::CorrectionSet> m_cset_JERC;
   virtual void clip_string(string& str, const string& clip){
     size_t pos = str.find(clip);
     if (pos != std::string::npos)
@@ -237,9 +238,9 @@ private:
   }
   bool minus_iso_hoe(int WPBitMap, int value, std::function<bool(int, int)> comp);
   int extract_nano_version(const std::string& dirname);
-  std::string normalize_btag_tag(const std::string& filetag);
+  std::string normalize_tag(const std::string& filetag);
   std::string normalize_filetag(const std::string& tag);
-  std::string find_btag_file(const std::string& btagfold, const std::string& filetag_in);
+  std::string find_clib_file(const std::string& fold, const std::string& filename);
    
 };
 

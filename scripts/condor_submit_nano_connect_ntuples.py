@@ -433,11 +433,12 @@ if __name__ == "__main__":
         # copy BTAG SF files
         if VERBOSE:
             print("making BTAG file")
-        os.system("cp -r root/BtagSF "+config+".")
-        os.system("cp -r csv/BtagSF/* "+config+"BtagSF/.")
-        btag_pog_fold = '/cvmfs/cms-griddata.cern.ch/cat/metadata/BTV/'
-        os.system(f"cp -r {btag_pog_fold}* {config}BtagSF/")
-        BTAGFOLD = "./config/BtagSF/"
+        if "102X" in listname:
+            os.system("cp -r root/BtagSF "+config+".")
+            os.system("cp -r csv/BtagSF/* "+config+"BtagSF/.")
+            BTAGFOLD = "./config/BtagSF/"
+        else:
+            BTAGFOLD = '/cvmfs/cms-griddata.cern.ch/cat/metadata/BTV/'
 
         # copy LEP SF files
         if VERBOSE:
@@ -448,8 +449,11 @@ if __name__ == "__main__":
         # copy JME files
         if VERBOSE:
             print("making JME file")
-        os.system("cp -r data/JME "+config+".")
-        JMEFOLD = "./config/JME/"
+        if "102X" in listname:
+            os.system("cp -r data/JME "+config+".")
+            JMEFOLD = "./config/JME/"
+        else:
+            JMEFOLD = '/cvmfs/cms-griddata.cern.ch/cat/metadata/JME/'
 
         # copy MET trigger files
         if VERBOSE:

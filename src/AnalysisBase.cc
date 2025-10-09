@@ -195,11 +195,7 @@ void AnalysisBase<Base>::AddBtagFolder(const string& btagfold, const string& pro
   if(!m_IsUL and m_year < 2019)
     m_BtagSFTool.BuildMap(btagfold, proc_rootfile, year);
   else{
-    string filetag = m_FileTag;
-    clip_string(filetag, "_Data");
-    clip_string(filetag, "_SMS");
-    clip_string(filetag, "_Cascades");
-    std::string Btag_file = find_btag_file(btagfold, filetag);
+    std::string Btag_file = find_clib_file(btagfold, "btagging.json.gz");
     m_cset_Btag = correction::CorrectionSet::from_file(Btag_file);
   }
 }
@@ -211,8 +207,14 @@ void AnalysisBase<Base>::AddLepFolder(const string& lepfold){
 
 template <class Base>
 void AnalysisBase<Base>::AddJMEFolder(const string& jmefold){
-  m_JMETool.BuildMap(jmefold);
-  m_JMETool.BuildJERMap(jmefold);
+  if(!m_IsUL and m_year < 2019){
+    m_JMETool.BuildMap(jmefold);
+    m_JMETool.BuildJERMap(jmefold);
+  }
+  else{
+    std::string JERC_file = find_clib_file(jmefold, "jet_jerc.json.gz");
+    m_cset_JERC = correction::CorrectionSet::from_file(JERC_file);
+  }
 }
 
 template <class Base>
@@ -568,7 +570,7 @@ bool AnalysisBase<Base>::minus_iso_hoe(int WPBitMap, int threshold, std::functio
 
 // Map UL campaign tokens to the Run2-style directory substrings
 template <class Base>
-std::string AnalysisBase<Base>::normalize_btag_tag(const std::string& filetag) {
+std::string AnalysisBase<Base>::normalize_tag(const std::string& filetag) {
     if (filetag.find("Summer20UL16APV") != std::string::npos)
         return "Run2-2016postVFP-UL";
     if (filetag.find("Summer20UL16") != std::string::npos)
@@ -594,7 +596,7 @@ std::string AnalysisBase<Base>::normalize_filetag(const std::string& filetag_in)
             break;
         }
     }
-    return normalize_btag_tag(tag);
+    return normalize_tag(tag);
 }
 
 // member function to extract NanoAOD version from a directory name
@@ -608,30 +610,33 @@ int AnalysisBase<Base>::extract_nano_version(const std::string& dirname) {
     return -1; // if not found
 }
 
-// Full find_btag_file implementation
 template <class Base>
-std::string AnalysisBase<Base>::find_btag_file(const std::string& btagfold, const std::string& filetag_in) {
+std::string AnalysisBase<Base>::find_clib_file(const std::string& fold, const std::string& filename) {
     // normalize_filetag makes a modifiable copy and applies UL->Run2 mapping
-    std::string filetag = normalize_filetag(filetag_in);
+    string filetag = m_FileTag;
+    clip_string(filetag, "_Data");
+    clip_string(filetag, "_SMS");
+    clip_string(filetag, "_Cascades");
+    filetag = normalize_filetag(filetag);
     std::vector<std::pair<int, fs::path>> matches;
 
     // Decide how to search to avoid accidental matches (e.g. Summer22 vs Summer22EE).
     // For Run2-mapped tags (start with "Run2-"), search for the tag as-is.
     // For campaign tokens like "Summer22", prefer "-Summer22-" to avoid "Summer22EE".
     std::string needle;
-    if (filetag.rfind("Run2-", 0) == 0 || filetag.rfind("Run3-", 0) == 0 || filetag.rfind("Run4-", 0) == 0) {
+    if (filetag.rfind("Run2-", 0) == 0 || filetag.rfind("Run3-", 0) == 0) {
         needle = filetag; // match substring anywhere in dirname
     } else {
         needle = "-" + filetag + "-";
     }
 
-    for (const auto& entry : fs::directory_iterator(btagfold)) {
+    for (const auto& entry : fs::directory_iterator(fold)) {
         if (!entry.is_directory()) continue;
         const std::string dirname = entry.path().filename().string();
         if (dirname.find(needle) != std::string::npos) {
             int version = extract_nano_version(dirname);
             if (version > 0) {
-                fs::path candidate = entry.path() / "latest" / "btagging.json.gz";
+                fs::path candidate = entry.path() / "latest" / filename;
                 if (fs::exists(candidate)) {
                     matches.emplace_back(version, candidate);
                 }
@@ -640,7 +645,7 @@ std::string AnalysisBase<Base>::find_btag_file(const std::string& btagfold, cons
     }
 
     if (matches.empty()) {
-        throw std::runtime_error("No matching btag file found for tag=" + filetag);
+        throw std::runtime_error("No matching clib file found for tag=" + filetag + " " + filename);
     }
 
     // Pick entry with highest NanoAOD version
@@ -3987,7 +3992,7 @@ ParticleList AnalysisBase<NANOULBase>::GetJetsMET(TVector3& MET, int id){
       // JER recipe based on https://github.com/cms-nanoAOD/nanoAOD-tools/blob/master/python/postprocessing/modules/jme/jetmetUncertainties.py
      
       double smearFactor = 1.;
-      double JER = m_JMETool.GetJERFactor(m_year, Jet_pt[i], Jet_eta[i], fixedGridRhoFastjetAll); // using this for rho based on: https://github.com/cms-nanoAOD/nanoAOD-tools/blob/0127d46a973e894d97e9a16bd3939f421b2b689e/python/postprocessing/modules/jme/jetmetUncertainties.py#L49
+      double JER = m_JMETool.GetJERFactor(m_year, Jet_pt[i], Jet_eta[i], fixedGridRhoFastjetAll);
       double SF = m_JMETool.GetJERSFFactor(m_year,Jet_eta[i],0);
 
       if(DO_JER)
@@ -5105,6 +5110,7 @@ void AnalysisBase<NANORun3>::BookHistograms(vector<TH1D*>& histos){
 
 template <>
 ParticleList AnalysisBase<NANORun3>::GetJetsMET(TVector3& MET, int id){
+  // Need to swap MET to PUPPI MET in Run3
   ParticleList list;
   bool passID = true;
   int Njet = nJet;
@@ -5148,7 +5154,7 @@ ParticleList AnalysisBase<NANORun3>::GetJetsMET(TVector3& MET, int id){
       // JER recipe based on https://github.com/cms-nanoAOD/nanoAOD-tools/blob/master/python/postprocessing/modules/jme/jetmetUncertainties.py
      
       double smearFactor = 1.;
-      double JER = m_JMETool.GetJERFactor(m_year, Jet_pt[i], Jet_eta[i], Rho_fixedGridRhoFastjetAll); // need to check this rho for Run3
+      double JER = m_JMETool.GetJERFactor(m_year, Jet_pt[i], Jet_eta[i], Rho_fixedGridRhoFastjetAll);
       double SF = m_JMETool.GetJERSFFactor(m_year,Jet_eta[i],0);
 
       if(DO_JER)
