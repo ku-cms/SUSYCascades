@@ -3,7 +3,7 @@
 # Example call of script from SUSYCascades:
 #    python3 python/CheckFiles.py -d Summer23_130X/ -o ../../../NTUPLES/Processing/Summer23_130X/ -e -r
 # ------------------------------------------------------------------------------------------------
-import os, argparse, subprocess, itertools, ROOT, time, math, re
+import os, argparse, subprocess, itertools, ROOT, time, math, re, glob
 from collections import defaultdict
 from new_countEvents import EventCount as EventCount
 from CondorJobCountMonitor import CondorJobCountMonitor
@@ -444,25 +444,33 @@ def checkJobs(workingDir, outputDir, skipEC, skipDAS, skipMissing, skipSmall,
 
             for digit in range(10):
                 pattern = os.path.join(workingDir, "err", DataSetName, f"*{digit}.err")
+                files = glob.glob(pattern)  # <-- expand the glob in Python
+            
+                if not files:
+                    continue  # skip if no matching files
+            
+                # Join files into a single space-separated string
+                file_list = " ".join(files)
+            
                 awk_cmd = (
                     f"awk -v marker='{marker}' "
                     "'{ if (found) { print FILENAME \":\" $0 } } "
                     "$0 ~ marker { found=1 }' "
-                    f"{pattern}"
+                    f"{file_list}"
                 )
+            
                 bash = f"{awk_cmd} | grep -v {grep_ignore}"
-
+            
                 try:
                     output = subprocess.check_output(['bash', '-c', bash], text=True).splitlines()
                 except subprocess.CalledProcessError:
                     output = []
                 except Exception:
                     output = []
-
+            
                 for line in output:
                     if not line:
                         continue
-                    # line expected as "/path/to/file.err:the rest of the matching line"
                     filename_part = line.split(":", 1)[0]
                     tup = path_to_tuple(filename_part)
                     if tup is None:
