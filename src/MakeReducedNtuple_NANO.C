@@ -211,6 +211,8 @@ int main(int argc, char* argv[]) {
       "davs://xrootd-local.unl.edu:1094/", // T2_US_Nebraska
       "root://cmsdcadisk.fnal.gov:1094//dcache/uscmsdisk/", // T1_US_FNAL_DISK
       "davs://k8s-redir-stageout.ultralight.org:1094/", // T2_US_Caltech
+      "davs://cmsxrootd.hep.wisc.edu:1094", // T2_US_Wisconsin
+      "davs://gfe02.grid.hep.ph.ic.ac.uk:2880/pnfs/hep.ph.ic.ac.uk/data/cms", // T2_UK_London_IC
   };
   
   bool success = false;
