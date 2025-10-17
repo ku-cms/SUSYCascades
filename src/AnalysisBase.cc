@@ -3995,10 +3995,10 @@ ParticleList AnalysisBase<NANOULBase>::GetJetsMET(TVector3& MET, int id){
      
       double smearFactor = 1.;
       double JER = m_JMETool.GetJERFactor(m_year, Jet_pt[i], Jet_eta[i], fixedGridRhoFastjetAll);
-      double SF = m_JMETool.GetJERSFFactor(m_year,Jet_eta[i],0);
+      double SF = 1.;//m_JMETool.GetJERSFFactor(m_year,Jet_eta[i],0);
 
       if(DO_JER)
-        SF = m_JMETool.GetJERSFFactor(m_year,Jet_eta[i],delta);
+        SF = 1.;//m_JMETool.GetJERSFFactor(m_year,Jet_eta[i],delta);
        
       //cout << SF << " " << JER << " " << Jet_pt[i] << " " << Jet_eta[i] << " " << Njet << " " << nGenJet <<  endl;
       
