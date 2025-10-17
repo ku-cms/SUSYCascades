@@ -1284,6 +1284,7 @@ uint16_t AnalysisBase<Base>::GetGenCascadesTree(){
       else if(N2_1stDecays.first == 23) N2_1stDecayMode = 2; // N2 -> Z + LSP
       else if(N2_1stDecays.second == 1000024) N2_1stDecayMode = 3; // N2 -> W- + C1+
       else if(N2_1stDecays.second == -1000024) N2_1stDecayMode = 4; // N2 -> W+ + C1-
+      else if(abs(N2_1stDecays.first) == 24 && abs(N2_1stDecays.second) == 24) N2_1stDecayMode = 5; // N2 -> W+ + W-
     }
     int N2_2nd_Index = -1;
     int N2_2ndDecayMode = 0;
@@ -1294,6 +1295,7 @@ uint16_t AnalysisBase<Base>::GetGenCascadesTree(){
       else if(N2_2ndDecays.first == 23) N2_2ndDecayMode = 2; // N2 -> Z + LSP
       else if(N2_2ndDecays.second == 1000024) N2_2ndDecayMode = 3; // N2 -> W- + C1+
       else if(N2_2ndDecays.second == -1000024) N2_2ndDecayMode = 4; // N2 -> W+ + C1-
+      else if(abs(N2_2ndDecays.first) == 24 && abs(N2_2ndDecays.second) == 24) N2_2ndDecayMode = 5; // N2 -> W+ + W-
     }
 
     uint16_t packed = CascadesTreeEncoder::Encode(prod_mode, SlepSneu1stDecayMode, SlepSneu2ndDecayMode, N2_1stDecayMode, N2_2ndDecayMode);
