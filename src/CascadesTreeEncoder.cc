@@ -1,7 +1,5 @@
 #include "CascadesTreeEncoder.hh"
-// need to edit so that this goes up to 5 for D & E
 uint16_t CascadesTreeEncoder::Encode(const int& A, const int& B, const int& C, const int& D, const int& E) {
-  // D, E now go up to 5 instead of 4 → need 3 bits each
   if (A < 1 || A > 8 || B < 1 || B > 3 || C < 1 || C > 3 || D < 0 || D > 5 || E < 0 || E > 5) return 0;
   else return ((A - 1) << 11) | ((B - 1) << 9) | ((C - 1) << 7) | (D << 4) | E;
 }
