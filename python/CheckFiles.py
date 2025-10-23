@@ -10,6 +10,21 @@ from CondorJobCountMonitor import CondorJobCountMonitor
 USER = os.environ['USER']
 DO_EVENTCOUNT = False # For checking event count files
 
+def get_auto_THRESHOLD():
+    result = subprocess.run(
+        ["condor_config_val", "-dump"],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True,
+        check=True
+    )
+    for line in result.stdout.splitlines():
+        if line.startswith("MAX_JOBS_PER_OWNER"):
+            _, value = line.split("=")
+            return int(value.strip())
+            break
+    return MAX_JOBS_SUB
+
 def getMissingFilesEC(outputDir,nList):
     baseIndexList = list(range(nList))
     for filename in os.listdir(outputDir):
@@ -572,7 +587,7 @@ def main():
     parser.add_argument("--skipZombie",     "-z", action='store_true', help="skip checking zombie root files")
     parser.add_argument("--skipDASDataset", "-k", action='store_true', help="skip checking DAS dataset matches")
     parser.add_argument("--maxResub",       "-l", default=5000, help="max number of jobs to resubmit")
-    parser.add_argument("--threshold",      "-t", default=90000, help="min number of jobs running before starting checker")
+    parser.add_argument("--threshold",      "-t", default=0.99*get_auto_THRESHOLD(), help="min number of jobs running before starting checker")
     parser.add_argument("--sleep",          "-p", default=1, help="time to sleep before starting checker")
 
     global DO_EVENTCOUNT
