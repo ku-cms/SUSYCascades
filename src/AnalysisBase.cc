@@ -3099,32 +3099,27 @@ ParticleList AnalysisBase<SUSYNANOBase>::GetMuons(){
 
 template <>
 bool AnalysisBase<NANOULBase>::PassEventFilter(){
-//
-//  if(m_year == 2016){
-//    return Flag_goodVertices &&
-//      (IsFastSim() ? true : Flag_globalSuperTightHalo2016Filter) &&
-//      Flag_HBHENoiseFilter &&
-//      Flag_HBHENoiseIsoFilter &&
-//      Flag_EcalDeadCellTriggerPrimitiveFilter &&
-//      Flag_BadPFMuonFilter;
-//  }
-//  if(m_year == 2017){
-//    return Flag_goodVertices &&
-//      (IsFastSim() ? true : Flag_globalSuperTightHalo2016Filter) &&
-//      Flag_HBHENoiseFilter &&
-//      Flag_HBHENoiseIsoFilter &&
-//      Flag_EcalDeadCellTriggerPrimitiveFilter &&
-//      Flag_BadPFMuonFilter;
-//  }
-//  if(m_year == 2018){
-//    return Flag_goodVertices &&
-//      (IsFastSim() ? true : Flag_globalSuperTightHalo2016Filter) &&
-//      Flag_HBHENoiseFilter &&
-//      Flag_HBHENoiseIsoFilter &&
-//      Flag_EcalDeadCellTriggerPrimitiveFilter &&
-//      Flag_BadPFMuonFilter;
-//  }
-  
+  if(m_year == 2016){
+    return Flag_goodVertices &&
+      (IsFastSim() ? true : Flag_globalSuperTightHalo2016Filter) &&
+      Flag_HBHENoiseFilter &&
+      Flag_HBHENoiseIsoFilter &&
+      Flag_EcalDeadCellTriggerPrimitiveFilter &&
+      Flag_BadPFMuonFilter &&
+      Flag_BadPFMuonDzFilter &&
+      Flag_eeBadScFilter;
+  }
+  else if(m_year == 2017 || m_year == 2018){
+    return Flag_goodVertices &&
+      (IsFastSim() ? true : Flag_globalSuperTightHalo2016Filter) &&
+      Flag_HBHENoiseFilter &&
+      Flag_HBHENoiseIsoFilter &&
+      Flag_EcalDeadCellTriggerPrimitiveFilter &&
+      Flag_BadPFMuonFilter &&
+      Flag_BadPFMuonDzFilter &&
+      Flag_eeBadScFilter && 
+      Flag_ecalBadCalibFilter;
+  }
   return true;
 }
 
