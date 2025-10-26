@@ -233,7 +233,7 @@ def makeSubmitScript(tuple_pairs, submitName, resubmit, maxResub, DataSetName, t
             print(f"If you are confident you want to resubmit, then you should rerun this script with '-l {resubmitFiles}'.", flush=True)
             print(f"Or run condor_submit {newFileName}", flush=True)
         else:
-            condor_monitor = CondorJobCountMonitor(threshold=min(threshold+resubmitFiles,100000), verbose=False)
+            condor_monitor = CondorJobCountMonitor(threshold=threshold+resubmitFiles, verbose=False)
             condor_monitor.wait_until_jobs_below()
             os.system(f"condor_submit {newFileName}")
 
@@ -295,7 +295,7 @@ def UpdateFilterList(DataSetName, filterlist_filename, add):
 # Check condor jobs
 def checkJobs(workingDir, outputDir, skipEC, skipDAS, skipMissing, skipSmall,
               skipErr, skipOut, skipZombie, resubmit, maxResub,
-              filter_list, threshold, skipDASDataset):
+              filter_list, threshold, skipDASDataset, skipHists):
     print("Running over the directory '{0}'.".format(workingDir), flush=True)
     print("------------------------------------------------------------", flush=True)
     grep_ignore = "-e \"Warning\" -e \"WARNING\" -e \"TTree::SetBranchStatus\" -e \"libXrdSecztn.so\" -e \"Phi_mpi_pi\" -e \"tar: stdout: write error\" -e \"INFO\""
@@ -332,13 +332,13 @@ def checkJobs(workingDir, outputDir, skipEC, skipDAS, skipMissing, skipSmall,
                 continue
         DataSetName = file.split(".")[0]
         resubmit_set = set()
+        event_count = EventCount()
 
         # --- DAS check ---
         if not skipDAS:
             nDAS_fail = 0
             NDAS_true = 0
             NDAS = 0
-            event_count = EventCount()
             listDir = os.path.join(workingDir, "config", "list", DataSetName)
             dataset = []
             try:
@@ -400,7 +400,41 @@ def checkJobs(workingDir, outputDir, skipEC, skipDAS, skipMissing, skipSmall,
             else:
                 print(f'{DataSetName} passed the DAS check!', flush=True)
                 UpdateFilterList(DataSetName, f"{workingDir}/CheckFiles_FilterList.txt", False)
-                continue  # passed DAS -> skip other checks
+                # --- Histograms folder check ---
+                # Need to do this regardless of DAS because it looks at different content in the root file
+                num_hist = 0
+                if not skipHists:
+                    try:
+                        bash = f"find {os.path.join(outputDir, DataSetName)} -type f"
+                        histFiles = subprocess.check_output(['bash', '-c', bash], text=True).splitlines()
+                    except subprocess.CalledProcessError:
+                        histFiles = []
+                    except Exception:
+                        histFiles = []
+                    for histFile in histFiles:
+                        if not histFile:
+                            continue
+                        try:
+                            if event_count.check_histograms_in_file(histFile) is True:
+                                continue
+                        except Exception:
+                            # If histogram fails, treat as zombie and attempt to remove
+                            pass
+                        # attempt to remove the bad file
+                        try:
+                            os.remove(histFile)
+                        except Exception:
+                            pass
+                        tup = path_to_tuple(histFile)
+                        if tup is None:
+                            continue
+                        if tup not in resubmit_set:
+                            resubmit_set.add(tup)
+                            num_hist += 1
+                if num_hist > 0:
+                    print(f"Got {num_hist} root files fail histogram check for dataset {DataSetName}", flush=True)
+                else:
+                    continue # passed DAS and hist checks -> skip other checks
             print(f"Got {nDAS_fail} DAS fail files for dataset {DataSetName}", flush=True)
 
         # --- missing files check ---
@@ -586,6 +620,7 @@ def main():
     parser.add_argument("--skipOut",        "-u", action='store_true', help="skip checking out files")
     parser.add_argument("--skipZombie",     "-z", action='store_true', help="skip checking zombie root files")
     parser.add_argument("--skipDASDataset", "-k", action='store_true', help="skip checking DAS dataset matches")
+    parser.add_argument("--skipHists",      "-f", action='store_true', help="skip checking Histograms folder")
     parser.add_argument("--maxResub",       "-l", default=5000, help="max number of jobs to resubmit")
     parser.add_argument("--threshold",      "-t", default=0.99*get_auto_THRESHOLD(), help="min number of jobs running before starting checker")
     parser.add_argument("--sleep",          "-p", default=1, help="time to sleep before starting checker")
@@ -605,6 +640,7 @@ def main():
     skipOut        = options.skipOut
     skipZombie     = options.skipZombie
     skipDASDataset = options.skipDASDataset
+    skipHists      = options.skipHists
     maxResub       = int(options.maxResub)
     threshold      = int(options.threshold)
     sleep_time     = int(options.sleep)
@@ -665,7 +701,7 @@ def main():
         print(f"Waiting until minumum of {threshold} jobs in the queue", flush=True)
         condor_monitor.wait_until_jobs_below()
         print("Running checker...", flush=True)
-        nJobs = checkJobs(directory,output,skipEC,skipDAS,skipMissing,skipSmall,skipErr,skipOut,skipZombie,resubmit,maxResub,filter_list,threshold,skipDASDataset)
+        nJobs = checkJobs(directory,output,skipEC,skipDAS,skipMissing,skipSmall,skipErr,skipOut,skipZombie,resubmit,maxResub,filter_list,threshold,skipDASDataset,skipHists)
         if resubmit and nJobs > 0:
             print(f"Resubmitted a total of {nJobs} jobs!", flush=True)
     print("Checker Complete!", flush=True)

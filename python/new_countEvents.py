@@ -222,6 +222,33 @@ class EventCount:
                     file_events[fname] = nevents
         return file_events
 
+    def check_histograms_in_file(self, filename, folder="Histograms"):
+        f = ROOT.TFile.Open(filename, "READ")
+        if not f or f.IsZombie():
+            print(f"Failed to open: {filename}")
+            return False
+        hist_dir = f.Get(folder)
+        if not hist_dir:
+            f.Close()
+            return True
+        for key in hist_dir.GetListOfKeys():
+            name = key.GetName()
+            try:
+                obj = hist_dir.Get(name)
+            except Exception as e:
+                return False
+            if not obj:
+                return False
+            if not obj.InheritsFrom("TH1"):
+                continue
+            # Attempt to force data unpacking by accessing integral
+            try:
+                _ = obj.Integral()
+            except Exception as e:
+                return False
+        f.Close()
+        return True
+
     def CleanDASDatasetOutputParsing(self, das_output):
         das_output = das_output.split('\n')
         das_output = [dataset for dataset in das_output if 'JME' not in dataset and 'PUFor' not in dataset and 'PU35ForTRK' not in dataset and 'LowPU' not in dataset]
