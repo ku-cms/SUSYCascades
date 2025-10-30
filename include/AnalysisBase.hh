@@ -8,6 +8,8 @@
 #include <optional>
 #include <algorithm>
 #include <cctype>
+#include <variant>
+#include <cmath>
 
 #include <TTree.h>
 #include <TLorentzVector.h>
@@ -112,6 +114,7 @@ public:
   virtual bool GetEMuMutrigger(); // High MuPt Low ElePt
   virtual bool GetEMuEtrigger(); // Low MuPt High ElePt
   
+  virtual void ApplyMETPhiCorrections(TLorentzVector &metOut, int runNumber, int npvGood, const std::string &variation);
   virtual TVector3 GetPV(bool& good);
   virtual TVector3 GetMET();
   virtual ParticleList GetJets(int id = -1);
@@ -234,6 +237,7 @@ private:
   const Systematic* m_CurSys;
   const Systematic& CurrentSystematic() const;
   std::unique_ptr<correction::CorrectionSet> m_cset_Btag;
+  std::unique_ptr<correction::CorrectionSet> m_cset_METPhi;
   double m_BtagLooseWP;
   double m_BtagMediumWP;
   double m_BtagTightWP;
@@ -243,6 +247,10 @@ private:
     size_t pos = str.find(clip);
     if (pos != std::string::npos)
       str.erase(pos, clip.length());
+  }
+  virtual void wrapPhi(double& phi) {
+    while (phi > M_PI)  phi -= 2.0*M_PI;
+    while (phi <= -M_PI) phi += 2.0*M_PI;
   }
   bool minus_iso_hoe(int WPBitMap, int value, std::function<bool(int, int)> comp);
   int extract_nano_version(const std::string& dirname);

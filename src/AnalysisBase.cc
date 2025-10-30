@@ -320,6 +320,13 @@ void AnalysisBase<Base>::AddJMEFolder(const std::string& jmefold) {
     m_JMETool.BuildMap(jmefold);
     m_JMETool.BuildJERMap(jmefold);
   } else {
+    std::string METPhi_file;
+    if(m_year < 2019) METPhi_file = find_clib_file(jmefold, "met.json.gz");
+    else if(m_year == 2022 && !m_IsEE) METPhi_file = find_clib_file(jmefold, "met_xyCorrections_2022_2022.json.gz");
+    else if(m_year == 2022 && m_IsEE) METPhi_file = find_clib_file(jmefold, "met_xyCorrections_2022_2022EE.json.gz");
+    else if(m_year == 2023 && !m_IsBPix) METPhi_file = find_clib_file(jmefold, "met_xyCorrections_2023_2023.json.gz");
+    else if(m_year == 2023 && m_IsBPix) METPhi_file = find_clib_file(jmefold, "met_xyCorrections_2023_2023BPix.json.gz");
+    m_cset_METPhi = correction::CorrectionSet::from_file(METPhi_file);
     m_jmeYearKey = getJMEYearKey();
     // --- Set up Jet Veto Map ---
     try {
@@ -550,6 +557,9 @@ template <class Base>
 bool AnalysisBase<Base>::GetEMuEtrigger(){
   return false;
 }
+
+template <class Base>
+void AnalysisBase<Base>::ApplyMETPhiCorrections(TLorentzVector &metOut, int runNumber, int npvGood, const std::string &variation) {}
 
 template <class Base>
 ParticleList AnalysisBase<Base>::GetJetsMET(TVector3& MET, int id){
@@ -2550,6 +2560,9 @@ void AnalysisBase<SUSYNANOBase>::BookHistograms(vector<TH1D*>& histos){
 }
 
 template <>
+void AnalysisBase<SUSYNANOBase>::ApplyMETPhiCorrections(TLorentzVector &metOut, int runNumber, int npvGood, const std::string &variation) {}
+
+template <>
 ParticleList AnalysisBase<SUSYNANOBase>::GetJetsMET(TVector3& MET, int id){
   ParticleList list;
   int Njet = nJet;
@@ -4060,6 +4073,84 @@ void AnalysisBase<NANOULBase>::BookHistograms(vector<TH1D*>& histos){
 }
 
 template <>
+void AnalysisBase<NANOULBase>::ApplyMETPhiCorrections(TLorentzVector &metOut, int runNumber, int npvGood, const std::string &variation){
+  if (!m_cset_METPhi) {
+    std::cerr << "[ApplyMETPhiCorrections] ERROR: m_cset_METPhi not loaded.\n";
+    return;
+  }
+
+  // read the inputs from the outgoing TLorentzVector (should be Type-1 propagated)
+  double in_pt  = metOut.Pt();
+  double in_phi = metOut.Phi();
+
+  // helper to check key presence using at() (CorrectionSet throws out_of_range if missing)
+  auto has_key = [&](const std::string& name) -> bool {
+    try {
+      m_cset_METPhi->at(name);
+      return true;
+    } catch (const std::out_of_range&) {
+      return false;
+    }
+  };
+
+  try {
+    std::string metLabel = "pfmet";
+    std::string dt = m_IsData ? "data" : "mc"; // assume you have m_IsData member
+    std::string phiKey = "phi_metphicorr_" + metLabel + "_" + dt;
+    std::string ptKey  = "pt_metphicorr_"  + metLabel + "_" + dt;
+
+    // Build args: met_pt (real), met_phi (real), npvs (real/int), run (real/int)
+    std::vector<std::variant<int,double,std::string>> args;
+    args.push_back(in_pt);
+    args.push_back(in_phi);
+    args.push_back(static_cast<double>(npvGood));
+    args.push_back(static_cast<double>(runNumber));
+
+    double corrected_phi = in_phi;
+    double corrected_pt  = in_pt;
+
+    try {
+      // access + evaluate phi
+      if (!has_key(phiKey)) { 
+        std::cerr << "[ApplyMETPhiCorrections] WARNING: Run-2 phi key '" << phiKey
+                  << "' not found in MET cset. Skipping phi correction.\n";
+      } else {
+        corrected_phi = m_cset_METPhi->at(phiKey)->evaluate(args);
+      }    
+    } catch (const std::exception &e) {
+      std::cerr << "[ApplyMETPhiCorrections] ERROR evaluating phi key '" << phiKey
+                << "': " << e.what() << "\n";
+    } catch (...) {
+      std::cerr << "[ApplyMETPhiCorrections] Unknown error evaluating phi key '"
+                << phiKey << "'.\n";
+    }    
+
+    try {
+      if (!has_key(ptKey)) { 
+        // some Run-2 configs do not provide pt-correction; that's fine
+      } else {
+        corrected_pt = m_cset_METPhi->at(ptKey)->evaluate(args);
+      }    
+    } catch (const std::exception &e) {
+      std::cerr << "[ApplyMETPhiCorrections] ERROR evaluating pt key '" << ptKey
+                << "': " << e.what() << "\n";
+    } catch (...) {
+      std::cerr << "[ApplyMETPhiCorrections] Unknown error evaluating pt key '"
+                << ptKey << "'.\n";
+    }    
+
+    wrapPhi(corrected_phi);
+    metOut.SetPtEtaPhiM(corrected_pt, 0.0, corrected_phi, 0.); 
+    return;
+
+  } catch (const std::exception &e) {
+    std::cerr << "[ApplyMETPhiCorrections] Caught exception: " << e.what() << "\n";
+  } catch (...) {
+    std::cerr << "[ApplyMETPhiCorrections] Caught unknown exception\n";
+  }
+}
+
+template <>
 ParticleList AnalysisBase<NANOULBase>::GetJetsMET(TVector3& MET, int id){
   ParticleList list;
   int Njet = nJet;
@@ -4163,7 +4254,10 @@ ParticleList AnalysisBase<NANOULBase>::GetJetsMET(TVector3& MET, int id){
 
     // --- Jet selection ---
     if(Jet_pt[i] < 15. || fabs(Jet_eta[i]) > 5.) continue;
-    if(Jet_jetId[i] < id) continue;
+    //if(Jet_jetId[i] < id) continue;
+    // Can't use jetId in NanoAODv12: https://twiki.cern.ch/twiki/bin/view/CMS/JetID13p6TeV#nanoAOD_Flags
+    if (!(Jet_jetId[i] & (1 << 1)) || Jet_muEF[i] >= 0.8 || Jet_chEmEF[i] >= 0.8)
+      continue;
 
     if(Jet_jetId[i] >= 3) jet.SetParticleID(kTight);
     else if(Jet_jetId[i] >= 2) jet.SetParticleID(kMedium);
@@ -4196,6 +4290,9 @@ ParticleList AnalysisBase<NANOULBase>::GetJetsMET(TVector3& MET, int id){
 
   // Call helper to get corrected MET 4-vector (JES+JER applied, MET propagation)
   TLorentzVector p4CorrectedMET = m_JMETool.GetCorrectedMET(m_jmeYearKey, m_IsData, RunNum, RawMET_pt, RawMET_phi, jetsForMet, jersForMet, fixedGridRhoFastjetAll, systOpts, false);
+
+  int NPV = static_cast<int>(GetNPV());
+  ApplyMETPhiCorrections(p4CorrectedMET, RunNum, NPV, "nom");
 
   MET.SetPtEtaPhi(p4CorrectedMET.Pt(), 0.0, p4CorrectedMET.Phi());
 
@@ -5194,8 +5291,95 @@ void AnalysisBase<NANORun3>::BookHistograms(vector<TH1D*>& histos){
   }
 }
 
-// changes from UL
-// btagging has kVeryVeryTight and kVeryTight too
+template <>
+void AnalysisBase<NANORun3>::ApplyMETPhiCorrections(TLorentzVector &metOut, int runNumber, int npvGood, const std::string &variation){
+  if (!m_cset_METPhi) {
+    std::cerr << "[ApplyMETPhiCorrections] ERROR: m_cset_METPhi not loaded.\n";
+    return;
+  }
+
+  // read the inputs from the outgoing TLorentzVector (should be Type-1 propagated)
+  double in_pt  = metOut.Pt();
+  double in_phi = metOut.Phi();
+
+  // helper to check key presence using at() (CorrectionSet throws out_of_range if missing)
+  auto has_key = [&](const std::string& name) -> bool {
+    try {
+      m_cset_METPhi->at(name);
+      return true;
+    } catch (const std::out_of_range&) {
+      return false;
+    }
+  };
+
+  try {
+    // Build met_type and epoch strings using existing flags (mirror your find_clib_file logic)
+    std::string met_type = "PuppiMET";
+    std::string dtmc = m_IsData ? "DATA" : "MC";
+    std::string epoch;
+    if (m_year == 2022) epoch = m_IsEE ? "2022EE" : "2022";
+    else if (m_year == 2023) epoch = m_IsBPix ? "2023BPix" : "2023";
+    else epoch = std::to_string(m_year); // fallback; most likely only 2022/2023 are used
+
+    std::string var = variation.empty() ? "nom" : variation;
+
+    // Build args: pt_phi (string), met_type (string), epoch (string), dtmc (string),
+    //             variation (string), met_pt (real), met_phi (real), npvGood (real)
+    std::vector<std::variant<int,double,std::string>> args;
+    args.push_back(std::string("phi"));     // request phi
+    args.push_back(met_type);
+    args.push_back(epoch);
+    args.push_back(dtmc);
+    args.push_back(var);
+    args.push_back(in_pt);
+    args.push_back(in_phi);
+    args.push_back(static_cast<double>(npvGood));
+
+    std::vector<std::variant<int,double,std::string>> args_pt = args;
+    args_pt[0] = std::string("pt"); // request pt
+
+    double corrected_phi = in_phi;
+    double corrected_pt  = in_pt;
+
+    try {
+      const std::string nodeName = "met_xy_corrections";
+      if (!has_key(nodeName)) {
+        std::cerr << "[ApplyMETPhiCorrections] WARNING: Run-3 node '" << nodeName
+                  << "' not found in MET cset. Skipping Run-3 corrections.\n";
+      } else {
+        corrected_phi = m_cset_METPhi->at(nodeName)->evaluate(args);
+      }
+    } catch (const std::exception &e) {
+      std::cerr << "[ApplyMETPhiCorrections] ERROR evaluating Run-3 phi node: "
+                << e.what() << "\n";
+    } catch (...) {
+      std::cerr << "[ApplyMETPhiCorrections] Unknown error evaluating Run-3 phi node.\n";
+    }
+
+    try {
+      const std::string nodeName = "met_xy_corrections";
+      if (!has_key(nodeName)) {
+        // already warned above
+      } else {
+        corrected_pt = m_cset_METPhi->at(nodeName)->evaluate(args_pt);
+      }
+    } catch (const std::exception &e) {
+      std::cerr << "[ApplyMETPhiCorrections] ERROR evaluating Run-3 pt node: "
+                << e.what() << "\n";
+    } catch (...) {
+      std::cerr << "[ApplyMETPhiCorrections] Unknown error evaluating Run-3 pt node.\n";
+    }
+
+    wrapPhi(corrected_phi);
+    metOut.SetPtEtaPhiM(corrected_pt, 0.0, corrected_phi, 0.);
+    return;
+
+  } catch (const std::exception &e) {
+    std::cerr << "[ApplyMETPhiCorrections] Caught exception: " << e.what() << "\n";
+  } catch (...) {
+    std::cerr << "[ApplyMETPhiCorrections] Caught unknown exception\n";
+  }
+}
 
 template <>
 ParticleList AnalysisBase<NANORun3>::GetJetsMET(TVector3& MET, int id){
@@ -5263,9 +5447,6 @@ ParticleList AnalysisBase<NANORun3>::GetJetsMET(TVector3& MET, int id){
         if (!optClibKey)
           std::cerr << "[JME] Warning: could not resolve JES systematic '" << systLabel
                     << "' for year key " << m_jmeYearKey << ". MET will use nominal JES.\n";
-        else // Can remove this if sure that any and all resolved keys for each year make sense
-          std::cerr << "[JME] Resolved JES systematic '" << systLabel << "' -> CLIB key '"
-                    << *optClibKey << "' for year key " << m_jmeYearKey << "\n";
       }
 
       if (optClibKey) {
@@ -5339,6 +5520,9 @@ ParticleList AnalysisBase<NANORun3>::GetJetsMET(TVector3& MET, int id){
 
   // Call helper to get corrected MET 4-vector (JES+JER applied, MET propagation)
   TLorentzVector p4CorrectedMET = m_JMETool.GetCorrectedMET(m_jmeYearKey, m_IsData, RunNum, RawPuppiMET_pt, RawPuppiMET_phi, jetsForMet, jersForMet, Rho_fixedGridRhoFastjetAll, systOpts, false);
+
+  int NPV = static_cast<int>(GetNPV());
+  ApplyMETPhiCorrections(p4CorrectedMET, RunNum, NPV, "nom");
 
   MET.SetPtEtaPhi(p4CorrectedMET.Pt(), 0.0, p4CorrectedMET.Phi());
 
