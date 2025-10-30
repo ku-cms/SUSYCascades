@@ -134,6 +134,7 @@ private:
   
   bool m_EventFilter;
   bool m_FastSimEventVeto;
+  bool m_PassesJVM;
 
   bool m_EventFlag_FailJetID;
   bool m_EventFlag_JetInHEM;

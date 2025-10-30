@@ -1,0 +1,375 @@
+{
+  "2016Pre": {
+    "jercJsonPath": "/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/JME/2016preVFP_UL/fatJet_jerc.json.gz",
+    "tagNameL1FastJet": "Summer19UL16APV_V7_MC_L1FastJet_AK8PFPuppi",
+    "tagNameL2Relative": "Summer19UL16APV_V7_MC_L2Relative_AK8PFPuppi",
+    "tagNameL3Absolute": "Summer19UL16APV_V7_MC_L3Absolute_AK8PFPuppi",
+    "tagNameL2Residual": "Summer19UL16APV_V7_MC_L2Residual_AK8PFPuppi",
+    "tagNameL2L3Residual": "Summer19UL16APV_V7_MC_L2L3Residual_AK8PFPuppi",
+    "tagNamePtResolution": "Summer20UL16APV_JRV3_MC_PtResolution_AK8PFPuppi",
+    "tagNameJerScaleFactor": "Summer20UL16APV_JRV3_MC_ScaleFactor_AK8PFPuppi",
+    "data": {
+      "Era2016PreBCD": {
+        "tagNameL1FastJet": "Summer19UL16APV_RunBCD_V7_DATA_L1FastJet_AK8PFPuppi",
+        "tagNameL2Relative": "Summer19UL16APV_RunBCD_V7_DATA_L2Relative_AK8PFPuppi",
+        "tagNameL3Absolute": "Summer19UL16APV_RunBCD_V7_DATA_L3Absolute_AK8PFPuppi",
+        "tagNameL2Residual": "Summer19UL16APV_RunBCD_V7_DATA_L2Residual_AK8PFPuppi",
+        "tagNameL2L3Residual": "Summer19UL16APV_RunBCD_V7_DATA_L2L3Residual_AK8PFPuppi"
+      },
+      "Era2016PreEF": {
+        "tagNameL1FastJet": "Summer19UL16APV_RunEF_V7_DATA_L1FastJet_AK8PFPuppi",
+        "tagNameL2Relative": "Summer19UL16APV_RunEF_V7_DATA_L2Relative_AK8PFPuppi",
+        "tagNameL3Absolute": "Summer19UL16APV_RunEF_V7_DATA_L3Absolute_AK8PFPuppi",
+        "tagNameL2Residual": "Summer19UL16APV_RunEF_V7_DATA_L2Residual_AK8PFPuppi",
+        "tagNameL2L3Residual": "Summer19UL16APV_RunEF_V7_DATA_L2L3Residual_AK8PFPuppi"
+      }
+    },
+    "ForUncertaintyJES": {
+      "ForUncertaintyJESFull": [
+        ["Summer19UL16APV_V7_MC_AbsoluteMPFBias_AK8PFPuppi", "CMS_scale_j_AbsoluteMPFBias"],
+        ["Summer19UL16APV_V7_MC_AbsoluteScale_AK8PFPuppi",   "CMS_scale_j_AbsoluteScale"],
+        ["Summer19UL16APV_V7_MC_AbsoluteStat_AK8PFPuppi",    "CMS_scale_j_AbsoluteStat_2016"],
+        ["Summer19UL16APV_V7_MC_FlavorQCD_AK8PFPuppi",       "CMS_scale_j_FlavorQCD"],
+        ["Summer19UL16APV_V7_MC_Fragmentation_AK8PFPuppi",   "CMS_scale_j_Fragmentation"],
+        ["Summer19UL16APV_V7_MC_PileUpDataMC_AK8PFPuppi",    "CMS_scale_j_PileUpDataMC"],
+        ["Summer19UL16APV_V7_MC_PileUpPtBB_AK8PFPuppi",      "CMS_scale_j_PileUpPtBB"],
+        ["Summer19UL16APV_V7_MC_PileUpPtEC1_AK8PFPuppi",     "CMS_scale_j_PileUpPtEC1"],
+        ["Summer19UL16APV_V7_MC_PileUpPtEC2_AK8PFPuppi",     "CMS_scale_j_PileUpPtEC2"],
+        ["Summer19UL16APV_V7_MC_PileUpPtHF_AK8PFPuppi",      "CMS_scale_j_PileUpPtHF"],
+        ["Summer19UL16APV_V7_MC_PileUpPtRef_AK8PFPuppi",     "CMS_scale_j_PileUpPtRef"],
+        ["Summer19UL16APV_V7_MC_RelativeFSR_AK8PFPuppi",     "CMS_scale_j_RelativeFSR"],
+        ["Summer19UL16APV_V7_MC_RelativeJEREC1_AK8PFPuppi",  "CMS_scale_j_RelativeJEREC1_2016"],
+        ["Summer19UL16APV_V7_MC_RelativeJEREC2_AK8PFPuppi",  "CMS_scale_j_RelativeJEREC2_2016"],
+        ["Summer19UL16APV_V7_MC_RelativeJERHF_AK8PFPuppi",   "CMS_scale_j_RelativeJERHF"],
+        ["Summer19UL16APV_V7_MC_RelativePtBB_AK8PFPuppi",    "CMS_scale_j_RelativePtBB"],
+        ["Summer19UL16APV_V7_MC_RelativePtEC1_AK8PFPuppi",   "CMS_scale_j_RelativePtEC1_2016"],
+        ["Summer19UL16APV_V7_MC_RelativePtEC2_AK8PFPuppi",   "CMS_scale_j_RelativePtEC2_2016"],
+        ["Summer19UL16APV_V7_MC_RelativePtHF_AK8PFPuppi",    "CMS_scale_j_RelativePtHF"],
+        ["Summer19UL16APV_V7_MC_RelativeBal_AK8PFPuppi",     "CMS_scale_j_RelativeBal"],
+        ["Summer19UL16APV_V7_MC_RelativeSample_AK8PFPuppi",  "CMS_scale_j_RelativeSample_2016"],
+        ["Summer19UL16APV_V7_MC_RelativeStatEC_AK8PFPuppi",  "CMS_scale_j_RelativeStatEC_2016"],
+        ["Summer19UL16APV_V7_MC_RelativeStatFSR_AK8PFPuppi", "CMS_scale_j_RelativeStatFSR_2016"],
+        ["Summer19UL16APV_V7_MC_RelativeStatHF_AK8PFPuppi",  "CMS_scale_j_RelativeStatHF_2016"],
+        ["Summer19UL16APV_V7_MC_SinglePionECAL_AK8PFPuppi",  "CMS_scale_j_SinglePionECAL"],
+        ["Summer19UL16APV_V7_MC_SinglePionHCAL_AK8PFPuppi",  "CMS_scale_j_SinglePionHCAL"],
+        ["Summer19UL16APV_V7_MC_TimePtEta_AK8PFPuppi",       "CMS_scale_j_TimePtEta_2016"]
+      ],
+      "ForUncertaintyJESReduced": [
+        ["Summer19UL16APV_V7_MC_Regrouped_FlavorQCD_AK8PFPuppi",     "CMS_scale_j_FlavorQCD"],
+        ["Summer19UL16APV_V7_MC_Regrouped_RelativeBal_AK8PFPuppi",   "CMS_scale_j_RelativeBal"],
+        ["Summer19UL16APV_V7_MC_Regrouped_HF_AK8PFPuppi",            "CMS_scale_j_HF"],
+        ["Summer19UL16APV_V7_MC_Regrouped_BBEC1_AK8PFPuppi",         "CMS_scale_j_BBEC1"],
+        ["Summer19UL16APV_V7_MC_Regrouped_EC2_AK8PFPuppi",           "CMS_scale_j_EC2"],
+        ["Summer19UL16APV_V7_MC_Regrouped_Absolute_AK8PFPuppi",      "CMS_scale_j_Absolute"],
+        ["Summer19UL16APV_V7_MC_Regrouped_BBEC1_2016_AK8PFPuppi",    "CMS_scale_j_BBEC1_2016"],
+        ["Summer19UL16APV_V7_MC_Regrouped_RelativeSample_2016_AK8PFPuppi", "CMS_scale_j_RelativeSample_2016"],
+        ["Summer19UL16APV_V7_MC_Regrouped_EC2_2016_AK8PFPuppi",      "CMS_scale_j_EC2_2016"],
+        ["Summer19UL16APV_V7_MC_Regrouped_HF_2016_AK8PFPuppi",       "CMS_scale_j_HF_2016"],
+        ["Summer19UL16APV_V7_MC_Regrouped_Absolute_2016_AK8PFPuppi", "CMS_scale_j_Absolute_2016"]
+      ],
+      "ForUncertaintyJESTotal": [
+        ["Summer19UL16APV_V7_MC_Total_AK8PFPuppi", "CMS_scale_j_Total"]
+      ]
+    },
+    "ForUncertaintyJER": {
+      "ForUncertaintyJERFull": {
+        "CMS_res_j_eta0to1p93_pt0toInf_2016":   [ 0.0,  1.93, 0,  10000 ],
+        "CMS_res_j_eta1p93to2p5_pt0toInf_2016": [ 1.93, 2.5,  0,  10000 ],
+        "CMS_res_j_eta2p5to3p0_pt0to50_2016":   [ 2.5,  3.0,  0,  50    ],
+        "CMS_res_j_eta2p5to3p0_pt50toInf_2016": [ 2.5,  3.0,  50, 10000 ],
+        "CMS_res_j_eta3to5_pt0to50_2016":       [ 3.0,  5.0,  0,  50    ],
+        "CMS_res_j_eta3to5_pt50toInf_2016":     [ 3.0,  5.0,  50, 10000 ]
+      },
+      "ForUncertaintyJERTotal": {
+        "CMS_res_j_2016": [0.0, 6.0, 0, 10000]
+      }
+    }
+  },
+  "2016Post": {
+    "jercJsonPath": "/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/JME/2016postVFP_UL/fatJet_jerc.json.gz",
+    "tagNameL1FastJet": "Summer19UL16_V7_MC_L1FastJet_AK8PFPuppi",
+    "tagNameL2Relative": "Summer19UL16_V7_MC_L2Relative_AK8PFPuppi",
+    "tagNameL3Absolute": "Summer19UL16_V7_MC_L3Absolute_AK8PFPuppi",
+    "tagNameL2Residual": "Summer19UL16_V7_MC_L2Residual_AK8PFPuppi",
+    "tagNameL2L3Residual": "Summer19UL16_V7_MC_L2L3Residual_AK8PFPuppi",
+    "tagNamePtResolution": "Summer20UL16_JRV3_MC_PtResolution_AK8PFPuppi",
+    "tagNameJerScaleFactor": "Summer20UL16_JRV3_MC_ScaleFactor_AK8PFPuppi",
+    "data": {
+      "Era2016PostFGH": {
+        "tagNameL1FastJet": "Summer19UL16_RunFGH_V7_DATA_L1FastJet_AK8PFPuppi",
+        "tagNameL2Relative": "Summer19UL16_RunFGH_V7_DATA_L2Relative_AK8PFPuppi",
+        "tagNameL3Absolute": "Summer19UL16_RunFGH_V7_DATA_L3Absolute_AK8PFPuppi",
+        "tagNameL2Residual": "Summer19UL16_RunFGH_V7_DATA_L2Residual_AK8PFPuppi",
+        "tagNameL2L3Residual": "Summer19UL16_RunFGH_V7_DATA_L2L3Residual_AK8PFPuppi"
+      }
+    },
+    "ForUncertaintyJES": {
+      "ForUncertaintyJESFull": [
+        ["Summer19UL16_V7_MC_AbsoluteMPFBias_AK8PFPuppi", "CMS_scale_j_AbsoluteMPFBias"],
+        ["Summer19UL16_V7_MC_AbsoluteScale_AK8PFPuppi",   "CMS_scale_j_AbsoluteScale"],
+        ["Summer19UL16_V7_MC_AbsoluteStat_AK8PFPuppi",    "CMS_scale_j_AbsoluteStat_2016"],
+        ["Summer19UL16_V7_MC_FlavorQCD_AK8PFPuppi",       "CMS_scale_j_FlavorQCD"],
+        ["Summer19UL16_V7_MC_Fragmentation_AK8PFPuppi",   "CMS_scale_j_Fragmentation"],
+        ["Summer19UL16_V7_MC_PileUpDataMC_AK8PFPuppi",    "CMS_scale_j_PileUpDataMC"],
+        ["Summer19UL16_V7_MC_PileUpPtBB_AK8PFPuppi",      "CMS_scale_j_PileUpPtBB"],
+        ["Summer19UL16_V7_MC_PileUpPtEC1_AK8PFPuppi",     "CMS_scale_j_PileUpPtEC1"],
+        ["Summer19UL16_V7_MC_PileUpPtEC2_AK8PFPuppi",     "CMS_scale_j_PileUpPtEC2"],
+        ["Summer19UL16_V7_MC_PileUpPtHF_AK8PFPuppi",      "CMS_scale_j_PileUpPtHF"],
+        ["Summer19UL16_V7_MC_PileUpPtRef_AK8PFPuppi",     "CMS_scale_j_PileUpPtRef"],
+        ["Summer19UL16_V7_MC_RelativeFSR_AK8PFPuppi",     "CMS_scale_j_RelativeFSR"],
+        ["Summer19UL16_V7_MC_RelativeJEREC1_AK8PFPuppi",  "CMS_scale_j_RelativeJEREC1_2016"],
+        ["Summer19UL16_V7_MC_RelativeJEREC2_AK8PFPuppi",  "CMS_scale_j_RelativeJEREC2_2016"],
+        ["Summer19UL16_V7_MC_RelativeJERHF_AK8PFPuppi",   "CMS_scale_j_RelativeJERHF"],
+        ["Summer19UL16_V7_MC_RelativePtBB_AK8PFPuppi",    "CMS_scale_j_RelativePtBB"],
+        ["Summer19UL16_V7_MC_RelativePtEC1_AK8PFPuppi",   "CMS_scale_j_RelativePtEC1_2016"],
+        ["Summer19UL16_V7_MC_RelativePtEC2_AK8PFPuppi",   "CMS_scale_j_RelativePtEC2_2016"],
+        ["Summer19UL16_V7_MC_RelativePtHF_AK8PFPuppi",    "CMS_scale_j_RelativePtHF"],
+        ["Summer19UL16_V7_MC_RelativeBal_AK8PFPuppi",     "CMS_scale_j_RelativeBal"],
+        ["Summer19UL16_V7_MC_RelativeSample_AK8PFPuppi",  "CMS_scale_j_RelativeSample_2016"],
+        ["Summer19UL16_V7_MC_RelativeStatEC_AK8PFPuppi",  "CMS_scale_j_RelativeStatEC_2016"],
+        ["Summer19UL16_V7_MC_RelativeStatFSR_AK8PFPuppi", "CMS_scale_j_RelativeStatFSR_2016"],
+        ["Summer19UL16_V7_MC_RelativeStatHF_AK8PFPuppi",  "CMS_scale_j_RelativeStatHF_2016"],
+        ["Summer19UL16_V7_MC_SinglePionECAL_AK8PFPuppi",  "CMS_scale_j_SinglePionECAL"],
+        ["Summer19UL16_V7_MC_SinglePionHCAL_AK8PFPuppi",  "CMS_scale_j_SinglePionHCAL"],
+        ["Summer19UL16_V7_MC_TimePtEta_AK8PFPuppi",       "CMS_scale_j_TimePtEta_2016"]
+      ],
+      "ForUncertaintyJESReduced": [
+        ["Summer19UL16_V7_MC_Regrouped_FlavorQCD_AK8PFPuppi",     "CMS_scale_j_FlavorQCD"],
+        ["Summer19UL16_V7_MC_Regrouped_RelativeBal_AK8PFPuppi",   "CMS_scale_j_RelativeBal"],
+        ["Summer19UL16_V7_MC_Regrouped_HF_AK8PFPuppi",            "CMS_scale_j_HF"],
+        ["Summer19UL16_V7_MC_Regrouped_BBEC1_AK8PFPuppi",         "CMS_scale_j_BBEC1"],
+        ["Summer19UL16_V7_MC_Regrouped_EC2_AK8PFPuppi",           "CMS_scale_j_EC2"],
+        ["Summer19UL16_V7_MC_Regrouped_Absolute_AK8PFPuppi",      "CMS_scale_j_Absolute"],
+        ["Summer19UL16_V7_MC_Regrouped_BBEC1_2016_AK8PFPuppi",    "CMS_scale_j_BBEC1_2016"],
+        ["Summer19UL16_V7_MC_Regrouped_RelativeSample_2016_AK8PFPuppi", "CMS_scale_j_RelativeSample_2016"],
+        ["Summer19UL16_V7_MC_Regrouped_EC2_2016_AK8PFPuppi",      "CMS_scale_j_EC2_2016"],
+        ["Summer19UL16_V7_MC_Regrouped_HF_2016_AK8PFPuppi",       "CMS_scale_j_HF_2016"],
+        ["Summer19UL16_V7_MC_Regrouped_Absolute_2016_AK8PFPuppi", "CMS_scale_j_Absolute_2016"]
+      ],
+      "ForUncertaintyJESTotal": [
+        ["Summer19UL16_V7_MC_Total_AK8PFPuppi", "CMS_scale_j_Total"]
+      ]
+    },
+    "ForUncertaintyJER": {
+      "ForUncertaintyJERFull": {
+        "CMS_res_j_eta0to1p93_pt0toInf_2016":   [ 0.0,  1.93, 0,  10000 ],
+        "CMS_res_j_eta1p93to2p5_pt0toInf_2016": [ 1.93, 2.5,  0,  10000 ],
+        "CMS_res_j_eta2p5to3p0_pt0to50_2016":   [ 2.5,  3.0,  0,  50    ],
+        "CMS_res_j_eta2p5to3p0_pt50toInf_2016": [ 2.5,  3.0,  50, 10000 ],
+        "CMS_res_j_eta3to5_pt0to50_2016":       [ 3.0,  5.0,  0,  50    ],
+        "CMS_res_j_eta3to5_pt50toInf_2016":     [ 3.0,  5.0,  50, 10000 ]
+      },
+      "ForUncertaintyJERTotal": {
+        "CMS_res_j_2016": [0.0, 6.0, 0, 10000]
+      }
+    }
+  },
+  "2017": {
+    "jercJsonPath": "/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/JME/2017_UL/fatJet_jerc.json.gz",
+    "tagNameL1FastJet": "Summer19UL17_V5_MC_L1FastJet_AK8PFPuppi",
+    "tagNameL2Relative": "Summer19UL17_V5_MC_L2Relative_AK8PFPuppi",
+    "tagNameL3Absolute": "Summer19UL17_V5_MC_L3Absolute_AK8PFPuppi",
+    "tagNameL2Residual": "Summer19UL17_V5_MC_L2Residual_AK8PFPuppi",
+    "tagNameL2L3Residual": "Summer19UL17_V5_MC_L2L3Residual_AK8PFPuppi",
+    "tagNamePtResolution": "Summer19UL17_JRV2_MC_PtResolution_AK8PFPuppi",
+    "tagNameJerScaleFactor": "Summer19UL17_JRV2_MC_ScaleFactor_AK8PFPuppi",
+    "data": {
+      "Era2017B": {
+        "tagNameL1FastJet": "Summer19UL17_RunB_V5_DATA_L1FastJet_AK8PFPuppi",
+        "tagNameL2Relative": "Summer19UL17_RunB_V5_DATA_L2Relative_AK8PFPuppi",
+        "tagNameL3Absolute": "Summer19UL17_RunB_V5_DATA_L3Absolute_AK8PFPuppi",
+        "tagNameL2Residual": "Summer19UL17_RunB_V5_DATA_L2Residual_AK8PFPuppi",
+        "tagNameL2L3Residual": "Summer19UL17_RunB_V5_DATA_L2L3Residual_AK8PFPuppi"
+      },
+      "Era2017C": {
+        "tagNameL1FastJet": "Summer19UL17_RunC_V5_DATA_L1FastJet_AK8PFPuppi",
+        "tagNameL2Relative": "Summer19UL17_RunC_V5_DATA_L2Relative_AK8PFPuppi",
+        "tagNameL3Absolute": "Summer19UL17_RunC_V5_DATA_L3Absolute_AK8PFPuppi",
+        "tagNameL2Residual": "Summer19UL17_RunC_V5_DATA_L2Residual_AK8PFPuppi",
+        "tagNameL2L3Residual": "Summer19UL17_RunC_V5_DATA_L2L3Residual_AK8PFPuppi"
+      },
+      "Era2017D": {
+        "tagNameL1FastJet": "Summer19UL17_RunD_V5_DATA_L1FastJet_AK8PFPuppi",
+        "tagNameL2Relative": "Summer19UL17_RunD_V5_DATA_L2Relative_AK8PFPuppi",
+        "tagNameL3Absolute": "Summer19UL17_RunD_V5_DATA_L3Absolute_AK8PFPuppi",
+        "tagNameL2Residual": "Summer19UL17_RunD_V5_DATA_L2Residual_AK8PFPuppi",
+        "tagNameL2L3Residual": "Summer19UL17_RunD_V5_DATA_L2L3Residual_AK8PFPuppi"
+      },
+      "Era2017E": {
+        "tagNameL1FastJet": "Summer19UL17_RunE_V5_DATA_L1FastJet_AK8PFPuppi",
+        "tagNameL2Relative": "Summer19UL17_RunE_V5_DATA_L2Relative_AK8PFPuppi",
+        "tagNameL3Absolute": "Summer19UL17_RunE_V5_DATA_L3Absolute_AK8PFPuppi",
+        "tagNameL2Residual": "Summer19UL17_RunE_V5_DATA_L2Residual_AK8PFPuppi",
+        "tagNameL2L3Residual": "Summer19UL17_RunE_V5_DATA_L2L3Residual_AK8PFPuppi"
+      },
+      "Era2017F": {
+        "tagNameL1FastJet": "Summer19UL17_RunF_V5_DATA_L1FastJet_AK8PFPuppi",
+        "tagNameL2Relative": "Summer19UL17_RunF_V5_DATA_L2Relative_AK8PFPuppi",
+        "tagNameL3Absolute": "Summer19UL17_RunF_V5_DATA_L3Absolute_AK8PFPuppi",
+        "tagNameL2Residual": "Summer19UL17_RunF_V5_DATA_L2Residual_AK8PFPuppi",
+        "tagNameL2L3Residual": "Summer19UL17_RunF_V5_DATA_L2L3Residual_AK8PFPuppi"
+      }
+    },
+    "ForUncertaintyJES": {
+      "ForUncertaintyJESFull": [
+        ["Summer19UL17_V5_MC_AbsoluteMPFBias_AK8PFPuppi", "CMS_scale_j_AbsoluteMPFBias"],
+        ["Summer19UL17_V5_MC_AbsoluteScale_AK8PFPuppi",   "CMS_scale_j_AbsoluteScale"],
+        ["Summer19UL17_V5_MC_AbsoluteStat_AK8PFPuppi",    "CMS_scale_j_AbsoluteStat_2017"],
+        ["Summer19UL17_V5_MC_FlavorQCD_AK8PFPuppi",       "CMS_scale_j_FlavorQCD"],
+        ["Summer19UL17_V5_MC_Fragmentation_AK8PFPuppi",   "CMS_scale_j_Fragmentation"],
+        ["Summer19UL17_V5_MC_PileUpDataMC_AK8PFPuppi",    "CMS_scale_j_PileUpDataMC"],
+        ["Summer19UL17_V5_MC_PileUpPtBB_AK8PFPuppi",      "CMS_scale_j_PileUpPtBB"],
+        ["Summer19UL17_V5_MC_PileUpPtEC1_AK8PFPuppi",     "CMS_scale_j_PileUpPtEC1"],
+        ["Summer19UL17_V5_MC_PileUpPtEC2_AK8PFPuppi",     "CMS_scale_j_PileUpPtEC2"],
+        ["Summer19UL17_V5_MC_PileUpPtHF_AK8PFPuppi",      "CMS_scale_j_PileUpPtHF"],
+        ["Summer19UL17_V5_MC_PileUpPtRef_AK8PFPuppi",     "CMS_scale_j_PileUpPtRef"],
+        ["Summer19UL17_V5_MC_RelativeFSR_AK8PFPuppi",     "CMS_scale_j_RelativeFSR"],
+        ["Summer19UL17_V5_MC_RelativeJEREC1_AK8PFPuppi",  "CMS_scale_j_RelativeJEREC1_2017"],
+        ["Summer19UL17_V5_MC_RelativeJEREC2_AK8PFPuppi",  "CMS_scale_j_RelativeJEREC2_2017"],
+        ["Summer19UL17_V5_MC_RelativeJERHF_AK8PFPuppi",   "CMS_scale_j_RelativeJERHF"],
+        ["Summer19UL17_V5_MC_RelativePtBB_AK8PFPuppi",    "CMS_scale_j_RelativePtBB"],
+        ["Summer19UL17_V5_MC_RelativePtEC1_AK8PFPuppi",   "CMS_scale_j_RelativePtEC1_2017"],
+        ["Summer19UL17_V5_MC_RelativePtEC2_AK8PFPuppi",   "CMS_scale_j_RelativePtEC2_2017"],
+        ["Summer19UL17_V5_MC_RelativePtHF_AK8PFPuppi",    "CMS_scale_j_RelativePtHF"],
+        ["Summer19UL17_V5_MC_RelativeBal_AK8PFPuppi",     "CMS_scale_j_RelativeBal"],
+        ["Summer19UL17_V5_MC_RelativeSample_AK8PFPuppi",  "CMS_scale_j_RelativeSample_2017"],
+        ["Summer19UL17_V5_MC_RelativeStatEC_AK8PFPuppi",  "CMS_scale_j_RelativeStatEC_2017"],
+        ["Summer19UL17_V5_MC_RelativeStatFSR_AK8PFPuppi", "CMS_scale_j_RelativeStatFSR_2017"],
+        ["Summer19UL17_V5_MC_RelativeStatHF_AK8PFPuppi",  "CMS_scale_j_RelativeStatHF_2017"],
+        ["Summer19UL17_V5_MC_SinglePionECAL_AK8PFPuppi",  "CMS_scale_j_SinglePionECAL"],
+        ["Summer19UL17_V5_MC_SinglePionHCAL_AK8PFPuppi",  "CMS_scale_j_SinglePionHCAL"],
+        ["Summer19UL17_V5_MC_TimePtEta_AK8PFPuppi",       "CMS_scale_j_TimePtEta_2017"]
+      ],
+      "ForUncertaintyJESReduced": [
+        ["Summer19UL17_V5_MC_Regrouped_FlavorQCD_AK8PFPuppi",     "CMS_scale_j_FlavorQCD"],
+        ["Summer19UL17_V5_MC_Regrouped_RelativeBal_AK8PFPuppi",   "CMS_scale_j_RelativeBal"],
+        ["Summer19UL17_V5_MC_Regrouped_HF_AK8PFPuppi",            "CMS_scale_j_HF"],
+        ["Summer19UL17_V5_MC_Regrouped_BBEC1_AK8PFPuppi",         "CMS_scale_j_BBEC1"],
+        ["Summer19UL17_V5_MC_Regrouped_EC2_AK8PFPuppi",           "CMS_scale_j_EC2"],
+        ["Summer19UL17_V5_MC_Regrouped_Absolute_AK8PFPuppi",      "CMS_scale_j_Absolute"],
+        ["Summer19UL17_V5_MC_Regrouped_BBEC1_2017_AK8PFPuppi",    "CMS_scale_j_BBEC1_2017"],
+        ["Summer19UL17_V5_MC_Regrouped_RelativeSample_2017_AK8PFPuppi", "CMS_scale_j_RelativeSample_2017"],
+        ["Summer19UL17_V5_MC_Regrouped_EC2_2017_AK8PFPuppi",      "CMS_scale_j_EC2_2017"],
+        ["Summer19UL17_V5_MC_Regrouped_HF_2017_AK8PFPuppi",       "CMS_scale_j_HF_2017"],
+        ["Summer19UL17_V5_MC_Regrouped_Absolute_2017_AK8PFPuppi", "CMS_scale_j_Absolute_2017"]
+      ],
+      "ForUncertaintyJESTotal": [
+        ["Summer19UL17_V5_MC_Total_AK8PFPuppi", "CMS_scale_j_Total"]
+      ]
+    },
+    "ForUncertaintyJER": {
+      "ForUncertaintyJERFull": {
+        "CMS_res_j_eta0to1p93_pt0toInf_2017":   [ 0.0,  1.93, 0,  10000 ],
+        "CMS_res_j_eta1p93to2p5_pt0toInf_2017": [ 1.93, 2.5,  0,  10000 ],
+        "CMS_res_j_eta2p5to3p0_pt0to50_2017":   [ 2.5,  3.0,  0,  50    ],
+        "CMS_res_j_eta2p5to3p0_pt50toInf_2017": [ 2.5,  3.0,  50, 10000 ],
+        "CMS_res_j_eta3to5_pt0to50_2017":       [ 3.0,  5.0,  0,  50    ],
+        "CMS_res_j_eta3to5_pt50toInf_2017":     [ 3.0,  5.0,  50, 10000 ]
+      },
+      "ForUncertaintyJERTotal": {
+        "CMS_res_j_2017": [0.0, 6.0, 0, 10000]
+      }
+    }
+  },
+  "2018": {
+    "jercJsonPath": "/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/JME/2018_UL/fatJet_jerc.json.gz",
+    "tagNameL1FastJet": "Summer19UL18_V5_MC_L1FastJet_AK8PFPuppi",
+    "tagNameL2Relative": "Summer19UL18_V5_MC_L2Relative_AK8PFPuppi",
+    "tagNameL3Absolute": "Summer19UL18_V5_MC_L3Absolute_AK8PFPuppi",
+    "tagNameL2Residual": "Summer19UL18_V5_MC_L2Residual_AK8PFPuppi",
+    "tagNameL2L3Residual": "Summer19UL18_V5_MC_L2L3Residual_AK8PFPuppi",
+    "tagNamePtResolution": "Summer19UL18_JRV2_MC_PtResolution_AK8PFPuppi",
+    "tagNameJerScaleFactor": "Summer19UL18_JRV2_MC_ScaleFactor_AK8PFPuppi",
+    "data": {
+      "Era2018A": {
+        "tagNameL1FastJet": "Summer19UL18_RunA_V5_DATA_L1FastJet_AK8PFPuppi",
+        "tagNameL2Relative": "Summer19UL18_RunA_V5_DATA_L2Relative_AK8PFPuppi",
+        "tagNameL3Absolute": "Summer19UL18_RunA_V5_DATA_L3Absolute_AK8PFPuppi",
+        "tagNameL2Residual": "Summer19UL18_RunA_V5_DATA_L2Residual_AK8PFPuppi",
+        "tagNameL2L3Residual": "Summer19UL18_RunA_V5_DATA_L2L3Residual_AK8PFPuppi"
+      },
+      "Era2018B": {
+        "tagNameL1FastJet": "Summer19UL18_RunB_V5_DATA_L1FastJet_AK8PFPuppi",
+        "tagNameL2Relative": "Summer19UL18_RunB_V5_DATA_L2Relative_AK8PFPuppi",
+        "tagNameL3Absolute": "Summer19UL18_RunB_V5_DATA_L3Absolute_AK8PFPuppi",
+        "tagNameL2Residual": "Summer19UL18_RunB_V5_DATA_L2Residual_AK8PFPuppi",
+        "tagNameL2L3Residual": "Summer19UL18_RunB_V5_DATA_L2L3Residual_AK8PFPuppi"
+      },
+      "Era2018C": {
+        "tagNameL1FastJet": "Summer19UL18_RunC_V5_DATA_L1FastJet_AK8PFPuppi",
+        "tagNameL2Relative": "Summer19UL18_RunC_V5_DATA_L2Relative_AK8PFPuppi",
+        "tagNameL3Absolute": "Summer19UL18_RunC_V5_DATA_L3Absolute_AK8PFPuppi",
+        "tagNameL2Residual": "Summer19UL18_RunC_V5_DATA_L2Residual_AK8PFPuppi",
+        "tagNameL2L3Residual": "Summer19UL18_RunC_V5_DATA_L2L3Residual_AK8PFPuppi"
+      },
+      "Era2018D": {
+        "tagNameL1FastJet": "Summer19UL18_RunD_V5_DATA_L1FastJet_AK8PFPuppi",
+        "tagNameL2Relative": "Summer19UL18_RunD_V5_DATA_L2Relative_AK8PFPuppi",
+        "tagNameL3Absolute": "Summer19UL18_RunD_V5_DATA_L3Absolute_AK8PFPuppi",
+        "tagNameL2Residual": "Summer19UL18_RunD_V5_DATA_L2Residual_AK8PFPuppi",
+        "tagNameL2L3Residual": "Summer19UL18_RunD_V5_DATA_L2L3Residual_AK8PFPuppi"
+      }
+    },
+    "ForUncertaintyJES": {
+      "ForUncertaintyJESFull": [
+        ["Summer19UL18_V5_MC_AbsoluteMPFBias_AK8PFPuppi", "CMS_scale_j_AbsoluteMPFBias"],
+        ["Summer19UL18_V5_MC_AbsoluteScale_AK8PFPuppi",   "CMS_scale_j_AbsoluteScale"],
+        ["Summer19UL18_V5_MC_AbsoluteStat_AK8PFPuppi",    "CMS_scale_j_AbsoluteStat_2018"],
+        ["Summer19UL18_V5_MC_FlavorQCD_AK8PFPuppi",       "CMS_scale_j_FlavorQCD"],
+        ["Summer19UL18_V5_MC_Fragmentation_AK8PFPuppi",   "CMS_scale_j_Fragmentation"],
+        ["Summer19UL18_V5_MC_PileUpDataMC_AK8PFPuppi",    "CMS_scale_j_PileUpDataMC"],
+        ["Summer19UL18_V5_MC_PileUpPtBB_AK8PFPuppi",      "CMS_scale_j_PileUpPtBB"],
+        ["Summer19UL18_V5_MC_PileUpPtEC1_AK8PFPuppi",     "CMS_scale_j_PileUpPtEC1"],
+        ["Summer19UL18_V5_MC_PileUpPtEC2_AK8PFPuppi",     "CMS_scale_j_PileUpPtEC2"],
+        ["Summer19UL18_V5_MC_PileUpPtHF_AK8PFPuppi",      "CMS_scale_j_PileUpPtHF"],
+        ["Summer19UL18_V5_MC_PileUpPtRef_AK8PFPuppi",     "CMS_scale_j_PileUpPtRef"],
+        ["Summer19UL18_V5_MC_RelativeFSR_AK8PFPuppi",     "CMS_scale_j_RelativeFSR"],
+        ["Summer19UL18_V5_MC_RelativeJEREC1_AK8PFPuppi",  "CMS_scale_j_RelativeJEREC1_2018"],
+        ["Summer19UL18_V5_MC_RelativeJEREC2_AK8PFPuppi",  "CMS_scale_j_RelativeJEREC2_2018"],
+        ["Summer19UL18_V5_MC_RelativeJERHF_AK8PFPuppi",   "CMS_scale_j_RelativeJERHF"],
+        ["Summer19UL18_V5_MC_RelativePtBB_AK8PFPuppi",    "CMS_scale_j_RelativePtBB"],
+        ["Summer19UL18_V5_MC_RelativePtEC1_AK8PFPuppi",   "CMS_scale_j_RelativePtEC1_2018"],
+        ["Summer19UL18_V5_MC_RelativePtEC2_AK8PFPuppi",   "CMS_scale_j_RelativePtEC2_2018"],
+        ["Summer19UL18_V5_MC_RelativePtHF_AK8PFPuppi",    "CMS_scale_j_RelativePtHF"],
+        ["Summer19UL18_V5_MC_RelativeBal_AK8PFPuppi",     "CMS_scale_j_RelativeBal"],
+        ["Summer19UL18_V5_MC_RelativeSample_AK8PFPuppi",  "CMS_scale_j_RelativeSample_2018"],
+        ["Summer19UL18_V5_MC_RelativeStatEC_AK8PFPuppi",  "CMS_scale_j_RelativeStatEC_2018"],
+        ["Summer19UL18_V5_MC_RelativeStatFSR_AK8PFPuppi", "CMS_scale_j_RelativeStatFSR_2018"],
+        ["Summer19UL18_V5_MC_RelativeStatHF_AK8PFPuppi",  "CMS_scale_j_RelativeStatHF_2018"],
+        ["Summer19UL18_V5_MC_SinglePionECAL_AK8PFPuppi",  "CMS_scale_j_SinglePionECAL"],
+        ["Summer19UL18_V5_MC_SinglePionHCAL_AK8PFPuppi",  "CMS_scale_j_SinglePionHCAL"],
+        ["Summer19UL18_V5_MC_TimePtEta_AK8PFPuppi",       "CMS_scale_j_TimePtEta_2018"]
+      ],
+      "ForUncertaintyJESReduced": [
+        ["Summer19UL18_V5_MC_Regrouped_FlavorQCD_AK8PFPuppi",     "CMS_scale_j_FlavorQCD"],
+        ["Summer19UL18_V5_MC_Regrouped_RelativeBal_AK8PFPuppi",   "CMS_scale_j_RelativeBal"],
+        ["Summer19UL18_V5_MC_Regrouped_HF_AK8PFPuppi",            "CMS_scale_j_HF"],
+        ["Summer19UL18_V5_MC_Regrouped_BBEC1_AK8PFPuppi",         "CMS_scale_j_BBEC1"],
+        ["Summer19UL18_V5_MC_Regrouped_EC2_AK8PFPuppi",           "CMS_scale_j_EC2"],
+        ["Summer19UL18_V5_MC_Regrouped_Absolute_AK8PFPuppi",      "CMS_scale_j_Absolute"],
+        ["Summer19UL18_V5_MC_Regrouped_BBEC1_2018_AK8PFPuppi",    "CMS_scale_j_BBEC1_2018"],
+        ["Summer19UL18_V5_MC_Regrouped_RelativeSample_2018_AK8PFPuppi", "CMS_scale_j_RelativeSample_2018"],
+        ["Summer19UL18_V5_MC_Regrouped_EC2_2018_AK8PFPuppi",      "CMS_scale_j_EC2_2018"],
+        ["Summer19UL18_V5_MC_Regrouped_HF_2018_AK8PFPuppi",       "CMS_scale_j_HF_2018"],
+        ["Summer19UL18_V5_MC_Regrouped_Absolute_2018_AK8PFPuppi", "CMS_scale_j_Absolute_2018"]
+      ],
+      "ForUncertaintyJESTotal": [
+        ["Summer19UL18_V5_MC_Total_AK8PFPuppi", "CMS_scale_j_Total"]
+      ]
+    },
+    "ForUncertaintyJER": {
+      "ForUncertaintyJERFull": {
+        "CMS_res_j_eta0to1p93_pt0toInf_2018":   [ 0.0,  1.93, 0,  10000 ],
+        "CMS_res_j_eta1p93to2p5_pt0toInf_2018": [ 1.93, 2.5,  0,  10000 ],
+        "CMS_res_j_eta2p5to3p0_pt0to50_2018":   [ 2.5,  3.0,  0,  50    ],
+        "CMS_res_j_eta2p5to3p0_pt50toInf_2018": [ 2.5,  3.0,  50, 10000 ],
+        "CMS_res_j_eta3to5_pt0to50_2018":       [ 3.0,  5.0,  0,  50    ],
+        "CMS_res_j_eta3to5_pt50toInf_2018":     [ 3.0,  5.0,  50, 10000 ]
+      },
+      "ForUncertaintyJERTotal": {
+        "CMS_res_j_2018": [0.0, 6.0, 0, 10000]
+      }
+    }
+  }
+}
+

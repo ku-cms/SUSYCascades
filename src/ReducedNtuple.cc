@@ -309,8 +309,8 @@ TTree* ReducedNtuple<Base>::InitOutputTree(const string& sample, bool do_slim){
   tree->Branch("NPV", &m_NPV);
 
   tree->Branch("EventFilter", &m_EventFilter);
+  tree->Branch("PassesJVM", &m_PassesJVM);
   tree->Branch("FastSimEventVeto", &m_FastSimEventVeto);
-
   tree->Branch("PrefireWeight", &m_PrefireWeight);
   tree->Branch("PrefireWeight_up", &m_PrefireWeight_up);
   tree->Branch("PrefireWeight_down", &m_PrefireWeight_down);
@@ -875,11 +875,11 @@ void ReducedNtuple<Base>::FillOutputTree(TTree* tree, const Systematic& sys, boo
 
   TVector3 ETMiss;
   ParticleList Jets_noID = AnalysisBase<Base>::GetJetsMET(ETMiss);
-  ParticleList Jets      = AnalysisBase<Base>::GetJetsMET(ETMiss, 3); // jet ID 3
+  ParticleList Jets      = AnalysisBase<Base>::GetJetsMET(ETMiss, 3); // jet ID
   ParticleList GenJets   = AnalysisBase<Base>::GetGenJets();
 
+  m_PassesJVM = AnalysisBase<Base>::PassesJVM(Jets);
   m_FastSimEventVeto = AnalysisBase<Base>::FastSimEventVeto(GenJets);
-  
   m_PrefireWeight = AnalysisBase<Base>::GetPrefireWeight(0);
   m_PrefireWeight_up = AnalysisBase<Base>::GetPrefireWeight(1);
   m_PrefireWeight_down = AnalysisBase<Base>::GetPrefireWeight(-1);

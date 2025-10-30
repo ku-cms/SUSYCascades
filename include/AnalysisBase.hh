@@ -5,6 +5,9 @@
 #include <filesystem>
 #include <regex>
 #include <stdexcept>
+#include <optional>
+#include <algorithm>
+#include <cctype>
 
 #include <TTree.h>
 #include <TLorentzVector.h>
@@ -86,6 +89,7 @@ public:
   virtual bool FastSimEventVeto(const ParticleList& GenJets);
   virtual double EGvalue(int jetIndex, int updown);
   virtual double GetPrefireWeight(int updown);
+  virtual bool PassesJVM(const ParticleList& jets) const;
   
   // analysis functions
   virtual int GetNPV();
@@ -93,9 +97,7 @@ public:
 
   virtual bool GetMETtrigger();
   virtual bool GetMETORtrigger();
-
   virtual bool GetMETDoubleMutrigger();
-
   virtual bool GetSingleElectrontrigger();
   virtual bool GetSingleMuontrigger();
   virtual bool GetDoubleElectrontrigger();
@@ -203,6 +205,8 @@ protected:
   bool m_IsRun3 = false;
 
   Systematics m_Systematics;
+  std::string m_JMEYearOverride{};
+  std::string m_JMEEraOverride{};
   
 private:
 
@@ -230,7 +234,11 @@ private:
   const Systematic* m_CurSys;
   const Systematic& CurrentSystematic() const;
   std::unique_ptr<correction::CorrectionSet> m_cset_Btag;
-  std::unique_ptr<correction::CorrectionSet> m_cset_JERC;
+  double m_BtagLooseWP;
+  double m_BtagMediumWP;
+  double m_BtagTightWP;
+  double m_BtagVeryTightWP;
+  double m_BtagVeryVeryTightWP;
   virtual void clip_string(string& str, const string& clip){
     size_t pos = str.find(clip);
     if (pos != std::string::npos)
@@ -241,6 +249,13 @@ private:
   std::string normalize_tag(const std::string& filetag);
   std::string normalize_filetag(const std::string& tag);
   std::string find_clib_file(const std::string& fold, const std::string& filename);
+
+  std::string getJMEYearKey() const;
+  std::string m_jmeYearKey;
+  void setJMEYearOverride(const std::string& s) { m_JMEYearOverride = s; }
+  void setJMEEraOverride(const std::string& s)  { m_JMEEraOverride = s;  }
+  bool ci_find_substr(const std::string &hay, const std::string &needle);
+  std::optional<std::string> findJESKeyForLabel(const std::string &label);
    
 };
 

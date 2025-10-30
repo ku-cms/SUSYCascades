@@ -181,52 +181,76 @@ double Particle::ProbC() const {
   return m_ProbC;
 }
 
-void Particle::SetDxy(double val){
+int Particle::jetID() const {
+  return m_jetID;
+}
+
+double Particle::ChEmEF() const {
+  return m_ChEmEF;
+}
+
+double Particle::NeEmEF() const {
+  return m_NeEmEF;
+}
+
+void Particle::SetDxy(const double& val){
   m_Dxy = val;
 }
 
-void Particle::SetDxyErr(double val){
+void Particle::SetDxyErr(const double& val){
   m_DxyErr = val;
 }
 
-void Particle::SetDz(double val){
+void Particle::SetDz(const double& val){
   m_Dz = val;
 }
 
-void Particle::SetDzErr(double val){
+void Particle::SetDzErr(const double& val){
   m_DzErr = val;
 }
 
-void Particle::SetIP3D(double val){
+void Particle::SetIP3D(const double& val){
   m_IP3D = val;
 }
 
-void Particle::SetSIP3D(double val){
+void Particle::SetSIP3D(const double& val){
   m_SIP3D = val;
 }
 
-void Particle::SetD3d(double val){
+void Particle::SetD3d(const double& val){
   m_D3d = val;
 }
 
-void Particle::SetD3dSig(double val){
+void Particle::SetD3dSig(const double& val){
   m_D3dSig = val;
 }
 
-void Particle::SetCosTheta(double val){
+void Particle::SetCosTheta(const double& val){
   m_CosTheta = val;
 }
 
-void Particle::SetNdof(double val){
+void Particle::SetNdof(const double& val){
   m_Ndof = val;
 }
 
-void Particle::SetProbB(double val){
+void Particle::SetProbB(const double& val){
   m_ProbB = val;
 }
 
-void Particle::SetProbC(double val){
+void Particle::SetProbC(const double& val){
   m_ProbC = val;
+}
+
+void Particle::SetjetID(const int& val){
+  m_jetID = val;
+}
+
+void Particle::SetChEmEF(const double& val){
+  m_ChEmEF = val;
+}
+
+void Particle::SetNeEmEF(const double& val){
+  m_NeEmEF = val;
 }
 
 void Particle::SetRelIso(double iso){

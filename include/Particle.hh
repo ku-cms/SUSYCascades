@@ -50,12 +50,12 @@ public:
   double DzErr() const;
   double IP3D() const;
   double SIP3D() const;
-  void SetDxy(double val);
-  void SetDxyErr(double val);
-  void SetDz(double val);
-  void SetDzErr(double val);
-  void SetIP3D(double val);
-  void SetSIP3D(double val);
+  void SetDxy(const double& val);
+  void SetDxyErr(const double& val);
+  void SetDz(const double& val);
+  void SetDzErr(const double& val);
+  void SetIP3D(const double& val);
+  void SetSIP3D(const double& val);
 
   double D3d() const;
   double D3dSig() const;
@@ -63,12 +63,19 @@ public:
   double Ndof() const;
   double ProbB() const;
   double ProbC() const;
-  void SetD3d(double val);
-  void SetD3dSig(double val);
-  void SetCosTheta(double val);
-  void SetNdof(double val);  
-  void SetProbB(double val);
-  void SetProbC(double val);
+  void SetD3d(const double& val);
+  void SetD3dSig(const double& val);
+  void SetCosTheta(const double& val);
+  void SetNdof(const double& val);  
+  void SetProbB(const double& val);
+  void SetProbC(const double& val);
+
+  int jetID() const;
+  double ChEmEF() const;
+  double NeEmEF() const;
+  void SetjetID(const int& val);
+  void SetChEmEF(const double& val);
+  void SetNeEmEF(const double& val);
 
   double Btag() const;
   void SetBtag(double btag);
@@ -125,6 +132,10 @@ private:
   double m_Ndof;
   double m_ProbB; 
   double m_ProbC;
+
+  int m_jetID;
+  double m_ChEmEF;
+  double m_NeEmEF;
   
 };
 
