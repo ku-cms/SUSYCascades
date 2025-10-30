@@ -117,7 +117,7 @@ def find_ilist_and_total(master_list_dir, iFile, splitStep):
                 return ilist_guess, None
     raise ValueError(f"Could not find ilist+SplitTotal for iFile={iFile}, splitStep={splitStep} in {master_list_dir}")
 
-def makeSubmitScript(tuple_pairs, submitName, resubmit, maxResub, DataSetName, threshold):
+def makeSubmitScript(tuple_pairs, submitName, resubmit, maxResub, DataSetName):
     """
     Create a tuple submit file for resubmitting failed (iFile, SplitStep) jobs.
     Writes tuple_filelist with columns:
@@ -233,7 +233,7 @@ def makeSubmitScript(tuple_pairs, submitName, resubmit, maxResub, DataSetName, t
             print(f"If you are confident you want to resubmit, then you should rerun this script with '-l {resubmitFiles}'.", flush=True)
             print(f"Or run condor_submit {newFileName}", flush=True)
         else:
-            condor_monitor = CondorJobCountMonitor(threshold=threshold+resubmitFiles, verbose=False)
+            condor_monitor = CondorJobCountMonitor(threshold=0.99*get_auto_THRESHOLD()+resubmitFiles, verbose=False)
             condor_monitor.wait_until_jobs_below()
             os.system(f"condor_submit {newFileName}")
 
@@ -295,7 +295,7 @@ def UpdateFilterList(DataSetName, filterlist_filename, add):
 # Check condor jobs
 def checkJobs(workingDir, outputDir, skipEC, skipDAS, skipMissing, skipSmall,
               skipErr, skipOut, skipZombie, resubmit, maxResub,
-              filter_list, threshold, skipDASDataset, skipHists):
+              filter_list, skipDASDataset, skipHists):
     print("Running over the directory '{0}'.".format(workingDir), flush=True)
     print("------------------------------------------------------------", flush=True)
     grep_ignore = "-e \"Warning\" -e \"WARNING\" -e \"TTree::SetBranchStatus\" -e \"libXrdSecztn.so\" -e \"Phi_mpi_pi\" -e \"tar: stdout: write error\" -e \"INFO\""
@@ -599,7 +599,7 @@ def checkJobs(workingDir, outputDir, skipEC, skipDAS, skipMissing, skipSmall,
 
         # create submit script(s) and count new jobs
         nJobs = makeSubmitScript(resubmit_set, os.path.join(workingDir, "src", DataSetName),
-                                 resubmit, maxResub, DataSetName, threshold)
+                                 resubmit, maxResub, DataSetName)
         total_resubmit += nJobs
 
     return total_resubmit
@@ -701,7 +701,7 @@ def main():
         print(f"Waiting until minumum of {threshold} jobs in the queue", flush=True)
         condor_monitor.wait_until_jobs_below()
         print("Running checker...", flush=True)
-        nJobs = checkJobs(directory,output,skipEC,skipDAS,skipMissing,skipSmall,skipErr,skipOut,skipZombie,resubmit,maxResub,filter_list,threshold,skipDASDataset,skipHists)
+        nJobs = checkJobs(directory,output,skipEC,skipDAS,skipMissing,skipSmall,skipErr,skipOut,skipZombie,resubmit,maxResub,filter_list,skipDASDataset,skipHists)
         if resubmit and nJobs > 0:
             print(f"Resubmitted a total of {nJobs} jobs!", flush=True)
     print("Checker Complete!", flush=True)
