@@ -4095,11 +4095,10 @@ void AnalysisBase<NANOULBase>::ApplyMETPhiCorrections(TLorentzVector &metOut, in
 
   try {
     std::string metLabel = "pfmet";
-    std::string dt = m_IsData ? "data" : "mc"; // assume you have m_IsData member
+    std::string dt = m_IsData ? "data" : "mc";
     std::string phiKey = "phi_metphicorr_" + metLabel + "_" + dt;
     std::string ptKey  = "pt_metphicorr_"  + metLabel + "_" + dt;
 
-    // Build args: met_pt (real), met_phi (real), npvs (real/int), run (real/int)
     std::vector<std::variant<int,double,std::string>> args;
     args.push_back(in_pt);
     args.push_back(in_phi);
@@ -4118,11 +4117,9 @@ void AnalysisBase<NANOULBase>::ApplyMETPhiCorrections(TLorentzVector &metOut, in
         corrected_phi = m_cset_METPhi->at(phiKey)->evaluate(args);
       }    
     } catch (const std::exception &e) {
-      std::cerr << "[ApplyMETPhiCorrections] ERROR evaluating phi key '" << phiKey
-                << "': " << e.what() << "\n";
+      std::cerr << "[ApplyMETPhiCorrections] ERROR evaluating phi key '" << phiKey << "': " << e.what() << "\n";
     } catch (...) {
-      std::cerr << "[ApplyMETPhiCorrections] Unknown error evaluating phi key '"
-                << phiKey << "'.\n";
+      std::cerr << "[ApplyMETPhiCorrections] Unknown error evaluating phi key '" << phiKey << "'.\n";
     }    
 
     try {
@@ -4132,11 +4129,9 @@ void AnalysisBase<NANOULBase>::ApplyMETPhiCorrections(TLorentzVector &metOut, in
         corrected_pt = m_cset_METPhi->at(ptKey)->evaluate(args);
       }    
     } catch (const std::exception &e) {
-      std::cerr << "[ApplyMETPhiCorrections] ERROR evaluating pt key '" << ptKey
-                << "': " << e.what() << "\n";
+      std::cerr << "[ApplyMETPhiCorrections] ERROR evaluating pt key '" << ptKey << "': " << e.what() << "\n";
     } catch (...) {
-      std::cerr << "[ApplyMETPhiCorrections] Unknown error evaluating pt key '"
-                << ptKey << "'.\n";
+      std::cerr << "[ApplyMETPhiCorrections] Unknown error evaluating pt key '" << ptKey << "'.\n";
     }    
 
     wrapPhi(corrected_phi);
@@ -5313,20 +5308,19 @@ void AnalysisBase<NANORun3>::ApplyMETPhiCorrections(TLorentzVector &metOut, int 
   };
 
   try {
-    // Build met_type and epoch strings using existing flags (mirror your find_clib_file logic)
     std::string met_type = "PuppiMET";
     std::string dtmc = m_IsData ? "DATA" : "MC";
     std::string epoch;
     if (m_year == 2022) epoch = m_IsEE ? "2022EE" : "2022";
     else if (m_year == 2023) epoch = m_IsBPix ? "2023BPix" : "2023";
-    else epoch = std::to_string(m_year); // fallback; most likely only 2022/2023 are used
+    else epoch = std::to_string(m_year); // need to update for later years
 
     std::string var = variation.empty() ? "nom" : variation;
 
     // Build args: pt_phi (string), met_type (string), epoch (string), dtmc (string),
     //             variation (string), met_pt (real), met_phi (real), npvGood (real)
     std::vector<std::variant<int,double,std::string>> args;
-    args.push_back(std::string("phi"));     // request phi
+    args.push_back(std::string("phi"));
     args.push_back(met_type);
     args.push_back(epoch);
     args.push_back(dtmc);
@@ -5336,7 +5330,7 @@ void AnalysisBase<NANORun3>::ApplyMETPhiCorrections(TLorentzVector &metOut, int 
     args.push_back(static_cast<double>(npvGood));
 
     std::vector<std::variant<int,double,std::string>> args_pt = args;
-    args_pt[0] = std::string("pt"); // request pt
+    args_pt[0] = std::string("pt");
 
     double corrected_phi = in_phi;
     double corrected_pt  = in_pt;
@@ -5350,8 +5344,7 @@ void AnalysisBase<NANORun3>::ApplyMETPhiCorrections(TLorentzVector &metOut, int 
         corrected_phi = m_cset_METPhi->at(nodeName)->evaluate(args);
       }
     } catch (const std::exception &e) {
-      std::cerr << "[ApplyMETPhiCorrections] ERROR evaluating Run-3 phi node: "
-                << e.what() << "\n";
+      std::cerr << "[ApplyMETPhiCorrections] ERROR evaluating Run-3 phi node: " << e.what() << "\n";
     } catch (...) {
       std::cerr << "[ApplyMETPhiCorrections] Unknown error evaluating Run-3 phi node.\n";
     }
@@ -5359,13 +5352,11 @@ void AnalysisBase<NANORun3>::ApplyMETPhiCorrections(TLorentzVector &metOut, int 
     try {
       const std::string nodeName = "met_xy_corrections";
       if (!has_key(nodeName)) {
-        // already warned above
       } else {
         corrected_pt = m_cset_METPhi->at(nodeName)->evaluate(args_pt);
       }
     } catch (const std::exception &e) {
-      std::cerr << "[ApplyMETPhiCorrections] ERROR evaluating Run-3 pt node: "
-                << e.what() << "\n";
+      std::cerr << "[ApplyMETPhiCorrections] ERROR evaluating Run-3 pt node: " << e.what() << "\n";
     } catch (...) {
       std::cerr << "[ApplyMETPhiCorrections] Unknown error evaluating Run-3 pt node.\n";
     }
