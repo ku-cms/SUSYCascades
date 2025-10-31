@@ -4527,8 +4527,8 @@ ParticleList AnalysisBase<NANOULBase>::GetJetsMET(TVector3& MET, int id) {
   TLorentzVector p4CorrectedMET = m_JMETool.GetCorrectedMET(
     m_jmeYearKey, m_IsData, m_JMEera, RunNum, RawMET_pt, RawMET_phi, jetsForMet, jersForMet, fixedGridRhoFastjetAll, systOpts, false);
 
-  int NPV = static_cast<int>(GetNPV());
-  ApplyMETPhiCorrections(p4CorrectedMET, static_cast<double>(RunNum), static_cast<double>(NPV), "nom");
+  //int NPV = static_cast<int>(GetNPV());
+  //ApplyMETPhiCorrections(p4CorrectedMET, static_cast<double>(RunNum), static_cast<double>(NPV), "nom");
 
   MET.SetPtEtaPhi(p4CorrectedMET.Pt(), 0.0, p4CorrectedMET.Phi());
 
@@ -5773,8 +5773,8 @@ ParticleList AnalysisBase<NANORun3>::GetJetsMET(TVector3& MET, int id) {
     m_jmeYearKey, m_IsData, m_JMEera, RunNum, RawPuppiMET_pt, RawPuppiMET_phi,
     jetsForMet, jersForMet, Rho_fixedGridRhoFastjetAll, systOpts, false);
 
-  int NPV = static_cast<int>(GetNPV());
-  ApplyMETPhiCorrections(p4CorrectedMET, static_cast<double>(RunNum), static_cast<double>(NPV), "nom");
+  //int NPV = static_cast<int>(GetNPV());
+  //ApplyMETPhiCorrections(p4CorrectedMET, static_cast<double>(RunNum), static_cast<double>(NPV), "nom");
 
   MET.SetPtEtaPhi(p4CorrectedMET.Pt(), 0.0, p4CorrectedMET.Phi());
 
