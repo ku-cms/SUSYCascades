@@ -269,6 +269,12 @@ int main(int argc, char* argv[]) {
   std::visit([&](auto& nt) { nt->GetChunks(NDAS, N1, N0, ICHUNK, NCHUNK); }, ntuple);
   NDAS = N0 - N1;
 
+  if(DO_SMS) std::visit([](auto& nt) { nt->DoSMS(); }, ntuple);
+  if(IS_DATA) std::visit([](auto& nt) { nt->DoData(); }, ntuple);
+  if(IS_FASTSIM) std::visit([](auto& nt) { nt->DoFastSim(); }, ntuple);
+  if(DO_CASCADES) std::visit([](auto& nt) { nt->DoCascades(); }, ntuple);
+  if(DO_PRIVATEMC) std::visit([](auto& nt) { nt->DoPrivateMC(); }, ntuple);
+
   std::visit([&](auto& nt) { nt->AddLabels(string(DataSet),string(FileTag)); }, ntuple);
   std::visit([&](auto& nt) { nt->AddEventCountFile(string(EventCount)); }, ntuple);
   std::visit([&](auto& nt) { nt->AddFilterEffFile(string(FilterEff)); }, ntuple);
@@ -300,21 +306,6 @@ int main(int argc, char* argv[]) {
   
   if(DO_JSON)
     std::visit([&](auto& nt) { nt->AddJSONFile(string(JSONFile)); }, ntuple);
-
-  if(DO_SMS)
-    std::visit([](auto& nt) { nt->DoSMS(); }, ntuple);
-
-  if(IS_DATA)
-    std::visit([](auto& nt) { nt->DoData(); }, ntuple);
-
-  if(IS_FASTSIM)
-    std::visit([](auto& nt) { nt->DoFastSim(); }, ntuple);
-
-  if(DO_CASCADES)
-    std::visit([](auto& nt) { nt->DoCascades(); }, ntuple);
-
-  if(DO_PRIVATEMC)
-    std::visit([](auto& nt) { nt->DoPrivateMC(); }, ntuple);
 
   cout << "writing output with ichunk=" << ICHUNK << " nchunk=" << NCHUNK << endl;
   bool passedDASCheck = std::visit([&](auto& nt) -> bool { return nt->WriteNtuple(string(outputFileName), ICHUNK, NCHUNK, DO_slim, NDAS, string(DAS_datasetname), string(DAS_filename)); }, ntuple);

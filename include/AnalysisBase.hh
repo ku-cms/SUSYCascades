@@ -10,6 +10,8 @@
 #include <cctype>
 #include <variant>
 #include <cmath>
+#include <unordered_map>
+#include <unordered_set>
 
 #include <TTree.h>
 #include <TLorentzVector.h>
@@ -40,6 +42,7 @@
 
 using namespace std;
 namespace fs = std::filesystem;
+using nlohmann::json;
 
 class ParticleList;
 
@@ -210,6 +213,12 @@ protected:
   Systematics m_Systematics;
   std::string m_JMEYearOverride{};
   std::string m_JMEEraOverride{};
+
+  std::unordered_map<std::string, std::optional<std::string>> m_jesClibCache;
+  std::unordered_set<std::string> m_jesLabelsCache;
+  std::unordered_set<std::string> m_jerLabelsCache;
+  virtual void BuildJmeSystematicMappings();
+  virtual void ExpandJESMacroSystematics();
   
 private:
 
@@ -258,8 +267,10 @@ private:
   std::string normalize_filetag(const std::string& tag);
   std::string find_clib_file(const std::string& fold, const std::string& filename);
 
-  std::string getJMEYearKey() const;
   std::string m_jmeYearKey;
+  std::string getJMEYearKey() const;
+  std::string m_JMEera;
+  std::string getJMEDataEra() const;
   void setJMEYearOverride(const std::string& s) { m_JMEYearOverride = s; }
   void setJMEEraOverride(const std::string& s)  { m_JMEEraOverride = s;  }
   bool ci_find_substr(const std::string &hay, const std::string &needle);

@@ -359,15 +359,12 @@ Systematics SystematicsTool::GetTreeSystematics() const {
   
   Systematics list;
   
+  //list += "JESUncer_Full";
+  //list += "JESUncer_Reduced";
   list += "JESUncer_Total";
   list += "JERUncer_Total";
   list += "METUncer_UnClust";
   list += "METUncer_GenMET";
-  // list += "JESUncer_CorrelationGroupMPFInSitu";
-  // list += "JESUncer_CorrelationGroupIntercalibration";
-  // list += "JESUncer_CorrelationGroupbJES";
-  // list += "JESUncer_CorrelationGroupFlavor";
-  // list += "JESUncer_CorrelationGroupUncorrelated";
   // list += "MMSUncer_Total";
   // list += "EESUncer_Total";
 
