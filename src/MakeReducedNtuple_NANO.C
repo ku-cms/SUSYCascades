@@ -47,6 +47,8 @@ int main(int argc, char* argv[]) {
   char BTAGFOLD[400];
   char LEPFOLD[400];
   char JMEFOLD[400];
+  char JECFILE[400];
+  char JVMFILE[400];
   char METTRIGFILE[400];
   char PREFIREFILE[400];
   char XSJSONFILE[400];
@@ -114,6 +116,8 @@ int main(int argc, char* argv[]) {
     if (strncmp(argv[i],"-btag",5)==0)   sscanf(argv[i],"-btag=%s", BTAGFOLD);
     if (strncmp(argv[i],"-lep",4)==0)   sscanf(argv[i],"-lep=%s", LEPFOLD);
     if (strncmp(argv[i],"-jme",4)==0)   sscanf(argv[i],"-jme=%s", JMEFOLD);
+    if (strncmp(argv[i],"-jec",4)==0)   sscanf(argv[i],"-jec=%s", JECFILE);
+    if (strncmp(argv[i],"-jvm",4)==0)   sscanf(argv[i],"-jvm=%s", JVMFILE);
     if (strncmp(argv[i],"-metfile",8)==0)   sscanf(argv[i],"-metfile=%s", METTRIGFILE);
     if (strncmp(argv[i],"-prefirefile",12)==0)   sscanf(argv[i],"-prefirefile=%s", PREFIREFILE);
     if (strncmp(argv[i],"-xsjsonfile",11)==0)   sscanf(argv[i],"-xsjsonfile=%s", XSJSONFILE);
@@ -281,6 +285,8 @@ int main(int argc, char* argv[]) {
   std::visit([&](auto& nt) { nt->AddPUFolder(string(PUFOLD)); }, ntuple);
   std::visit([&](auto& nt) { nt->AddBtagFolder(string(BTAGFOLD)); }, ntuple);
   std::visit([&](auto& nt) { nt->AddLepFolder(string(LEPFOLD)); }, ntuple);
+  std::visit([&](auto& nt) { nt->AddJECFile(string(JECFILE)); }, ntuple);
+  std::visit([&](auto& nt) { nt->AddJVMFile(string(JVMFILE)); }, ntuple);
   std::visit([&](auto& nt) { nt->AddJMEFolder(string(JMEFOLD)); }, ntuple);
   std::visit([&](auto& nt) { nt->AddMETTriggerFile(string(METTRIGFILE)); }, ntuple);
   std::visit([&](auto& nt) { nt->AddPrefireFile(string(PREFIREFILE)); }, ntuple);

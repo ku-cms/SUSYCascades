@@ -1,4 +1,4 @@
-# runs skim locally to check that single test condor job works
+# runs skim to check that single test condor job works
 
 make clean
 make cmssw -j 8
@@ -25,9 +25,9 @@ python3 scripts/condor_submit_nano_connect_ntuples.py -list samples/NANO/Lists/A
 python3 scripts/condor_submit_nano_connect_ntuples.py -list samples/NANO/Lists/Additional_Lists/Summer22_130X_Cascades_local.list --verbose --cascades --privateMC --force --single --sys
 
 # Run2 Data
-python3 scripts/condor_submit_nano_connect_ntuples.py -list samples/NANO/Lists/Additional_Lists/Summer20UL17_106X_Data_local.list --verbose --data --force --single --sys
+python3 scripts/condor_submit_nano_connect_ntuples.py -list samples/NANO/Lists/Additional_Lists/Summer20UL17_106X_Data_local.list --verbose --data --force --single 
 
 # Run3 Data
-python3 scripts/condor_submit_nano_connect_ntuples.py -list samples/NANO/Lists/Additional_Lists/Summer23BPix_130X_Data_local.list --verbose --data --force --single --sys
+python3 scripts/condor_submit_nano_connect_ntuples.py -list samples/NANO/Lists/Additional_Lists/Summer23BPix_130X_Data_local.list --verbose --data --force --single 
 
 echo "Finished running era test!"

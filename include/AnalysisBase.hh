@@ -60,6 +60,8 @@ public:
   void AddPUFolder(const string& pufold);
   void AddBtagFolder(const string& btagfold, const string& proc_rootfile="", int year=1);
   void AddLepFolder(const string& lepfold);
+  void AddJECFile(const string& jecfile);
+  void AddJVMFile(const string& jvmfile);
   void AddJMEFolder(const string& jmefold);
   void AddMETTriggerFile(const string& csvfile);
   void AddPrefireFile(const string& prefirefile);

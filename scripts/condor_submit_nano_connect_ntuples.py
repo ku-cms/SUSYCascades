@@ -118,6 +118,8 @@ def write_sh_single(srcfile,ifile,ofile,logfile,outfile,errfile,dataset,filetag,
     fsrc.write('-btag='+BTAGFOLD+" ")
     fsrc.write('-lep='+LEPFOLD+" ")
     fsrc.write('-jme='+JMEFOLD+" ")
+    fsrc.write('-jec='+JECFILE+" ")
+    fsrc.write('-jvm='+JVMFILE+" ")
     fsrc.write('-metfile='+METFILE+" ")
     fsrc.write('-prefirefile='+PREFIREFILE+" ")
     fsrc.write('-xsjsonfile='+XSJSONFILE+" ")
@@ -189,6 +191,8 @@ def write_sh(srcfile,ifile,ofile,logfile,outfile,errfile,dataset,filetag,NAME):
     fsrc.write('-btag='+BTAGFOLD+" ")
     fsrc.write('-lep='+LEPFOLD+" ")
     fsrc.write('-jme='+JMEFOLD+" ")
+    fsrc.write('-jec='+JECFILE+" ")
+    fsrc.write('-jvm='+JVMFILE+" ")
     fsrc.write('-metfile='+METFILE+" ")
     fsrc.write('-prefirefile='+PREFIREFILE+" ")
     fsrc.write('-xsjsonfile='+XSJSONFILE+" ")
@@ -454,6 +458,18 @@ if __name__ == "__main__":
             JMEFOLD = "./config/JME/"
         else:
             JMEFOLD = '/cvmfs/cms-griddata.cern.ch/cat/metadata/JME/'
+
+        # copy JEC file
+        if VERBOSE:
+            print("making JEC file")
+        os.system("cp data/JME/JecConfigAK4.json "+config+".")
+        JECFILE = './config/JecConfigAK4.json'
+
+        # copy JVM file
+        if VERBOSE:
+            print("making JVM file")
+        os.system("cp data/JME/JvmConfig.json "+config+".")
+        JVMFILE = './config/JvmConfig.json'
 
         # copy MET trigger files
         if VERBOSE:

@@ -540,6 +540,20 @@ void AnalysisBase<Base>::BuildJmeSystematicMappings() {
 }
 
 template <class Base>
+void AnalysisBase<Base>::AddJECFile(const std::string& jecfile) {
+  JecConfigReader::ConfigPaths cfg{
+    .ak4 = jecfile,
+    .ak8 = ""
+  };
+  JecConfigReader::setConfigPaths(cfg);
+}
+
+template <class Base>
+void AnalysisBase<Base>::AddJVMFile(const std::string& jecfile) {
+  JvmConfigReader::setConfigPath(jecfile);
+}
+
+template <class Base>
 void AnalysisBase<Base>::AddJMEFolder(const std::string& jmefold) {
   if (!m_IsUL && m_year < 2019) {
     m_JMETool.BuildMap(jmefold);
@@ -4533,13 +4547,13 @@ ParticleList AnalysisBase<NANOULBase>::GetJetsMET(TVector3& MET, int id) {
   MET.SetPtEtaPhi(p4CorrectedMET.Pt(), 0.0, p4CorrectedMET.Phi());
 
   // Unclustered MET systematic
-  if (CurrentSystematic() == Systematic("METUncer_UnClust")) {
+  if (!m_IsData && CurrentSystematic() == Systematic("METUncer_UnClust")) {
     const double delta = (CurrentSystematic().IsUp() ? 1. : -1.);
     TVector3 dUncl(delta * MET_MetUnclustEnUpDeltaX, delta * MET_MetUnclustEnUpDeltaY, 0.);
     MET += dUncl;
   }
 
-  if (CurrentSystematic() == Systematic("METUncer_GenMET"))
+  if (!m_IsData && CurrentSystematic() == Systematic("METUncer_GenMET"))
     MET.SetPtEtaPhi(GenMET_pt, 0.0, GenMET_phi);
 
   return list;
@@ -5779,7 +5793,7 @@ ParticleList AnalysisBase<NANORun3>::GetJetsMET(TVector3& MET, int id) {
   MET.SetPtEtaPhi(p4CorrectedMET.Pt(), 0.0, p4CorrectedMET.Phi());
 
   // Unclustered MET systematic
-  if (CurrentSystematic() == Systematic("METUncer_UnClust")) {
+  if (!m_IsData && CurrentSystematic() == Systematic("METUncer_UnClust")) {
     const double delta = (CurrentSystematic().IsUp() ? 1. : -1.);
     TVector3 dUncl;
     if (delta >= 0.)
@@ -5789,7 +5803,7 @@ ParticleList AnalysisBase<NANORun3>::GetJetsMET(TVector3& MET, int id) {
     MET += dUncl;
   }
 
-  if (CurrentSystematic() == Systematic("METUncer_GenMET"))
+  if (!m_IsData && CurrentSystematic() == Systematic("METUncer_GenMET"))
     MET.SetPtEtaPhi(GenMET_pt, 0., GenMET_phi);
 
   return list;
