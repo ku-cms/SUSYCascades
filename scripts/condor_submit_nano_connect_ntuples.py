@@ -746,5 +746,9 @@ if __name__ == "__main__":
         # os.system(f'nohup python3 python/CheckFiles.py -d {TARGET}/ -o {OUT_DIR} -e > /dev/null 2>&1 &')
         print(Fore.GREEN + "Congrats... your jobs were submitted!" + Fore.RESET)
         print('Run this after jobs have finished to check for failed jobs (and resubmit them):')
-        print(f'nohup python3 python/CheckFiles.py -d {TARGET} -o {OUT_DIR} > CheckFiles_{os.path.basename(OUT_DIR.rstrip("/"))}_0.debug 2>&1 &')
+        check_files_helper = f'nohup python3 python/CheckFiles.py -d {TARGET} -o {OUT_DIR}'
+        if DO_PRIVATEMC:
+            check_files_helper += ' -w -c'
+        check_files_helper += ' > CheckFiles_{os.path.basename(OUT_DIR.rstrip("/"))}_0.debug 2>&1 &'
+        print(check_files_helper)
 
