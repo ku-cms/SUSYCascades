@@ -409,14 +409,11 @@ TTree* ReducedNtuple<Base>::InitOutputTree(const string& sample, bool do_slim){
     tree->Branch("Phi_Genjet", &m_Phi_Genjet);
     tree->Branch("M_Genjet",   &m_M_Genjet);
     tree->Branch("Index_jet",   &m_Index_jet);
-  }
 
-  if(!do_slim){
     tree->Branch("dphi_lep_S", &m_dphi_lep_S);
     tree->Branch("cos_lep_S", &m_cos_lep_S);
     tree->Branch("dphi_jet_S", &m_dphi_jet_S);
     tree->Branch("cos_jet_S", &m_cos_jet_S);
-
     tree->Branch("dphiMET_lep_S", &m_dphiMET_lep_S);
     tree->Branch("dphiMET_jet_S", &m_dphiMET_jet_S);
   }
@@ -2237,24 +2234,24 @@ void ReducedNtuple<Base>::FillOutputTree(TTree* tree, const Systematic& sys, boo
   m_MET_phi = ETMiss.Phi();
 
   // Fill Jets
-  if(!do_slim){
-    m_PT_jet.clear();
-    m_Eta_jet.clear();
-    m_Phi_jet.clear();
-    m_M_jet.clear();
-    m_Btag_jet.clear();
-    m_BtagID_jet.clear();
-    m_Flavor_jet.clear();
-    for(int i = 0; i < m_Njet; i++){
-      m_PT_jet.push_back(Jets[i].Pt());
-      m_Eta_jet.push_back(Jets[i].Eta());
-      m_Phi_jet.push_back(Jets[i].Phi());
-      m_M_jet.push_back(Jets[i].M());
-      m_Btag_jet.push_back(Jets[i].Btag());
-      m_BtagID_jet.push_back(Jets[i].BtagID());
-      m_Flavor_jet.push_back(Jets[i].PDGID());
-    }
+  m_PT_jet.clear();
+  m_Eta_jet.clear();
+  m_Phi_jet.clear();
+  m_M_jet.clear();
+  m_Btag_jet.clear();
+  m_BtagID_jet.clear();
+  m_Flavor_jet.clear();
+  for(int i = 0; i < m_Njet; i++){
+    m_PT_jet.push_back(Jets[i].Pt());
+    m_Eta_jet.push_back(Jets[i].Eta());
+    m_Phi_jet.push_back(Jets[i].Phi());
+    m_M_jet.push_back(Jets[i].M());
+    m_Btag_jet.push_back(Jets[i].Btag());
+    m_BtagID_jet.push_back(Jets[i].BtagID());
+    m_Flavor_jet.push_back(Jets[i].PDGID());
+  }
 
+  if(!do_slim){
     // Fill GenJets
     vector<int> genmatch_jet;
     for(int i = 0; i < m_NGenjet; i++)
