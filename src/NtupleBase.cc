@@ -66,9 +66,6 @@ bool NtupleBase<Base>::WriteNtuple(const string& filename, int ichunk, int nchun
 
   int Nsys = AnalysisBase<Base>::m_Systematics.GetN();
 
-  if(Nsys > 1)
-    do_slim = true;
-  
   cout << "looping between " << N0 << " " << N1 << endl;
   for(Long64_t i = N0; i < N1 && i < NTOT; i++){
     int mymod = (N1-N0)/10;

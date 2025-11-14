@@ -343,26 +343,27 @@ TTree* ReducedNtuple<Base>::InitOutputTree(const string& sample, bool do_slim){
   tree->Branch("MET", &m_MET);
   tree->Branch("MET_phi", &m_MET_phi);
 
-  tree->Branch("altMET", &m_altMET);
-  tree->Branch("altMET_phi", &m_altMET_phi);
-
   tree->Branch("LHE_HT", &m_LHE_HT);
   tree->Branch("LHE_HTIncoming", &m_LHE_HTIncoming);
 
-  tree->Branch("HT_eta24", &m_HT_eta24);
-  tree->Branch("HT_eta24_id", &m_HT_eta24_id);
-  tree->Branch("HT_eta3", &m_HT_eta3);
-  tree->Branch("HT_eta3_id", &m_HT_eta3_id);
-  tree->Branch("HT_eta5", &m_HT_eta5);
-  tree->Branch("HT_eta5_id", &m_HT_eta5_id);
+  if(!do_slim){
+    tree->Branch("altMET", &m_altMET);
+    tree->Branch("altMET_phi", &m_altMET_phi);
+    tree->Branch("HT_eta24", &m_HT_eta24);
+    tree->Branch("HT_eta24_id", &m_HT_eta24_id);
+    tree->Branch("HT_eta3", &m_HT_eta3);
+    tree->Branch("HT_eta3_id", &m_HT_eta3_id);
+    tree->Branch("HT_eta5", &m_HT_eta5);
+    tree->Branch("HT_eta5_id", &m_HT_eta5_id);
+  }
 
   tree->Branch("Nele", &m_Nele);
   tree->Branch("Nlele", &m_Nlele);
   tree->Branch("Nmu", &m_Nmu);
 
   tree->Branch("Nlep", &m_Nlep);
+
   tree->Branch("PT_lep",  &m_PT_lep);
-  
   tree->Branch("Eta_lep", &m_Eta_lep);
   tree->Branch("Phi_lep", &m_Phi_lep);
   tree->Branch("M_lep",   &m_M_lep);
@@ -388,19 +389,17 @@ TTree* ReducedNtuple<Base>::InitOutputTree(const string& sample, bool do_slim){
   tree->Branch("Njet", &m_Njet);
   tree->Branch("Nbjet", &m_Nbjet);
 
-  if(!do_slim){
-    tree->Branch("PT_jet",  &m_PT_jet);
-    tree->Branch("Eta_jet", &m_Eta_jet);
-    tree->Branch("Phi_jet", &m_Phi_jet);
-    tree->Branch("M_jet",   &m_M_jet);
-    tree->Branch("Btag_jet",   &m_Btag_jet);
-    tree->Branch("BtagID_jet",   &m_BtagID_jet);
-    tree->Branch("Flavor_jet",   &m_Flavor_jet);
-    tree->Branch("index_jet_a", &m_index_jet_a);
-    tree->Branch("index_jet_b", &m_index_jet_b);
-    tree->Branch("index_jet_ISR", &m_index_jet_ISR);
-    tree->Branch("index_jet_S", &m_index_jet_S);
-  }
+  tree->Branch("PT_jet",  &m_PT_jet);
+  tree->Branch("Eta_jet", &m_Eta_jet);
+  tree->Branch("Phi_jet", &m_Phi_jet);
+  tree->Branch("M_jet",   &m_M_jet);
+  tree->Branch("Btag_jet",   &m_Btag_jet);
+  tree->Branch("BtagID_jet",   &m_BtagID_jet);
+  tree->Branch("Flavor_jet",   &m_Flavor_jet);
+  tree->Branch("index_jet_a", &m_index_jet_a);
+  tree->Branch("index_jet_b", &m_index_jet_b);
+  tree->Branch("index_jet_ISR", &m_index_jet_ISR);
+  tree->Branch("index_jet_S", &m_index_jet_S);
 
   if(!do_slim){
     tree->Branch("PT_Genjet",  &m_PT_Genjet);
@@ -426,14 +425,14 @@ TTree* ReducedNtuple<Base>::InitOutputTree(const string& sample, bool do_slim){
   tree->Branch("Njet_S", &m_Njet_S);
   tree->Branch("Nbjet_ISR", &m_Nbjet_ISR);
   tree->Branch("Nbjet_S", &m_Nbjet_S);
-  tree->Branch("Nlep_ISR", &m_Nlep_ISR);
-  tree->Branch("Nlep_S", &m_Nlep_S);
-  tree->Branch("index_lep_ISR", &m_index_lep_ISR);
-  tree->Branch("index_lep_S", &m_index_lep_S);
   tree->Branch("Njet_a", &m_Njet_a);
   tree->Branch("Njet_b", &m_Njet_b);
   tree->Branch("Nbjet_a", &m_Nbjet_a);
   tree->Branch("Nbjet_b", &m_Nbjet_b);
+  tree->Branch("Nlep_ISR", &m_Nlep_ISR);
+  tree->Branch("Nlep_S", &m_Nlep_S);
+  tree->Branch("index_lep_ISR", &m_index_lep_ISR);
+  tree->Branch("index_lep_S", &m_index_lep_S);
   tree->Branch("Nlep_a", &m_Nlep_a);
   tree->Branch("Nlep_b", &m_Nlep_b);
   tree->Branch("index_lep_a", &m_index_lep_a);
@@ -453,11 +452,13 @@ TTree* ReducedNtuple<Base>::InitOutputTree(const string& sample, bool do_slim){
   tree->Branch("dphiCMI", &m_dphiCMI);
   tree->Branch("dphiMET_V", &m_dphiMET_V);
 
-  tree->Branch("CosDecayAngle_Pa", &m_CosDecayAngle_Pa);
-  tree->Branch("CosDecayAngle_Pb", &m_CosDecayAngle_Pb);
-  tree->Branch("CosDecayAngle_Va", &m_CosDecayAngle_Va);
-  tree->Branch("CosDecayAngle_Vb", &m_CosDecayAngle_Vb);
-  tree->Branch("CosDecayAngle_S", &m_CosDecayAngle_S);
+  if(!do_slim){
+    tree->Branch("CosDecayAngle_Pa", &m_CosDecayAngle_Pa);
+    tree->Branch("CosDecayAngle_Pb", &m_CosDecayAngle_Pb);
+    tree->Branch("CosDecayAngle_Va", &m_CosDecayAngle_Va);
+    tree->Branch("CosDecayAngle_Vb", &m_CosDecayAngle_Vb);
+    tree->Branch("CosDecayAngle_S", &m_CosDecayAngle_S);
+  }
 
   tree->Branch("PTCM_LEP", &m_PTCM_LEP);
   tree->Branch("PzCM_LEP", &m_PzCM_LEP);
@@ -468,40 +469,57 @@ TTree* ReducedNtuple<Base>::InitOutputTree(const string& sample, bool do_slim){
 
   tree->Branch("Mperp", &m_Mperp);
   tree->Branch("gammaT", &m_gammaT);
-  tree->Branch("EJ_BoostT", &m_EJ_BoostT);
-  tree->Branch("EL_BoostT", &m_EL_BoostT);
   tree->Branch("PTISR", &m_PTISR);
   tree->Branch("RISR", &m_RISR);
-
-  tree->Branch("EtaCM", &m_EtaCM);
-  tree->Branch("PhiCM", &m_PhiCM);
-  tree->Branch("MCM", &m_MCM);
-  tree->Branch("EtaS", &m_EtaS);
-  tree->Branch("PhiS", &m_PhiS);
-
-  tree->Branch("LAB_Pt", &m_LAB_Pt);
-  tree->Branch("LAB_Eta", &m_LAB_Eta);
-  tree->Branch("LAB_Phi", &m_LAB_Phi);
-  tree->Branch("LAB_M", &m_LAB_M);
+  if(!do_slim){
+    tree->Branch("EJ_BoostT", &m_EJ_BoostT);
+    tree->Branch("EL_BoostT", &m_EL_BoostT);
+    tree->Branch("EtaCM", &m_EtaCM);
+    tree->Branch("PhiCM", &m_PhiCM);
+    tree->Branch("MCM", &m_MCM);
+    tree->Branch("EtaS", &m_EtaS);
+    tree->Branch("PhiS", &m_PhiS);
+    tree->Branch("LAB_Pt", &m_LAB_Pt);
+    tree->Branch("LAB_Eta", &m_LAB_Eta);
+    tree->Branch("LAB_Phi", &m_LAB_Phi);
+    tree->Branch("LAB_M", &m_LAB_M);
+  }
 
   // New Observables for Run3/Cascades
   // analysis using ISR boosted tree
-  tree->Branch("MSperpCM0", &m_MSperpCM0); 
-  tree->Branch("MaPerpCM0", &m_MaPerpCM0);
-  tree->Branch("MbPerpCM0", &m_MbPerpCM0);
-  tree->Branch("MaVPerpCM0", &m_MaVPerpCM0);
-  tree->Branch("MbVPerpCM0", &m_MbVPerpCM0);
-  tree->Branch("MQperpCM0", &m_MQperpCM0); // sqrt(Ma*Ma + Mb*Mb)/sqrt(2)
-  tree->Branch("gammaPerpCM0", &m_gammaPerpCM0); // 2*MQ/MS
-  tree->Branch("MSCM0", &m_MSCM0); 
-  tree->Branch("MaCM0", &m_MaCM0);
-  tree->Branch("MbCM0", &m_MbCM0);
-  tree->Branch("MaVCM0", &m_MaVCM0);
-  tree->Branch("MbVCM0", &m_MbVCM0);
-  tree->Branch("MQCM0", &m_MQCM0); // sqrt(Ma*Ma + Mb*Mb)/sqrt(2)
-  tree->Branch("gammaCM0", &m_gammaCM0); // 2*MQ/MS
-  tree->Branch("MQV", &m_MQV);
-  tree->Branch("gammaV", &m_gammaV);
+  if(!do_slim){
+    tree->Branch("MSperpCM0", &m_MSperpCM0); 
+    tree->Branch("MaPerpCM0", &m_MaPerpCM0);
+    tree->Branch("MbPerpCM0", &m_MbPerpCM0);
+    tree->Branch("MaVPerpCM0", &m_MaVPerpCM0);
+    tree->Branch("MbVPerpCM0", &m_MbVPerpCM0);
+    tree->Branch("MQperpCM0", &m_MQperpCM0); // sqrt(Ma*Ma + Mb*Mb)/sqrt(2)
+    tree->Branch("gammaPerpCM0", &m_gammaPerpCM0); // 2*MQ/MS
+    tree->Branch("MSCM0", &m_MSCM0); 
+    tree->Branch("MaCM0", &m_MaCM0);
+    tree->Branch("MbCM0", &m_MbCM0);
+    tree->Branch("MaVCM0", &m_MaVCM0);
+    tree->Branch("MbVCM0", &m_MbVCM0);
+    tree->Branch("MQCM0", &m_MQCM0); // sqrt(Ma*Ma + Mb*Mb)/sqrt(2)
+    tree->Branch("gammaCM0", &m_gammaCM0); // 2*MQ/MS
+    tree->Branch("MQV", &m_MQV);
+    tree->Branch("gammaV", &m_gammaV);
+    tree->Branch("PTS_CM_LEP", &m_PTS_CM_LEP);
+    tree->Branch("MS_S0_LEP", &m_MS_S0_LEP);
+    tree->Branch("MV_S0_LEP", &m_MV_S0_LEP);
+    tree->Branch("MQ_S0_LEP", &m_MQ_S0_LEP);
+    tree->Branch("gamma_S0_LEP", &m_gamma_S0_LEP);
+    tree->Branch("MPTilde_LEP", &m_MPTilde_LEP);
+    tree->Branch("MSTilde_LEP", &m_MSTilde_LEP);
+    tree->Branch("gammaTilde_LEP", &m_gammaTilde_LEP);
+    tree->Branch("CosDecayAngle_Pa_LEP", &m_CosDecayAngle_Pa_LEP);
+    tree->Branch("CosDecayAngle_Pb_LEP", &m_CosDecayAngle_Pb_LEP);
+    tree->Branch("CosDecayAngle_Va_LEP", &m_CosDecayAngle_Va_LEP);
+    tree->Branch("CosDecayAngle_Vb_LEP", &m_CosDecayAngle_Vb_LEP);
+    tree->Branch("CosDecayAngle_S_LEP", &m_CosDecayAngle_S_LEP);
+    tree->Branch("RZPara_LEP", &m_RZPara_LEP);
+    tree->Branch("MINV_LEP", &m_MINV_LEP);
+  }
 
   tree->Branch("MT2", &m_MT2);
   tree->Branch("RISR_LEP", &m_RISR_LEP);
@@ -516,21 +534,6 @@ TTree* ReducedNtuple<Base>::InitOutputTree(const string& sample, bool do_slim){
   tree->Branch("MVb_LEP", &m_MVb_LEP);
   tree->Branch("MaRatio_LEP", &m_MaRatio_LEP);
   tree->Branch("MbRatio_LEP", &m_MbRatio_LEP);
-  tree->Branch("PTS_CM_LEP", &m_PTS_CM_LEP);
-  tree->Branch("MS_S0_LEP", &m_MS_S0_LEP);
-  tree->Branch("MV_S0_LEP", &m_MV_S0_LEP);
-  tree->Branch("MQ_S0_LEP", &m_MQ_S0_LEP);
-  tree->Branch("gamma_S0_LEP", &m_gamma_S0_LEP);
-  tree->Branch("MPTilde_LEP", &m_MPTilde_LEP);
-  tree->Branch("MSTilde_LEP", &m_MSTilde_LEP);
-  tree->Branch("gammaTilde_LEP", &m_gammaTilde_LEP);
-  tree->Branch("CosDecayAngle_Pa_LEP", &m_CosDecayAngle_Pa_LEP);
-  tree->Branch("CosDecayAngle_Pb_LEP", &m_CosDecayAngle_Pb_LEP);
-  tree->Branch("CosDecayAngle_Va_LEP", &m_CosDecayAngle_Va_LEP);
-  tree->Branch("CosDecayAngle_Vb_LEP", &m_CosDecayAngle_Vb_LEP);
-  tree->Branch("CosDecayAngle_S_LEP", &m_CosDecayAngle_S_LEP);
-  tree->Branch("RZPara_LEP", &m_RZPara_LEP);
-  tree->Branch("MINV_LEP", &m_MINV_LEP);
   tree->Branch("Mperp_LEP", &m_Mperp_LEP);
   tree->Branch("gammaT_LEP", &m_gammaT_LEP);
   tree->Branch("MQV_LEP", &m_MQV_LEP);
