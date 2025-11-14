@@ -131,6 +131,8 @@ private:
   double m_HT_eta3_id;
   double m_HT_eta5;
   double m_HT_eta5_id;
+
+  bool m_leadSjet_Pt45;
   
   bool m_EventFilter;
   bool m_FastSimEventVeto;

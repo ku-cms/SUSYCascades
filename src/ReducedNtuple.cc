@@ -346,6 +346,8 @@ TTree* ReducedNtuple<Base>::InitOutputTree(const string& sample, bool do_slim){
   tree->Branch("LHE_HT", &m_LHE_HT);
   tree->Branch("LHE_HTIncoming", &m_LHE_HTIncoming);
 
+  tree->Branch("leadSjet_Pt45", &m_leadSjet_Pt45);
+
   if(!do_slim){
     tree->Branch("altMET", &m_altMET);
     tree->Branch("altMET_phi", &m_altMET_phi);
@@ -1375,6 +1377,7 @@ void ReducedNtuple<Base>::FillOutputTree(TTree* tree, const Systematic& sys, boo
           m_dphiMET_lep_S.push_back( Leptons[m_index_lep_S[l]].Vect().DeltaPhi(ETMiss) );
         }
         m_PISR = vPISR.Mag();
+        m_leadSjet_Pt45 = (m_index_jet_S.empty()) || (m_PT_jet[m_index_jet_S[0]] < 45.);
         for(int l = 0; l < m_Njet_S; l++){
           TVector3 jet   = S[t]->GetFourVector(Jets[m_index_jet_S[l]]).Vect();
           TVector3 jet_t = S[t]->GetTransverseFourVector(Jets[m_index_jet_S[l]]).Vect();

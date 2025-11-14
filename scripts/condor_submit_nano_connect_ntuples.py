@@ -26,9 +26,9 @@ USER         = os.environ['USER']
 OUT_BASE     = "/ospool/cms-user/"+USER+"/NTUPLES/Processing"
 LIST         = "default.list"
 QUEUE        = ""
-SPLIT        = 100
+SPLIT        = 200
 THRESHOLD    = 90000
-MAX_JOBS_SUB = 10000 # Max jobs/submission (Connect max is 20000)
+MAX_JOBS_SUB = 8000 # Max jobs/submission (Connect max is 20000)
 MIN_JOBS_SUB = 3000 # Min jobs/submission
 # ----------------------------------------------------------- #
 
