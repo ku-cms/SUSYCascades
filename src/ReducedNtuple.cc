@@ -1374,7 +1374,9 @@ void ReducedNtuple<Base>::FillOutputTree(TTree* tree, const Systematic& sys, boo
           m_dphiMET_lep_S.push_back( Leptons[m_index_lep_S[l]].Vect().DeltaPhi(ETMiss) );
         }
         m_PISR = vPISR.Mag();
-        m_leadSjet_Pt45 = (m_index_jet_S.empty()) || (m_PT_jet[m_index_jet_S[0]] < 45.);
+        if (m_Njet_S <= 0) m_leadSjet_Pt45 = true; 
+        else if (Jets[m_index_jet_S[0]].Pt() < 45.) m_leadSjet_Pt45 = true;
+        else m_leadSjet_Pt45 = false;
         for(int l = 0; l < m_Njet_S; l++){
           TVector3 jet   = S[t]->GetFourVector(Jets[m_index_jet_S[l]]).Vect();
           TVector3 jet_t = S[t]->GetTransverseFourVector(Jets[m_index_jet_S[l]]).Vect();
@@ -1730,7 +1732,6 @@ void ReducedNtuple<Base>::FillOutputTree(TTree* tree, const Systematic& sys, boo
             		sqrt(m_MX2b0_BoostT_LEP*m_MX2b0_BoostT_LEP+m_PX20_BoostT_LEP*m_PX20_BoostT_LEP));
       m_RatioPerp0A = m_MVa_LEP / m_MX2a0_BoostT_LEP;
       m_RatioPerp0B = m_MVb_LEP / m_MX2b0_BoostT_LEP;
-
     }
     if(t==2){ // JET + ISR tree
       if(m_Njet < 2){
