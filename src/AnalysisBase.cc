@@ -368,22 +368,13 @@ std::string AnalysisBase<Base>::getJMEYearKey() const {
 
   // For 2022: try to guess Pre vs Post from file tag
   if (m_year == 2022) {
-    // Heuristic: if filename/tag mentions "RunC" or "RunD" prefer Pre, otherwise Post.
-    std::string tag = m_FileTag;
-    if (tag.find("RunC") != std::string::npos || tag.find("RunD") != std::string::npos
-     || tag.find("C") != std::string::npos || tag.find("D") != std::string::npos) {
-        return "2022Pre";
-    }
-    return "2022Post";
+    if (m_IsEE) return "2022Post";
+    else return "2022Pre";
   }
 
   // 2023 has run-dependent payloads (Pre/Post). Heuristic below:
   if (m_year == 2023) {
-    // If the input tag explicitly references "BPix" the original code used a BPix-specific tag;
-    // use that as a weak indicator for the "Post" payload in some workflows.
     if (m_IsBPix) return "2023Post";
-    // Otherwise default to 2023Pre (safe fallback; override if needed)
-    //Era2023PreAll
     return "2023Pre";
   }
 
