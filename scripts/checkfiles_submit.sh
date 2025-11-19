@@ -1,5 +1,5 @@
-THRESHOLD=91000
-LIMIT=8000
+THRESHOLD=99000
+LIMIT=100
 INDEX=0
 nohup python3 python/CheckFiles.py -a -l ${LIMIT} -t ${THRESHOLD} -d /home/zflowers/CMSSW_13_3_1/src/SUSYCascades/Summer20UL16APV_106X_SMS/ -o /ospool/cms-user/zflowers/NTUPLES/Processing/Summer20UL16APV_106X_SMS/ > CheckFiles_Summer20UL16APV_106X_SMS_${INDEX}.debug 2>&1 &
 nohup python3 python/CheckFiles.py -a -l ${LIMIT} -t ${THRESHOLD} -d /home/zflowers/CMSSW_13_3_1/src/SUSYCascades/Summer20UL16_106X_SMS/ -o /ospool/cms-user/zflowers/NTUPLES/Processing/Summer20UL16_106X_SMS/ > CheckFiles_Summer20UL16_106X_SMS_${INDEX}.debug 2>&1 &
