@@ -644,52 +644,52 @@ bool AnalysisBase<Base>::IsHEM(Particle part){
 
 template <class Base>
 double AnalysisBase<Base>::GetBtagSFWeight(const ParticleList& jets, bool HForLF, int updown, ParticleIDType tag){
-  return 0;
+  return 1;
 }
 
 template <class Base>
 double AnalysisBase<Base>::GetElIDSFWeight(const ParticleList& els, int updown){
-  return 0;
+  return 1;
 }
 
 template <class Base>
 double AnalysisBase<Base>::GetElISOSFWeight(const ParticleList& els, int updown){
-  return 0;
+  return 1;
 }
 
 template <class Base>
 double AnalysisBase<Base>::GetElSIPSFWeight(const ParticleList& els, int updown){
-  return 0;
+  return 1;
 }
 
 template <class Base>
 double AnalysisBase<Base>::GetElVLIDSFWeight(const ParticleList& els, int updown){
-  return 0;
+  return 1;
 }
 
 template <class Base>
 double AnalysisBase<Base>::GetMuIDSFWeight(const ParticleList& mus, int updown){
-  return 0;
+  return 1;
 }
 
 template <class Base>
 double AnalysisBase<Base>::GetMuISOSFWeight(const ParticleList& mus, int updown){
-  return 0;
+  return 1;
 }
 
 template <class Base>
 double AnalysisBase<Base>::GetMuSIPSFWeight(const ParticleList& mus, int updown){
-  return 0;
+  return 1;
 }
 
 template <class Base>
 double AnalysisBase<Base>::GetMuVLIDSFWeight(const ParticleList& mus, int updown){
-  return 0;
+  return 1;
 }
 
 template <class Base>
 double AnalysisBase<Base>::GetMETTriggerSFWeight(double MET, double HT, int Nele, int Nmu, int updown){
-  return 0;
+  return 1;
 }
 
 template <class Base>
