@@ -283,21 +283,19 @@ class CondorJobCountMonitor:
             try:
                 if active_clusters is None:
                     # check all schedds; proceed if any one of them drops below threshold
-                    cmd = self._condor_q_cmd(cluster_id="", total=True)
+                    cmd = self._condor_q_user_cmd(total=True)
                     output = subprocess.check_output(cmd, shell=True, text=True)
                     total_jobs_per_schedd = []
-    
-                    # parse the per-schedd job totals for your username
+
                     for line in output.splitlines():
-                        if f"Total for {self.username}:" in line:
+                        line = line.strip()
+                        if line.startswith("Total for") and not line.startswith("Total for all users"):
                             parts = line.split()
-                            try:
-                                idx = parts.index("jobs;")
-                                n_jobs = int(parts[idx - 1])
-                                total_jobs_per_schedd.append(n_jobs)
-                            except (ValueError, IndexError):
-                                continue
-    
+                            for p in parts:
+                                if p.isdigit():
+                                    total_jobs_per_schedd.append(int(p))
+                                    break
+ 
                     if not total_jobs_per_schedd:
                         print("[CondorJobCountMonitor] Could not parse any schedd totals, retrying...", flush=True)
                         total_jobs = -1
