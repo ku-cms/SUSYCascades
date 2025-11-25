@@ -30,6 +30,7 @@ SPLIT        = 200
 THRESHOLD    = 91000
 MAX_JOBS_SUB = 8000 # Max jobs/submission (Connect max is 20000)
 MIN_JOBS_SUB = 3000 # Min jobs/submission
+MAX_MATERIALIZE = (MAX_JOBS_SUB - MIN_JOBS_SUB) / 2 # Max jobs to show up in scheduler
 # ----------------------------------------------------------- #
 
 def get_auto_THRESHOLD():
@@ -206,6 +207,7 @@ def write_sh(srcfile,ifile,ofile,logfile,outfile,errfile,dataset,filetag,NAME):
     fsrc.write('error = '+errlog+" \n")
     fsrc.write('log = '+loglog+" \n")
     fsrc.write('request_memory = 1 GB \n')
+    fsrc.write('max_materialize = '+str(MAX_MATERIALIZE)+'\n')
     transfer_input = 'transfer_input_files = '+TARGET+'config.tgz,/ospool/cms-user/zflowers/public/sandbox-CMSSW_13_3_1-el9.tar.bz2\n'
     fsrc.write(transfer_input)
 
@@ -321,6 +323,7 @@ if __name__ == "__main__":
     if MAX_JOBS_SUB < MIN_JOBS_SUB:
         MIN_JOBS_SUB = 1000
         MAX_JOBS_SUB = 10000
+        MAX_MATERIALIZE = (MAX_JOBS_SUB - MIN_JOBS_SUB) / 2 # Max jobs to show up in scheduler
 
     THRESHOLD = 0.99*get_auto_THRESHOLD()
     
