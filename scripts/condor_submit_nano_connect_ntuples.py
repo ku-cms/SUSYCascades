@@ -24,13 +24,14 @@ CMSSW_SETUP  = './scripts/cmssw_setup_connect_el9.sh'
 TREE         = "Events"
 USER         = os.environ['USER']
 OUT_BASE     = "/ospool/cms-user/"+USER+"/NTUPLES/Processing"
+#OUT_BASE     = "/local-scratch/"+USER+"/NTUPLES/Processing"
 LIST         = "default.list"
 QUEUE        = ""
 SPLIT        = 200
 THRESHOLD    = 91000
 MAX_JOBS_SUB = 8000 # Max jobs/submission (Connect max is 20000)
 MIN_JOBS_SUB = 3000 # Min jobs/submission
-MAX_MATERIALIZE = (MAX_JOBS_SUB - MIN_JOBS_SUB) / 2 # Max jobs to show up in scheduler
+MAX_MATERIALIZE = 5000 # (MAX_JOBS_SUB - MIN_JOBS_SUB) / 2 # Max jobs to show up in scheduler
 # ----------------------------------------------------------- #
 
 def get_auto_THRESHOLD():

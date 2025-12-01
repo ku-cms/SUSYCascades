@@ -4760,6 +4760,7 @@ ParticleList AnalysisBase<NANOULBase>::GetMuons(){
       continue;
     if(Muon_pfRelIso03_all[i]*Muon_pt[i] >= 20. + 300./Muon_pt[i])
       continue;
+    //if(Muon_pt[i] < 5. && fabs(Muon_eta[i]) > 1.566) continue; // remove low pt endcap muon DO NOT COMMIT UNTIL TESTED
     
     Particle lep;
     lep.SetPtEtaPhiM(Muon_pt[i], Muon_eta[i],
