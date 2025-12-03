@@ -17,16 +17,13 @@ protected:
   std::vector<TTree*>     m_Trees;
   std::map<string,vector<TTree*>> m_Label2Tree;
  
-
 private:
-  virtual TTree* InitOutputTree(const std::string& sample, bool do_slim = false) = 0;
+  virtual TTree* InitOutputTree(const std::string& sample, bool do_slim = false, bool tree_is_sys = false) = 0;
   virtual void FillOutputTree(TTree* tree, const Systematic& sys = Systematic::Default(), bool do_slim = false) = 0;
 
   // for event count bookkeeping
   std::vector<std::pair<int,int> > m_masses;
   std::map<std::pair<int,int>,double > m_mapNevent;
-  
-  
 
 };
 

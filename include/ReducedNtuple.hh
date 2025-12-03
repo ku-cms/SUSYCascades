@@ -21,7 +21,7 @@ private:
 
   vector<bool> m_treeSkipped;
   bool m_library_generated;
-  TTree* InitOutputTree(const string& sample, bool do_slim = false);
+  TTree* InitOutputTree(const string& sample, bool do_slim = false, bool tree_is_sys = false);
   void FillOutputTree(TTree* tree, const Systematic& sys = Systematic::Default(), bool do_slim = false);
 
   void ClearVariables();
