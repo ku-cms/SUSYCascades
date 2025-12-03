@@ -208,7 +208,7 @@ def write_sh(srcfile,ifile,ofile,logfile,outfile,errfile,dataset,filetag,NAME):
     fsrc.write('error = '+errlog+" \n")
     fsrc.write('log = '+loglog+" \n")
     fsrc.write('request_memory = 1 GB \n')
-    fsrc.write('max_materialize = '+str(MAX_MATERIALIZE)+'\n')
+    fsrc.write('max_materialize = '+str(int(MAX_MATERIALIZE))+'\n')
     transfer_input = 'transfer_input_files = '+TARGET+'config.tgz,/ospool/cms-user/zflowers/public/sandbox-CMSSW_13_3_1-el9.tar.bz2\n'
     fsrc.write(transfer_input)
 
