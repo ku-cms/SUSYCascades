@@ -31,7 +31,7 @@ SPLIT        = 200
 THRESHOLD    = 91000
 MAX_JOBS_SUB = 8000 # Max jobs/submission (Connect max is 20000)
 MIN_JOBS_SUB = 3000 # Min jobs/submission
-MAX_MATERIALIZE = 5000 # (MAX_JOBS_SUB - MIN_JOBS_SUB) / 2 # Max jobs to show up in scheduler
+MAX_MATERIALIZE = 8000 # (MAX_JOBS_SUB - MIN_JOBS_SUB) / 2 # Max jobs to show up in scheduler
 # ----------------------------------------------------------- #
 
 def get_auto_THRESHOLD():
@@ -328,33 +328,33 @@ if __name__ == "__main__":
 
     THRESHOLD = 0.99*get_auto_THRESHOLD()
     
-    print (" --- Preparing condor submission to create ntuples.")
+    print (" --- Preparing condor submission to create ntuples.", flush=True)
     if DO_DATA:
-        print (" --- Processing Data")
+        print (" --- Processing Data", flush=True)
 
     if DO_SMS:
-        print (" --- Processing SMS")
+        print (" --- Processing SMS", flush=True)
 
     if DO_CASCADES:
-        print (" --- Processing Cascades")
+        print (" --- Processing Cascades", flush=True)
 
     if DO_PRIVATEMC:
-        print (" --- Processing PrivateMC")
+        print (" --- Processing PrivateMC", flush=True)
     
     if SYS:
-        print (" --- Processing SYS")
+        print (" --- Processing SYS", flush=True)
 
     if FASTSIM:
-        print (" --- Processing FastSim")
+        print (" --- Processing FastSim", flush=True)
 
     if SLIM:
-        print (" --- Processing Slim")
+        print (" --- Processing Slim", flush=True)
 
     if DO_SINGLE:
-        print (" --- Submitting Single Test Jobs")
+        print (" --- Submitting Single Test Jobs", flush=True)
 
     if COUNT:
-        print (" --- Only Counting (No Processing)")
+        print (" --- Only Counting (No Processing)", flush=True)
 
     # input sample list
     listfile = LIST
@@ -399,7 +399,7 @@ if __name__ == "__main__":
 
         # make EventCount file
         if VERBOSE:
-            print("making EventCount file")
+            print("making EventCount file", flush=True)
         os.system("hadd "+config+"EventCount.root root/EventCount/*.root > /dev/null")
         unique_hashes = collect_unique_hashes(glob.glob("root/EventCount/*.root"))
         write_git_hashes_to_output(config+"EventCount.root", unique_hashes)
@@ -407,13 +407,13 @@ if __name__ == "__main__":
 
         # make FilterEff file 
         if VERBOSE:
-            print("making FilterEff file")
+            print("making FilterEff file", flush=True)
         os.system("hadd "+config+"FilterEff.root root/FilterEff/*.root > /dev/null")
         FILTEREFF = "./config/FilterEff.root"
 
-        # make json file
+        # make lumi json file
         if VERBOSE:
-            print("making json file")
+            print("making lumi json file", flush=True)
         os.system("cat json/GoodRunList/*.txt > "+config+"GRL_JSON.txt")
         os.system("echo -n $(tr -d '\n' < "+config+"GRL_JSON.txt) > "+config+"GRL_JSON.txt")
         JSON = "./config/GRL_JSON.txt"
@@ -428,19 +428,19 @@ if __name__ == "__main__":
             newest_timestamp = max(files)
             XSJSONFILENAME = f"info_XSDB_{newest_timestamp}.json"
         if VERBOSE:
-            print("making xs json file")
+            print("making xs json file", flush=True)
         os.system(f"xrdcp -s root://cmseos.fnal.gov//store/user/z374f439/XSectionJSONs/{XSJSONFILENAME} {config}/XS_jsonfile.json")
         XSJSONFILE = f"./config/XS_jsonfile.json"
 
         # copy PU root files
         if VERBOSE:
-            print("making Pileup file")
+            print("making Pileup file", flush=True)
         os.system("cp -r root/PU "+config+".")
         PUFOLD = "./config/PU/"
 
         # copy BTAG SF files
         if VERBOSE:
-            print("making BTAG file")
+            print("making BTAG file", flush=True)
         if "102X" in listname:
             os.system("cp -r root/BtagSF "+config+".")
             os.system("cp -r csv/BtagSF/* "+config+"BtagSF/.")
@@ -450,13 +450,13 @@ if __name__ == "__main__":
 
         # copy LEP SF files
         if VERBOSE:
-            print("making LEP file")
+            print("making LEP file", flush=True)
         os.system("cp -r root/LepSF "+config+".")
         LEPFOLD = "./config/LepSF/"
 
         # copy JME files
         if VERBOSE:
-            print("making JME file")
+            print("making JME file", flush=True)
         if "102X" in listname:
             os.system("cp -r data/JME "+config+".")
             JMEFOLD = "./config/JME/"
@@ -465,30 +465,30 @@ if __name__ == "__main__":
 
         # copy JEC file
         if VERBOSE:
-            print("making JEC file")
+            print("making JEC file", flush=True)
         os.system("cp data/JME/JecConfigAK4.json "+config+".")
         JECFILE = './config/JecConfigAK4.json'
 
         # copy JVM file
         if VERBOSE:
-            print("making JVM file")
+            print("making JVM file", flush=True)
         os.system("cp data/JME/JvmConfig.json "+config+".")
         JVMFILE = './config/JvmConfig.json'
 
         # copy MET trigger files
         if VERBOSE:
-            print("making Trigger file")
+            print("making Trigger file", flush=True)
         os.system("cp -r csv/METTrigger "+config+".")
         METFILE = "./config/METTrigger/Parameters.csv"
 
         # copy Prefire files
         if VERBOSE:
-            print("making Prefire file")
+            print("making Prefire file", flush=True)
         os.system("cp -r root/Prefire "+config+".")
         PREFIREFILE = "./config/Prefire/Prefire.root"
 
         if VERBOSE:
-            print("Setting up working area...")
+            print("Setting up working area...", flush=True)
         
         os.system("cp "+EXE+" "+config+".")
         os.system("cp "+RESTFRAMES+" "+config+".")
@@ -634,7 +634,7 @@ if __name__ == "__main__":
             datasetlist[p][2].extend(rootlist)
 
     if VERBOSE and not COUNT:
-        print("Created area for output root files")
+        print("Created area for output root files", flush=True)
 
     for (dataset,filetag,rootlist) in datasetlist:
         if not COUNT:
@@ -664,16 +664,14 @@ if __name__ == "__main__":
             write_sh_single(script_name, overlist_name, file_name+'.root', logfile, outfile, errfile, dataset, filetag, dataset_split[dataset+"_"+filetag+"_0"], NAME)
     
     if VERBOSE and not COUNT:
-        print("Created area for log files")
+        print("Created area for log files", flush=True)
 
     if not COUNT:
-        #print listdir
         os.system("cp -r "+listdir+" "+config)
-        #print "creating tarball from: ", TARGET
         os.system("sleep 10") # sleep so copy command(s) can catch up...
         os.system("tar -C "+config+"/../ -czf "+TARGET+"/config.tgz config")
         if VERBOSE:
-            print("Created tar ball")
+            print("Created tar ball", flush=True)
 
     submit_dir  = srcdir 
     filter_condition = lambda f: os.path.isfile(os.path.join(submit_dir, f)) and '.submit' in f
@@ -699,7 +697,7 @@ if __name__ == "__main__":
             sample_handle = sample_handle.replace(".submit",'')
             if DO_SINGLE:
                 sample_handle = sample_handle.replace("_single",'')
-            print (f"submitting: {f}")
+            print (f"submitting: {f}", flush=True)
             submit_jobs = input_info[sample_handle]["n_jobs"]
             condor_monitor.set_threshold(THRESHOLD-submit_jobs)
             if CSV:
@@ -721,9 +719,9 @@ if __name__ == "__main__":
         for f in clean_inputlist:
             n_root_files    = input_info[f]["n_root_files"] 
             n_jobs          = input_info[f]["n_jobs"] 
-            print(f"sample: {f}")
-            print(f" - number of root files  = {n_root_files}")
-            print(f" - number of jobs        = {n_jobs}")
+            print(f"sample: {f}", flush=True)
+            print(f" - number of root files  = {n_root_files}", flush=True)
+            print(f" - number of jobs        = {n_jobs}", flush=True)
             # make sure that "clusterid" has been filled to avoid key error
             if not DRY_RUN and not COUNT and CSV:
                 f_csv.write(f"{0}".format(f+","+input_info[f]["clusterid"].replace('.\n','')+",{0}".format(n_jobs)+'\n'))
@@ -733,26 +731,26 @@ if __name__ == "__main__":
          f_csv.close()
     
     # Summary Info
-    print ("----------------------------")
+    print ("-------------------------------", flush=True)
     print ("Condor Submission Info")
-    print ("----------------------------")
-    print (f"sample list:             {LIST}")
-    print (f"working directory:       {TARGET}")
-    print (f"output directory:        {OUT_DIR}")
-    print (f"number of samples:       {n_samples}")
-    print (f"total input root files:  {total_root_files}")
-    print (f"total condor jobs:       {total_jobs}")
-    print ("----------------------------")
+    print ("-------------------------------", flush=True)
+    print (f"sample list:             {LIST}", flush=True)
+    print (f"working directory:       {TARGET}", flush=True)
+    print (f"output directory:        {OUT_DIR}", flush=True)
+    print (f"number of samples:       {n_samples}", flush=True)
+    print (f"total input root files:  {total_root_files}", flush=True)
+    print (f"total condor jobs:       {total_jobs}", flush=True)
+    print ("-------------------------------", flush=True)
 
     if DRY_RUN or COUNT:
         print("No jobs were submitted.")
     else:
         # os.system(f'nohup python3 python/CheckFiles.py -d {TARGET}/ -o {OUT_DIR} -e > /dev/null 2>&1 &')
-        print(Fore.GREEN + "Congrats... your jobs were submitted!" + Fore.RESET)
-        print('Run this after jobs have finished to check for failed jobs (and resubmit them):')
+        print(Fore.GREEN + "Congrats... your jobs were submitted!" + Fore.RESET, flush=True)
+        print('Run this after jobs have finished to check for failed jobs (and resubmit them):', flush=True)
         check_files_helper = f'nohup python3 python/CheckFiles.py -d {TARGET} -o {OUT_DIR}'
         if DO_PRIVATEMC:
             check_files_helper += ' -w -c'
         check_files_helper += f' > CheckFiles_{os.path.basename(OUT_DIR.rstrip("/"))}_0.debug 2>&1 &'
-        print(check_files_helper)
+        print(check_files_helper, flush=True)
 
