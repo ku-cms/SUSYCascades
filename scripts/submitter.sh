@@ -10,6 +10,6 @@ python3 scripts/condor_submit_nano_connect_ntuples.py -list samples/NANO/Lists/S
 python3 scripts/condor_submit_nano_connect_ntuples.py -list samples/NANO/Lists/Summer22EE_130X_Data.list --verbose --data
 python3 scripts/condor_submit_nano_connect_ntuples.py -list samples/NANO/Lists/Summer23_130X_Data.list --verbose --data
 python3 scripts/condor_submit_nano_connect_ntuples.py -list samples/NANO/Lists/Summer23BPix_130X_Data.list --verbose --data
-python3 scripts/condor_submit_nano_connect_ntuples.py -list samples/NANO/Lists/Summer23BPix_130X_Cascades.list --verbose --cascades --sys
-python3 scripts/condor_submit_nano_connect_ntuples.py -list samples/NANO/Lists/Summer22_130X_Cascades.list --verbose --cascades --privateMC --sys
-python3 scripts/condor_submit_nano_connect_ntuples.py -list samples/NANO/Lists/Summer22_130X_SMS.list --verbose --sms --privateMC --sys
+python3 scripts/condor_submit_nano_connect_ntuples.py -list samples/NANO/Lists/Summer23BPix_130X_Cascades.list --verbose --cascades --sys --slim
+python3 scripts/condor_submit_nano_connect_ntuples.py -list samples/NANO/Lists/Summer22_130X_Cascades.list --verbose --cascades --privateMC --sys --slim
+python3 scripts/condor_submit_nano_connect_ntuples.py -list samples/NANO/Lists/Summer22_130X_SMS.list --verbose --sms --privateMC --sys --slim
