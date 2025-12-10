@@ -1,5 +1,5 @@
-THRESHOLD=99000
-LIMIT=100
+THRESHOLD=94000
+LIMIT=5000
 INDEX=0
 nohup python3 python/CheckFiles.py -a -l ${LIMIT} -t ${THRESHOLD} -d /home/zflowers/CMSSW_13_3_1/src/SUSYCascades/Summer20UL16APV_106X_SMS/ -o /ospool/cms-user/zflowers/NTUPLES/Processing/Summer20UL16APV_106X_SMS/ > CheckFiles_Summer20UL16APV_106X_SMS_${INDEX}.debug 2>&1 &
 nohup python3 python/CheckFiles.py -a -l ${LIMIT} -t ${THRESHOLD} -d /home/zflowers/CMSSW_13_3_1/src/SUSYCascades/Summer20UL16_106X_SMS/ -o /ospool/cms-user/zflowers/NTUPLES/Processing/Summer20UL16_106X_SMS/ > CheckFiles_Summer20UL16_106X_SMS_${INDEX}.debug 2>&1 &
@@ -12,7 +12,7 @@ nohup python3 python/CheckFiles.py -a -l ${LIMIT} -t ${THRESHOLD} -d /home/zflow
 nohup python3 python/CheckFiles.py -a -l ${LIMIT} -t ${THRESHOLD} -d /home/zflowers/CMSSW_13_3_1/src/SUSYCascades/Summer22_130X_Data/ -o /ospool/cms-user/zflowers/NTUPLES/Processing/Summer22_130X_Data/ > CheckFiles_Summer22_130X_Data_${INDEX}.debug 2>&1 &
 nohup python3 python/CheckFiles.py -a -l ${LIMIT} -t ${THRESHOLD} -d /home/zflowers/CMSSW_13_3_1/src/SUSYCascades/Summer22EE_130X_Data/ -o /ospool/cms-user/zflowers/NTUPLES/Processing/Summer22EE_130X_Data/ > CheckFiles_Summer22EE_130X_Data_${INDEX}.debug 2>&1 &
 nohup python3 python/CheckFiles.py -a -l ${LIMIT} -t ${THRESHOLD} -d /home/zflowers/CMSSW_13_3_1/src/SUSYCascades/Summer23_130X_Data/ -o /ospool/cms-user/zflowers/NTUPLES/Processing/Summer23_130X_Data/ > CheckFiles_Summer23_130X_Data_${INDEX}.debug 2>&1 &
-#nohup python3 python/CheckFiles.py -a -l ${LIMIT} -t ${THRESHOLD} -d /home/zflowers/CMSSW_13_3_1/src/SUSYCascades/Summer23BPix_130X_Data/ -o /ospool/cms-user/zflowers/NTUPLES/Processing/Summer23BPix_130X_Data/ > CheckFiles_Summer23BPix_130X_Data_${INDEX}.debug 2>&1 &
-#nohup python3 python/CheckFiles.py -d Summer23BPix_130X_Cascades/ -o /ospool/cms-user/zflowers/NTUPLES/Processing/Summer23BPix_130X_Cascades/ -l ${LIMIT} -t ${THRESHOLD} > CheckFiles_Summer23BPix_130X_Cascades_${INDEX}.debug 2>&1 &
-#nohup python3 python/CheckFiles.py -d Summer22_130X_Cascades/ -o /ospool/cms-user/zflowers/NTUPLES/Processing/Summer22_130X_Cascades/ -l ${LIMIT} -t ${THRESHOLD} -w -c > CheckFiles_Summer22_130X_Cascades_${INDEX}.debug 2>&1 &
-#nohup python3 python/CheckFiles.py -d Summer22_130X_SMS/ -o /ospool/cms-user/zflowers/NTUPLES/Processing/Summer22_130X_SMS/ -l ${LIMIT} -t ${THRESHOLD} -w -c > CheckFiles_Summer22_130X_SMS_${INDEX}.debug 2>&1 &
+nohup python3 python/CheckFiles.py -a -l ${LIMIT} -t ${THRESHOLD} -d /home/zflowers/CMSSW_13_3_1/src/SUSYCascades/Summer23BPix_130X_Data/ -o /ospool/cms-user/zflowers/NTUPLES/Processing/Summer23BPix_130X_Data/ > CheckFiles_Summer23BPix_130X_Data_${INDEX}.debug 2>&1 &
+nohup python3 python/CheckFiles.py -d Summer23BPix_130X_Cascades/ -o /ospool/cms-user/zflowers/NTUPLES/Processing/Summer23BPix_130X_Cascades/ -l ${LIMIT} -t ${THRESHOLD} > CheckFiles_Summer23BPix_130X_Cascades_${INDEX}.debug 2>&1 &
+nohup python3 python/CheckFiles.py -d Summer22_130X_Cascades/ -o /ospool/cms-user/zflowers/NTUPLES/Processing/Summer22_130X_Cascades/ -l ${LIMIT} -t ${THRESHOLD} -w -c > CheckFiles_Summer22_130X_Cascades_${INDEX}.debug 2>&1 &
+nohup python3 python/CheckFiles.py -d Summer22_130X_SMS/ -o /ospool/cms-user/zflowers/NTUPLES/Processing/Summer22_130X_SMS/ -l ${LIMIT} -t ${THRESHOLD} -w -c > CheckFiles_Summer22_130X_SMS_${INDEX}.debug 2>&1 &
