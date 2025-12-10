@@ -84,7 +84,7 @@ samples/NANO/Summer22EE_130X/VH_HtoNonbb_M-125_TuneCP5_13p6TeV_amcatnloFXFX-mads
 #samples/NANO/Summer22EE_130X/VHtoGG_M-125_TuneCP5_13p6TeV_amcatnloFXFX-madspin-pythia8.txt
 samples/NANO/Summer22EE_130X/WWW_4F_TuneCP5_13p6TeV_amcatnlo-madspin-pythia8.txt
 samples/NANO/Summer22EE_130X/WWZ_4F_TuneCP5_13p6TeV_amcatnlo-pythia8.txt
-samples/NANO/Summer22EE_130X/WWZto4L2Nu_4F_TuneCP5_13p6TeV_amcatnlo-pythia8.txt
+#samples/NANO/Summer22EE_130X/WWZto4L2Nu_4F_TuneCP5_13p6TeV_amcatnlo-pythia8.txt
 #samples/NANO/Summer22EE_130X/WW_TuneCP5_13p6TeV_pythia8.txt
 samples/NANO/Summer22EE_130X/WWto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8.txt
 samples/NANO/Summer22EE_130X/WWto4Q_TuneCP5_13p6TeV_powheg-pythia8.txt
