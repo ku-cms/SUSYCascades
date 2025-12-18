@@ -20,13 +20,18 @@ void LHETool::GetFromLHAPDF(int& nPDFWeights, std::vector<double>& PDFWeights, i
  
 }
 
+// https://cms-pdmv.gitbook.io/project/mccontact/info-for-mc-production-for-ultra-legacy-campaigns-2016-2017-2018
+// https://twiki.cern.ch/twiki/bin/view/Main/Bsm3gRun3PrivateMC
 void LHETool::AddLHAPDF(int year)
 {
 #ifdef _CMSSW_
-  if(year == 2016)
-    pdfset = LHAPDF::getPDFSet("NNPDF30_lo_as_0130"); 
-  else // NNPDF31_nnlo_as_0118 for preUL '17 & '18, need to check for UL & Run3
-    pdfset = LHAPDF::getPDFSet("NNPDF31_nnlo_as_0118"); 
+  // PreUL
+  //if(year == 2016)
+  //  pdfset = LHAPDF::getPDFSet("NNPDF30_lo_as_0130"); 
+  //else
+  //  pdfset = LHAPDF::getPDFSet("NNPDF31_nnlo_as_0118"); 
+  // UL & Run3
+  pdfset = LHAPDF::getPDFSet("NNPDF31_nnlo_as_0118_mc_hessian_pdfas");
   pdfs = pdfset.mkPDFs(); 
 #endif
 }
