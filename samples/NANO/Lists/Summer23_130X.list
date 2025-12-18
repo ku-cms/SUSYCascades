@@ -92,10 +92,10 @@ samples/NANO/Summer23_130X/WZZ_TuneCP5_13p6TeV_amcatnlo-pythia8.txt
 #samples/NANO/Summer23_130X/WZ_TuneCP5_13p6TeV_pythia8.txt
 samples/NANO/Summer23_130X/WZto2L2Q_TuneCP5_13p6TeV_powheg-pythia8.txt
 samples/NANO/Summer23_130X/WZto3LNu-1Jets-4FS_TuneCP5_13p6TeV_amcatnloFXFX-pythia8.txt
-samples/NANO/Summer23_130X/WZto3LNu_TuneCP5_13p6TeV_powheg-pythia8.txt
+#samples/NANO/Summer23_130X/WZto3LNu_TuneCP5_13p6TeV_powheg-pythia8.txt
 samples/NANO/Summer23_130X/WZtoL3Nu-1Jets-4FS_TuneCP5_13p6TeV_amcatnloFXFX-pythia8.txt
 samples/NANO/Summer23_130X/WZtoLNu2Q-1Jets-4FS_TuneCP5_13p6TeV_amcatnloFXFX-pythia8.txt
-samples/NANO/Summer23_130X/WZtoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8.txt
+#samples/NANO/Summer23_130X/WZtoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8.txt
 samples/NANO/Summer23_130X/WminusH_Hto2B_WtoLNu_M-125_TuneCP5_13p6TeV_powheg-pythia8.txt
 samples/NANO/Summer23_130X/WplusH_Hto2B_WtoLNu_M-125_TuneCP5_13p6TeV_powheg-pythia8.txt
 #samples/NANO/Summer23_130X/WtoLNu-2Jets_TuneCP5_13p6TeV_amcatnloFXFX-pythia8.txt
