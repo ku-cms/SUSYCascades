@@ -368,7 +368,7 @@ def checkJobs(workingDir, outputDir, skipEC, skipDAS, skipMissing, skipSmall,
                 comp_percent = 0
                 if NDAS_true > 0:
                     comp_percent = 100. * math.floor(NDAS / NDAS_true * 1000) / 1000
-                print(f'{DataSetName} failed the DAS check! ({comp_percent}%)\nMissing {NDAS_true-NDAS} events\nUse other options to investigate', flush=True)
+                print(f'{DataSetName} failed the DAS check! ({comp_percent}%)\nMissing {NDAS_true-NDAS} events', flush=True)
                 if (not skipDASDataset) and dataset:
                     files_datasets = set()
                     try:

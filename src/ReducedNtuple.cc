@@ -977,6 +977,7 @@ void ReducedNtuple<Base>::FillOutputTree(TTree* tree, const Systematic& sys, boo
 
   ParticleList Leptons = Electrons+LowPtElectrons+Muons;
   Leptons.SortByPt();
+  if(Leptons.size() > 0 && Leptons[0].Pt() > 1.e7) return; // remove weird events
 
   Jets = Jets.RemoveOverlap(Leptons, 0.2);
 
