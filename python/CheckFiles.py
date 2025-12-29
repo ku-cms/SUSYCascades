@@ -295,7 +295,7 @@ def UpdateFilterList(DataSetName, filterlist_filename, add):
 # Check condor jobs
 def checkJobs(workingDir, outputDir, skipEC, skipDAS, skipMissing, skipSmall,
               skipErr, skipOut, skipZombie, resubmit, maxResub,
-              filter_list, skipDASDataset, skipHists):
+              filter_list, skipDASDataset, skipHists, doRucio):
     print("Running over the directory '{0}'.".format(workingDir), flush=True)
     print("------------------------------------------------------------", flush=True)
     grep_ignore = "-e \"Warning\" -e \"WARNING\" -e \"TTree::SetBranchStatus\" -e \"libXrdSecztn.so\" -e \"Phi_mpi_pi\" -e \"tar: stdout: write error\" -e \"INFO\""
@@ -600,6 +600,72 @@ def checkJobs(workingDir, outputDir, skipEC, skipDAS, skipMissing, skipSmall,
         # create submit script(s) and count new jobs
         nJobs = makeSubmitScript(resubmit_set, os.path.join(workingDir, "src", DataSetName),
                                  resubmit, maxResub, DataSetName)
+
+        # create Rucio request for bad files
+        if doRucio:
+            # Setup rucio environment once per dataset
+            rucio_setup = "source /cvmfs/cms.cern.ch/rucio/setup-py3.sh"
+
+            # Path to tuple file
+            tuple_file = os.path.join(
+                workingDir,
+                "src",
+                f"{DataSetName}_tuple.txt"
+            )
+
+            if not os.path.exists(tuple_file):
+                print(f"[Rucio] Tuple file not found: {tuple_file}", flush=True)
+            else:
+                rucio_files = set()
+
+                with open(tuple_file, "r") as tf:
+                    for line in tf:
+                        if not line.strip():
+                            continue
+
+                        parts = line.strip().split()
+                        if len(parts) < 2:
+                            continue
+
+                        list_path = parts[0]
+
+                        # Full path to the .list file
+                        full_list_path = os.path.join(workingDir, list_path)
+
+                        if not os.path.exists(full_list_path):
+                            print(f"[Rucio] Missing list file: {full_list_path}", flush=True)
+                            continue
+
+                        with open(full_list_path, "r") as lf:
+                            for rootline in lf:
+                                rootline = rootline.strip()
+                                if not rootline:
+                                    continue
+
+                                # Strip everything before /store/
+                                store_idx = rootline.find("/store/")
+                                if store_idx == -1:
+                                    continue
+
+                                rucio_path = "cms:" + rootline[store_idx:]
+                                rucio_files.add(rucio_path)
+
+                if not rucio_files:
+                    print(f"[Rucio] No files found for rule creation in {DataSetName}", flush=True)
+                else:
+                    print(f"[Rucio] Creating {len(rucio_files)} rules", flush=True)
+
+                    for rfile in sorted(rucio_files):
+                        cmd = (
+                            f'{rucio_setup} && '
+                            f'rucio rule add --copies 1 --rses T2_US_Nebraska -d {rfile}'
+                        )
+
+                        try:
+                            subprocess.check_call(['bash', '-c', cmd])
+                        except subprocess.CalledProcessError as e:
+                            print(f"[Rucio] Failed rule for {rfile}", flush=True)
+
         total_resubmit += nJobs
 
     return total_resubmit
@@ -621,6 +687,7 @@ def main():
     parser.add_argument("--skipZombie",     "-z", action='store_true', help="skip checking zombie root files")
     parser.add_argument("--skipDASDataset", "-k", action='store_true', help="skip checking DAS dataset matches")
     parser.add_argument("--skipHists",      "-f", action='store_true', help="skip checking Histograms folder")
+    parser.add_argument("--rucio",          "-n", action='store_true', help="create rucio request to move bad files to different site")
     parser.add_argument("--maxResub",       "-l", default=5000, help="max number of jobs to resubmit")
     parser.add_argument("--threshold",      "-t", default=0.99*get_auto_THRESHOLD(), help="min number of jobs running before starting checker")
     parser.add_argument("--sleep",          "-p", default=1, help="time to sleep before starting checker")
@@ -641,6 +708,7 @@ def main():
     skipZombie     = options.skipZombie
     skipDASDataset = options.skipDASDataset
     skipHists      = options.skipHists
+    doRucio        = options.rucio
     maxResub       = int(options.maxResub)
     threshold      = int(options.threshold)
     sleep_time     = int(options.sleep)
@@ -701,7 +769,7 @@ def main():
         print(f"Waiting until minumum of {threshold} jobs in the queue", flush=True)
         condor_monitor.wait_until_jobs_below()
         print("Running checker...", flush=True)
-        nJobs = checkJobs(directory,output,skipEC,skipDAS,skipMissing,skipSmall,skipErr,skipOut,skipZombie,resubmit,maxResub,filter_list,skipDASDataset,skipHists)
+        nJobs = checkJobs(directory,output,skipEC,skipDAS,skipMissing,skipSmall,skipErr,skipOut,skipZombie,resubmit,maxResub,filter_list,skipDASDataset,skipHists,doRucio)
         if resubmit and nJobs > 0:
             print(f"Resubmitted a total of {nJobs} jobs!", flush=True)
     print("Checker Complete!", flush=True)
