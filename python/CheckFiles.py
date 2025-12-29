@@ -10,6 +10,14 @@ from CondorJobCountMonitor import CondorJobCountMonitor
 USER = os.environ['USER']
 DO_EVENTCOUNT = False # For checking event count files
 
+def has_rule(did, rse):
+    cmd = ["rucio", "rule", "list", "--did", did]
+    try:
+        out = subprocess.check_output(cmd, text=True)
+    except subprocess.CalledProcessError:
+        return False
+    return rse in out
+
 def get_auto_THRESHOLD():
     result = subprocess.run(
         ["condor_config_val", "-dump"],
@@ -648,19 +656,16 @@ def checkJobs(workingDir, outputDir, skipEC, skipDAS, skipMissing, skipSmall,
                                     continue
 
                                 rucio_path = "cms:" + rootline[store_idx:]
+                                if has_rule(rucio_path, "T2_US_Nebraska"):
+                                    continue
                                 rucio_files.add(rucio_path)
-
-                if not rucio_files:
-                    print(f"[Rucio] No files found for rule creation in {DataSetName}", flush=True)
-                else:
-                    print(f"[Rucio] Creating {len(rucio_files)} rules", flush=True)
-
+                if len(rucio_files) > 0:
+                    print(f"Creating {len(rucio_files)} rucio rules")
                     for rfile in sorted(rucio_files):
                         cmd = (
                             f'{rucio_setup} && '
-                            f'rucio rule add --copies 1 --rses T2_US_Nebraska -d {rfile}'
+                            f'rucio rule add --copies 1 --lifetime 175000 --rses T2_US_Nebraska -d {rfile}'
                         )
-
                         try:
                             subprocess.check_call(['bash', '-c', cmd])
                         except subprocess.CalledProcessError as e:
