@@ -5,7 +5,9 @@ void Plot_Advanced(){
   Long64_t start = gSystem->Now();
   RestFrames::SetStyle();
   InitRJRtree();
-  //DrawRJRtree(false); gApplication->Terminate(0); // end macro if making tree plot
+  DrawRJRtree(false, "trees_jetlep_light.root");
+  DrawRJRtree(true,  "trees_jetlep_dark.root");
+  gApplication->Terminate(0); // end macro if making tree plot
 
   string NtuplePath = "/local-scratch/zflowers/NTUPLES/HADD_NTUPLES_v3/";
 

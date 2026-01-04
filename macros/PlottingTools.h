@@ -1002,9 +1002,14 @@ SetRapidityInvJigsaw InvEta("InvEta", "Set inv. system rapidity");
 MinMassesSqInvJigsaw InvSplit("InvSplit", "INV -> I_{a} + I_{b}", 2);
 CombinatoricGroup COMB_L("COMB_L","Lepton Jigsaws");
 MinMassesSqCombJigsaw CombSplitSq_L("CombSplitSq_L", "Minimize M_{Sa}^{2} + M_{Sb}^{2}",2,2);
+CombinatoricGroup COMB_J("COMB_J","Jet Jigsaws");
+MinMassesSqCombJigsaw CombSplitSq_J_ISR("CombSplitSq_J_ISR", "Minimize M_{S}^{2} + M_{ISR}^{2}",2,2);
+MinMassesSqCombJigsaw CombSplitSq_J_S("CombSplitSq_J_S", "Minimize M_{Sa}^{2} + M_{Sb}^{2}",2,2);
 
 void InitRJRtree(){
 
+  // default actual plotting
+  /*
   LAB.SetChildFrame(CM);
   CM.AddChildFrame(S);
   CM.AddChildFrame(ISR);
@@ -1017,7 +1022,49 @@ void InitRJRtree(){
   sLa.AddChildFrame(La);
   sLb.AddChildFrame(Lb);
 
-  LAB.InitializeTree();
+  COMB_L.AddFrame(La);
+  COMB_L.SetNElementsForFrame(La, 0);
+  COMB_L.AddFrame(Lb);
+  COMB_L.SetNElementsForFrame(Lb, 0);
+  COMB_L.AddJigsaw(CombSplitSq_L);
+  CombSplitSq_L.AddCombFrame(La, 0);
+  CombSplitSq_L.AddCombFrame(Lb, 1);
+  CombSplitSq_L.AddObjectFrame(La, 0);
+  CombSplitSq_L.AddObjectFrame(Lb, 1);
+  */
+
+  // Lep + Jet
+  ///*
+  LAB.SetChildFrame(CM);
+  CM.AddChildFrame(S);
+  CM.AddChildFrame(ISR);
+  S.AddChildFrame(Pa);
+  S.AddChildFrame(Pb);
+  Pa.AddChildFrame(Ia);
+  Pb.AddChildFrame(Ib);
+  Pa.AddChildFrame(La);
+  Pa.AddChildFrame(Ja);
+  Pb.AddChildFrame(Lb);
+  Pb.AddChildFrame(Jb);
+
+  COMB_J.AddFrame(ISR);
+  COMB_J.SetNElementsForFrame(ISR, 1);
+  COMB_J.AddFrame(Ja);
+  COMB_J.SetNElementsForFrame(Ja, 0);
+  COMB_J.AddFrame(Jb);
+  COMB_J.SetNElementsForFrame(Jb, 0);
+  COMB_J.AddJigsaw(CombSplitSq_J_ISR);
+  CombSplitSq_J_ISR.AddCombFrame(Ja, 0);
+  CombSplitSq_J_ISR.AddCombFrame(Jb, 0);
+  CombSplitSq_J_ISR.AddCombFrame(ISR, 1);
+  CombSplitSq_J_ISR.AddObjectFrame(Ja, 0);
+  CombSplitSq_J_ISR.AddObjectFrame(Jb, 0);
+  CombSplitSq_J_ISR.AddObjectFrame(ISR, 1);
+  COMB_J.AddJigsaw(CombSplitSq_J_S);
+  CombSplitSq_J_S.AddCombFrame(Ja, 0);
+  CombSplitSq_J_S.AddCombFrame(Jb, 1);
+  CombSplitSq_J_S.AddObjectFrame(Ja, 0);
+  CombSplitSq_J_S.AddObjectFrame(Jb, 1);
 
   COMB_L.AddFrame(La);
   COMB_L.SetNElementsForFrame(La, 0);
@@ -1028,6 +1075,32 @@ void InitRJRtree(){
   CombSplitSq_L.AddCombFrame(Lb, 1);
   CombSplitSq_L.AddObjectFrame(La, 0);
   CombSplitSq_L.AddObjectFrame(Lb, 1);
+  //*/
+
+  // Lep only
+  /*
+  LAB.SetChildFrame(CM);
+  CM.AddChildFrame(S);
+  CM.AddChildFrame(ISR);
+  S.AddChildFrame(Pa);
+  S.AddChildFrame(Pb);
+  Pa.AddChildFrame(Ia);
+  Pb.AddChildFrame(Ib);
+  Pa.AddChildFrame(La);
+  Pb.AddChildFrame(Lb);
+
+  COMB_L.AddFrame(La);
+  COMB_L.SetNElementsForFrame(La, 0);
+  COMB_L.AddFrame(Lb);
+  COMB_L.SetNElementsForFrame(Lb, 0);
+  COMB_L.AddJigsaw(CombSplitSq_L);
+  CombSplitSq_L.AddCombFrame(La, 0);
+  CombSplitSq_L.AddCombFrame(Lb, 1);
+  CombSplitSq_L.AddObjectFrame(La, 0);
+  CombSplitSq_L.AddObjectFrame(Lb, 1);
+  */
+
+  // Invis jigsaws
 
   INV.AddFrame(Ia);
   INV.AddFrame(Ib);
@@ -1041,10 +1114,11 @@ void InitRJRtree(){
   InvSplit.AddInvisibleFrame(Ia, 0);
   InvSplit.AddInvisibleFrame(Ib, 1);
 
+  LAB.InitializeTree();
   LAB.InitializeAnalysis();
 }
 
-void DrawRJRtree(bool treeplot_INV = true){ // treeplot_INV: whether to flip treeplots to dark mode
+void DrawRJRtree(bool treeplot_INV = true, const std::string& output = "trees.root"){ // treeplot_INV: whether to flip treeplots to dark mode
   TreePlot tree_plot("TreePlot","TreePlot");
   tree_plot.SetTree(LAB);
   tree_plot.Draw("ISR_LEP_tree", "Analysis Tree", treeplot_INV);
@@ -1053,6 +1127,6 @@ void DrawRJRtree(bool treeplot_INV = true){ // treeplot_INV: whether to flip tre
   tree_plot.SetTree(COMB_L);
   tree_plot.Draw("ISR_LEP_leps", "Lep Jigsaws", treeplot_INV);
 
-  tree_plot.WriteOutput("trees.root");
-  std::cout << "Writing trees to trees.root" << endl;
+  tree_plot.WriteOutput(output.c_str());
+  std::cout << "Writing trees to " << output << endl;
 }
