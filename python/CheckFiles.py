@@ -649,9 +649,9 @@ def checkJobs(workingDir, outputDir, skipEC, skipDAS, skipMissing, skipSmall,
                 if len(rucio_files) > 0:
                     print(f"Creating {len(rucio_files)} rucio rules")
                     for rfile in sorted(rucio_files):
-                        cmd = f'rucio rule add --copies 1 --lifetime 175000 --rses T2_US_Nebraska -d {rfile}'
+                        cmd = f'rucio rule add --copies 1 --rses T2_US_Nebraska -d {rfile}'
                         try:
-                            subprocess.check_call(cmd, shell=True, env=rucio_env)
+                            subprocess.check_call(["bash", "-c", cmd], env=rucio_env)
                         except subprocess.CalledProcessError as e:
                             print(f"[Rucio] Failed rule for {rfile}", flush=True)
         total_resubmit += nJobs
@@ -710,6 +710,9 @@ def main():
                 continue
             k, v = line.split("=", 1)
             rucio_env[k] = v
+        for k in list(rucio_env.keys()):
+            if k.startswith("BASH_FUNC_"):
+                del rucio_env[k]
 
     # quick strictly das check from root file (useful for after final hadd test)
     if directory is None:
