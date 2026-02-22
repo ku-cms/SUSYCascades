@@ -200,14 +200,27 @@ void AnalysisBase<Base>::AddBtagFolder(const string& btagfold, const string& pro
   if(!m_IsUL and m_year < 2019)
     m_BtagSFTool.BuildMap(btagfold, proc_rootfile, year);
   else{
-    std::string Btag_file = find_clib_file(btagfold, "btagging.json.gz");
+    std::string Btag_file = "";
+    if(m_year < 2024)
+      Btag_file = find_clib_file(btagfold, "btagging.json.gz");
+    else
+      Btag_file = find_clib_file(btagfold, "btagging_preliminary.json.gz");
     m_cset_Btag = correction::CorrectionSet::from_file(Btag_file);
-    m_BtagLooseWP = m_cset_Btag->at("deepJet_wp_values")->evaluate({"L"});
-    m_BtagMediumWP = m_cset_Btag->at("deepJet_wp_values")->evaluate({"M"});
-    m_BtagTightWP = m_cset_Btag->at("deepJet_wp_values")->evaluate({"T"});
-    if(m_year > 2018){
-      m_BtagVeryTightWP = m_cset_Btag->at("deepJet_wp_values")->evaluate({"XT"});
-      m_BtagVeryVeryTightWP = m_cset_Btag->at("deepJet_wp_values")->evaluate({"XXT"});
+    if(m_year < 2024){
+      m_BtagLooseWP = m_cset_Btag->at("deepJet_wp_values")->evaluate({"L"});
+      m_BtagMediumWP = m_cset_Btag->at("deepJet_wp_values")->evaluate({"M"});
+      m_BtagTightWP = m_cset_Btag->at("deepJet_wp_values")->evaluate({"T"});
+      if(m_year > 2018){
+        m_BtagVeryTightWP = m_cset_Btag->at("deepJet_wp_values")->evaluate({"XT"});
+        m_BtagVeryVeryTightWP = m_cset_Btag->at("deepJet_wp_values")->evaluate({"XXT"});
+      }
+    }
+    else{
+      m_BtagLooseWP = m_cset_Btag->at("UParTAK4_wp_values")->evaluate({"L"});
+      m_BtagMediumWP = m_cset_Btag->at("UParTAK4_wp_values")->evaluate({"M"});
+      m_BtagTightWP = m_cset_Btag->at("UParTAK4_wp_values")->evaluate({"T"});
+      m_BtagVeryTightWP = m_cset_Btag->at("UParTAK4_wp_values")->evaluate({"XT"});
+      m_BtagVeryVeryTightWP = m_cset_Btag->at("UParTAK4_wp_values")->evaluate({"XXT"});
     }
   }
 }
@@ -491,9 +504,9 @@ std::string AnalysisBase<Base>::getJMEDataEra() const {
   }
 
   // Future years / simple passthrough to keep code safe
-  if (m_year == 2024) return "Era2024";
-  if (m_year == 2025) return "Era2025";
-  if (m_year == 2026) return "Era2026";
+  if (m_year == 2024) return "Era2024All";
+  if (m_year == 2025) return "Era2025All";
+  if (m_year == 2026) return "Era2026All";
 
   return "";
 }
@@ -556,6 +569,8 @@ void AnalysisBase<Base>::AddJMEFolder(const std::string& jmefold) {
     else if(m_year == 2022 && m_IsEE) METPhi_file = find_clib_file(jmefold, "met_xyCorrections_2022_2022EE.json.gz");
     else if(m_year == 2023 && !m_IsBPix) METPhi_file = find_clib_file(jmefold, "met_xyCorrections_2023_2023.json.gz");
     else if(m_year == 2023 && m_IsBPix) METPhi_file = find_clib_file(jmefold, "met_xyCorrections_2023_2023BPix.json.gz");
+    // placeholder
+    else if(m_year > 2023) METPhi_file = find_clib_file("/cvmfs/cms-griddata.cern.ch/cat/metadata/JME/", "met_xyCorrections_2023_2023BPix.json.gz", normalize_filetag("Summer23BPix_130X"));
     m_cset_METPhi = correction::CorrectionSet::from_file(METPhi_file);
     m_jmeYearKey = getJMEYearKey();
     m_JMEera = getJMEDataEra();
@@ -709,81 +724,97 @@ TVector3 AnalysisBase<Base>::GetAltMET(){
 
 template <class Base>
 bool AnalysisBase<Base>::GetMETtrigger(){
+  if(IsFastSim()) return true;
   return false;
 }
 
 template <class Base>
 bool AnalysisBase<Base>::GetMETORtrigger(){
+  if(IsFastSim()) return true;
   return false;
 }
 
 template <class Base>
 bool AnalysisBase<Base>::GetMETDoubleMutrigger(){
+  if(IsFastSim()) return true;
   return false;
 }
 
 template <class Base>
 bool AnalysisBase<Base>::GetSingleElectrontrigger(){
+  if(IsFastSim()) return true;
   return false;
 }
 
 template <class Base>
 bool AnalysisBase<Base>::GetSingleMuontrigger(){
+  if(IsFastSim()) return true;
   return false;
 }
 
 template <class Base>
 bool AnalysisBase<Base>::GetDoubleElectrontrigger(){
+  if(IsFastSim()) return true;
   return false;
 }
 
 template <class Base>
 bool AnalysisBase<Base>::GetDoubleMuontrigger(){
+  if(IsFastSim()) return true;
   return false;
 }
 
 template <class Base>
 bool AnalysisBase<Base>::GetTripleElectrontrigger(){
+  if(IsFastSim()) return true;
   return false;
 }
 
 template <class Base>
 bool AnalysisBase<Base>::GetTripleMuonLowPTtrigger(){
+  if(IsFastSim()) return true;
   return false;
 }
 
 template <class Base>
 bool AnalysisBase<Base>::GetTripleMuonHighPTtrigger(){
+  if(IsFastSim()) return true;
   return false;
 }
 
 template <class Base>
 bool AnalysisBase<Base>::GetDiMuEleLowPTtrigger(){
+  if(IsFastSim()) return true;
   return false;
 }
 
 template <class Base>
 bool AnalysisBase<Base>::GetDiMuEleHighPTtrigger(){
+  if(IsFastSim()) return true;
   return false;
 }
 
 template <class Base>
 bool AnalysisBase<Base>::GetDiEleMutrigger(){
+  if(IsFastSim()) return true;
   return false;
 }
 
 template <class Base>
 bool AnalysisBase<Base>::GetEMutrigger(){
+  if(IsFastSim()) return true;
   return false;
 }
 
 template <class Base>
 bool AnalysisBase<Base>::GetEMuMutrigger(){
+  if(IsFastSim()) return true;
   return false;
 }
 
 template <class Base>
 bool AnalysisBase<Base>::GetEMuEtrigger(){
+  if(IsFastSim()) return true;
   return false;
 }
 
@@ -970,13 +1001,7 @@ int AnalysisBase<Base>::extract_nano_version(const std::string& dirname) {
 }
 
 template <class Base>
-std::string AnalysisBase<Base>::find_clib_file(const std::string& fold, const std::string& filename) {
-    // normalize_filetag makes a modifiable copy and applies UL->Run2 mapping
-    string filetag = m_FileTag;
-    clip_string(filetag, "_Data");
-    clip_string(filetag, "_SMS");
-    clip_string(filetag, "_Cascades");
-    filetag = normalize_filetag(filetag);
+std::string AnalysisBase<Base>::_find_clib_file(const std::string& fold, const std::string& filename, const std::string& filetag) {
     std::vector<std::pair<int, fs::path>> matches;
 
     // Decide how to search to avoid accidental matches (e.g. Summer22 vs Summer22EE).
@@ -1026,6 +1051,22 @@ std::string AnalysisBase<Base>::find_clib_file(const std::string& fold, const st
     }
 
     return best->second.string();
+}
+
+template <class Base>
+std::string AnalysisBase<Base>::find_clib_file(const std::string& fold, const std::string& filename) {
+    // normalize_filetag makes a modifiable copy and applies UL->Run2 mapping
+    string filetag = m_FileTag;
+    clip_string(filetag, "_Data");
+    clip_string(filetag, "_SMS");
+    clip_string(filetag, "_Cascades");
+    filetag = normalize_filetag(filetag);
+    return _find_clib_file(fold, filename, filetag);
+}
+
+template <class Base>
+std::string AnalysisBase<Base>::find_clib_file(const std::string& fold, const std::string& filename, const std::string& filetag) {
+    return _find_clib_file(fold, filename, filetag);
 }
 
 /////////////////////////////////////////////////
@@ -2001,6 +2042,7 @@ bool AnalysisBase<SUSYNANOBase>::PassEventFilter(){
 
 template <>
 bool AnalysisBase<SUSYNANOBase>::GetMETtrigger(){
+  if(IsFastSim()) return true;
   if(m_year == 2016)
     return (HLT_PFMET120_PFMHT120_IDTight ||
 	    HLT_PFMETNoMu120_PFMHTNoMu120_IDTight);
@@ -2014,6 +2056,7 @@ bool AnalysisBase<SUSYNANOBase>::GetMETtrigger(){
   
 template <>
 bool AnalysisBase<SUSYNANOBase>::GetMETORtrigger(){
+  if(IsFastSim()) return true;
   if(m_year == 2016)
     return (HLT_PFMETNoMu90_PFMHTNoMu90_IDTight ||
 	    HLT_PFMETNoMu100_PFMHTNoMu100_IDTight ||
@@ -2040,6 +2083,7 @@ bool AnalysisBase<SUSYNANOBase>::GetMETORtrigger(){
 
 template <>
 bool AnalysisBase<SUSYNANOBase>::GetMETDoubleMutrigger(){
+  if(IsFastSim()) return true;
   if(m_year == 2016)
      return HLT_DoubleMu3_PFMET50;
   else return HLT_DoubleMu3_DZ_PFMET50_PFMHT60;
@@ -2047,6 +2091,7 @@ bool AnalysisBase<SUSYNANOBase>::GetMETDoubleMutrigger(){
 
 template <>
 bool AnalysisBase<SUSYNANOBase>::GetSingleElectrontrigger(){
+  if(IsFastSim()) return true;
   if(m_year == 2016)
     return (HLT_Ele27_WPTight_Gsf);
   if(m_year == 2017 ||
@@ -2057,6 +2102,7 @@ bool AnalysisBase<SUSYNANOBase>::GetSingleElectrontrigger(){
 
 template <>
 bool AnalysisBase<SUSYNANOBase>::GetSingleMuontrigger(){
+  if(IsFastSim()) return true;
   if(m_year == 2016 ||
      m_year == 2017 ||
      m_year == 2018  )
@@ -2067,6 +2113,7 @@ bool AnalysisBase<SUSYNANOBase>::GetSingleMuontrigger(){
 
 template <>
 bool AnalysisBase<SUSYNANOBase>::GetDoubleElectrontrigger(){
+  if(IsFastSim()) return true;
   if(m_year == 2016 ||
      m_year == 2017 ||
      m_year == 2018  )
@@ -2076,6 +2123,7 @@ bool AnalysisBase<SUSYNANOBase>::GetDoubleElectrontrigger(){
 
 template <>
 bool AnalysisBase<SUSYNANOBase>::GetDoubleMuontrigger(){
+  if(IsFastSim()) return true;
   if(m_year == 2016 ||
      m_year == 2017 ||
      m_year == 2018  )
@@ -2085,11 +2133,13 @@ bool AnalysisBase<SUSYNANOBase>::GetDoubleMuontrigger(){
 
 template <>
 bool AnalysisBase<SUSYNANOBase>::GetTripleElectrontrigger(){
+  if(IsFastSim()) return true;
   return HLT_Ele16_Ele12_Ele8_CaloIdL_TrackIdL;
 }
 
 template <>
 bool AnalysisBase<SUSYNANOBase>::GetTripleMuonLowPTtrigger(){
+  if(IsFastSim()) return true;
   if(m_year == 2016)
     return HLT_TripleMu_5_3_3_DZ_Mass3p8;
   else if(m_year == 2017)
@@ -2107,6 +2157,7 @@ bool AnalysisBase<SUSYNANOBase>::GetTripleMuonLowPTtrigger(){
 
 template <>
 bool AnalysisBase<SUSYNANOBase>::GetTripleMuonHighPTtrigger(){
+  if(IsFastSim()) return true;
   if(m_year == 2016)
     return HLT_TripleMu_12_10_5;
   else if(m_year == 2017)
@@ -2122,34 +2173,40 @@ bool AnalysisBase<SUSYNANOBase>::GetTripleMuonHighPTtrigger(){
 
 template <>
 bool AnalysisBase<SUSYNANOBase>::GetDiMuEleLowPTtrigger(){
+  if(IsFastSim()) return true;
   if(m_year == 2018) return HLT_DiMu4_Ele9_CaloIdL_TrackIdL_DZ_Mass3p8;
   else return false;
 }
 
 template <>
 bool AnalysisBase<SUSYNANOBase>::GetDiMuEleHighPTtrigger(){
+  if(IsFastSim()) return true;
   if(m_year == 2016) return HLT_DiMu9_Ele9_CaloIdL_TrackIdL;
   else return HLT_DiMu9_Ele9_CaloIdL_TrackIdL || HLT_DiMu9_Ele9_CaloIdL_TrackIdL_DZ;
 }
 
 template <>
 bool AnalysisBase<SUSYNANOBase>::GetDiEleMutrigger(){
+  if(IsFastSim()) return true;
   if(m_year == 2016) return HLT_Mu8_DiEle12_CaloIdL_TrackIdL;
   else return HLT_Mu8_DiEle12_CaloIdL_TrackIdL_DZ || HLT_Mu8_DiEle12_CaloIdL_TrackIdL;
 }
 
 template <>
 bool AnalysisBase<SUSYNANOBase>::GetEMutrigger(){
+  if(IsFastSim()) return true;
   return HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ || HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ;
 }
 
 template <>
 bool AnalysisBase<SUSYNANOBase>::GetEMuMutrigger(){
+  if(IsFastSim()) return true;
   return HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ;
 }
 
 template <>
 bool AnalysisBase<SUSYNANOBase>::GetEMuEtrigger(){
+  if(IsFastSim()) return true;
   return HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ;
 }
 
@@ -2848,8 +2905,6 @@ ParticleList AnalysisBase<SUSYNANOBase>::GetJetsMET(TVector3& MET, int id){
       if(DO_JER)
         SF = m_JMETool.GetJERSFFactor(m_year,Jet_eta[i],delta);
        
-      //cout << SF << " " << JER << " " << Jet_pt[i] << " " << Jet_eta[i] << " " << Njet << " " << nGenJet <<  endl;
-      
       // check for gen jet matching:
       bool gen_match = false;
       Particle genJet;
@@ -2996,6 +3051,80 @@ ParticleList AnalysisBase<SUSYNANOBase>::GetJets(int id){
 
 template <>
 ParticleList AnalysisBase<SUSYNANOBase>::GetElectrons(){
+// test use UL version
+
+  ParticleList list;
+
+  int N = nElectron;
+  for(int i = 0; i < N; i++){
+    // baseline lepton definition
+    if(Electron_pt[i] < 5. || fabs(Electron_eta[i]) > 2.5) // go down to 5 since no low pt ele
+      continue;
+    if(Electron_pt[i] < 10. && fabs(Electron_eta[i]) > 1.4442) // remove low pt endcap ele
+      continue;
+    if(fabs(Electron_eta[i]) >= 1.4442 && fabs(Electron_eta[i]) <= 1.566)
+      continue;
+    if(fabs(Electron_dxy[i]) >= 0.05 || fabs(Electron_dz[i]) >= 0.1 ||
+       Electron_sip3d[i] >= 6.)
+      continue;
+    if(Electron_pfRelIso03_all[i]*Electron_pt[i] >= 20. + 300./Electron_pt[i])
+      continue;
+    if(!minus_iso_hoe(Electron_vidNestedWPBitmap[i], 2, std::greater_equal<int>()))
+      continue;
+    if(Electron_lostHits[i] != 0)
+      continue;
+    if(Electron_convVeto[i] == 0)
+      continue;
+
+    Particle lep;
+    lep.SetPtEtaPhiM(Electron_pt[i], Electron_eta[i],
+		     Electron_phi[i], std::max(Electron_mass[i],float(1.e-6)));
+    lep.SetPDGID( (Electron_charge[i] < 0. ? 11 : -11) );
+    lep.SetCharge( (Electron_charge[i] < 0. ? -1 : 1) );
+
+    lep.SetDxy(Electron_dxy[i]);
+    lep.SetDxyErr(Electron_dxyErr[i]);
+    lep.SetDz(Electron_dz[i]);
+    lep.SetDzErr(Electron_dzErr[i]);
+    lep.SetIP3D(Electron_ip3d[i]);
+    lep.SetSIP3D(Electron_sip3d[i]);
+    lep.SetIsLowPt(false);
+    lep.SetTightCharge(Electron_tightCharge[i]);
+    lep.SetParticleID(kVeryLoose); // need to set to something
+
+    lep.SetRelIso(Electron_pfRelIso03_all[i]);
+    lep.SetMiniIso(Electron_miniPFRelIso_all[i]);
+    if( ( Electron_pt[i] < 20. && (
+          lep.MiniIso()*lep.Pt() >= 4. || 
+          lep.RelIso()*lep.Pt() >= 4. ||
+          !minus_iso_hoe(Electron_vidNestedWPBitmap[i], 4, std::greater_equal<int>())
+        )) ||
+        ( Electron_pt[i] >= 20. && (
+          !Electron_mvaFall17V2Iso_WP90[i]
+        ))
+      ) 
+        lep.SetLepQual(kBronze);
+    else if(( Electron_pt[i] < 20. && (
+          lep.MiniIso()*lep.Pt() < 4. && 
+          lep.RelIso()*lep.Pt() < 4. &&
+          minus_iso_hoe(Electron_vidNestedWPBitmap[i], 4, std::greater_equal<int>())
+        )) ||
+        ( Electron_pt[i] >= 20. && (
+          Electron_mvaFall17V2Iso_WP90[i]
+        ))
+      )
+    { 
+      if(lep.SIP3D() >= 3.)
+        lep.SetLepQual(kSilver);
+      else
+        lep.SetLepQual(kGold);
+    }
+    list.push_back(lep);
+
+  } // for(int i = 0; i < N; i++)
+  return list;
+// end test
+/*
   ParticleList list;
 
   int N = nElectron;
@@ -3397,10 +3526,64 @@ ParticleList AnalysisBase<SUSYNANOBase>::GetElectrons(){
     list.push_back(lep);
   }
   return list;
+*/
 }
 
 template <>
 ParticleList AnalysisBase<SUSYNANOBase>::GetMuons(){
+// test use UL version
+  ParticleList list;
+
+  int N = nMuon;
+  for(int i = 0; i < N; i++){
+    // baseline lepton definition
+    if(Muon_pt[i] < 3. || fabs(Muon_eta[i]) > 2.4)
+      continue;
+    if(fabs(Muon_dxy[i]) >= 0.05 || fabs(Muon_dz[i]) >= 0.1 || Muon_sip3d[i] >= 6.)
+      continue;
+    if(Muon_pfRelIso03_all[i]*Muon_pt[i] >= 20. + 300./Muon_pt[i])
+      continue;
+    if(Muon_pt[i] < 6. && fabs(Muon_eta[i]) > 1.2) continue; // remove low pt endcap muon
+    
+    Particle lep;
+    lep.SetPtEtaPhiM(Muon_pt[i], Muon_eta[i],
+		     Muon_phi[i], std::max(float(0.),Muon_mass[i]));
+    lep.SetPDGID( (Muon_charge[i] < 0. ? 13 : -13) );
+    lep.SetCharge( (Muon_charge[i] < 0. ? -1 : 1) );	
+    lep.SetDxy(Muon_dxy[i]);
+    lep.SetDxyErr(Muon_dxyErr[i]);
+    lep.SetDz(Muon_dz[i]);
+    lep.SetDzErr(Muon_dzErr[i]);
+    lep.SetIP3D(Muon_ip3d[i]);
+    lep.SetSIP3D(Muon_sip3d[i]);
+    lep.SetIsLowPt(false);
+    lep.SetTightCharge(Muon_tightCharge[i]);
+
+    lep.SetRelIso(Muon_pfRelIso03_all[i]);
+    lep.SetMiniIso(Muon_miniPFRelIso_all[i]);
+
+    // FO baseline criteria
+    lep.SetParticleID(kLoose);
+
+    // signal lep criteria
+    if(Muon_tightId[i])
+      lep.SetParticleID(kTight);
+    else if(Muon_mediumId[i])
+      lep.SetParticleID(kMedium);
+    if(lep.ParticleID() < kTight || lep.MiniIso()*lep.Pt() >= 4. || lep.RelIso()*lep.Pt() >= 4.)
+      lep.SetLepQual(kBronze);
+    else if(lep.SIP3D() >= 3.)
+      lep.SetLepQual(kSilver);
+    else
+      lep.SetLepQual(kGold);
+    list.push_back(lep);
+  }
+  return list;
+
+// end test
+/*
+
+
   ParticleList list;
 
   int N = nMuon;
@@ -3451,6 +3634,7 @@ ParticleList AnalysisBase<SUSYNANOBase>::GetMuons(){
     list.push_back(lep);
   }
   return list;
+*/
 }
 
 /////////////////////////////////////////////////
@@ -3526,6 +3710,7 @@ double AnalysisBase<NANOULBase>::EGvalue(int jetIndex, int updown){
 
 template <>
 bool AnalysisBase<NANOULBase>::GetMETtrigger(){
+  if(IsFastSim()) return true;
   if(m_year == 2016)
     return (HLT_PFMET120_PFMHT120_IDTight ||
 	    HLT_PFMETNoMu120_PFMHTNoMu120_IDTight);
@@ -3540,6 +3725,7 @@ bool AnalysisBase<NANOULBase>::GetMETtrigger(){
 
 template <>
 bool AnalysisBase<NANOULBase>::GetMETORtrigger(){
+  if(IsFastSim()) return true;
   if(m_year == 2016)
     return (HLT_PFMETNoMu90_PFMHTNoMu90_IDTight ||
 	    HLT_PFMETNoMu100_PFMHTNoMu100_IDTight ||
@@ -3566,6 +3752,7 @@ bool AnalysisBase<NANOULBase>::GetMETORtrigger(){
 
 template <>
 bool AnalysisBase<NANOULBase>::GetMETDoubleMutrigger(){
+  if(IsFastSim()) return true;
   if(m_year == 2016)
      return HLT_DoubleMu3_PFMET50;
   else return HLT_DoubleMu3_DZ_PFMET50_PFMHT60;
@@ -3573,6 +3760,7 @@ bool AnalysisBase<NANOULBase>::GetMETDoubleMutrigger(){
 
 template <>
 bool AnalysisBase<NANOULBase>::GetSingleElectrontrigger(){
+  if(IsFastSim()) return true;
   if(m_year == 2016)
     return (HLT_Ele27_WPTight_Gsf);
   if(m_year == 2017)
@@ -3584,26 +3772,31 @@ bool AnalysisBase<NANOULBase>::GetSingleElectrontrigger(){
 
 template <>
 bool AnalysisBase<NANOULBase>::GetSingleMuontrigger(){
+  if(IsFastSim()) return true;
   return HLT_IsoMu24;
 }
 
 template <>
 bool AnalysisBase<NANOULBase>::GetDoubleElectrontrigger(){
+  if(IsFastSim()) return true;
   return HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL;
 }
 
 template <>
 bool AnalysisBase<NANOULBase>::GetDoubleMuontrigger(){
+  if(IsFastSim()) return true;
   return HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL;
 }
 
 template <>
 bool AnalysisBase<NANOULBase>::GetTripleElectrontrigger(){
+  if(IsFastSim()) return true;
   return HLT_Ele16_Ele12_Ele8_CaloIdL_TrackIdL;
 }
 
 template <>
 bool AnalysisBase<NANOULBase>::GetTripleMuonLowPTtrigger(){
+  if(IsFastSim()) return true;
   if(m_year == 2016)
     return HLT_TripleMu_5_3_3_DZ_Mass3p8;
   else if(m_year == 2017)
@@ -3621,6 +3814,7 @@ bool AnalysisBase<NANOULBase>::GetTripleMuonLowPTtrigger(){
 
 template <>
 bool AnalysisBase<NANOULBase>::GetTripleMuonHighPTtrigger(){
+  if(IsFastSim()) return true;
   if(m_year == 2016)
     return HLT_TripleMu_12_10_5;
   else if(m_year == 2017)
@@ -3636,34 +3830,40 @@ bool AnalysisBase<NANOULBase>::GetTripleMuonHighPTtrigger(){
 
 template <>
 bool AnalysisBase<NANOULBase>::GetDiMuEleLowPTtrigger(){
+  if(IsFastSim()) return true;
   if(m_year == 2018) return HLT_DiMu4_Ele9_CaloIdL_TrackIdL_DZ_Mass3p8;
   else return false;
 }
 
 template <>
 bool AnalysisBase<NANOULBase>::GetDiMuEleHighPTtrigger(){
+  if(IsFastSim()) return true;
   if(m_year == 2016) return HLT_DiMu9_Ele9_CaloIdL_TrackIdL;
   else return HLT_DiMu9_Ele9_CaloIdL_TrackIdL || HLT_DiMu9_Ele9_CaloIdL_TrackIdL_DZ;
 }
 
 template <>
 bool AnalysisBase<NANOULBase>::GetDiEleMutrigger(){
+  if(IsFastSim()) return true;
   if(m_year == 2016) return HLT_Mu8_DiEle12_CaloIdL_TrackIdL;
   else return HLT_Mu8_DiEle12_CaloIdL_TrackIdL_DZ || HLT_Mu8_DiEle12_CaloIdL_TrackIdL;
 }
 
 template <>
 bool AnalysisBase<NANOULBase>::GetEMutrigger(){
+  if(IsFastSim()) return true;
   return HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ || HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ;
 }
 
 template <>
 bool AnalysisBase<NANOULBase>::GetEMuMutrigger(){
+  if(IsFastSim()) return true;
   return HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ;
 }
 
 template <>
 bool AnalysisBase<NANOULBase>::GetEMuEtrigger(){
+  if(IsFastSim()) return true;
   return HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ;
 }
 
@@ -4821,6 +5021,7 @@ bool AnalysisBase<NANORun3>::PassEventFilter(){
 
 template <>
 bool AnalysisBase<NANORun3>::GetMETtrigger(){
+  if(IsFastSim()) return true;
 // https://cmshltinfo.app.cern.ch/summary?search=HLT_PFMET&year=2023&paths=true&prescaled=true&stream-types=Physics
   return (HLT_PFMET120_PFMHT120_IDTight ||
     HLT_PFMETNoMu120_PFMHTNoMu120_IDTight ||
@@ -4830,6 +5031,7 @@ bool AnalysisBase<NANORun3>::GetMETtrigger(){
 
 template <>
 bool AnalysisBase<NANORun3>::GetMETORtrigger(){
+  if(IsFastSim()) return true;
   return (//HLT_PFMET110_PFMHT110_IDTight ||
     HLT_PFMET120_PFMHT120_IDTight ||
     HLT_PFMET130_PFMHT130_IDTight ||
@@ -4844,36 +5046,43 @@ bool AnalysisBase<NANORun3>::GetMETORtrigger(){
 
 template <>
 bool AnalysisBase<NANORun3>::GetMETDoubleMutrigger(){
+  if(IsFastSim()) return true;
   return HLT_DoubleMu3_DZ_PFMET50_PFMHT60;
 }
 
 template <>
 bool AnalysisBase<NANORun3>::GetSingleElectrontrigger(){
+  if(IsFastSim()) return true;
   return HLT_Ele30_WPTight_Gsf;
 }
 
 template <>
 bool AnalysisBase<NANORun3>::GetSingleMuontrigger(){
+  if(IsFastSim()) return true;
   return HLT_IsoMu24;
 }
 
 template <>
 bool AnalysisBase<NANORun3>::GetDoubleElectrontrigger(){
+  if(IsFastSim()) return true;
   return HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL;
 }
 
 template <>
 bool AnalysisBase<NANORun3>::GetDoubleMuontrigger(){
+  if(IsFastSim()) return true;
   return HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL;
 }
 
 template <>
 bool AnalysisBase<NANORun3>::GetTripleElectrontrigger(){
+  if(IsFastSim()) return true;
   return HLT_Ele16_Ele12_Ele8_CaloIdL_TrackIdL;
 }
 
 template <>
 bool AnalysisBase<NANORun3>::GetTripleMuonLowPTtrigger(){
+  if(IsFastSim()) return true;
   return (HLT_TripleMu_5_3_3_Mass3p8_DZ ||
           HLT_TripleMu_5_3_3_Mass3p8_DCA
          );
@@ -4881,6 +5090,7 @@ bool AnalysisBase<NANORun3>::GetTripleMuonLowPTtrigger(){
 
 template <>
 bool AnalysisBase<NANORun3>::GetTripleMuonHighPTtrigger(){
+  if(IsFastSim()) return true;
   return (HLT_TripleMu_12_10_5 ||
           HLT_TripleMu_10_5_5_DZ
          );
@@ -4888,31 +5098,37 @@ bool AnalysisBase<NANORun3>::GetTripleMuonHighPTtrigger(){
 
 template <>
 bool AnalysisBase<NANORun3>::GetDiMuEleLowPTtrigger(){
+  if(IsFastSim()) return true;
   return HLT_DiMu4_Ele9_CaloIdL_TrackIdL_DZ_Mass3p8;
 }
 
 template <>
 bool AnalysisBase<NANORun3>::GetDiMuEleHighPTtrigger(){
+  if(IsFastSim()) return true;
   return HLT_DiMu9_Ele9_CaloIdL_TrackIdL || HLT_DiMu9_Ele9_CaloIdL_TrackIdL_DZ;
 }
 
 template <>
 bool AnalysisBase<NANORun3>::GetDiEleMutrigger(){
+  if(IsFastSim()) return true;
   return HLT_Mu8_DiEle12_CaloIdL_TrackIdL_DZ || HLT_Mu8_DiEle12_CaloIdL_TrackIdL;
 }
 
 template <>
 bool AnalysisBase<NANORun3>::GetEMutrigger(){
+  if(IsFastSim()) return true;
   return HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ || HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ;
 }
 
 template <>
 bool AnalysisBase<NANORun3>::GetEMuMutrigger(){
+  if(IsFastSim()) return true;
   return HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ;
 }
 
 template <>
 bool AnalysisBase<NANORun3>::GetEMuEtrigger(){
+  if(IsFastSim()) return true;
   return HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ;
 }
 

@@ -267,6 +267,8 @@ private:
   int extract_nano_version(const std::string& dirname);
   std::string normalize_tag(const std::string& filetag);
   std::string normalize_filetag(const std::string& tag);
+  std::string _find_clib_file(const std::string& fold, const std::string& filename, const std::string& filetag);
+  std::string find_clib_file(const std::string& fold, const std::string& filename, const std::string& filetag);
   std::string find_clib_file(const std::string& fold, const std::string& filename);
 
   std::string m_jmeYearKey;

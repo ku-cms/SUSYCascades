@@ -293,7 +293,6 @@ int main(int argc, char* argv[]) {
   std::visit([&](auto& nt) { nt->AddXSecJSON(string(XSJSONFILE)); }, ntuple);
   #ifdef _CMSSW_
   if(!DO_SMS && !IS_DATA && !DO_CASCADES)
-    //ntuple->AddLHAPDF();
     std::visit([](auto& nt) { nt->AddLHAPDF(); }, ntuple);
   #endif
 
