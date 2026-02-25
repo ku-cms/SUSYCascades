@@ -279,7 +279,7 @@ int main(int argc, char* argv[]) {
   if(DO_CASCADES) std::visit([](auto& nt) { nt->DoCascades(); }, ntuple);
   if(DO_PRIVATEMC) std::visit([](auto& nt) { nt->DoPrivateMC(); }, ntuple);
 
-  std::visit([&](auto& nt) { nt->AddLabels(string(DataSet),string(FileTag)); }, ntuple);
+  std::visit([&](auto& nt) { nt->AddLabels(string(DataSet),string(FileTag),string(DAS_filename)); }, ntuple);
   std::visit([&](auto& nt) { nt->AddEventCountFile(string(EventCount)); }, ntuple);
   std::visit([&](auto& nt) { nt->AddFilterEffFile(string(FilterEff)); }, ntuple);
   std::visit([&](auto& nt) { nt->AddPUFolder(string(PUFOLD)); }, ntuple);

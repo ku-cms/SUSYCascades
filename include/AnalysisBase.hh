@@ -53,7 +53,7 @@ public:
   AnalysisBase(TTree* tree = 0);
   virtual ~AnalysisBase();
 
-  void AddLabels(const string& dataset, const string& filetag);
+  void AddLabels(const string& dataset, const string& filetag, const string& DAS_filename);
   void AddEventCountFile(const string& rootfile);
   void AddFilterEffFile(const string& rootfile);
   void AddJSONFile(const string& jsonfile);
@@ -211,6 +211,7 @@ protected:
   bool m_IsEE = false;
   bool m_IsBPix = false;
   bool m_IsRun3 = false;
+  bool m_NanoV15 = false;
 
   Systematics m_Systematics;
   std::string m_JMEYearOverride{};

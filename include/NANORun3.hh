@@ -314,6 +314,8 @@ public :
    Float_t         Jet_phi[17];   //[nJet]
    Float_t         Jet_pt[17];   //[nJet]
    Float_t         Jet_rawFactor[17];   //[nJet]
+   Short_t         Jet_chMultiplicity[17];   //[nJet]
+   Short_t         Jet_neMultiplicity[17];   //[nJet]
    UChar_t         LHE_Njets;
    UChar_t         LHE_Nb;
    UChar_t         LHE_Nc;
@@ -2028,6 +2030,8 @@ Float_t            fixedGridRhoFastjetAll;
    TBranch        *b_Jet_phi;   //!
    TBranch        *b_Jet_pt;   //!
    TBranch        *b_Jet_rawFactor;   //!
+   TBranch        *b_Jet_chMultiplicity;   //!
+   TBranch        *b_Jet_neMultiplicity;   //!
    TBranch        *b_LHE_Njets;   //!
    TBranch        *b_LHE_Nb;   //!
    TBranch        *b_LHE_Nc;   //!
@@ -3810,6 +3814,8 @@ inline void NANORun3::Init(TTree *tree)
    fChain->SetBranchAddress("Jet_phi", &Jet_phi, &b_Jet_phi);
    fChain->SetBranchAddress("Jet_pt", &Jet_pt, &b_Jet_pt);
    fChain->SetBranchAddress("Jet_rawFactor", &Jet_rawFactor, &b_Jet_rawFactor);
+   fChain->SetBranchAddress("Jet_chMultiplicity", &Jet_chMultiplicity, &b_Jet_chMultiplicity);
+   fChain->SetBranchAddress("Jet_neMultiplicity", &Jet_neMultiplicity, &b_Jet_neMultiplicity);
    fChain->SetBranchAddress("LHE_Njets", &LHE_Njets, &b_LHE_Njets);
    fChain->SetBranchAddress("LHE_Nb", &LHE_Nb, &b_LHE_Nb);
    fChain->SetBranchAddress("LHE_Nc", &LHE_Nc, &b_LHE_Nc);

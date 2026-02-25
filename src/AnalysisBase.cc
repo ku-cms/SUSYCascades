@@ -153,7 +153,7 @@ double AnalysisBase<Base>::GetFilterEff(){
 }
 
 template <class Base>
-void AnalysisBase<Base>::AddLabels(const string& dataset, const string& filetag){
+void AnalysisBase<Base>::AddLabels(const string& dataset, const string& filetag, const string& DAS_filename){
   m_DataSet = dataset;
   m_FileTag = filetag;
   m_year = 2016;
@@ -173,6 +173,7 @@ void AnalysisBase<Base>::AddLabels(const string& dataset, const string& filetag)
   if(m_FileTag.find("SMS") != std::string::npos) DoSMS();
   if(m_FileTag.find("Data") != std::string::npos) DoData();
   m_XsecTool.SetFileTag(filetag);
+  if(DAS_filename.find("NANOv15") != std::string::npos) m_NanoV15 = true;
 }
 
 template <class Base>
@@ -5954,18 +5955,43 @@ ParticleList AnalysisBase<NANORun3>::GetJetsMET(TVector3& MET, int id) {
       jet.SetPtEtaPhiM(jet.Pt() * jesSystFactor, jet.Eta(), jet.Phi(), mass);
     }
 
-    // --- Jet selection ---
     if (Jet_pt[i] < 15. || fabs(Jet_eta[i]) > 5.) continue;
-    if (Jet_jetId[i] < id) continue;
-
-    // ensure jet meta-info filled for data & MC
-    jet.SetjetID(Jet_jetId[i]);
     jet.SetChEmEF(Jet_chEmEF[i]);
     jet.SetNeEmEF(Jet_neEmEF[i]);
 
-    if (Jet_jetId[i] >= 3) jet.SetParticleID(kTight);
-    else if (Jet_jetId[i] >= 2) jet.SetParticleID(kMedium);
-    else if (Jet_jetId[i] >= 1) jet.SetParticleID(kLoose);
+    // --- Jet ID selection ---
+    bool Jet_passJetIdTight = false;
+    bool Jet_passJetIdTightLepVeto = false;
+
+    // --- Nano v12 ---
+    if(!m_NanoV15) {
+        if (abs(Jet_eta[i]) <= 2.7) Jet_passJetIdTight = Jet_jetId[i] & (1 << 1);
+        else if (abs(Jet_eta[i]) > 2.7 && abs(Jet_eta[i]) <= 3.0) Jet_passJetIdTight = (Jet_jetId[i] & (1 << 1)) && (Jet_neHEF[i] < 0.99);
+        else if (abs(Jet_eta[i]) > 3.0) Jet_passJetIdTight = (Jet_jetId[i] & (1 << 1)) && (Jet_neEmEF[i] < 0.4);
+        
+        if (abs(Jet_eta[i]) <= 2.7) Jet_passJetIdTightLepVeto = Jet_passJetIdTight && (Jet_muEF[i] < 0.8) && (Jet_chEmEF[i] < 0.8);
+        else Jet_passJetIdTightLepVeto = Jet_passJetIdTight;
+    }
+    
+    // --- Nano v15 ---
+    // Need to eventually update to use correction lib
+    else {
+        if (abs(Jet_eta[i]) <= 2.6)
+          Jet_passJetIdTight = (Jet_neHEF[i] < 0.99) && (Jet_neEmEF[i] < 0.9) && (Jet_chMultiplicity[i]+Jet_neMultiplicity[i] > 1) && (Jet_chHEF[i] > 0.01) && (Jet_chMultiplicity[i] > 0);
+        else if (abs(Jet_eta[i]) > 2.6 && abs(Jet_eta[i]) <= 2.7)
+          Jet_passJetIdTight = (Jet_neHEF[i] < 0.90) && (Jet_neEmEF[i] < 0.99);
+        else if (abs(Jet_eta[i]) > 2.7 && abs(Jet_eta[i]) <= 3.0)
+          Jet_passJetIdTight = (Jet_neHEF[i] < 0.99);
+        else if (abs(Jet_eta[i]) > 3.0)
+          Jet_passJetIdTight = (Jet_neMultiplicity[i] >= 2) && (Jet_neEmEF[i] < 0.4);
+        
+        if (abs(Jet_eta[i]) <= 2.7) Jet_passJetIdTightLepVeto = Jet_passJetIdTight && (Jet_muEF[i] < 0.8) && (Jet_chEmEF[i] < 0.8);
+        else Jet_passJetIdTightLepVeto = Jet_passJetIdTight;
+    }
+
+    // --- Jet ID check ---
+    if (id >= 3 && !Jet_passJetIdTightLepVeto) continue;
+    else if (id < 3 && id > 0 && !Jet_passJetIdTight) continue;
 
     // --- B-tagging ---
     jet.SetBtag(Jet_btagDeepFlavB[i]);
