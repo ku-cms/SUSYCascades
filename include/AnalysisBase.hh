@@ -249,12 +249,14 @@ private:
   const Systematic* m_CurSys;
   const Systematic& CurrentSystematic() const;
   std::unique_ptr<correction::CorrectionSet> m_cset_Btag;
-  std::unique_ptr<correction::CorrectionSet> m_cset_METPhi;
   double m_BtagLooseWP;
   double m_BtagMediumWP;
   double m_BtagTightWP;
   double m_BtagVeryTightWP;
   double m_BtagVeryVeryTightWP;
+  std::unique_ptr<correction::CorrectionSet> m_cset_METPhi;
+  std::unique_ptr<correction::CorrectionSet> m_cset_PU;
+  std::shared_ptr<const correction::Correction> m_cset_corr_PU;
   virtual void clip_string(string& str, const string& clip){
     size_t pos = str.find(clip);
     if (pos != std::string::npos)

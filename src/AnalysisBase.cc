@@ -193,7 +193,24 @@ void AnalysisBase<Base>::AddJSONFile(const string& jsonfile){
 
 template <class Base>
 void AnalysisBase<Base>::AddPUFolder(const string& pufold){
-  m_PUTool.BuildMap(pufold);
+  if(!m_IsUL and m_year < 2019)
+      m_PUTool.BuildMap(pufold);
+  else {
+    std::string PU_file = "";
+    if(m_year < 2024)
+      PU_file = find_clib_file(pufold, "puWeights.json.gz");
+    else
+      PU_file = find_clib_file(pufold, "puWeights_BCDEFGHI.json.gz");
+    m_cset_PU = correction::CorrectionSet::from_file(PU_file);
+    if(m_year == 2016)              m_cset_corr_PU = m_cset_PU->at("Collisions16_UltraLegacy_goldenJSON");
+    if(m_year == 2017)              m_cset_corr_PU = m_cset_PU->at("Collisions17_UltraLegacy_goldenJSON");
+    if(m_year == 2018)              m_cset_corr_PU = m_cset_PU->at("Collisions18_UltraLegacy_goldenJSON");
+    if(m_year == 2022 && !m_IsEE)   m_cset_corr_PU = m_cset_PU->at("Collisions2022_355100_357900_eraBCD_GoldenJson");
+    if(m_year == 2022 && m_IsEE)    m_cset_corr_PU = m_cset_PU->at("Collisions2022_359022_362760_eraEFG_GoldenJson");
+    if(m_year == 2023 && !m_IsBPix) m_cset_corr_PU = m_cset_PU->at("Collisions2023_366403_369802_eraBC_GoldenJson");
+    if(m_year == 2023 && m_IsBPix)  m_cset_corr_PU = m_cset_PU->at("Collisions2023_369803_370790_eraD_GoldenJson");
+    if(m_year == 2024)              m_cset_corr_PU = m_cset_PU->at("Collisions24_BCDEFGHI_goldenJSON");
+  }
 }
 
 template <class Base>
@@ -1910,8 +1927,10 @@ template <class Base>
 double AnalysisBase<Base>::GetPUWeight(int updown){
   if(IsData())
     return 1.;
-  if constexpr (std::is_member_object_pointer<decltype(&Base::Pileup_nPU)>::value)
-    return m_PUTool.GetWeight(this->Pileup_nPU, m_year, updown);
+  if constexpr (std::is_member_object_pointer<decltype(&Base::Pileup_nPU)>::value) {
+    if(!m_IsUL && m_year < 2019) return m_PUTool.GetWeight(this->Pileup_nPU, m_year, updown);
+    else return m_cset_corr_PU->evaluate({static_cast<double>(this->Pileup_nPU), updown == 0 ? "nominal" : (updown < 0 ? "down" : "up")});
+  }
   return 1.;
 }
 

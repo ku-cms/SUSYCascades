@@ -435,8 +435,11 @@ if __name__ == "__main__":
         # copy PU root files
         if VERBOSE:
             print("making Pileup file", flush=True)
-        os.system("cp -r root/PU "+config+".")
-        PUFOLD = "./config/PU/"
+        if "102X" in listname:
+            os.system("cp -r root/PU "+config+".")
+            PUFOLD = "./config/PU/"
+        else:
+            PUFOLD = '/cvmfs/cms-griddata.cern.ch/cat/metadata/LUM/'
 
         # copy BTAG SF files
         if VERBOSE:
