@@ -243,9 +243,32 @@ void AnalysisBase<Base>::AddBtagFolder(const string& btagfold, const string& pro
   }
 }
 
+//template <class Base>
+//void AnalysisBase<Base>::AddLepFolder(const string& lepfold){
+//  m_LepSFTool.BuildMap(lepfold);
+//}
+
 template <class Base>
 void AnalysisBase<Base>::AddLepFolder(const string& lepfold){
-  m_LepSFTool.BuildMap(lepfold);
+    std::string SF_file = find_clib_file(lepfold, "../root/LepSF/LepSFs_fixed.json");
+    m_LepSFTool.BuildMap(SF_file);
+
+    m_LepSFTool.SetYear(std::to_string(m_year));
+
+    if(m_year == 2016)
+        m_LepSFTool.SetEra(m_IsAPV ? "postVFP" : "preVFP");
+    else if(m_year == 2017)
+        m_LepSFTool.SetEra("none");
+    else if(m_year == 2018)
+        m_LepSFTool.SetEra("none");
+    else if(m_year == 2022)
+        m_LepSFTool.SetEra(m_IsEE ? "postEE" : "preEE");
+    else if(m_year == 2023)
+        m_LepSFTool.SetEra(m_IsBPix ? "postBPix" : "preBPix");
+    else if(m_year == 2024)
+        m_LepSFTool.SetEra("none");
+    else if(m_year == 2025)
+        m_LepSFTool.SetEra("none");
 }
 
 template <class Base>
@@ -2279,496 +2302,182 @@ double AnalysisBase<SUSYNANOBase>::GetBtagSFWeight(const ParticleList& jets, boo
 
 template <>
 double AnalysisBase<SUSYNANOBase>::GetElIDSFWeight(const ParticleList& els, int updown){
-  if(IsData())
-    return 1.;
+  if(IsData()) return 1.;
 
-  bool FastSim = IsFastSim();
-  
-  int Nlep = els.size();
+  double tot_SF = 1.0;
   int pdg = 11;
-  double EFFMC, EFFData, SF;
-  double EFFMCErr, EFFDataErr, SFErr;
 
-  double probMC   = 1.;
-  double probDATA = 1.;
-  
-  for(int i = 0; i < Nlep; i++){
-    if(els[i].SourceID() > 0)
-      continue;
-    
-    EFFMC = m_LepSFTool.getMCIdEfficiency(els[i].Pt(), els[i].Eta(), pdg, m_year);
-    EFFData = m_LepSFTool.getDataIdEfficiency(els[i].Pt(), els[i].Eta(), pdg, m_year);
+  for(int i = 0; i < (int)els.size(); i++){
+    if(els[i].SourceID() > 0) continue;
+    LepID qual = els[i].LepQual();
 
-    if(EFFMC > 0 && EFFData > 0)
-      SF = EFFData/EFFMC;
-    else
-      SF = 1;
+    // BLP_over_COL applies to all qualities, ID_over_BLP should return 1.0 for bronze
+    double SF = m_LepSFTool.get_BLP_COL_SF(els[i].Pt(), els[i].Eta(), pdg, qual)
+              * m_LepSFTool.get_ID_BLP_SF(els[i].Pt(), els[i].Eta(), pdg, qual);
 
-    SFErr = 0;
-    if(updown != 0){
-      EFFMCErr = m_LepSFTool.getMCIdError(els[i].Pt(), els[i].Eta(), pdg, m_year);
-      EFFDataErr = m_LepSFTool.getDataIdError(els[i].Pt(), els[i].Eta(), pdg, m_year);
-
-      if(EFFMC > 0 && EFFData > 0)
-	SFErr = updown * SF * sqrt( EFFMCErr*EFFMCErr/EFFMC/EFFMC + EFFDataErr*EFFDataErr/EFFData/EFFData );
-    }
-
-    SF += SFErr;
-    
-    if(FastSim){
-      double FSSF = m_LepSFTool.getIdFastSimSF(els[i].Pt(), els[i].Eta(), pdg, m_year);
-      if(FSSF > 0){
-	SF *= FSSF;
-	EFFMC /= FSSF;
-      }
-    }
-
-    // Evaluate cut
-    if(els[i].ParticleID() >= kMedium){
-      probMC   *= EFFMC;
-      probDATA *= SF*EFFMC;
-    } else {
-      probMC   *= EFFMC;
-      probDATA *= EFFMC/SF;
-    }
+    if(updown != 0)
+      //ID_over_BLP_err should return 0.0 for bronze
+      SF += updown * (m_LepSFTool.get_BLP_COL_SF_err(els[i].Pt(), els[i].Eta(), pdg, qual)
+                    + m_LepSFTool.get_ID_BLP_SF_err(els[i].Pt(), els[i].Eta(), pdg, qual));
+    tot_SF *= SF;
   }
-
-  if(probMC <= 0. || probDATA <= 0.)
-    return 1.;
-
-  return probDATA/probMC;
+  return tot_SF;
 }
 
 template <>
 double AnalysisBase<SUSYNANOBase>::GetElISOSFWeight(const ParticleList& els, int updown){
-  if(IsData())
-    return 1.;
+  if(IsData()) return 1.;
 
-  bool FastSim = IsFastSim();
-
-  int Nlep = els.size();
+  double tot_SF = 1.0;
   int pdg = 11;
-  double EFFMC, EFFData, SF;
-  double EFFMCErr, EFFDataErr, SFErr;
 
-  double probMC   = 1.;
-  double probDATA = 1.;
-  
-  for(int i = 0; i < Nlep; i++){
-    if(els[i].SourceID() > 0)
-      continue;
+  for(int i = 0; i < (int)els.size(); i++){
+    if(els[i].SourceID() > 0) continue;
+    LepID qual = els[i].LepQual();
+
+    // Bronze should get 1.0 from this
+    double SF = m_LepSFTool.get_ISO_ID_SF(els[i].Pt(), els[i].Eta(), pdg, qual);
+
+    if(updown != 0)
+      SF += updown * m_LepSFTool.get_ISO_ID_SF_err(els[i].Pt(), els[i].Eta(), pdg, qual);
     
-    EFFMC = m_LepSFTool.getMCIsoEfficiency(els[i].Pt(), els[i].Eta(), pdg, m_year);
-    EFFData = m_LepSFTool.getDataIsoEfficiency(els[i].Pt(), els[i].Eta(), pdg, m_year);
-
-    if(EFFMC > 0 && EFFData > 0)
-      SF = EFFData/EFFMC;
-    else
-      SF = 1;
-
-    SFErr = 0;
-    if(updown != 0){
-      EFFMCErr = m_LepSFTool.getMCIsoError(els[i].Pt(), els[i].Eta(), pdg, m_year);
-      EFFDataErr = m_LepSFTool.getDataIsoError(els[i].Pt(), els[i].Eta(), pdg, m_year);
-
-      if(EFFMC > 0 && EFFData > 0)
-	SFErr = updown * SF * sqrt( EFFMCErr*EFFMCErr/EFFMC/EFFMC + EFFDataErr*EFFDataErr/EFFData/EFFData );
-    }
-
-    SF += SFErr;
-    
-    if(FastSim){
-      double FSSF = m_LepSFTool.getIsoFastSimSF(els[i].Pt(), els[i].Eta(), pdg, m_year);
-      if(FSSF > 0){
-	SF *= FSSF;
-	EFFMC /= FSSF;
-      }
-    }
-
-    // Evaluate cut
-    if(els[i].RelIso() < 4. && els[i].MiniIso() < 4.){
-      probMC   *= EFFMC;
-      probDATA *= SF*EFFMC;
-    } else {
-      probMC   *= EFFMC;
-      probDATA *= EFFMC/SF;
-    }
+    tot_SF *= SF;
   }
 
-  if(probMC <= 0. || probDATA <= 0.)
-    return 1.;
-
-  return probDATA/probMC;
+  return tot_SF;
 }
 
 template <>
 double AnalysisBase<SUSYNANOBase>::GetElSIPSFWeight(const ParticleList& els, int updown){
-  if(IsData())
-    return 1.;
+  if(IsData()) return 1.;
 
-  bool FastSim = IsFastSim();
-
-  int Nlep = els.size();
+  double tot_SF = 1.0;
   int pdg = 11;
-  double EFFMC, EFFData, SF;
-  double EFFMCErr, EFFDataErr, SFErr;
 
-  double probMC   = 1.;
-  double probDATA = 1.;
-  
-  for(int i = 0; i < Nlep; i++){
-    if(els[i].SourceID() > 0)
-      continue;
-    
-    EFFMC = m_LepSFTool.getMCSipEfficiency(els[i].Pt(), els[i].Eta(), pdg, m_year);
-    EFFData = m_LepSFTool.getDataSipEfficiency(els[i].Pt(), els[i].Eta(), pdg, m_year);
+  for(int i = 0; i < (int)els.size(); i++){
+    if(els[i].SourceID() > 0) continue;
+    LepID qual = els[i].LepQual();
 
-    if(EFFMC > 0 && EFFData > 0)
-      SF = EFFData/EFFMC;
-    else
-      SF = 1;
+    // Gold gets Prompt, Silver gets NOT_Prompt, Bronze gets 1.0 from both
+    double SF = m_LepSFTool.get_Prompt_ISOID_SF(els[i].Pt(), els[i].Eta(), pdg, qual)
+              * m_LepSFTool.get_NOT_Prompt_ISOID_SF(els[i].Pt(), els[i].Eta(), pdg, qual);
 
-    SFErr = 0;
     if(updown != 0){
-      EFFMCErr = m_LepSFTool.getMCSipError(els[i].Pt(), els[i].Eta(), pdg, m_year);
-      EFFDataErr = m_LepSFTool.getDataSipError(els[i].Pt(), els[i].Eta(), pdg, m_year);
-
-      if(EFFMC > 0 && EFFData > 0)
-	SFErr = updown * SF * sqrt( EFFMCErr*EFFMCErr/EFFMC/EFFMC + EFFDataErr*EFFDataErr/EFFData/EFFData );
+      SF += updown * (m_LepSFTool.get_Prompt_ISOID_SF_err(els[i].Pt(), els[i].Eta(), pdg, qual)
+                    + m_LepSFTool.get_NOT_Prompt_ISOID_SF_err(els[i].Pt(), els[i].Eta(), pdg, qual));
     }
 
-    SF += SFErr;
-    
-    if(FastSim){
-      double FSSF = m_LepSFTool.getSipFastSimSF(els[i].Pt(), els[i].Eta(), pdg, m_year);
-      if(FSSF > 0){
-	SF *= FSSF;
-	EFFMC /= FSSF;
-      }
-    }
-
-    // Evaluate cut
-    if(els[i].LepQual() != kBronze){
-      if(els[i].SIP3D() < 2.){
-	probMC   *= EFFMC;
-	probDATA *= SF*EFFMC;
-      } else {
-	probMC   *= EFFMC;
-	probDATA *= EFFMC/SF;
-      }
-    }
+    tot_SF *= SF;
   }
-
-  if(probMC <= 0. || probDATA <= 0.)
-    return 1.;
-
-  return probDATA/probMC;
+  return tot_SF;
 }
 
 template <>
 double AnalysisBase<SUSYNANOBase>::GetElVLIDSFWeight(const ParticleList& els, int updown){
-   if(IsData())
-    return 1.;
+  if(IsData()) return 1.;
 
-  bool FastSim = IsFastSim();
-  
-  int m_year = 2016;
-  if(m_FileTag.find("17") != std::string::npos)
-    m_year = 2017;
-  if(m_FileTag.find("18") != std::string::npos)
-    m_year = 2018;
-
-  int Nlep = els.size();
+  double tot_SF = 1.0;
   int pdg = 11;
-  double EFFMC, EFFData, SF;
-  double EFFMCErr, EFFDataErr, SFErr;
 
-  double probMC   = 1.;
-  double probDATA = 1.;
-  
-  for(int i = 0; i < Nlep; i++){
-    if(els[i].SourceID() > 0)
-      continue;
+  for(int i = 0; i < (int)els.size(); i++){
+    if(els[i].SourceID() > 0) continue;
+    LepID qual = els[i].LepQual();
+
+    double SF = m_LepSFTool.get_NOT_ID_nor_ISO_SF(els[i].Pt(), els[i].Eta(), pdg, qual);
+
+    if(updown != 0)
+      SF += updown * m_LepSFTool.get_NOT_ID_nor_ISO_SF_err(els[i].Pt(), els[i].Eta(), pdg, qual);
     
-    EFFMC = m_LepSFTool.getMCVLIdEfficiency(els[i].Pt(), els[i].Eta(), pdg, m_year);
-    EFFData = m_LepSFTool.getDataVLIdEfficiency(els[i].Pt(), els[i].Eta(), pdg, m_year);
-
-    if(EFFMC > 0)
-      SF = EFFData/EFFMC;
-    else
-      SF = 1;
-
-    SFErr = 0;
-    if(updown != 0){
-      EFFMCErr = m_LepSFTool.getMCVLIdError(els[i].Pt(), els[i].Eta(), pdg, m_year);
-      EFFDataErr = m_LepSFTool.getDataVLIdError(els[i].Pt(), els[i].Eta(), pdg, m_year);
-
-      if(EFFMC > 0 && EFFData > 0)
-	SFErr = updown * SF * sqrt( EFFMCErr*EFFMCErr/EFFMC/EFFMC + EFFDataErr*EFFDataErr/EFFData/EFFData );
-    }
-
-    SF += SFErr;
-    
-    if(FastSim){
-      double FSSF = m_LepSFTool.getVLIdFastSimSF(els[i].Pt(), els[i].Eta(), pdg, m_year);
-      if(FSSF > 0){
-	SF *= FSSF;
-	EFFMC /= FSSF;
-      }
-    }
-
-    // apply VL SF to all leptons
-    probDATA *= SF;
+    tot_SF *= SF;
   }
-
-  if(probMC <= 0. || probDATA <= 0.)
-    return 1.;
-
-  return probDATA/probMC;
+  return tot_SF;
 }
 
 template <>
 double AnalysisBase<SUSYNANOBase>::GetMuIDSFWeight(const ParticleList& mus, int updown){
-   if(IsData())
-    return 1.;
+  if(IsData()) return 1.;
 
-  bool FastSim = IsFastSim();
-  
-  int Nlep = mus.size();
+  double tot_SF = 1.0;
   int pdg = 13;
-  double EFFMC, EFFData, SF;
-  double EFFMCErr, EFFDataErr, SFErr;
 
-  double probMC   = 1.;
-  double probDATA = 1.;
-  
-  for(int i = 0; i < Nlep; i++){
-    if(mus[i].SourceID() > 0)
-      continue;
+  for(int i = 0; i < (int)mus.size(); i++){
+    if(mus[i].SourceID() > 0) continue;
+    LepID qual = mus[i].LepQual();
+
+    //See comments from El functions on bronze leps
+    double SF = m_LepSFTool.get_BLP_COL_SF(mus[i].Pt(), mus[i].Eta(), pdg, qual)
+              * m_LepSFTool.get_ID_BLP_SF(mus[i].Pt(), mus[i].Eta(), pdg, qual);
+
+    if(updown != 0)
+      SF += updown * (m_LepSFTool.get_BLP_COL_SF_err(mus[i].Pt(), mus[i].Eta(), pdg, qual)
+                    + m_LepSFTool.get_ID_BLP_SF_err(mus[i].Pt(), mus[i].Eta(), pdg, qual));
     
-    EFFMC = m_LepSFTool.getMCIdEfficiency(mus[i].Pt(), mus[i].Eta(), pdg, m_year);
-    EFFData = m_LepSFTool.getDataIdEfficiency(mus[i].Pt(), mus[i].Eta(), pdg, m_year);
+    tot_SF *= SF;
 
-    if(EFFMC > 0 && EFFData > 0)
-      SF = EFFData/EFFMC;
-    else
-      SF = 1;
-
-    SFErr = 0;
-    if(updown != 0){
-      EFFMCErr = m_LepSFTool.getMCIdError(mus[i].Pt(), mus[i].Eta(), pdg, m_year);
-      EFFDataErr = m_LepSFTool.getDataIdError(mus[i].Pt(), mus[i].Eta(), pdg, m_year);
-
-      if(EFFMC > 0 && EFFData > 0)
-	SFErr = updown * SF * sqrt( EFFMCErr*EFFMCErr/EFFMC/EFFMC + EFFDataErr*EFFDataErr/EFFData/EFFData );
-    }
-
-    SF += SFErr;
-    
-    if(FastSim){
-      double FSSF = m_LepSFTool.getIdFastSimSF(mus[i].Pt(), mus[i].Eta(), pdg, m_year);
-      if(FSSF > 0){
-	SF *= FSSF;
-	EFFMC /= FSSF;
-      }
-    }
-
-    // Evaluate cut
-    if(mus[i].ParticleID() >= kMedium){
-      probMC   *= EFFMC;
-      probDATA *= SF*EFFMC;
-    } else {
-      probMC   *= EFFMC;
-      probDATA *= EFFMC/SF;
-    }
   }
-
-  if(probMC <= 0. || probDATA <= 0.)
-    return 1.;
-
-  return probDATA/probMC;
+  return tot_SF;
 }
 
 template <>
 double AnalysisBase<SUSYNANOBase>::GetMuISOSFWeight(const ParticleList& mus, int updown){
-  if(IsData())
-    return 1.;
-
-  bool FastSim = IsFastSim();
-  
-  int Nlep = mus.size();
+  if(IsData()) return 1.;
+  double tot_SF = 1.0;
   int pdg = 13;
-  double EFFMC, EFFData, SF;
-  double EFFMCErr, EFFDataErr, SFErr;
 
-  double probMC   = 1.;
-  double probDATA = 1.;
-  
-  for(int i = 0; i < Nlep; i++){
-    if(mus[i].SourceID() > 0)
-      continue;
+  for(int i = 0; i < (int)mus.size(); i++){
+    if(mus[i].SourceID() > 0) continue;
+    LepID qual = mus[i].LepQual();
+
+    double SF = m_LepSFTool.get_ISO_ID_SF(mus[i].Pt(), mus[i].Eta(), pdg, qual);
     
-    EFFMC = m_LepSFTool.getMCIsoEfficiency(mus[i].Pt(), mus[i].Eta(), pdg, m_year);
-    EFFData = m_LepSFTool.getDataIsoEfficiency(mus[i].Pt(), mus[i].Eta(), pdg, m_year);
+    if(updown != 0)
+      SF += updown * m_LepSFTool.get_ISO_ID_SF_err(mus[i].Pt(), mus[i].Eta(), pdg, qual);
 
-    if(EFFMC > 0 && EFFData > 0)
-      SF = EFFData/EFFMC;
-    else
-      SF = 1;
-
-    SFErr = 0;
-    if(updown != 0){
-      EFFMCErr = m_LepSFTool.getMCIsoError(mus[i].Pt(), mus[i].Eta(), pdg, m_year);
-      EFFDataErr = m_LepSFTool.getDataIsoError(mus[i].Pt(), mus[i].Eta(), pdg, m_year);
-
-      if(EFFMC > 0 && EFFData > 0)
-	SFErr = updown * SF * sqrt( EFFMCErr*EFFMCErr/EFFMC/EFFMC + EFFDataErr*EFFDataErr/EFFData/EFFData );
-    }
-
-    SF += SFErr;
-    
-    if(FastSim){
-      double FSSF = m_LepSFTool.getIsoFastSimSF(mus[i].Pt(), mus[i].Eta(), pdg, m_year);
-      if(FSSF > 0){
-	SF *= FSSF;
-	EFFMC /= FSSF;
-      }
-    }
-
-    // Evaluate cut
-    if(mus[i].RelIso() < 4. && mus[i].MiniIso() < 4.){
-      probMC   *= EFFMC;
-      probDATA *= SF*EFFMC;
-    } else {
-      probMC   *= EFFMC;
-      probDATA *= EFFMC/SF;
-    }
+    tot_SF *= SF;
   }
-
-  if(probMC <= 0. || probDATA <= 0.)
-    return 1.;
-
-  return probDATA/probMC;
+  return tot_SF;
 }
 
 template <>
 double AnalysisBase<SUSYNANOBase>::GetMuSIPSFWeight(const ParticleList& mus, int updown){
-  if(IsData())
-    return 1.;
-
-  bool FastSim = IsFastSim();
-  
-  int Nlep = mus.size();
+  if(IsData()) return 1.;
+  double tot_SF = 1.0;
   int pdg = 13;
-  double EFFMC, EFFData, SF;
-  double EFFMCErr, EFFDataErr, SFErr;
 
-  double probMC   = 1.;
-  double probDATA = 1.;
-  
-  for(int i = 0; i < Nlep; i++){
-    if(mus[i].SourceID() > 0)
-      continue;
-    
-    EFFMC = m_LepSFTool.getMCSipEfficiency(mus[i].Pt(), mus[i].Eta(), pdg, m_year);
-    EFFData = m_LepSFTool.getDataSipEfficiency(mus[i].Pt(), mus[i].Eta(), pdg, m_year);
+  for(int i = 0; i < (int)mus.size(); i++){
+    if(mus[i].SourceID() > 0) continue;
+    LepID qual = mus[i].LepQual();
 
-    if(EFFMC > 0 && EFFData > 0)
-      SF = EFFData/EFFMC;
-    else
-      SF = 1;
+    double SF = m_LepSFTool.get_Prompt_ISOID_SF(mus[i].Pt(), mus[i].Eta(), pdg, qual)
+              * m_LepSFTool.get_NOT_Prompt_ISOID_SF(mus[i].Pt(), mus[i].Eta(), pdg, qual);
 
-    SFErr = 0;
     if(updown != 0){
-      EFFMCErr = m_LepSFTool.getMCSipError(mus[i].Pt(), mus[i].Eta(), pdg, m_year);
-      EFFDataErr = m_LepSFTool.getDataSipError(mus[i].Pt(), mus[i].Eta(), pdg, m_year);
-
-      if(EFFMC > 0 && EFFData > 0)
-	SFErr = updown * SF * sqrt( EFFMCErr*EFFMCErr/EFFMC/EFFMC + EFFDataErr*EFFDataErr/EFFData/EFFData );
+      SF += updown * (m_LepSFTool.get_Prompt_ISOID_SF_err(mus[i].Pt(), mus[i].Eta(), pdg, qual)
+                    + m_LepSFTool.get_NOT_Prompt_ISOID_SF_err(mus[i].Pt(), mus[i].Eta(), pdg, qual));
     }
 
-    SF += SFErr;
-    
-    if(FastSim){
-      double FSSF = m_LepSFTool.getSipFastSimSF(mus[i].Pt(), mus[i].Eta(), pdg, m_year);
-      if(FSSF > 0){
-	SF *= FSSF;
-	EFFMC /= FSSF;
-      }
-    }
-
-    // Evaluate cut
-    if(mus[i].LepQual() != kBronze){
-      if(mus[i].SIP3D() < 2.){
-	probMC   *= EFFMC;
-	probDATA *= SF*EFFMC;
-      } else {
-	probMC   *= EFFMC;
-	probDATA *= EFFMC/SF;
-      }
-    }
+    tot_SF *= SF;
   }
-
-  if(probMC <= 0. || probDATA <= 0.)
-    return 1.;
-
-  return probDATA/probMC;
+  return tot_SF;
 }
 
 template <>
 double AnalysisBase<SUSYNANOBase>::GetMuVLIDSFWeight(const ParticleList& mus, int updown){
-  if(IsData())
-    return 1.;
-
-  bool FastSim = IsFastSim();
-  
-  int Nlep = mus.size();
+  if(IsData()) return 1.;
+  double tot_SF = 1.0;
   int pdg = 13;
-  double EFFMC, EFFData, SF;
-  double EFFMCErr, EFFDataErr, SFErr;
 
-  double probMC   = 1.;
-  double probDATA = 1.;
-  
-  for(int i = 0; i < Nlep; i++){
-    if(mus[i].SourceID() > 0)
-      continue;
+  for(int i = 0; i < (int)mus.size(); i++){
+    if(mus[i].SourceID() > 0) continue;
+    LepID qual = mus[i].LepQual();
+
+    double SF = m_LepSFTool.get_NOT_ID_nor_ISO_SF(mus[i].Pt(), mus[i].Eta(), pdg, qual);
+    if(updown != 0)
+      SF += updown * m_LepSFTool.get_NOT_ID_nor_ISO_SF_err(mus[i].Pt(), mus[i].Eta(), pdg, qual);
     
-    EFFMC = m_LepSFTool.getMCVLIdEfficiency(mus[i].Pt(), mus[i].Eta(), pdg, m_year);
-    EFFData = m_LepSFTool.getDataVLIdEfficiency(mus[i].Pt(), mus[i].Eta(), pdg, m_year);
-
-    if(EFFMC > 0)
-      SF = EFFData/EFFMC;
-    else
-      SF = 1;
-
-    SFErr = 0;
-    if(updown != 0){
-      EFFMCErr = m_LepSFTool.getMCVLIdError(mus[i].Pt(), mus[i].Eta(), pdg, m_year);
-      EFFDataErr = m_LepSFTool.getDataVLIdError(mus[i].Pt(), mus[i].Eta(), pdg, m_year);
-
-      if(EFFMC > 0 && EFFData > 0)
-	SFErr = updown * SF * sqrt( EFFMCErr*EFFMCErr/EFFMC/EFFMC + EFFDataErr*EFFDataErr/EFFData/EFFData );
-    }
-
-    SF += SFErr;
-    
-    if(FastSim){
-      double FSSF = m_LepSFTool.getVLIdFastSimSF(mus[i].Pt(), mus[i].Eta(), pdg, m_year);
-      if(FSSF > 0){
-	SF *= FSSF;
-	EFFMC /= FSSF;
-      }
-    }
-
-    // apply VL SF to all leptons
-    probDATA *= SF;
+    tot_SF *= SF;
   }
-
-  if(probMC <= 0. || probDATA <= 0.)
-    return 1.;
-
-  return probDATA/probMC;
+  return tot_SF;
 }
 
 template <>
@@ -3941,490 +3650,141 @@ double AnalysisBase<NANOULBase>::GetBtagSFWeight(const ParticleList& jets, bool 
 
 template <>
 double AnalysisBase<NANOULBase>::GetElIDSFWeight(const ParticleList& els, int updown){
-  if(IsData())
-    return 1.;
-
-  bool FastSim = IsFastSim();
-
-  int Nlep = els.size();
+  if(IsData()) return 1.;
+  double tot_SF = 1.0;
   int pdg = 11;
-  double EFFMC, EFFData, SF;
-  double EFFMCErr, EFFDataErr, SFErr;
-
-  double probMC   = 1.;
-  double probDATA = 1.;
-  
-  for(int i = 0; i < Nlep; i++){
-    if(els[i].SourceID() > 0)
-      continue;
-    
-    EFFMC = m_LepSFTool.getMCIdEfficiency(els[i].Pt(), els[i].Eta(), pdg, m_year);
-    EFFData = m_LepSFTool.getDataIdEfficiency(els[i].Pt(), els[i].Eta(), pdg, m_year);
-
-    if(EFFMC > 0 && EFFData > 0)
-      SF = EFFData/EFFMC;
-    else
-      SF = 1;
-
-    SFErr = 0;
-    if(updown != 0){
-      EFFMCErr = m_LepSFTool.getMCIdError(els[i].Pt(), els[i].Eta(), pdg, m_year);
-      EFFDataErr = m_LepSFTool.getDataIdError(els[i].Pt(), els[i].Eta(), pdg, m_year);
-
-      if(EFFMC > 0 && EFFData > 0)
-	SFErr = updown * SF * sqrt( EFFMCErr*EFFMCErr/EFFMC/EFFMC + EFFDataErr*EFFDataErr/EFFData/EFFData );
-    }
-
-    SF += SFErr;
-    
-    if(FastSim){
-      double FSSF = m_LepSFTool.getIdFastSimSF(els[i].Pt(), els[i].Eta(), pdg, m_year);
-      if(FSSF > 0){
-	SF *= FSSF;
-	EFFMC /= FSSF;
-      }
-    }
-
-    // Evaluate cut
-    if(els[i].ParticleID() >= kMedium){
-      probMC   *= EFFMC;
-      probDATA *= SF*EFFMC;
-    } else {
-      probMC   *= EFFMC;
-      probDATA *= EFFMC/SF;
-    }
+  for(int i = 0; i < (int)els.size(); i++){
+    if(els[i].SourceID() > 0) continue;
+    LepID qual = els[i].LepQual();
+    double SF = m_LepSFTool.get_BLP_COL_SF(els[i].Pt(), els[i].Eta(), pdg, qual)
+              * m_LepSFTool.get_ID_BLP_SF(els[i].Pt(), els[i].Eta(), pdg, qual);
+    if(updown != 0)
+      SF += updown * (m_LepSFTool.get_BLP_COL_SF_err(els[i].Pt(), els[i].Eta(), pdg, qual)
+                    + m_LepSFTool.get_ID_BLP_SF_err(els[i].Pt(), els[i].Eta(), pdg, qual));
+    tot_SF *= SF;
   }
-
-  if(probMC <= 0. || probDATA <= 0.)
-    return 1.;
-
-  return probDATA/probMC;
+  return tot_SF;
 }
 
 template <>
 double AnalysisBase<NANOULBase>::GetElISOSFWeight(const ParticleList& els, int updown){
-  if(IsData())
-    return 1.;
-
-  bool FastSim = IsFastSim();
-  
-  int Nlep = els.size();
+  if(IsData()) return 1.;
+  double tot_SF = 1.0;
   int pdg = 11;
-  double EFFMC, EFFData, SF;
-  double EFFMCErr, EFFDataErr, SFErr;
-
-  double probMC   = 1.;
-  double probDATA = 1.;
-  
-  for(int i = 0; i < Nlep; i++){
-    if(els[i].SourceID() > 0)
-      continue;
-    
-    EFFMC = m_LepSFTool.getMCIsoEfficiency(els[i].Pt(), els[i].Eta(), pdg, m_year);
-    EFFData = m_LepSFTool.getDataIsoEfficiency(els[i].Pt(), els[i].Eta(), pdg, m_year);
-
-    if(EFFMC > 0 && EFFData > 0)
-      SF = EFFData/EFFMC;
-    else
-      SF = 1;
-
-    SFErr = 0;
-    if(updown != 0){
-      EFFMCErr = m_LepSFTool.getMCIsoError(els[i].Pt(), els[i].Eta(), pdg, m_year);
-      EFFDataErr = m_LepSFTool.getDataIsoError(els[i].Pt(), els[i].Eta(), pdg, m_year);
-
-      if(EFFMC > 0 && EFFData > 0)
-	SFErr = updown * SF * sqrt( EFFMCErr*EFFMCErr/EFFMC/EFFMC + EFFDataErr*EFFDataErr/EFFData/EFFData );
-    }
-
-    SF += SFErr;
-    
-    if(FastSim){
-      double FSSF = m_LepSFTool.getIsoFastSimSF(els[i].Pt(), els[i].Eta(), pdg, m_year);
-      if(FSSF > 0){
-	SF *= FSSF;
-	EFFMC /= FSSF;
-      }
-    }
-
-    // Evaluate cut
-    if(els[i].RelIso() < 4. && els[i].MiniIso() < 4.){
-      probMC   *= EFFMC;
-      probDATA *= SF*EFFMC;
-    } else {
-      probMC   *= EFFMC;
-      probDATA *= EFFMC/SF;
-    }
+  for(int i = 0; i < (int)els.size(); i++){
+    if(els[i].SourceID() > 0) continue;
+    LepID qual = els[i].LepQual();
+    double SF = m_LepSFTool.get_ISO_ID_SF(els[i].Pt(), els[i].Eta(), pdg, qual);
+    if(updown != 0)
+      SF += updown * m_LepSFTool.get_ISO_ID_SF_err(els[i].Pt(), els[i].Eta(), pdg, qual);
+    tot_SF *= SF;
   }
-
-  if(probMC <= 0. || probDATA <= 0.)
-    return 1.;
-
-  return probDATA/probMC;
+  return tot_SF;
 }
 
 template <>
 double AnalysisBase<NANOULBase>::GetElSIPSFWeight(const ParticleList& els, int updown){
-  if(IsData())
-    return 1.;
-
-  bool FastSim = IsFastSim();
-
-  int Nlep = els.size();
+  if(IsData()) return 1.;
+  double tot_SF = 1.0;
   int pdg = 11;
-  double EFFMC, EFFData, SF;
-  double EFFMCErr, EFFDataErr, SFErr;
-
-  double probMC   = 1.;
-  double probDATA = 1.;
-  
-  for(int i = 0; i < Nlep; i++){
-    if(els[i].SourceID() > 0)
-      continue;
-    
-    EFFMC = m_LepSFTool.getMCSipEfficiency(els[i].Pt(), els[i].Eta(), pdg, m_year);
-    EFFData = m_LepSFTool.getDataSipEfficiency(els[i].Pt(), els[i].Eta(), pdg, m_year);
-
-    if(EFFMC > 0 && EFFData > 0)
-      SF = EFFData/EFFMC;
-    else
-      SF = 1;
-
-    SFErr = 0;
+  for(int i = 0; i < (int)els.size(); i++){
+    if(els[i].SourceID() > 0) continue;
+    LepID qual = els[i].LepQual();
+    // Gold gets Prompt, Silver gets NOT_Prompt, Bronze gets 1.0 from both
+    double SF = m_LepSFTool.get_Prompt_ISOID_SF(els[i].Pt(), els[i].Eta(), pdg, qual)
+              * m_LepSFTool.get_NOT_Prompt_ISOID_SF(els[i].Pt(), els[i].Eta(), pdg, qual);
     if(updown != 0){
-      EFFMCErr = m_LepSFTool.getMCSipError(els[i].Pt(), els[i].Eta(), pdg, m_year);
-      EFFDataErr = m_LepSFTool.getDataSipError(els[i].Pt(), els[i].Eta(), pdg, m_year);
-
-      if(EFFMC > 0 && EFFData > 0)
-	SFErr = updown * SF * sqrt( EFFMCErr*EFFMCErr/EFFMC/EFFMC + EFFDataErr*EFFDataErr/EFFData/EFFData );
+      SF += updown * (m_LepSFTool.get_Prompt_ISOID_SF_err(els[i].Pt(), els[i].Eta(), pdg, qual)
+                    + m_LepSFTool.get_NOT_Prompt_ISOID_SF_err(els[i].Pt(), els[i].Eta(), pdg, qual));
     }
-
-    SF += SFErr;
-    
-    if(FastSim){
-      double FSSF = m_LepSFTool.getSipFastSimSF(els[i].Pt(), els[i].Eta(), pdg, m_year);
-      if(FSSF > 0){
-	SF *= FSSF;
-	EFFMC /= FSSF;
-      }
-    }
-
-    // Evaluate cut
-    if(els[i].LepQual() != kBronze){
-      if(els[i].SIP3D() < 2.){
-	probMC   *= EFFMC;
-	probDATA *= SF*EFFMC;
-      } else {
-	probMC   *= EFFMC;
-	probDATA *= EFFMC/SF;
-      }
-    }
+    tot_SF *= SF;
   }
-
-  if(probMC <= 0. || probDATA <= 0.)
-    return 1.;
-
-  return probDATA/probMC;
+  return tot_SF;
 }
 
 template <>
 double AnalysisBase<NANOULBase>::GetElVLIDSFWeight(const ParticleList& els, int updown){
-   if(IsData())
-    return 1.;
-
-  bool FastSim = IsFastSim();
-  
-  int Nlep = els.size();
+  if(IsData()) return 1.;
+  double tot_SF = 1.0;
   int pdg = 11;
-  double EFFMC, EFFData, SF;
-  double EFFMCErr, EFFDataErr, SFErr;
-
-  double probMC   = 1.;
-  double probDATA = 1.;
-  
-  for(int i = 0; i < Nlep; i++){
-    if(els[i].SourceID() > 0)
-      continue;
-    
-    EFFMC = m_LepSFTool.getMCVLIdEfficiency(els[i].Pt(), els[i].Eta(), pdg, m_year);
-    EFFData = m_LepSFTool.getDataVLIdEfficiency(els[i].Pt(), els[i].Eta(), pdg, m_year);
-
-    if(EFFMC > 0)
-      SF = EFFData/EFFMC;
-    else
-      SF = 1;
-
-    SFErr = 0;
-    if(updown != 0){
-      EFFMCErr = m_LepSFTool.getMCVLIdError(els[i].Pt(), els[i].Eta(), pdg, m_year);
-      EFFDataErr = m_LepSFTool.getDataVLIdError(els[i].Pt(), els[i].Eta(), pdg, m_year);
-
-      if(EFFMC > 0 && EFFData > 0)
-	SFErr = updown * SF * sqrt( EFFMCErr*EFFMCErr/EFFMC/EFFMC + EFFDataErr*EFFDataErr/EFFData/EFFData );
-    }
-
-    SF += SFErr;
-    
-    if(FastSim){
-      double FSSF = m_LepSFTool.getVLIdFastSimSF(els[i].Pt(), els[i].Eta(), pdg, m_year);
-      if(FSSF > 0){
-	SF *= FSSF;
-	EFFMC /= FSSF;
-      }
-    }
-
-    // apply VL SF to all leptons
-    probDATA *= SF;
+  for(int i = 0; i < (int)els.size(); i++){
+    if(els[i].SourceID() > 0) continue;
+    LepID qual = els[i].LepQual();
+    double SF = m_LepSFTool.get_NOT_ID_nor_ISO_SF(els[i].Pt(), els[i].Eta(), pdg, qual);
+    if(updown != 0)
+      SF += updown * m_LepSFTool.get_NOT_ID_nor_ISO_SF_err(els[i].Pt(), els[i].Eta(), pdg, qual);
+    tot_SF *= SF;
   }
-
-  if(probMC <= 0. || probDATA <= 0.)
-    return 1.;
-
-  return probDATA/probMC;
+  return tot_SF;
 }
 
 template <>
 double AnalysisBase<NANOULBase>::GetMuIDSFWeight(const ParticleList& mus, int updown){
-   if(IsData())
-    return 1.;
-
-  bool FastSim = IsFastSim();
-  
-  int Nlep = mus.size();
+  if(IsData()) return 1.;
+  double tot_SF = 1.0;
   int pdg = 13;
-  double EFFMC, EFFData, SF;
-  double EFFMCErr, EFFDataErr, SFErr;
-
-  double probMC   = 1.;
-  double probDATA = 1.;
-  
-  for(int i = 0; i < Nlep; i++){
-    if(mus[i].SourceID() > 0)
-      continue;
-    
-    EFFMC = m_LepSFTool.getMCIdEfficiency(mus[i].Pt(), mus[i].Eta(), pdg, m_year);
-    EFFData = m_LepSFTool.getDataIdEfficiency(mus[i].Pt(), mus[i].Eta(), pdg, m_year);
-
-    if(EFFMC > 0 && EFFData > 0)
-      SF = EFFData/EFFMC;
-    else
-      SF = 1;
-
-    SFErr = 0;
-    if(updown != 0){
-      EFFMCErr = m_LepSFTool.getMCIdError(mus[i].Pt(), mus[i].Eta(), pdg, m_year);
-      EFFDataErr = m_LepSFTool.getDataIdError(mus[i].Pt(), mus[i].Eta(), pdg, m_year);
-
-      if(EFFMC > 0 && EFFData > 0)
-	SFErr = updown * SF * sqrt( EFFMCErr*EFFMCErr/EFFMC/EFFMC + EFFDataErr*EFFDataErr/EFFData/EFFData );
-    }
-
-    SF += SFErr;
-    
-    if(FastSim){
-      double FSSF = m_LepSFTool.getIdFastSimSF(mus[i].Pt(), mus[i].Eta(), pdg, m_year);
-      if(FSSF > 0){
-	SF *= FSSF;
-	EFFMC /= FSSF;
-      }
-    }
-
-    // Evaluate cut
-    if(mus[i].ParticleID() >= kMedium){
-      probMC   *= EFFMC;
-      probDATA *= SF*EFFMC;
-    } else {
-      probMC   *= EFFMC;
-      probDATA *= EFFMC/SF;
-    }
+  for(int i = 0; i < (int)mus.size(); i++){
+    if(mus[i].SourceID() > 0) continue;
+    LepID qual = mus[i].LepQual();
+    double SF = m_LepSFTool.get_BLP_COL_SF(mus[i].Pt(), mus[i].Eta(), pdg, qual)
+              * m_LepSFTool.get_ID_BLP_SF(mus[i].Pt(), mus[i].Eta(), pdg, qual);
+    if(updown != 0)
+      SF += updown * (m_LepSFTool.get_BLP_COL_SF_err(mus[i].Pt(), mus[i].Eta(), pdg, qual)
+                    + m_LepSFTool.get_ID_BLP_SF_err(mus[i].Pt(), mus[i].Eta(), pdg, qual));
+    tot_SF *= SF;
   }
-
-  if(probMC <= 0. || probDATA <= 0.)
-    return 1.;
-
-  return probDATA/probMC;
+  return tot_SF;
 }
 
 template <>
 double AnalysisBase<NANOULBase>::GetMuISOSFWeight(const ParticleList& mus, int updown){
-  if(IsData())
-    return 1.;
-
-  bool FastSim = IsFastSim();
-  
-  int Nlep = mus.size();
+  if(IsData()) return 1.;
+  double tot_SF = 1.0;
   int pdg = 13;
-  double EFFMC, EFFData, SF;
-  double EFFMCErr, EFFDataErr, SFErr;
-
-  double probMC   = 1.;
-  double probDATA = 1.;
-  
-  for(int i = 0; i < Nlep; i++){
-    if(mus[i].SourceID() > 0)
-      continue;
-    
-    EFFMC = m_LepSFTool.getMCIsoEfficiency(mus[i].Pt(), mus[i].Eta(), pdg, m_year);
-    EFFData = m_LepSFTool.getDataIsoEfficiency(mus[i].Pt(), mus[i].Eta(), pdg, m_year);
-
-    if(EFFMC > 0 && EFFData > 0)
-      SF = EFFData/EFFMC;
-    else
-      SF = 1;
-
-    SFErr = 0;
-    if(updown != 0){
-      EFFMCErr = m_LepSFTool.getMCIsoError(mus[i].Pt(), mus[i].Eta(), pdg, m_year);
-      EFFDataErr = m_LepSFTool.getDataIsoError(mus[i].Pt(), mus[i].Eta(), pdg, m_year);
-
-      if(EFFMC > 0 && EFFData > 0)
-	SFErr = updown * SF * sqrt( EFFMCErr*EFFMCErr/EFFMC/EFFMC + EFFDataErr*EFFDataErr/EFFData/EFFData );
-    }
-
-    SF += SFErr;
-    
-    if(FastSim){
-      double FSSF = m_LepSFTool.getIsoFastSimSF(mus[i].Pt(), mus[i].Eta(), pdg, m_year);
-      if(FSSF > 0){
-	SF *= FSSF;
-	EFFMC /= FSSF;
-      }
-    }
-
-    // Evaluate cut
-    if(mus[i].RelIso() < 4. && mus[i].MiniIso() < 4.){
-      probMC   *= EFFMC;
-      probDATA *= SF*EFFMC;
-    } else {
-      probMC   *= EFFMC;
-      probDATA *= EFFMC/SF;
-    }
+  for(int i = 0; i < (int)mus.size(); i++){
+    if(mus[i].SourceID() > 0) continue;
+    LepID qual = mus[i].LepQual();
+    double SF = m_LepSFTool.get_ISO_ID_SF(mus[i].Pt(), mus[i].Eta(), pdg, qual);
+    if(updown != 0)
+      SF += updown * m_LepSFTool.get_ISO_ID_SF_err(mus[i].Pt(), mus[i].Eta(), pdg, qual);
+    tot_SF *= SF;
   }
-
-  if(probMC <= 0. || probDATA <= 0.)
-    return 1.;
-
-  return probDATA/probMC;
+  return tot_SF;
 }
 
 template <>
 double AnalysisBase<NANOULBase>::GetMuSIPSFWeight(const ParticleList& mus, int updown){
-  if(IsData())
-    return 1.;
-
-  bool FastSim = IsFastSim();
-  
-  int Nlep = mus.size();
+  if(IsData()) return 1.;
+  double tot_SF = 1.0;
   int pdg = 13;
-  double EFFMC, EFFData, SF;
-  double EFFMCErr, EFFDataErr, SFErr;
-
-  double probMC   = 1.;
-  double probDATA = 1.;
-  
-  for(int i = 0; i < Nlep; i++){
-    if(mus[i].SourceID() > 0)
-      continue;
-    
-    EFFMC = m_LepSFTool.getMCSipEfficiency(mus[i].Pt(), mus[i].Eta(), pdg, m_year);
-    EFFData = m_LepSFTool.getDataSipEfficiency(mus[i].Pt(), mus[i].Eta(), pdg, m_year);
-
-    if(EFFMC > 0 && EFFData > 0)
-      SF = EFFData/EFFMC;
-    else
-      SF = 1;
-
-    SFErr = 0;
+  for(int i = 0; i < (int)mus.size(); i++){
+    if(mus[i].SourceID() > 0) continue;
+    LepID qual = mus[i].LepQual();
+    double SF = m_LepSFTool.get_Prompt_ISOID_SF(mus[i].Pt(), mus[i].Eta(), pdg, qual)
+              * m_LepSFTool.get_NOT_Prompt_ISOID_SF(mus[i].Pt(), mus[i].Eta(), pdg, qual);
     if(updown != 0){
-      EFFMCErr = m_LepSFTool.getMCSipError(mus[i].Pt(), mus[i].Eta(), pdg, m_year);
-      EFFDataErr = m_LepSFTool.getDataSipError(mus[i].Pt(), mus[i].Eta(), pdg, m_year);
-
-      if(EFFMC > 0 && EFFData > 0)
-	SFErr = updown * SF * sqrt( EFFMCErr*EFFMCErr/EFFMC/EFFMC + EFFDataErr*EFFDataErr/EFFData/EFFData );
+      SF += updown * (m_LepSFTool.get_Prompt_ISOID_SF_err(mus[i].Pt(), mus[i].Eta(), pdg, qual)
+                    + m_LepSFTool.get_NOT_Prompt_ISOID_SF_err(mus[i].Pt(), mus[i].Eta(), pdg, qual));
     }
-
-    SF += SFErr;
-    
-    if(FastSim){
-      double FSSF = m_LepSFTool.getSipFastSimSF(mus[i].Pt(), mus[i].Eta(), pdg, m_year);
-      if(FSSF > 0){
-	SF *= FSSF;
-	EFFMC /= FSSF;
-      }
-    }
-
-    // Evaluate cut
-    if(mus[i].LepQual() != kBronze){
-      if(mus[i].SIP3D() < 2.){
-	probMC   *= EFFMC;
-	probDATA *= SF*EFFMC;
-      } else {
-	probMC   *= EFFMC;
-	probDATA *= EFFMC/SF;
-      }
-    }
+    tot_SF *= SF;
   }
-
-  if(probMC <= 0. || probDATA <= 0.)
-    return 1.;
-
-  return probDATA/probMC;
+  return tot_SF;
 }
 
 template <>
 double AnalysisBase<NANOULBase>::GetMuVLIDSFWeight(const ParticleList& mus, int updown){
-  if(IsData())
-    return 1.;
-
-  bool FastSim = IsFastSim();
-  
-  int Nlep = mus.size();
+  if(IsData()) return 1.;
+  double tot_SF = 1.0;
   int pdg = 13;
-  double EFFMC, EFFData, SF;
-  double EFFMCErr, EFFDataErr, SFErr;
-
-  double probMC   = 1.;
-  double probDATA = 1.;
-  
-  for(int i = 0; i < Nlep; i++){
-    if(mus[i].SourceID() > 0)
-      continue;
-    
-    EFFMC = m_LepSFTool.getMCVLIdEfficiency(mus[i].Pt(), mus[i].Eta(), pdg, m_year);
-    EFFData = m_LepSFTool.getDataVLIdEfficiency(mus[i].Pt(), mus[i].Eta(), pdg, m_year);
-
-    if(EFFMC > 0)
-      SF = EFFData/EFFMC;
-    else
-      SF = 1;
-
-    SFErr = 0;
-    if(updown != 0){
-      EFFMCErr = m_LepSFTool.getMCVLIdError(mus[i].Pt(), mus[i].Eta(), pdg, m_year);
-      EFFDataErr = m_LepSFTool.getDataVLIdError(mus[i].Pt(), mus[i].Eta(), pdg, m_year);
-
-      if(EFFMC > 0 && EFFData > 0)
-	SFErr = updown * SF * sqrt( EFFMCErr*EFFMCErr/EFFMC/EFFMC + EFFDataErr*EFFDataErr/EFFData/EFFData );
-    }
-
-    SF += SFErr;
-    
-    if(FastSim){
-      double FSSF = m_LepSFTool.getVLIdFastSimSF(mus[i].Pt(), mus[i].Eta(), pdg, m_year);
-      if(FSSF > 0){
-	SF *= FSSF;
-	EFFMC /= FSSF;
-      }
-    }
-
-    // apply VL SF to all leptons
-    probDATA *= SF;
+  for(int i = 0; i < (int)mus.size(); i++){
+    if(mus[i].SourceID() > 0) continue;
+    LepID qual = mus[i].LepQual();
+    double SF = m_LepSFTool.get_NOT_ID_nor_ISO_SF(mus[i].Pt(), mus[i].Eta(), pdg, qual);
+    if(updown != 0)
+      SF += updown * m_LepSFTool.get_NOT_ID_nor_ISO_SF_err(mus[i].Pt(), mus[i].Eta(), pdg, qual);
+    tot_SF *= SF;
   }
-
-  if(probMC <= 0. || probDATA <= 0.)
-    return 1.;
-
-  return probDATA/probMC;
+  return tot_SF;
 }
 
 template <>
@@ -5206,490 +4566,141 @@ double AnalysisBase<NANORun3>::GetBtagSFWeight(const ParticleList& jets, bool HF
 
 template <>
 double AnalysisBase<NANORun3>::GetElIDSFWeight(const ParticleList& els, int updown){
-  if(IsData())
-    return 1.;
-
-  bool FastSim = IsFastSim();
-
-  int Nlep = els.size();
+  if(IsData()) return 1.;
+  double tot_SF = 1.0;
   int pdg = 11;
-  double EFFMC, EFFData, SF;
-  double EFFMCErr, EFFDataErr, SFErr;
-
-  double probMC   = 1.;
-  double probDATA = 1.;
-  
-  for(int i = 0; i < Nlep; i++){
-    if(els[i].SourceID() > 0)
-      continue;
-    
-    EFFMC = m_LepSFTool.getMCIdEfficiency(els[i].Pt(), els[i].Eta(), pdg, m_year);
-    EFFData = m_LepSFTool.getDataIdEfficiency(els[i].Pt(), els[i].Eta(), pdg, m_year);
-
-    if(EFFMC > 0 && EFFData > 0)
-      SF = EFFData/EFFMC;
-    else
-      SF = 1;
-
-    SFErr = 0;
-    if(updown != 0){
-      EFFMCErr = m_LepSFTool.getMCIdError(els[i].Pt(), els[i].Eta(), pdg, m_year);
-      EFFDataErr = m_LepSFTool.getDataIdError(els[i].Pt(), els[i].Eta(), pdg, m_year);
-
-      if(EFFMC > 0 && EFFData > 0)
-	SFErr = updown * SF * sqrt( EFFMCErr*EFFMCErr/EFFMC/EFFMC + EFFDataErr*EFFDataErr/EFFData/EFFData );
-    }
-
-    SF += SFErr;
-    
-    if(FastSim){
-      double FSSF = m_LepSFTool.getIdFastSimSF(els[i].Pt(), els[i].Eta(), pdg, m_year);
-      if(FSSF > 0){
-	SF *= FSSF;
-	EFFMC /= FSSF;
-      }
-    }
-
-    // Evaluate cut
-    if(els[i].ParticleID() >= kMedium){
-      probMC   *= EFFMC;
-      probDATA *= SF*EFFMC;
-    } else {
-      probMC   *= EFFMC;
-      probDATA *= EFFMC/SF;
-    }
+  for(int i = 0; i < (int)els.size(); i++){
+    if(els[i].SourceID() > 0) continue;
+    LepID qual = els[i].LepQual();
+    double SF = m_LepSFTool.get_BLP_COL_SF(els[i].Pt(), els[i].Eta(), pdg, qual)
+              * m_LepSFTool.get_ID_BLP_SF(els[i].Pt(), els[i].Eta(), pdg, qual);
+    if(updown != 0)
+      SF += updown * (m_LepSFTool.get_BLP_COL_SF_err(els[i].Pt(), els[i].Eta(), pdg, qual)
+                    + m_LepSFTool.get_ID_BLP_SF_err(els[i].Pt(), els[i].Eta(), pdg, qual));
+    tot_SF *= SF;
   }
-
-  if(probMC <= 0. || probDATA <= 0.)
-    return 1.;
-
-  return probDATA/probMC;
+  return tot_SF;
 }
 
 template <>
 double AnalysisBase<NANORun3>::GetElISOSFWeight(const ParticleList& els, int updown){
-  if(IsData())
-    return 1.;
-
-  bool FastSim = IsFastSim();
-  
-  int Nlep = els.size();
+  if(IsData()) return 1.;
+  double tot_SF = 1.0;
   int pdg = 11;
-  double EFFMC, EFFData, SF;
-  double EFFMCErr, EFFDataErr, SFErr;
-
-  double probMC   = 1.;
-  double probDATA = 1.;
-  
-  for(int i = 0; i < Nlep; i++){
-    if(els[i].SourceID() > 0)
-      continue;
-    
-    EFFMC = m_LepSFTool.getMCIsoEfficiency(els[i].Pt(), els[i].Eta(), pdg, m_year);
-    EFFData = m_LepSFTool.getDataIsoEfficiency(els[i].Pt(), els[i].Eta(), pdg, m_year);
-
-    if(EFFMC > 0 && EFFData > 0)
-      SF = EFFData/EFFMC;
-    else
-      SF = 1;
-
-    SFErr = 0;
-    if(updown != 0){
-      EFFMCErr = m_LepSFTool.getMCIsoError(els[i].Pt(), els[i].Eta(), pdg, m_year);
-      EFFDataErr = m_LepSFTool.getDataIsoError(els[i].Pt(), els[i].Eta(), pdg, m_year);
-
-      if(EFFMC > 0 && EFFData > 0)
-	SFErr = updown * SF * sqrt( EFFMCErr*EFFMCErr/EFFMC/EFFMC + EFFDataErr*EFFDataErr/EFFData/EFFData );
-    }
-
-    SF += SFErr;
-    
-    if(FastSim){
-      double FSSF = m_LepSFTool.getIsoFastSimSF(els[i].Pt(), els[i].Eta(), pdg, m_year);
-      if(FSSF > 0){
-	SF *= FSSF;
-	EFFMC /= FSSF;
-      }
-    }
-
-    // Evaluate cut
-    if(els[i].RelIso() < 4. && els[i].MiniIso() < 4.){
-      probMC   *= EFFMC;
-      probDATA *= SF*EFFMC;
-    } else {
-      probMC   *= EFFMC;
-      probDATA *= EFFMC/SF;
-    }
+  for(int i = 0; i < (int)els.size(); i++){
+    if(els[i].SourceID() > 0) continue;
+    LepID qual = els[i].LepQual();
+    double SF = m_LepSFTool.get_ISO_ID_SF(els[i].Pt(), els[i].Eta(), pdg, qual);
+    if(updown != 0)
+      SF += updown * m_LepSFTool.get_ISO_ID_SF_err(els[i].Pt(), els[i].Eta(), pdg, qual);
+    tot_SF *= SF;
   }
-
-  if(probMC <= 0. || probDATA <= 0.)
-    return 1.;
-
-  return probDATA/probMC;
+  return tot_SF;
 }
 
 template <>
 double AnalysisBase<NANORun3>::GetElSIPSFWeight(const ParticleList& els, int updown){
-  if(IsData())
-    return 1.;
-
-  bool FastSim = IsFastSim();
-
-  int Nlep = els.size();
+  if(IsData()) return 1.;
+  double tot_SF = 1.0;
   int pdg = 11;
-  double EFFMC, EFFData, SF;
-  double EFFMCErr, EFFDataErr, SFErr;
-
-  double probMC   = 1.;
-  double probDATA = 1.;
-  
-  for(int i = 0; i < Nlep; i++){
-    if(els[i].SourceID() > 0)
-      continue;
-    
-    EFFMC = m_LepSFTool.getMCSipEfficiency(els[i].Pt(), els[i].Eta(), pdg, m_year);
-    EFFData = m_LepSFTool.getDataSipEfficiency(els[i].Pt(), els[i].Eta(), pdg, m_year);
-
-    if(EFFMC > 0 && EFFData > 0)
-      SF = EFFData/EFFMC;
-    else
-      SF = 1;
-
-    SFErr = 0;
+  for(int i = 0; i < (int)els.size(); i++){
+    if(els[i].SourceID() > 0) continue;
+    LepID qual = els[i].LepQual();
+    // Gold gets Prompt, Silver gets NOT_Prompt, Bronze gets 1.0 from both
+    double SF = m_LepSFTool.get_Prompt_ISOID_SF(els[i].Pt(), els[i].Eta(), pdg, qual)
+              * m_LepSFTool.get_NOT_Prompt_ISOID_SF(els[i].Pt(), els[i].Eta(), pdg, qual);
     if(updown != 0){
-      EFFMCErr = m_LepSFTool.getMCSipError(els[i].Pt(), els[i].Eta(), pdg, m_year);
-      EFFDataErr = m_LepSFTool.getDataSipError(els[i].Pt(), els[i].Eta(), pdg, m_year);
-
-      if(EFFMC > 0 && EFFData > 0)
-	SFErr = updown * SF * sqrt( EFFMCErr*EFFMCErr/EFFMC/EFFMC + EFFDataErr*EFFDataErr/EFFData/EFFData );
+      SF += updown * (m_LepSFTool.get_Prompt_ISOID_SF_err(els[i].Pt(), els[i].Eta(), pdg, qual)
+                    + m_LepSFTool.get_NOT_Prompt_ISOID_SF_err(els[i].Pt(), els[i].Eta(), pdg, qual));
     }
-
-    SF += SFErr;
-    
-    if(FastSim){
-      double FSSF = m_LepSFTool.getSipFastSimSF(els[i].Pt(), els[i].Eta(), pdg, m_year);
-      if(FSSF > 0){
-	SF *= FSSF;
-	EFFMC /= FSSF;
-      }
-    }
-
-    // Evaluate cut
-    if(els[i].LepQual() != kBronze){
-      if(els[i].SIP3D() < 2.){
-	probMC   *= EFFMC;
-	probDATA *= SF*EFFMC;
-      } else {
-	probMC   *= EFFMC;
-	probDATA *= EFFMC/SF;
-      }
-    }
+    tot_SF *= SF;
   }
-
-  if(probMC <= 0. || probDATA <= 0.)
-    return 1.;
-
-  return probDATA/probMC;
+  return tot_SF;
 }
 
 template <>
 double AnalysisBase<NANORun3>::GetElVLIDSFWeight(const ParticleList& els, int updown){
-   if(IsData())
-    return 1.;
-
-  bool FastSim = IsFastSim();
-  
-  int Nlep = els.size();
+  if(IsData()) return 1.;
+  double tot_SF = 1.0;
   int pdg = 11;
-  double EFFMC, EFFData, SF;
-  double EFFMCErr, EFFDataErr, SFErr;
-
-  double probMC   = 1.;
-  double probDATA = 1.;
-  
-  for(int i = 0; i < Nlep; i++){
-    if(els[i].SourceID() > 0)
-      continue;
-    
-    EFFMC = m_LepSFTool.getMCVLIdEfficiency(els[i].Pt(), els[i].Eta(), pdg, m_year);
-    EFFData = m_LepSFTool.getDataVLIdEfficiency(els[i].Pt(), els[i].Eta(), pdg, m_year);
-
-    if(EFFMC > 0)
-      SF = EFFData/EFFMC;
-    else
-      SF = 1;
-
-    SFErr = 0;
-    if(updown != 0){
-      EFFMCErr = m_LepSFTool.getMCVLIdError(els[i].Pt(), els[i].Eta(), pdg, m_year);
-      EFFDataErr = m_LepSFTool.getDataVLIdError(els[i].Pt(), els[i].Eta(), pdg, m_year);
-
-      if(EFFMC > 0 && EFFData > 0)
-	SFErr = updown * SF * sqrt( EFFMCErr*EFFMCErr/EFFMC/EFFMC + EFFDataErr*EFFDataErr/EFFData/EFFData );
-    }
-
-    SF += SFErr;
-    
-    if(FastSim){
-      double FSSF = m_LepSFTool.getVLIdFastSimSF(els[i].Pt(), els[i].Eta(), pdg, m_year);
-      if(FSSF > 0){
-	SF *= FSSF;
-	EFFMC /= FSSF;
-      }
-    }
-
-    // apply VL SF to all leptons
-    probDATA *= SF;
+  for(int i = 0; i < (int)els.size(); i++){
+    if(els[i].SourceID() > 0) continue;
+    LepID qual = els[i].LepQual();
+    double SF = m_LepSFTool.get_NOT_ID_nor_ISO_SF(els[i].Pt(), els[i].Eta(), pdg, qual);
+    if(updown != 0)
+      SF += updown * m_LepSFTool.get_NOT_ID_nor_ISO_SF_err(els[i].Pt(), els[i].Eta(), pdg, qual);
+    tot_SF *= SF;
   }
-
-  if(probMC <= 0. || probDATA <= 0.)
-    return 1.;
-
-  return probDATA/probMC;
+  return tot_SF;
 }
 
 template <>
 double AnalysisBase<NANORun3>::GetMuIDSFWeight(const ParticleList& mus, int updown){
-   if(IsData())
-    return 1.;
-
-  bool FastSim = IsFastSim();
-  
-  int Nlep = mus.size();
+  if(IsData()) return 1.;
+  double tot_SF = 1.0;
   int pdg = 13;
-  double EFFMC, EFFData, SF;
-  double EFFMCErr, EFFDataErr, SFErr;
-
-  double probMC   = 1.;
-  double probDATA = 1.;
-  
-  for(int i = 0; i < Nlep; i++){
-    if(mus[i].SourceID() > 0)
-      continue;
-    
-    EFFMC = m_LepSFTool.getMCIdEfficiency(mus[i].Pt(), mus[i].Eta(), pdg, m_year);
-    EFFData = m_LepSFTool.getDataIdEfficiency(mus[i].Pt(), mus[i].Eta(), pdg, m_year);
-
-    if(EFFMC > 0 && EFFData > 0)
-      SF = EFFData/EFFMC;
-    else
-      SF = 1;
-
-    SFErr = 0;
-    if(updown != 0){
-      EFFMCErr = m_LepSFTool.getMCIdError(mus[i].Pt(), mus[i].Eta(), pdg, m_year);
-      EFFDataErr = m_LepSFTool.getDataIdError(mus[i].Pt(), mus[i].Eta(), pdg, m_year);
-
-      if(EFFMC > 0 && EFFData > 0)
-	SFErr = updown * SF * sqrt( EFFMCErr*EFFMCErr/EFFMC/EFFMC + EFFDataErr*EFFDataErr/EFFData/EFFData );
-    }
-
-    SF += SFErr;
-    
-    if(FastSim){
-      double FSSF = m_LepSFTool.getIdFastSimSF(mus[i].Pt(), mus[i].Eta(), pdg, m_year);
-      if(FSSF > 0){
-	SF *= FSSF;
-	EFFMC /= FSSF;
-      }
-    }
-
-    // Evaluate cut
-    if(mus[i].ParticleID() >= kMedium){
-      probMC   *= EFFMC;
-      probDATA *= SF*EFFMC;
-    } else {
-      probMC   *= EFFMC;
-      probDATA *= EFFMC/SF;
-    }
+  for(int i = 0; i < (int)mus.size(); i++){
+    if(mus[i].SourceID() > 0) continue;
+    LepID qual = mus[i].LepQual();
+    double SF = m_LepSFTool.get_BLP_COL_SF(mus[i].Pt(), mus[i].Eta(), pdg, qual)
+              * m_LepSFTool.get_ID_BLP_SF(mus[i].Pt(), mus[i].Eta(), pdg, qual);
+    if(updown != 0)
+      SF += updown * (m_LepSFTool.get_BLP_COL_SF_err(mus[i].Pt(), mus[i].Eta(), pdg, qual)
+                    + m_LepSFTool.get_ID_BLP_SF_err(mus[i].Pt(), mus[i].Eta(), pdg, qual));
+    tot_SF *= SF;
   }
-
-  if(probMC <= 0. || probDATA <= 0.)
-    return 1.;
-
-  return probDATA/probMC;
+  return tot_SF;
 }
 
 template <>
 double AnalysisBase<NANORun3>::GetMuISOSFWeight(const ParticleList& mus, int updown){
-  if(IsData())
-    return 1.;
-
-  bool FastSim = IsFastSim();
-  
-  int Nlep = mus.size();
+  if(IsData()) return 1.;
+  double tot_SF = 1.0;
   int pdg = 13;
-  double EFFMC, EFFData, SF;
-  double EFFMCErr, EFFDataErr, SFErr;
-
-  double probMC   = 1.;
-  double probDATA = 1.;
-  
-  for(int i = 0; i < Nlep; i++){
-    if(mus[i].SourceID() > 0)
-      continue;
-    
-    EFFMC = m_LepSFTool.getMCIsoEfficiency(mus[i].Pt(), mus[i].Eta(), pdg, m_year);
-    EFFData = m_LepSFTool.getDataIsoEfficiency(mus[i].Pt(), mus[i].Eta(), pdg, m_year);
-
-    if(EFFMC > 0 && EFFData > 0)
-      SF = EFFData/EFFMC;
-    else
-      SF = 1;
-
-    SFErr = 0;
-    if(updown != 0){
-      EFFMCErr = m_LepSFTool.getMCIsoError(mus[i].Pt(), mus[i].Eta(), pdg, m_year);
-      EFFDataErr = m_LepSFTool.getDataIsoError(mus[i].Pt(), mus[i].Eta(), pdg, m_year);
-
-      if(EFFMC > 0 && EFFData > 0)
-	SFErr = updown * SF * sqrt( EFFMCErr*EFFMCErr/EFFMC/EFFMC + EFFDataErr*EFFDataErr/EFFData/EFFData );
-    }
-
-    SF += SFErr;
-    
-    if(FastSim){
-      double FSSF = m_LepSFTool.getIsoFastSimSF(mus[i].Pt(), mus[i].Eta(), pdg, m_year);
-      if(FSSF > 0){
-	SF *= FSSF;
-	EFFMC /= FSSF;
-      }
-    }
-
-    // Evaluate cut
-    if(mus[i].RelIso() < 4. && mus[i].MiniIso() < 4.){
-      probMC   *= EFFMC;
-      probDATA *= SF*EFFMC;
-    } else {
-      probMC   *= EFFMC;
-      probDATA *= EFFMC/SF;
-    }
+  for(int i = 0; i < (int)mus.size(); i++){
+    if(mus[i].SourceID() > 0) continue;
+    LepID qual = mus[i].LepQual();
+    double SF = m_LepSFTool.get_ISO_ID_SF(mus[i].Pt(), mus[i].Eta(), pdg, qual);
+    if(updown != 0)
+      SF += updown * m_LepSFTool.get_ISO_ID_SF_err(mus[i].Pt(), mus[i].Eta(), pdg, qual);
+    tot_SF *= SF;
   }
-
-  if(probMC <= 0. || probDATA <= 0.)
-    return 1.;
-
-  return probDATA/probMC;
+  return tot_SF;
 }
 
 template <>
 double AnalysisBase<NANORun3>::GetMuSIPSFWeight(const ParticleList& mus, int updown){
-  if(IsData())
-    return 1.;
-
-  bool FastSim = IsFastSim();
-  
-  int Nlep = mus.size();
+  if(IsData()) return 1.;
+  double tot_SF = 1.0;
   int pdg = 13;
-  double EFFMC, EFFData, SF;
-  double EFFMCErr, EFFDataErr, SFErr;
-
-  double probMC   = 1.;
-  double probDATA = 1.;
-  
-  for(int i = 0; i < Nlep; i++){
-    if(mus[i].SourceID() > 0)
-      continue;
-    
-    EFFMC = m_LepSFTool.getMCSipEfficiency(mus[i].Pt(), mus[i].Eta(), pdg, m_year);
-    EFFData = m_LepSFTool.getDataSipEfficiency(mus[i].Pt(), mus[i].Eta(), pdg, m_year);
-
-    if(EFFMC > 0 && EFFData > 0)
-      SF = EFFData/EFFMC;
-    else
-      SF = 1;
-
-    SFErr = 0;
+  for(int i = 0; i < (int)mus.size(); i++){
+    if(mus[i].SourceID() > 0) continue;
+    LepID qual = mus[i].LepQual();
+    double SF = m_LepSFTool.get_Prompt_ISOID_SF(mus[i].Pt(), mus[i].Eta(), pdg, qual)
+              * m_LepSFTool.get_NOT_Prompt_ISOID_SF(mus[i].Pt(), mus[i].Eta(), pdg, qual);
     if(updown != 0){
-      EFFMCErr = m_LepSFTool.getMCSipError(mus[i].Pt(), mus[i].Eta(), pdg, m_year);
-      EFFDataErr = m_LepSFTool.getDataSipError(mus[i].Pt(), mus[i].Eta(), pdg, m_year);
-
-      if(EFFMC > 0 && EFFData > 0)
-	SFErr = updown * SF * sqrt( EFFMCErr*EFFMCErr/EFFMC/EFFMC + EFFDataErr*EFFDataErr/EFFData/EFFData );
+      SF += updown * (m_LepSFTool.get_Prompt_ISOID_SF_err(mus[i].Pt(), mus[i].Eta(), pdg, qual)
+                    + m_LepSFTool.get_NOT_Prompt_ISOID_SF_err(mus[i].Pt(), mus[i].Eta(), pdg, qual));
     }
-
-    SF += SFErr;
-    
-    if(FastSim){
-      double FSSF = m_LepSFTool.getSipFastSimSF(mus[i].Pt(), mus[i].Eta(), pdg, m_year);
-      if(FSSF > 0){
-	SF *= FSSF;
-	EFFMC /= FSSF;
-      }
-    }
-
-    // Evaluate cut
-    if(mus[i].LepQual() != kBronze){
-      if(mus[i].SIP3D() < 2.){
-	probMC   *= EFFMC;
-	probDATA *= SF*EFFMC;
-      } else {
-	probMC   *= EFFMC;
-	probDATA *= EFFMC/SF;
-      }
-    }
+    tot_SF *= SF;
   }
-
-  if(probMC <= 0. || probDATA <= 0.)
-    return 1.;
-
-  return probDATA/probMC;
+  return tot_SF;
 }
 
 template <>
 double AnalysisBase<NANORun3>::GetMuVLIDSFWeight(const ParticleList& mus, int updown){
-  if(IsData())
-    return 1.;
-
-  bool FastSim = IsFastSim();
-  
-  int Nlep = mus.size();
+  if(IsData()) return 1.;
+  double tot_SF = 1.0;
   int pdg = 13;
-  double EFFMC, EFFData, SF;
-  double EFFMCErr, EFFDataErr, SFErr;
-
-  double probMC   = 1.;
-  double probDATA = 1.;
-  
-  for(int i = 0; i < Nlep; i++){
-    if(mus[i].SourceID() > 0)
-      continue;
-    
-    EFFMC = m_LepSFTool.getMCVLIdEfficiency(mus[i].Pt(), mus[i].Eta(), pdg, m_year);
-    EFFData = m_LepSFTool.getDataVLIdEfficiency(mus[i].Pt(), mus[i].Eta(), pdg, m_year);
-
-    if(EFFMC > 0)
-      SF = EFFData/EFFMC;
-    else
-      SF = 1;
-
-    SFErr = 0;
-    if(updown != 0){
-      EFFMCErr = m_LepSFTool.getMCVLIdError(mus[i].Pt(), mus[i].Eta(), pdg, m_year);
-      EFFDataErr = m_LepSFTool.getDataVLIdError(mus[i].Pt(), mus[i].Eta(), pdg, m_year);
-
-      if(EFFMC > 0 && EFFData > 0)
-	SFErr = updown * SF * sqrt( EFFMCErr*EFFMCErr/EFFMC/EFFMC + EFFDataErr*EFFDataErr/EFFData/EFFData );
-    }
-
-    SF += SFErr;
-    
-    if(FastSim){
-      double FSSF = m_LepSFTool.getVLIdFastSimSF(mus[i].Pt(), mus[i].Eta(), pdg, m_year);
-      if(FSSF > 0){
-	SF *= FSSF;
-	EFFMC /= FSSF;
-      }
-    }
-
-    // apply VL SF to all leptons
-    probDATA *= SF;
+  for(int i = 0; i < (int)mus.size(); i++){
+    if(mus[i].SourceID() > 0) continue;
+    LepID qual = mus[i].LepQual();
+    double SF = m_LepSFTool.get_NOT_ID_nor_ISO_SF(mus[i].Pt(), mus[i].Eta(), pdg, qual);
+    if(updown != 0)
+      SF += updown * m_LepSFTool.get_NOT_ID_nor_ISO_SF_err(mus[i].Pt(), mus[i].Eta(), pdg, qual);
+    tot_SF *= SF;
   }
-
-  if(probMC <= 0. || probDATA <= 0.)
-    return 1.;
-
-  return probDATA/probMC;
+  return tot_SF;
 }
 
 template <>
