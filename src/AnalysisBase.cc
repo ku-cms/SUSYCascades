@@ -656,7 +656,6 @@ void AnalysisBase<Base>::AddPrefireFile(const string& prefirefile){
   m_PrefireTool = PrefireTool(m_year,UseEMpT,prefirefile);
 }
 
-
 template <class Base>
 double AnalysisBase<Base>::GetPrefireWeight(int updown){
   return 1.;
@@ -3691,43 +3690,6 @@ bool AnalysisBase<NANOULBase>::PassEventFilter(){
   return true;
 }
 
-template<>
-double AnalysisBase<NANOULBase>::EGvalue(int jetIndex, int updown){
-  double PhotonMinPt = 20.;
-  double PhotonMaxPt = 500.;
-  double PhotonMinEta = 2.;
-  double PhotonMaxEta = 3.;
-  double phopf = 1.;
-
-  vector<int> PhotonInJet;
-
-  for(int p = 0; p < nPhoton; p++)
-    {
-      if(Photon_jetIdx[p] == jetIndex){
-	if(Photon_pt[p] >= PhotonMinPt && fabs(Photon_eta[p]) <= PhotonMaxEta && fabs(Photon_eta[p]) >= PhotonMinEta){
-	  double phopf_temp = 1. - m_PrefireTool.GetPrefireProbability(false, Photon_eta[p], Photon_pt[p], PhotonMaxPt, updown);
-	  double elepf_temp = 1.;
-	  if(Photon_electronIdx[p] > -1){
-	    if(Electron_pt[Photon_electronIdx[p]] >= PhotonMinPt && fabs(Electron_eta[Photon_electronIdx[p]]) <= PhotonMaxEta && fabs(Electron_eta[Photon_electronIdx[p]]) >= PhotonMinEta){
-	      elepf_temp = 1. - m_PrefireTool.GetPrefireProbability(false, Electron_eta[Photon_electronIdx[p]], Electron_pt[Photon_electronIdx[p]], PhotonMaxPt, updown);
-	    }
-	  }
-	  phopf *= min(phopf_temp,elepf_temp);
-	  PhotonInJet.push_back(p);
-	}   
-      }
-    }
-  for(int e = 0; e < nElectron; e++)
-    {
-      if(Electron_jetIdx[e] == jetIndex && std::count(PhotonInJet.begin(), PhotonInJet.end(), Electron_photonIdx[e]) == 0){
-	if(Electron_pt[e] >= PhotonMinPt && fabs(Electron_eta[e]) <= PhotonMaxEta && fabs(Electron_eta[e]) >= PhotonMinEta){
-	  phopf *= 1. - m_PrefireTool.GetPrefireProbability(false, Electron_eta[e], Electron_pt[e], PhotonMaxPt, updown);
-	}
-      }
-    }
-  return phopf;
-}
-
 template <>
 bool AnalysisBase<NANOULBase>::GetMETtrigger(){
   if(IsFastSim()) return true;
@@ -3885,6 +3847,15 @@ template <>
 bool AnalysisBase<NANOULBase>::GetEMuEtrigger(){
   if(IsFastSim()) return true;
   return HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ;
+}
+
+template <>
+double AnalysisBase<NANOULBase>::GetPrefireWeight(int updown){
+  if(m_year >= 2018) return 1.;
+  if(updown == 0) return this->L1PreFiringWeight_Nom;
+  else if(updown > 0) return this->L1PreFiringWeight_Up;
+  else if(updown < 0) return this->L1PreFiringWeight_Dn;
+  return 1.;
 }
 
 template <>  
