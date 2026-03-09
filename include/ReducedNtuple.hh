@@ -50,6 +50,11 @@ private:
   double m_BtagLFSFweight_up;
   double m_BtagLFSFweight_down;
 
+  //new LepSF here
+  double m_elBLPoverCOLSFweight;
+  double m_elBLPoverCOLSFweight_up;
+  double m_elBLPoverCOLSFweight_down;
+
   double m_elIDSFweight;
   double m_elIDSFweight_up;
   double m_elIDSFweight_down;

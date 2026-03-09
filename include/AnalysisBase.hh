@@ -184,6 +184,10 @@ protected:
   virtual double GetMuRWeight(int updown = 0);
   virtual double GetBtagSFWeight(const ParticleList& jets, bool HForLF, int updown = 0, ParticleIDType tag = kMedium);
 
+  //new LepSF here
+  virtual double Get_El_BLP_over_COL(const ParticleList& els, int updown = 0);
+
+
   virtual double GetElIDSFWeight(const ParticleList& els, int updown = 0);
   virtual double GetElISOSFWeight(const ParticleList& els, int updown = 0);
   virtual double GetElSIPSFWeight(const ParticleList& els, int updown = 0);
