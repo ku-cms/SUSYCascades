@@ -28,6 +28,7 @@
 #include "LHETool.hh"
 #include "BtagSFTool.hh"
 #include "LepSFTool.hh"
+#include "LepSFTool_Cascades.hh"
 #include "JMETool.hh"
 #include "METTriggerTool.hh"
 #include "PrefireTool.hh"
@@ -184,8 +185,20 @@ protected:
   virtual double GetMuRWeight(int updown = 0);
   virtual double GetBtagSFWeight(const ParticleList& jets, bool HForLF, int updown = 0, ParticleIDType tag = kMedium);
 
-  //new LepSF here
+  // new LepSF here
   virtual double Get_El_BLP_over_COL(const ParticleList& els, int updown = 0);
+  virtual double Get_El_ID_over_BLP(const ParticleList& els, int updown = 0);
+  virtual double Get_El_ISO_over_ID(const ParticleList& els, int updown = 0);
+  virtual double Get_El_Prompt_ISOID(const ParticleList& els, int updown = 0);
+  virtual double Get_El_NOT_Prompt_ISOID(const ParticleList& els, int updown = 0);
+  virtual double Get_El_NOT_ID_nor_ISO(const ParticleList& els, int updown = 0);
+
+  virtual double Get_Mu_BLP_over_COL(const ParticleList& mus, int updown = 0);
+  virtual double Get_Mu_ID_over_BLP(const ParticleList& mus, int updown = 0);
+  virtual double Get_Mu_ISO_over_ID(const ParticleList& mus, int updown = 0);
+  virtual double Get_Mu_Prompt_ISOID(const ParticleList& mus, int updown = 0);
+  virtual double Get_Mu_NOT_Prompt_ISOID(const ParticleList& mus, int updown = 0);
+  virtual double Get_Mu_NOT_ID_nor_ISO(const ParticleList& mus, int updown = 0);
 
 
   virtual double GetElIDSFWeight(const ParticleList& els, int updown = 0);
@@ -229,17 +242,18 @@ protected:
   
 private:
 
-  NeventTool      m_NeventTool;
-  XsecTool        m_XsecTool;
-  JSONTool        m_JSONTool;
-  PUTool          m_PUTool;
-  LHETool         m_LHETool;
-  BtagSFTool      m_BtagSFTool;
-  LepSFTool       m_LepSFTool;
-  JMETool         m_JMETool;
-  SystematicsTool m_SysTool;
-  METTriggerTool  m_METTriggerTool;
-  PrefireTool     m_PrefireTool;
+  NeventTool          m_NeventTool;
+  XsecTool            m_XsecTool;
+  JSONTool            m_JSONTool;
+  PUTool              m_PUTool;
+  LHETool             m_LHETool;
+  BtagSFTool          m_BtagSFTool;
+  LepSFTool           m_LepSFTool;
+  LepSFToolCascades   m_LepSFToolCascades; //new LepSF here
+  JMETool             m_JMETool;
+  SystematicsTool     m_SysTool;
+  METTriggerTool      m_METTriggerTool;
+  PrefireTool         m_PrefireTool;
 
   int m_SampleIndex;
   virtual int GetSampleIndex();

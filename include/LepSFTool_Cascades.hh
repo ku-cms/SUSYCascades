@@ -1,16 +1,17 @@
-#ifndef LepSFTool_h
-#define LepSFTool_h
+// LepSFTool_Cascades.hh
+#ifndef LepSFToolCascades_h
+#define LepSFToolCascades_h
 
 #include "correction.h"
 #include "Particle.hh"
 #include <string>
 #include <memory>
 
-class LepSFTool {
+class LepSFToolCascades {
 
 public:
-  LepSFTool(const std::string& filename = "SFs.json");
-  virtual ~LepSFTool();
+  LepSFToolCascades(const std::string& filename = "");
+  virtual ~LepSFToolCascades();
 
   void SetEra(const std::string& era)   { era_  = era;  }
   void SetYear(const std::string& year) { year_ = year; }

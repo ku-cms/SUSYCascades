@@ -1,47 +1,91 @@
 #ifndef LepSFTool_h
 #define LepSFTool_h
 
-#include "correction.h"
-#include "Particle.hh"
-#include <string>
-#include <memory>
+#include "../include/E_bank.hh"
+#include "../include/E_bank_fit.hh"
+
+using std::vector;
 
 class LepSFTool {
-
+  
 public:
-  LepSFTool(const std::string& filename = "SFs.json");
+  LepSFTool();
   virtual ~LepSFTool();
 
-  void SetEra(const std::string& era)   { era_  = era;  }
-  void SetYear(const std::string& year) { year_ = year; }
-  void BuildMap(const std::string& filename);
+  double getMCIdEfficiency(double pt, double eta, int pdg, int year = 0);
+  double getDataIdEfficiency(double pt, double eta, int pdg, int year = 0);
+  
+  double getMCIsoEfficiency(double pt, double eta, int pdg, int year = 0);
+  double getDataIsoEfficiency(double pt, double eta, int pdg, int year = 0);
+  
+  double getMCSipEfficiency(double pt, double eta, int pdg, int year = 0);
+  double getDataSipEfficiency(double pt, double eta, int pdg, int year = 0);
 
-  double get_BLP_COL_SF(double pt, double eta, int pdg, LepID qual);
-  double get_BLP_COL_SF_err(double pt, double eta, int pdg, LepID qual);
+  double getMCVLIdEfficiency(double pt, double eta, int pdg, int year = 0);
+  double getDataVLIdEfficiency(double pt, double eta, int pdg, int year = 0);
+  
+  double getMCIdError(double pt, double eta, int pdg, int year = 0);
+  double getDataIdError(double pt, double eta, int pdg, int year = 0);
+  
+  double getMCIsoError(double pt, double eta, int pdg, int year = 0);
+  double getDataIsoError(double pt, double eta, int pdg, int year = 0);
+  
+  double getMCSipError(double pt, double eta, int pdg, int year = 0);
+  double getDataSipError(double pt, double eta, int pdg, int year = 0);
 
-  double get_ID_BLP_SF(double pt, double eta, int pdg, LepID qual);
-  double get_ID_BLP_SF_err(double pt, double eta, int pdg, LepID qual);
+  double getMCVLIdError(double pt, double eta, int pdg, int year = 0);
+  double getDataVLIdError(double pt, double eta, int pdg, int year = 0);
 
-  double get_ISO_ID_SF(double pt, double eta, int pdg, LepID qual);
-  double get_ISO_ID_SF_err(double pt, double eta, int pdg, LepID qual);
-
-  double get_Prompt_ISOID_SF(double pt, double eta, int pdg, LepID qual);
-  double get_Prompt_ISOID_SF_err(double pt, double eta, int pdg, LepID qual);
-
-  double get_NOT_Prompt_ISOID_SF(double pt, double eta, int pdg, LepID qual);
-  double get_NOT_Prompt_ISOID_SF_err(double pt, double eta, int pdg, LepID qual);
-
-  double get_NOT_ID_nor_ISO_SF(double pt, double eta, int pdg, LepID qual);
-  double get_NOT_ID_nor_ISO_SF_err(double pt, double eta, int pdg, LepID qual);
+  double getIdFastSimSF(double pt, double eta, int pdg, int year = 0);
+  double getIdFastSimSFerr(double pt, double eta, int pdg, int year = 0);
+  
+  double getIsoFastSimSF(double pt, double eta, int pdg, int year = 0);
+  double getIsoFastSimSFerr(double pt, double eta, int pdg, int year = 0);
+ 
+  double getSipFastSimSF(double pt, double eta, int pdg, int year = 0);
+  double getSipFastSimSFerr(double pt, double eta, int pdg, int year = 0);
+  
+  double getVLIdFastSimSF(double pt, double eta, int pdg, int year = 0);
+  double getVLIdFastSimSFerr(double pt, double eta, int pdg, int year = 0);
+  
+  void BuildMap(const std::string& lepSFfolder); 
 
 private:
-  std::shared_ptr<const correction::CorrectionSet> cset_;
-  std::string era_  = "";  // must be set via SetEra() before any lookup
-  std::string year_ = "";  // must be set via SetYear() before any lookup
 
-  double Lookup(const std::string& sf_key, double pt, double eta) const;
-  std::string GetFlav(int pdg) const;
+  bool b_E_bank;
+  E_bank* id_Jmu_MC;
+  E_bank* id_Jmu_Data;
+  E_bank* id_Zmu_MC;
+  E_bank_fit* iso_med_Zmu_MC;
+  E_bank_fit* sip_isomed_Zmu_MC;
+  E_bank* id_Zmu_Data;
+  E_bank_fit* iso_med_Zmu_Data;
+  E_bank_fit* sip_isomed_Zmu_Data;
+  E_bank_fit* vl_Zmu_Data;
+  E_bank_fit* vl_Zmu_MC;
+  E_bank* id_Zel_MC;
+  E_bank* iso_med_Zel_MC;
+  E_bank* sip_isomed_Zel_MC;
+  E_bank* id_Zel_Data;
+  E_bank* iso_med_Zel_Data;
+  E_bank* sip_isomed_Zel_Data;
+  E_bank* vl_Zel_Data;
+  E_bank* vl_Zel_MC;
+  E_bank* id_SimF_el;
+  E_bank* iso_med_SimF_el;
+  E_bank* sip_isomed_SimF_el;
+  E_bank* vl_SimF_el;
+  E_bank* id_SimF_mu;
+  E_bank* iso_med_SimF_mu;
+  E_bank* sip_isomed_SimF_mu;
+  E_bank* vl_SimF_mu;
 
 };
 
 #endif
+
+
+
+
+
+
