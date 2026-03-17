@@ -219,10 +219,7 @@ void AnalysisBase<Base>::AddBtagFolder(const string& btagfold, const string& pro
     m_BtagSFTool.BuildMap(btagfold, proc_rootfile, year);
   else{
     std::string Btag_file = "";
-    if(m_year < 2024)
-      Btag_file = find_clib_file(btagfold, "btagging.json.gz");
-    else
-      Btag_file = find_clib_file(btagfold, "btagging_preliminary.json.gz");
+    Btag_file = find_clib_file(btagfold, "btagging.json.gz");
     m_cset_Btag = correction::CorrectionSet::from_file(Btag_file);
     if(m_year < 2024){
       m_BtagLooseWP = m_cset_Btag->at("deepJet_wp_values")->evaluate({"L"});
