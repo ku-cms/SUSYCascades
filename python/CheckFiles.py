@@ -649,7 +649,7 @@ def checkJobs(workingDir, outputDir, skipEC, skipDAS, skipMissing, skipSmall,
                 if len(rucio_files) > 0:
                     print(f"Creating {len(rucio_files)} rucio rules")
                     for rfile in sorted(rucio_files):
-                        cmd = f'rucio rule add --copies 1 --rses T2_US_Nebraska -d {rfile}'
+                        cmd = f'rucio rule add --copies 1 --rses T2_US_Nebraska {rfile}'
                         try:
                             subprocess.check_call(["bash", "-c", cmd], env=rucio_env)
                         except subprocess.CalledProcessError as e:
