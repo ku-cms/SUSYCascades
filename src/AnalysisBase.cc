@@ -251,6 +251,10 @@ void AnalysisBase<Base>::AddLepFolder(const string& lepfold){
   m_LepSFToolCascades.BuildMap(SF_file);
   m_LepSFToolCascades.SetYear(std::to_string(m_year));
 
+  std::string SF_file_fs = lepfold + "/LepSFs_FastSim.json";
+  m_LepSFToolFastSim.BuildMap(SF_file_fs);
+  m_LepSFToolFastSim.SetYear(std::to_string(m_year));
+
   if(m_year == 2016)
     m_LepSFToolCascades.SetEra(m_IsAPV ? "postVFP" : "preVFP");
   else if(m_year == 2017)
@@ -265,10 +269,6 @@ void AnalysisBase<Base>::AddLepFolder(const string& lepfold){
     m_LepSFToolCascades.SetEra("none");
   else if(m_year == 2025)
     m_LepSFToolCascades.SetEra("none");
-
-  std::string SF_file_fs = lepfold + "/LepSFs_FastSim.json";
-  m_LepSFToolFastSim.BuildMap(SF_file_fs);
-  m_LepSFToolFastSim.SetYear(std::to_string(m_year));
 }
 
 template <class Base>
@@ -2222,10 +2222,10 @@ double AnalysisBase<Base>::Get_El_BLP_over_COL_fs(const ParticleList& els, int u
     LepID qual = els[i].LepQual();
 
     // BLP_over_COL applies to all qualities
-    double SF = m_LepSFToolCascades.get_BLP_COL_SF_fs(els[i].Pt(), els[i].Eta(), pdg, qual);
+    double SF = m_LepSFToolFastSim.get_BLP_COL_SF_fs(els[i].Pt(), els[i].Eta(), pdg, qual);
 
     if(updown != 0)
-      SF += updown * (m_LepSFToolCascades.get_BLP_COL_SF_fs_err(els[i].Pt(), els[i].Eta(), pdg, qual));
+      SF += updown * (m_LepSFToolFastSim.get_BLP_COL_SF_fs_err(els[i].Pt(), els[i].Eta(), pdg, qual));
     tot_SF *= SF;
   }
   return tot_SF;
@@ -2244,11 +2244,11 @@ double AnalysisBase<Base>::Get_El_ID_over_BLP_fs(const ParticleList& els, int up
     LepID qual = els[i].LepQual();
 
     // ID_over_BLP should return 1.0 for bronze
-    double SF = m_LepSFToolCascades.get_ID_BLP_SF_fs(els[i].Pt(), els[i].Eta(), pdg, qual);
+    double SF = m_LepSFToolFastSim.get_ID_BLP_SF_fs(els[i].Pt(), els[i].Eta(), pdg, qual);
 
     if(updown != 0)
       //ID_over_BLP_err should return 0.0 for bronze
-      SF += updown * (m_LepSFToolCascades.get_ID_BLP_SF_fs_err(els[i].Pt(), els[i].Eta(), pdg, qual));
+      SF += updown * (m_LepSFToolFastSim.get_ID_BLP_SF_fs_err(els[i].Pt(), els[i].Eta(), pdg, qual));
     tot_SF *= SF;
   }
   return tot_SF;
@@ -2264,11 +2264,11 @@ double AnalysisBase<Base>::Get_El_ISO_over_ID_fs(const ParticleList& els, int up
     LepID qual = els[i].LepQual();
 
     // ISO_over_ID should return 1.0 for bronze
-    double SF = m_LepSFToolCascades.get_ISO_ID_SF_fs(els[i].Pt(), els[i].Eta(), pdg, qual);
+    double SF = m_LepSFToolFastSim.get_ISO_ID_SF_fs(els[i].Pt(), els[i].Eta(), pdg, qual);
     
     if(updown != 0)
       // ISO_over_ID_err should return 0.0 for bronze
-      SF += updown * m_LepSFToolCascades.get_ISO_ID_SF_fs_err(els[i].Pt(), els[i].Eta(), pdg, qual);
+      SF += updown * m_LepSFToolFastSim.get_ISO_ID_SF_fs_err(els[i].Pt(), els[i].Eta(), pdg, qual);
     tot_SF *= SF;
   }
   return tot_SF;
@@ -2284,11 +2284,11 @@ double AnalysisBase<Base>::Get_El_Prompt_ISOID_fs(const ParticleList& els, int u
     LepID qual = els[i].LepQual();
 
     // Prompt_over_ISOID should return 1.0 for bronze
-    double SF = m_LepSFToolCascades.get_Prompt_ISOID_SF_fs(els[i].Pt(), els[i].Eta(), pdg, qual);
+    double SF = m_LepSFToolFastSim.get_Prompt_ISOID_SF_fs(els[i].Pt(), els[i].Eta(), pdg, qual);
     if(updown != 0)
 
       //Prompt_over_ISOID_err should return 0.0 for bronze
-      SF += updown * m_LepSFToolCascades.get_Prompt_ISOID_SF_fs_err(els[i].Pt(), els[i].Eta(), pdg, qual);
+      SF += updown * m_LepSFToolFastSim.get_Prompt_ISOID_SF_fs_err(els[i].Pt(), els[i].Eta(), pdg, qual);
     tot_SF *= SF;
   }
   return tot_SF;
@@ -2304,11 +2304,11 @@ double AnalysisBase<Base>::Get_El_NOT_Prompt_ISOID_fs(const ParticleList& els, i
     LepID qual = els[i].LepQual();
 
     //should return 1 for gold or bronze
-    double SF = m_LepSFToolCascades.get_NOT_Prompt_ISOID_SF_fs(els[i].Pt(), els[i].Eta(), pdg, qual);
+    double SF = m_LepSFToolFastSim.get_NOT_Prompt_ISOID_SF_fs(els[i].Pt(), els[i].Eta(), pdg, qual);
     if(updown != 0)
 
       //should return 0 for gold or bronze
-      SF += updown * m_LepSFToolCascades.get_NOT_Prompt_ISOID_SF_fs_err(els[i].Pt(), els[i].Eta(), pdg, qual);
+      SF += updown * m_LepSFToolFastSim.get_NOT_Prompt_ISOID_SF_fs_err(els[i].Pt(), els[i].Eta(), pdg, qual);
     tot_SF *= SF;
   }
   return tot_SF;
@@ -2324,11 +2324,11 @@ double AnalysisBase<Base>::Get_El_NOT_ID_nor_ISO_fs(const ParticleList& els, int
     LepID qual = els[i].LepQual();
 
     //should return 1 for gold or silver
-    double SF = m_LepSFToolCascades.get_NOT_ID_nor_ISO_SF_fs(els[i].Pt(), els[i].Eta(), pdg, qual);
+    double SF = m_LepSFToolFastSim.get_NOT_ID_nor_ISO_SF_fs(els[i].Pt(), els[i].Eta(), pdg, qual);
     if(updown != 0)
 
       //should return 0 for gold or silver
-      SF += updown * m_LepSFToolCascades.get_NOT_ID_nor_ISO_SF_fs_err(els[i].Pt(), els[i].Eta(), pdg, qual);
+      SF += updown * m_LepSFToolFastSim.get_NOT_ID_nor_ISO_SF_fs_err(els[i].Pt(), els[i].Eta(), pdg, qual);
     tot_SF *= SF;
   }
   return tot_SF;
@@ -2344,9 +2344,9 @@ double AnalysisBase<Base>::Get_Mu_BLP_over_COL_fs(const ParticleList& mus, int u
   for(int i = 0; i < (int)mus.size(); i++){
     if(mus[i].SourceID() > 0) continue;
     LepID qual = mus[i].LepQual();
-    double SF = m_LepSFToolCascades.get_BLP_COL_SF_fs(mus[i].Pt(), mus[i].Eta(), pdg, qual);
+    double SF = m_LepSFToolFastSim.get_BLP_COL_SF_fs(mus[i].Pt(), mus[i].Eta(), pdg, qual);
     if(updown != 0)
-      SF += updown * m_LepSFToolCascades.get_BLP_COL_SF_fs_err(mus[i].Pt(), mus[i].Eta(), pdg, qual);
+      SF += updown * m_LepSFToolFastSim.get_BLP_COL_SF_fs_err(mus[i].Pt(), mus[i].Eta(), pdg, qual);
     tot_SF *= SF;
   }
   return tot_SF;
@@ -2360,9 +2360,9 @@ double AnalysisBase<Base>::Get_Mu_ID_over_BLP_fs(const ParticleList& mus, int up
   for(int i = 0; i < (int)mus.size(); i++){
     if(mus[i].SourceID() > 0) continue;
     LepID qual = mus[i].LepQual();
-    double SF = m_LepSFToolCascades.get_ID_BLP_SF_fs(mus[i].Pt(), mus[i].Eta(), pdg, qual);
+    double SF = m_LepSFToolFastSim.get_ID_BLP_SF_fs(mus[i].Pt(), mus[i].Eta(), pdg, qual);
     if(updown != 0)
-      SF += updown * m_LepSFToolCascades.get_ID_BLP_SF_fs_err(mus[i].Pt(), mus[i].Eta(), pdg, qual);
+      SF += updown * m_LepSFToolFastSim.get_ID_BLP_SF_fs_err(mus[i].Pt(), mus[i].Eta(), pdg, qual);
     tot_SF *= SF;
   }
   return tot_SF;
@@ -2376,9 +2376,9 @@ double AnalysisBase<Base>::Get_Mu_ISO_over_ID_fs(const ParticleList& mus, int up
   for(int i = 0; i < (int)mus.size(); i++){
     if(mus[i].SourceID() > 0) continue;
     LepID qual = mus[i].LepQual();
-    double SF = m_LepSFToolCascades.get_ISO_ID_SF_fs(mus[i].Pt(), mus[i].Eta(), pdg, qual);
+    double SF = m_LepSFToolFastSim.get_ISO_ID_SF_fs(mus[i].Pt(), mus[i].Eta(), pdg, qual);
     if(updown != 0)
-      SF += updown * m_LepSFToolCascades.get_ISO_ID_SF_fs_err(mus[i].Pt(), mus[i].Eta(), pdg, qual);
+      SF += updown * m_LepSFToolFastSim.get_ISO_ID_SF_fs_err(mus[i].Pt(), mus[i].Eta(), pdg, qual);
     tot_SF *= SF;
   }
   return tot_SF;
@@ -2392,9 +2392,9 @@ double AnalysisBase<Base>::Get_Mu_Prompt_ISOID_fs(const ParticleList& mus, int u
   for(int i = 0; i < (int)mus.size(); i++){
     if(mus[i].SourceID() > 0) continue;
     LepID qual = mus[i].LepQual();
-    double SF = m_LepSFToolCascades.get_Prompt_ISOID_SF_fs(mus[i].Pt(), mus[i].Eta(), pdg, qual);
+    double SF = m_LepSFToolFastSim.get_Prompt_ISOID_SF_fs(mus[i].Pt(), mus[i].Eta(), pdg, qual);
     if(updown != 0)
-      SF += updown * m_LepSFToolCascades.get_Prompt_ISOID_SF_fs_err(mus[i].Pt(), mus[i].Eta(), pdg, qual);
+      SF += updown * m_LepSFToolFastSim.get_Prompt_ISOID_SF_fs_err(mus[i].Pt(), mus[i].Eta(), pdg, qual);
     tot_SF *= SF;
   }
   return tot_SF;
@@ -2408,9 +2408,9 @@ double AnalysisBase<Base>::Get_Mu_NOT_Prompt_ISOID_fs(const ParticleList& mus, i
   for(int i = 0; i < (int)mus.size(); i++){
     if(mus[i].SourceID() > 0) continue;
     LepID qual = mus[i].LepQual();
-    double SF = m_LepSFToolCascades.get_NOT_Prompt_ISOID_SF_fs(mus[i].Pt(), mus[i].Eta(), pdg, qual);
+    double SF = m_LepSFToolFastSim.get_NOT_Prompt_ISOID_SF_fs(mus[i].Pt(), mus[i].Eta(), pdg, qual);
     if(updown != 0)
-      SF += updown * m_LepSFToolCascades.get_NOT_Prompt_ISOID_SF_fs_err(mus[i].Pt(), mus[i].Eta(), pdg, qual);
+      SF += updown * m_LepSFToolFastSim.get_NOT_Prompt_ISOID_SF_fs_err(mus[i].Pt(), mus[i].Eta(), pdg, qual);
     tot_SF *= SF;
   }
   return tot_SF;
@@ -2424,9 +2424,9 @@ double AnalysisBase<Base>::Get_Mu_NOT_ID_nor_ISO_fs(const ParticleList& mus, int
   for(int i = 0; i < (int)mus.size(); i++){
     if(mus[i].SourceID() > 0) continue;
     LepID qual = mus[i].LepQual();
-    double SF = m_LepSFToolCascades.get_NOT_ID_nor_ISO_SF_fs(mus[i].Pt(), mus[i].Eta(), pdg, qual);
+    double SF = m_LepSFToolFastSim.get_NOT_ID_nor_ISO_SF_fs(mus[i].Pt(), mus[i].Eta(), pdg, qual);
     if(updown != 0)
-      SF += updown * m_LepSFToolCascades.get_NOT_ID_nor_ISO_SF_fs_err(mus[i].Pt(), mus[i].Eta(), pdg, qual);
+      SF += updown * m_LepSFToolFastSim.get_NOT_ID_nor_ISO_SF_fs_err(mus[i].Pt(), mus[i].Eta(), pdg, qual);
     tot_SF *= SF;
   }
   return tot_SF;

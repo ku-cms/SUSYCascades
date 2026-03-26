@@ -311,6 +311,45 @@ TTree* ReducedNtuple<Base>::InitOutputTree(const string& sample, bool do_slim, b
   tree->Branch("muNOT_ID_nor_ISO_SFweight_up",   &m_muNOT_ID_nor_ISO_SFweight_up);
   tree->Branch("muNOT_ID_nor_ISO_SFweight_down", &m_muNOT_ID_nor_ISO_SFweight_down);
 
+  // new LepSF here FS
+  tree->Branch("elBLP_over_COL_SF_fs_weight",      &m_elBLP_over_COL_SF_fs_weight);
+  tree->Branch("elBLP_over_COL_SF_fs_weight_up",   &m_elBLP_over_COL_SF_fs_weight_up);
+  tree->Branch("elBLP_over_COL_SF_fs_weight_down", &m_elBLP_over_COL_SF_fs_weight_down);
+  tree->Branch("elID_over_BLP_SF_fs_weight",       &m_elID_over_BLP_SF_fs_weight);
+  tree->Branch("elID_over_BLP_SF_fs_weight_up",    &m_elID_over_BLP_SF_fs_weight_up);
+  tree->Branch("elID_over_BLP_SF_fs_weight_down",  &m_elID_over_BLP_SF_fs_weight_down);
+  tree->Branch("elISO_over_ID_SF_fs_weight",       &m_elISO_over_ID_SF_fs_weight);
+  tree->Branch("elISO_over_ID_SF_fs_weight_up",    &m_elISO_over_ID_SF_fs_weight_up);
+  tree->Branch("elISO_over_ID_SF_fs_weight_down",  &m_elISO_over_ID_SF_fs_weight_down);
+  tree->Branch("elPrompt_ISOID_SF_fs_weight",      &m_elPrompt_ISOID_SF_fs_weight);
+  tree->Branch("elPrompt_ISOID_SF_fs_weight_up",   &m_elPrompt_ISOID_SF_fs_weight_up);
+  tree->Branch("elPrompt_ISOID_SF_fs_weight_down", &m_elPrompt_ISOID_SF_fs_weight_down);
+  tree->Branch("elNOT_Prompt_ISOID_SF_fs_weight",      &m_elNOT_Prompt_ISOID_SF_fs_weight);
+  tree->Branch("elNOT_Prompt_ISOID_SF_fs_weight_up",   &m_elNOT_Prompt_ISOID_SF_fs_weight_up);
+  tree->Branch("elNOT_Prompt_ISOID_SF_fs_weight_down", &m_elNOT_Prompt_ISOID_SF_fs_weight_down);
+  tree->Branch("elNOT_ID_nor_ISO_SF_fs_weight",      &m_elNOT_ID_nor_ISO_SF_fs_weight);
+  tree->Branch("elNOT_ID_nor_ISO_SF_fs_weight_up",   &m_elNOT_ID_nor_ISO_SF_fs_weight_up);
+  tree->Branch("elNOT_ID_nor_ISO_SF_fs_weight_down", &m_elNOT_ID_nor_ISO_SF_fs_weight_down);
+
+  tree->Branch("muBLP_over_COL_SF_fs_weight",      &m_muBLP_over_COL_SF_fs_weight);
+  tree->Branch("muBLP_over_COL_SF_fs_weight_up",   &m_muBLP_over_COL_SF_fs_weight_up);
+  tree->Branch("muBLP_over_COL_SF_fs_weight_down", &m_muBLP_over_COL_SF_fs_weight_down);
+  tree->Branch("muID_over_BLP_SF_fs_weight",       &m_muID_over_BLP_SF_fs_weight);
+  tree->Branch("muID_over_BLP_SF_fs_weight_up",    &m_muID_over_BLP_SF_fs_weight_up);
+  tree->Branch("muID_over_BLP_SF_fs_weight_down",  &m_muID_over_BLP_SF_fs_weight_down);
+  tree->Branch("muISO_over_ID_SF_fs_weight",       &m_muISO_over_ID_SF_fs_weight);
+  tree->Branch("muISO_over_ID_SF_fs_weight_up",    &m_muISO_over_ID_SF_fs_weight_up);
+  tree->Branch("muISO_over_ID_SF_fs_weight_down",  &m_muISO_over_ID_SF_fs_weight_down);
+  tree->Branch("muPrompt_ISOID_SF_fs_weight",      &m_muPrompt_ISOID_SF_fs_weight);
+  tree->Branch("muPrompt_ISOID_SF_fs_weight_up",   &m_muPrompt_ISOID_SF_fs_weight_up);
+  tree->Branch("muPrompt_ISOID_SF_fs_weight_down", &m_muPrompt_ISOID_SF_fs_weight_down);
+  tree->Branch("muNOT_Prompt_ISOID_SF_fs_weight",      &m_muNOT_Prompt_ISOID_SF_fs_weight);
+  tree->Branch("muNOT_Prompt_ISOID_SF_fs_weight_up",   &m_muNOT_Prompt_ISOID_SF_fs_weight_up);
+  tree->Branch("muNOT_Prompt_ISOID_SF_fs_weight_down", &m_muNOT_Prompt_ISOID_SF_fs_weight_down);
+  tree->Branch("muNOT_ID_nor_ISO_SF_fs_weight",      &m_muNOT_ID_nor_ISO_SF_fs_weight);
+  tree->Branch("muNOT_ID_nor_ISO_SF_fs_weight_up",   &m_muNOT_ID_nor_ISO_SF_fs_weight_up);
+  tree->Branch("muNOT_ID_nor_ISO_SF_fs_weight_down", &m_muNOT_ID_nor_ISO_SF_fs_weight_down);
+
   tree->Branch("elIDSFweight", &m_elIDSFweight);
   tree->Branch("elIDSFweight_up", &m_elIDSFweight_up);
   tree->Branch("elIDSFweight_down", &m_elIDSFweight_down);
@@ -2180,6 +2219,45 @@ void ReducedNtuple<Base>::FillOutputTree(TTree* tree, const Systematic& sys, boo
     m_muNOT_ID_nor_ISO_SFweight      = AnalysisBase<Base>::Get_Mu_NOT_ID_nor_ISO(Muons, 0);
     m_muNOT_ID_nor_ISO_SFweight_up   = AnalysisBase<Base>::Get_Mu_NOT_ID_nor_ISO(Muons, 1);
     m_muNOT_ID_nor_ISO_SFweight_down = AnalysisBase<Base>::Get_Mu_NOT_ID_nor_ISO(Muons, -1);
+
+    // new LepSF FASTSIM here
+    m_elBLP_over_COL_SF_fs_weight      = AnalysisBase<Base>::Get_El_BLP_over_COL_fs(Electrons+LowPtElectrons, 0);
+    m_elBLP_over_COL_SF_fs_weight_up   = AnalysisBase<Base>::Get_El_BLP_over_COL_fs(Electrons+LowPtElectrons, 1);
+    m_elBLP_over_COL_SF_fs_weight_down = AnalysisBase<Base>::Get_El_BLP_over_COL_fs(Electrons+LowPtElectrons, -1);
+    m_elID_over_BLP_SF_fs_weight       = AnalysisBase<Base>::Get_El_ID_over_BLP_fs(Electrons+LowPtElectrons, 0);
+    m_elID_over_BLP_SF_fs_weight_up    = AnalysisBase<Base>::Get_El_ID_over_BLP_fs(Electrons+LowPtElectrons, 1);
+    m_elID_over_BLP_SF_fs_weight_down  = AnalysisBase<Base>::Get_El_ID_over_BLP_fs(Electrons+LowPtElectrons, -1);
+    m_elISO_over_ID_SF_fs_weight       = AnalysisBase<Base>::Get_El_ISO_over_ID_fs(Electrons+LowPtElectrons, 0);
+    m_elISO_over_ID_SF_fs_weight_up    = AnalysisBase<Base>::Get_El_ISO_over_ID_fs(Electrons+LowPtElectrons, 1);
+    m_elISO_over_ID_SF_fs_weight_down  = AnalysisBase<Base>::Get_El_ISO_over_ID_fs(Electrons+LowPtElectrons, -1);
+    m_elPrompt_ISOID_SF_fs_weight      = AnalysisBase<Base>::Get_El_Prompt_ISOID_fs(Electrons+LowPtElectrons, 0);
+    m_elPrompt_ISOID_SF_fs_weight_up   = AnalysisBase<Base>::Get_El_Prompt_ISOID_fs(Electrons+LowPtElectrons, 1);
+    m_elPrompt_ISOID_SF_fs_weight_down = AnalysisBase<Base>::Get_El_Prompt_ISOID_fs(Electrons+LowPtElectrons, -1);
+    m_elNOT_Prompt_ISOID_SF_fs_weight      = AnalysisBase<Base>::Get_El_NOT_Prompt_ISOID_fs(Electrons+LowPtElectrons, 0);
+    m_elNOT_Prompt_ISOID_SF_fs_weight_up   = AnalysisBase<Base>::Get_El_NOT_Prompt_ISOID_fs(Electrons+LowPtElectrons, 1);
+    m_elNOT_Prompt_ISOID_SF_fs_weight_down = AnalysisBase<Base>::Get_El_NOT_Prompt_ISOID_fs(Electrons+LowPtElectrons, -1);
+    m_elNOT_ID_nor_ISO_SF_fs_weight      = AnalysisBase<Base>::Get_El_NOT_ID_nor_ISO_fs(Electrons+LowPtElectrons, 0);
+    m_elNOT_ID_nor_ISO_SF_fs_weight_up   = AnalysisBase<Base>::Get_El_NOT_ID_nor_ISO_fs(Electrons+LowPtElectrons, 1);
+    m_elNOT_ID_nor_ISO_SF_fs_weight_down = AnalysisBase<Base>::Get_El_NOT_ID_nor_ISO_fs(Electrons+LowPtElectrons, -1);
+
+    m_muBLP_over_COL_SF_fs_weight      = AnalysisBase<Base>::Get_Mu_BLP_over_COL_fs(Muons, 0);
+    m_muBLP_over_COL_SF_fs_weight_up   = AnalysisBase<Base>::Get_Mu_BLP_over_COL_fs(Muons, 1);
+    m_muBLP_over_COL_SF_fs_weight_down = AnalysisBase<Base>::Get_Mu_BLP_over_COL_fs(Muons, -1);
+    m_muID_over_BLP_SF_fs_weight       = AnalysisBase<Base>::Get_Mu_ID_over_BLP_fs(Muons, 0);
+    m_muID_over_BLP_SF_fs_weight_up    = AnalysisBase<Base>::Get_Mu_ID_over_BLP_fs(Muons, 1);
+    m_muID_over_BLP_SF_fs_weight_down  = AnalysisBase<Base>::Get_Mu_ID_over_BLP_fs(Muons, -1);
+    m_muISO_over_ID_SF_fs_weight       = AnalysisBase<Base>::Get_Mu_ISO_over_ID_fs(Muons, 0);
+    m_muISO_over_ID_SF_fs_weight_up    = AnalysisBase<Base>::Get_Mu_ISO_over_ID_fs(Muons, 1);
+    m_muISO_over_ID_SF_fs_weight_down  = AnalysisBase<Base>::Get_Mu_ISO_over_ID_fs(Muons, -1);
+    m_muPrompt_ISOID_SF_fs_weight      = AnalysisBase<Base>::Get_Mu_Prompt_ISOID_fs(Muons, 0);
+    m_muPrompt_ISOID_SF_fs_weight_up   = AnalysisBase<Base>::Get_Mu_Prompt_ISOID_fs(Muons, 1);
+    m_muPrompt_ISOID_SF_fs_weight_down = AnalysisBase<Base>::Get_Mu_Prompt_ISOID_fs(Muons, -1);
+    m_muNOT_Prompt_ISOID_SF_fs_weight      = AnalysisBase<Base>::Get_Mu_NOT_Prompt_ISOID_fs(Muons, 0);
+    m_muNOT_Prompt_ISOID_SF_fs_weight_up   = AnalysisBase<Base>::Get_Mu_NOT_Prompt_ISOID_fs(Muons, 1);
+    m_muNOT_Prompt_ISOID_SF_fs_weight_down = AnalysisBase<Base>::Get_Mu_NOT_Prompt_ISOID_fs(Muons, -1);
+    m_muNOT_ID_nor_ISO_SF_fs_weight      = AnalysisBase<Base>::Get_Mu_NOT_ID_nor_ISO_fs(Muons, 0);
+    m_muNOT_ID_nor_ISO_SF_fs_weight_up   = AnalysisBase<Base>::Get_Mu_NOT_ID_nor_ISO_fs(Muons, 1);
+    m_muNOT_ID_nor_ISO_SF_fs_weight_down = AnalysisBase<Base>::Get_Mu_NOT_ID_nor_ISO_fs(Muons, -1);
     
 m_elIDSFweight = AnalysisBase<Base>::GetElIDSFWeight(Electrons, 0);
     m_elIDSFweight_up = AnalysisBase<Base>::GetElIDSFWeight(Electrons, 1);

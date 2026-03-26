@@ -201,16 +201,6 @@ protected:
   virtual double Get_Mu_NOT_Prompt_ISOID(const ParticleList& mus, int updown = 0);
   virtual double Get_Mu_NOT_ID_nor_ISO(const ParticleList& mus, int updown = 0);
 
-
-  virtual double GetElIDSFWeight(const ParticleList& els, int updown = 0);
-  virtual double GetElISOSFWeight(const ParticleList& els, int updown = 0);
-  virtual double GetElSIPSFWeight(const ParticleList& els, int updown = 0);
-  virtual double GetElVLIDSFWeight(const ParticleList& els, int updown = 0);
-  virtual double GetMuIDSFWeight(const ParticleList& mus, int updown = 0);
-  virtual double GetMuISOSFWeight(const ParticleList& mus, int updown = 0);
-  virtual double GetMuSIPSFWeight(const ParticleList& mus, int updown = 0);
-  virtual double GetMuVLIDSFWeight(const ParticleList& mus, int updown = 0);
-
   // new LepSF FASTSIM here
   virtual double Get_El_BLP_over_COL_fs(const ParticleList& els, int updown = 0);
   virtual double Get_El_ID_over_BLP_fs(const ParticleList& els, int updown = 0);
@@ -276,7 +266,7 @@ private:
   BtagSFTool          m_BtagSFTool;
   LepSFTool           m_LepSFTool;
   LepSFToolCascades   m_LepSFToolCascades; //new LepSF here
-  LepSFTool_FastSim   m_LepSFToolCascades; //new LepSF FASTSIM here
+  LepSFTool_FastSim   m_LepSFToolFastSim; //new LepSF FASTSIM here
   JMETool             m_JMETool;
   SystematicsTool     m_SysTool;
   METTriggerTool      m_METTriggerTool;
