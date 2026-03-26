@@ -355,9 +355,9 @@ TTree* ReducedNtuple<Base>::InitOutputTree(const string& sample, bool do_slim, b
     tree->Branch("HT_eta24_id", &m_HT_eta24_id);
     tree->Branch("HT_eta3", &m_HT_eta3);
     tree->Branch("HT_eta3_id", &m_HT_eta3_id);
-    tree->Branch("HT_eta5", &m_HT_eta5);
     tree->Branch("HT_eta5_id", &m_HT_eta5_id);
   }
+  tree->Branch("HT_eta5", &m_HT_eta5);
 
   tree->Branch("Nele", &m_Nele);
   tree->Branch("Nlele", &m_Nlele);
