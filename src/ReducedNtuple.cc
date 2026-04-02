@@ -1017,14 +1017,12 @@ void ReducedNtuple<Base>::FillOutputTree(TTree* tree, const Systematic& sys, boo
   m_Nlep = Leptons.size();
   
   // NTUPLE Event Selection
-  //if(m_Nlep < 2 && ETMiss.Mag() < 150.) return;
-  //if(m_Nlep == 0) return;
-  if(m_Nlep < 2 || ETMiss.Mag() < 150. || m_Njet == 0) return;
+  if (m_Nlep < 2 || (m_Nlep == 2 && ETMiss.Mag() < 150.)) return;
   if(AnalysisBase<Base>::IsCascades() || AnalysisBase<Base>::IsSMS()){
     std::pair<int,int> temp_masses = AnalysisBase<Base>::GetSUSYMasses();
     m_MP = temp_masses.first;
     m_MN1 = temp_masses.second;
-    if(1.*m_MN1/m_MP < 0.45) return; // only keep compressed signals
+    if(1.*m_MN1/m_MP < 0.4) return; // only keep compressed signals
   }
 
   m_HEM_Veto = m_EventFlag_JetInHEM_Pt20;
