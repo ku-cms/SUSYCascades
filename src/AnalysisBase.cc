@@ -4975,7 +4975,7 @@ ParticleList AnalysisBase<NANOULBase>::GetMuons(){
       lep.SetParticleID(kTight);
     else if(Muon_mediumId[i])
       lep.SetParticleID(kMedium);
-    if(lep.ParticleID() < kTight || lep.MiniIso()*lep.Pt() >= 4. || lep.RelIso()*lep.Pt() >= 4.)
+    if(lep.ParticleID() < kMedium || lep.MiniIso()*lep.Pt() >= 4. || lep.RelIso()*lep.Pt() >= 4.)
       lep.SetLepQual(kBronze);
     else if(lep.SIP3D() >= 3.)
       lep.SetLepQual(kSilver);
@@ -6266,7 +6266,7 @@ ParticleList AnalysisBase<NANORun3>::GetMuons(){
       lep.SetParticleID(kTight);
     else if(Muon_mediumId[i])
       lep.SetParticleID(kMedium);
-    if(lep.ParticleID() < kTight || lep.MiniIso()*lep.Pt() >= 4. || lep.RelIso()*lep.Pt() >= 4.)
+    if(lep.ParticleID() < kMedium || lep.MiniIso()*lep.Pt() >= 4. || lep.RelIso()*lep.Pt() >= 4.)
       lep.SetLepQual(kBronze);
     else if(lep.SIP3D() >= 3.)
       lep.SetLepQual(kSilver);
