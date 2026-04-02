@@ -27,10 +27,10 @@ OUT_BASE     = "/ospool/cms-user/"+USER+"/NTUPLES/Processing"
 #OUT_BASE     = "/local-scratch/"+USER+"/NTUPLES/Processing"
 LIST         = "default.list"
 QUEUE        = ""
-SPLIT        = 200
-THRESHOLD    = 97000
+SPLIT        = 10
+THRESHOLD    = 21000
 MAX_JOBS_SUB = 2500 # Max jobs/submission (Connect max is 20000)
-MIN_JOBS_SUB = 500 # Min jobs/submission
+MIN_JOBS_SUB = 10 # Min jobs/submission
 MAX_MATERIALIZE = MAX_JOBS_SUB+1 # (MAX_JOBS_SUB - MIN_JOBS_SUB) / 2 # Max jobs to show up in scheduler
 # ----------------------------------------------------------- #
 
@@ -135,7 +135,7 @@ def write_sh_single(srcfile,ifile,ofile,logfile,outfile,errfile,dataset,filetag,
     fsrc.write('log = '+loglog+" \n")
     fsrc.write('request_memory = 1 GB \n')
     fsrc.write('+RequiresCVMFS = True \n')
-    transfer_input = 'transfer_input_files = '+TARGET+'config.tgz,/ospool/cms-user/zflowers/public/sandbox-CMSSW_13_3_1-el9.tar.bz2\n'
+    transfer_input = 'transfer_input_files = '+TARGET+'config.tgz\n'
     fsrc.write(transfer_input)
 
     fsrc.write('should_transfer_files = YES\n')
@@ -209,7 +209,7 @@ def write_sh(srcfile,ifile,ofile,logfile,outfile,errfile,dataset,filetag,NAME):
     fsrc.write('log = '+loglog+" \n")
     fsrc.write('request_memory = 1 GB \n')
     fsrc.write('max_materialize = '+str(int(MAX_MATERIALIZE))+'\n')
-    transfer_input = 'transfer_input_files = '+TARGET+'config.tgz,/ospool/cms-user/zflowers/public/sandbox-CMSSW_13_3_1-el9.tar.bz2\n'
+    transfer_input = 'transfer_input_files = '+TARGET+'config.tgz\n'
     fsrc.write(transfer_input)
 
     fsrc.write('should_transfer_files = YES\n')
@@ -362,6 +362,13 @@ if __name__ == "__main__":
     listname = listname[-1]
 
     NAME = listname.replace(".list",'')
+
+    # tags need to follow the format of CAMPAIGN_CMSSWX and CMSSWX must be 5 chars for later DAS checks to work
+    knowntags = ["Autumn18_102X","Fall17_102X","Summer16_102X","Summer20UL16_106X","Summer20UL16APV_106X","Summer20UL17_106X","Summer20UL18_106X","Summer22_130X","Summer22EE_130X","Summer23_130X","Summer23BPix_130X","Summer24_130X","Summer25_130X","Summer26_130X"]
+    filetag = ""
+    for ktag in knowntags:
+        if ktag in NAME:
+            filetag = ktag
     
     # create and organize output folders
     TARGET = RUN_DIR+"/"+NAME+"/"
@@ -400,15 +407,20 @@ if __name__ == "__main__":
         # make EventCount file
         if VERBOSE:
             print("making EventCount file", flush=True)
-        os.system("hadd "+config+"EventCount.root root/EventCount/*.root > /dev/null")
-        unique_hashes = collect_unique_hashes(glob.glob("root/EventCount/*.root"))
+        extra_EC_str = ""
+        if DO_SMS:
+            extra_EC_str = "*SMS*"
+        elif DO_CASCADES:
+            extra_EC_str = "*Cascade*"
+        os.system("hadd "+config+"EventCount.root root/EventCount/*"+filetag+extra_EC_str+".root > /dev/null")
+        unique_hashes = collect_unique_hashes(glob.glob("root/EventCount/*"+filetag+extra_EC_str+".root"))
         write_git_hashes_to_output(config+"EventCount.root", unique_hashes)
         EVTCNT = "./config/EventCount.root"
 
         # make FilterEff file 
         if VERBOSE:
             print("making FilterEff file", flush=True)
-        os.system("hadd "+config+"FilterEff.root root/FilterEff/*.root > /dev/null")
+        os.system("hadd "+config+"FilterEff.root root/FilterEff/*"+filetag+"*.root > /dev/null")
         FILTEREFF = "./config/FilterEff.root"
 
         # make lumi json file
@@ -507,10 +519,6 @@ if __name__ == "__main__":
     datasetlist     = []
     clean_inputlist = []
     input_info      = {}
-
-    # tags need to follow the format of CAMPAIGN_CMSSWX and CMSSWX must be 5 chars for later DAS checks to work
-    knowntags = ["Autumn18_102X","Fall17_102X","Summer16_102X","Summer20UL16_106X","Summer20UL16APV_106X","Summer20UL17_106X","Summer20UL18_106X","Summer22_130X","Summer22EE_130X","Summer23_130X","Summer23BPix_130X","Summer24_130X","Summer25_130X","Summer26_130X"]
-    filetag = ''
     
     n_samples = 0
     total_jobs  = 0
@@ -534,11 +542,6 @@ if __name__ == "__main__":
             dataset = flist.split("/")
             dataset = dataset[-1]
             dataset = dataset.replace(".txt",'')
-
-            filetag = ""
-            for ktag in knowntags:
-                if ktag in flist:
-                    filetag = ktag
 
             # get list of ROOT files
             rootlist = []

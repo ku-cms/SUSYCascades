@@ -1,4 +1,6 @@
+#!/bin/bash
 source /cvmfs/cms.cern.ch/cmsset_default.sh
+xrdcp root://eosuser.cern.ch//eos/user/z/zflowers/sandboxes/sandbox-CMSSW_13_3_1-el9.tar.bz2 ./
 tar -xzf ./config.tgz
 source ./config/cmssw_setup_connect_el9.sh
 cmssw_setup sandbox-CMSSW_13_3_1-el9.tar.bz2  
