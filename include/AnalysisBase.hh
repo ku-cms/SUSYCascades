@@ -12,14 +12,15 @@
 #include <cmath>
 #include <unordered_map>
 #include <unordered_set>
+#include <string>
+#include <functional>
 
 #include <TTree.h>
 #include <TLorentzVector.h>
 #include <TVector3.h>
 #include <TH1D.h>
 #include <TRandom3.h>
-#include <string>
-#include <functional>
+#include <ROOT/RDataFrame.hxx>
 
 #include "NeventTool.hh"
 #include "XsecTool.hh"
@@ -46,6 +47,12 @@ using nlohmann::json;
 
 class ParticleList;
 
+struct HistSet {
+  TH1D* nPU = nullptr;   // only for SUSYNANOBase
+  TH1D* btag_den[3];  // 0=b, 1=c, 2=light
+  TH1D* btag_num[3];
+};
+
 template <class Base>
 class AnalysisBase : public Base {
 
@@ -58,7 +65,8 @@ public:
   void AddFilterEffFile(const string& rootfile);
   void AddJSONFile(const string& jsonfile);
   void AddPUFolder(const string& pufold);
-  void AddBtagFolder(const string& btagfold, const string& proc_rootfile="", int year=1);
+  void AddBtagFolder(const string& btagfold);
+  void SetupBtagWP();
   void AddLepFolder(const string& lepfold);
   void AddJECFile(const string& jecfile);
   void AddJVMFile(const string& jvmfile);
@@ -81,8 +89,7 @@ public:
   void AddEESSystematics();
   void AddMMSSystematics();
   
-  void InitializeHistograms(vector<TH1D*>& histos);
-  void BookHistograms(vector<TH1D*>& histos);
+  std::map<std::string, HistSet> BuildHistograms(ROOT::RDF::RNode df_range, std::string sample_name);
 
   string GetEntry(int entry);
 
@@ -282,6 +289,12 @@ private:
   void setJMEEraOverride(const std::string& s)  { m_JMEEraOverride = s;  }
   bool ci_find_substr(const std::string &hay, const std::string &needle);
   std::optional<std::string> findJESKeyForLabel(const std::string &label);
+
+  virtual HistSet MakeHistSet(const std::string& sample);
+  const std::vector<double>& GetBtagPtBins();
+
+  std::string m_Btag_eff_file = "";
+  ROOT::RDF::RNode DefineFlavorCol(ROOT::RDF::RNode& df);
    
 };
 

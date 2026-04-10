@@ -8,7 +8,7 @@ from new_countEvents import EventCount as EventCount
 event_count = EventCount()
 
 # Example submission: 
-# nohup python3 scripts/condor_submit_nano_connect_ntuples.py -split 25 -list samples/NANO/Lists/Summer23BPix_130X.list --verbose > submit_bkg.debug 2>&1 &
+# nohup python3 scripts/condor_submit_nano_connect_histograms.py -split 25 -list samples/NANO/Lists/Summer23BPix_130X.list --verbose > submit_bkg.debug 2>&1 &
 
 # ----------------------------------------------------------- #
 # Parameters
@@ -16,21 +16,19 @@ event_count = EventCount()
 # current working directory
 pwd          = os.environ['PWD']
 RUN_DIR      = pwd
-jobEXE       = "execute_script.sh"
-EXE          = "MakeReducedNtuple_NANO.x"
+jobEXE       = "execute_script_Hists.sh"
+EXE          = "MakeHistograms.x"
 RESTFRAMES   = './scripts/setup_RestFrames_connect.sh'
-#CMSSW_SETUP  = './scripts/cmssw_setup_connect.sh'
 CMSSW_SETUP  = './scripts/cmssw_setup_connect_el9.sh'
 TREE         = "Events"
 USER         = os.environ['USER']
-OUT_BASE     = "/ospool/cms-user/"+USER+"/NTUPLES/Processing"
-#OUT_BASE     = "/local-scratch/"+USER+"/NTUPLES/Processing"
+OUT_BASE     = "/ospool/cms-user/"+USER+"/HISTS/Processing"
 LIST         = "default.list"
 QUEUE        = ""
-SPLIT        = 10
-THRESHOLD    = 21000
-MAX_JOBS_SUB = 2500 # Max jobs/submission (Connect max is 20000)
-MIN_JOBS_SUB = 10 # Min jobs/submission
+SPLIT        = 20
+THRESHOLD    = 30000
+MAX_JOBS_SUB = 3000 # Max jobs/submission (Connect max is 20000)
+MIN_JOBS_SUB = 100 # Min jobs/submission
 MAX_MATERIALIZE = MAX_JOBS_SUB+1 # (MAX_JOBS_SUB - MIN_JOBS_SUB) / 2 # Max jobs to show up in scheduler
 # ----------------------------------------------------------- #
 
@@ -99,32 +97,12 @@ def write_sh_single(srcfile,ifile,ofile,logfile,outfile,errfile,dataset,filetag,
     fsrc.write('-tree='+TREE+" ")
     if DO_SMS == 1:
         fsrc.write('--sms ')
-    if DO_DATA == 1:
-        fsrc.write('--data ')
-    if SYS == 1 and DO_DATA != 1:
-        fsrc.write('--sys ')
-    if FASTSIM == 1 and DO_DATA != 1: # note that technically FS should only be needed for SMS but not requiring it here
-        fsrc.write('--fastsim ')
-    if SLIM == 1:
-        fsrc.write('--slim ')
     if DO_CASCADES == 1:
         fsrc.write('--cascades ')
     if DO_PRIVATEMC == 1:
         fsrc.write('--privateMC ')
     fsrc.write('-dataset='+dataset+" ")
     fsrc.write('-filetag='+filetag+" ")
-    fsrc.write('-eventcount='+EVTCNT+" ")
-    fsrc.write('-filtereff='+FILTEREFF+" ")
-    fsrc.write('-json='+JSON+" ")
-    fsrc.write('-pu='+PUFOLD+" ")
-    fsrc.write('-btag='+BTAGFOLD+" ")
-    fsrc.write('-lep='+LEPFOLD+" ")
-    fsrc.write('-jme='+JMEFOLD+" ")
-    fsrc.write('-jec='+JECFILE+" ")
-    fsrc.write('-jvm='+JVMFILE+" ")
-    fsrc.write('-metfile='+METFILE+" ")
-    fsrc.write('-prefirefile='+PREFIREFILE+" ")
-    fsrc.write('-xsjsonfile='+XSJSONFILE+" ")
     fsrc.write('-split=1,'+str(n)+'\n')
 
     outlog = outfile+".out"
@@ -172,32 +150,12 @@ def write_sh(srcfile,ifile,ofile,logfile,outfile,errfile,dataset,filetag,NAME):
     fsrc.write('-tree='+TREE+" ")
     if DO_SMS == 1:
         fsrc.write('--sms ')
-    if DO_DATA == 1:
-        fsrc.write('--data ')
-    if SYS == 1 and DO_DATA != 1:
-        fsrc.write('--sys ')
-    if FASTSIM == 1 and DO_DATA != 1: # note that technically FS should only be needed for SMS but not requiring it here
-        fsrc.write('--fastsim ')
-    if SLIM == 1:
-        fsrc.write('--slim ')
     if DO_CASCADES == 1:
         fsrc.write('--cascades ')
     if DO_PRIVATEMC == 1:
         fsrc.write('--privateMC ')
     fsrc.write('-dataset='+dataset+" ")
     fsrc.write('-filetag='+filetag+" ")
-    fsrc.write('-eventcount='+EVTCNT+" ")
-    fsrc.write('-filtereff='+FILTEREFF+" ")
-    fsrc.write('-json='+JSON+" ")
-    fsrc.write('-pu='+PUFOLD+" ")
-    fsrc.write('-btag='+BTAGFOLD+" ")
-    fsrc.write('-lep='+LEPFOLD+" ")
-    fsrc.write('-jme='+JMEFOLD+" ")
-    fsrc.write('-jec='+JECFILE+" ")
-    fsrc.write('-jvm='+JVMFILE+" ")
-    fsrc.write('-metfile='+METFILE+" ")
-    fsrc.write('-prefirefile='+PREFIREFILE+" ")
-    fsrc.write('-xsjsonfile='+XSJSONFILE+" ")
     splitstring = '-split=$$([$(SplitStep)+1]),$(SplitTotal)\n'
     fsrc.write(splitstring)
 
@@ -247,14 +205,10 @@ if __name__ == "__main__":
     DO_SMS       = 0
     DO_CASCADES  = 0
     DO_PRIVATEMC = 0
-    DO_DATA      = 0
     DRY_RUN      = 0
     COUNT        = 0
     VERBOSE      = 0
     CSV          = 0
-    SYS          = 0
-    FASTSIM      = 0
-    SLIM         = 0
     FORCE_SUB    = 0
     DO_SINGLE    = 0
   
@@ -286,9 +240,6 @@ if __name__ == "__main__":
     if '--privateMC' in sys.argv:
         DO_PRIVATEMC = 1
         argv_pos += 1
-    if '--data' in sys.argv:
-        DO_DATA = 1
-        argv_pos += 1
     if '--dry-run' in sys.argv or '--dryrun' in sys.argv:
         DRY_RUN = 1
         argv_pos += 1
@@ -301,15 +252,6 @@ if __name__ == "__main__":
     if '--csv' in sys.argv:
         VERBOSE = 1
         CSV = 1
-        argv_pos += 1
-    if '--sys' in sys.argv:
-        SYS = 1
-        argv_pos += 1
-    if '--fastsim' in sys.argv:
-        FASTSIM = 1
-        argv_pos += 1
-    if '--slim' in sys.argv:
-        SLIM = 1
         argv_pos += 1
     if '--force' in sys.argv:
         FORCE_SUB = 1
@@ -328,9 +270,7 @@ if __name__ == "__main__":
 
     THRESHOLD = 0.99*get_auto_THRESHOLD()
     
-    print (" --- Preparing condor submission to create ntuples.", flush=True)
-    if DO_DATA:
-        print (" --- Processing Data", flush=True)
+    print (" --- Preparing condor submission to create histograms.", flush=True)
 
     if DO_SMS:
         print (" --- Processing SMS", flush=True)
@@ -341,15 +281,6 @@ if __name__ == "__main__":
     if DO_PRIVATEMC:
         print (" --- Processing PrivateMC", flush=True)
     
-    if SYS:
-        print (" --- Processing SYS", flush=True)
-
-    if FASTSIM:
-        print (" --- Processing FastSim", flush=True)
-
-    if SLIM:
-        print (" --- Processing Slim", flush=True)
-
     if DO_SINGLE:
         print (" --- Submitting Single Test Jobs", flush=True)
 
@@ -371,7 +302,7 @@ if __name__ == "__main__":
             filetag = ktag
     
     # create and organize output folders
-    TARGET = RUN_DIR+"/"+NAME+"/"
+    TARGET = RUN_DIR+"/"+NAME+"_HISTS/"
     if not COUNT:
         os.system("rm -rf "+TARGET)
         os.system("mkdir -p "+TARGET)
@@ -403,113 +334,6 @@ if __name__ == "__main__":
                 print("You have uncommitted changes you may want to commit!")
                 print("If you do not want to commit your changes, please rerun with --force")
                 sys.exit()
-
-        # make EventCount file
-        if VERBOSE:
-            print("making EventCount file", flush=True)
-        extra_EC_str = ""
-        if DO_SMS:
-            extra_EC_str = "*SMS*"
-        elif DO_CASCADES:
-            extra_EC_str = "*Cascade*"
-        os.system("hadd "+config+"EventCount.root root/EventCount/*"+filetag+extra_EC_str+".root > /dev/null")
-        unique_hashes = collect_unique_hashes(glob.glob("root/EventCount/*"+filetag+extra_EC_str+".root"))
-        write_git_hashes_to_output(config+"EventCount.root", unique_hashes)
-        EVTCNT = "./config/EventCount.root"
-
-        # make FilterEff file 
-        if VERBOSE:
-            print("making FilterEff file", flush=True)
-        os.system("hadd "+config+"FilterEff.root root/FilterEff/*"+filetag+"*.root > /dev/null")
-        FILTEREFF = "./config/FilterEff.root"
-
-        # make lumi json file
-        if VERBOSE:
-            print("making lumi json file", flush=True)
-        os.system("cat json/GoodRunList/*.txt > "+config+"GRL_JSON.txt")
-        os.system("echo -n $(tr -d '\n' < "+config+"GRL_JSON.txt) > "+config+"GRL_JSON.txt")
-        JSON = "./config/GRL_JSON.txt"
-
-        # copy xs json file
-        XSJSONFILENAME = 'info_XSDB_2025-03-30_14-22.json'
-        command = ["xrdfs", "root://cmseos.fnal.gov/", "ls", "/store/user/z374f439/XSectionJSONs/"]
-        result = subprocess.run(command, capture_output=True, text=True, check=True)
-        pattern = re.compile(r"/store/user/z374f439/XSectionJSONs/info_XSDB_(\d{4}-\d{2}-\d{2}_\d{2}-\d{2})\.json")
-        files = pattern.findall(result.stdout)
-        if files:
-            newest_timestamp = max(files)
-            XSJSONFILENAME = f"info_XSDB_{newest_timestamp}.json"
-        if VERBOSE:
-            print("making xs json file", flush=True)
-        os.system(f"xrdcp -s root://cmseos.fnal.gov//store/user/z374f439/XSectionJSONs/{XSJSONFILENAME} {config}/XS_jsonfile.json")
-        XSJSONFILE = f"./config/XS_jsonfile.json"
-
-        # copy PU root files
-        if VERBOSE:
-            print("making Pileup file", flush=True)
-        if "102X" in listname:
-            os.system("cp -r root/PU "+config+".")
-            PUFOLD = "./config/PU/"
-        else:
-            PUFOLD = '/cvmfs/cms-griddata.cern.ch/cat/metadata/LUM/'
-
-        # copy BTAG SF files
-        if VERBOSE:
-            print("making BTAG file", flush=True)
-        if "102X" in listname:
-            os.system("cp -r root/BtagSF "+config+".")
-            os.system("cp -r csv/BtagSF/* "+config+"BtagSF/.")
-        else:
-            extra_BTAG_str = ""
-            if DO_SMS:
-                extra_BTAG_str = "*SMS*"
-            elif DO_CASCADES:
-                extra_BTAG_str = "*Cascade*"
-            os.system("mkdir -p "+config+"/BtagSF/")
-            os.system("hadd "+config+"/BtagSF/BtagEff.root root/BtagSF/*"+filetag+extra_EC_str+"*/*.root > /dev/null")
-        BTAGFOLD = "./config/BtagSF/"
-
-        # copy LEP SF files
-        if VERBOSE:
-            print("making LEP file", flush=True)
-        os.system("cp -r root/LepSF "+config+".")
-        LEPFOLD = "./config/LepSF/"
-
-        # copy JME files
-        if VERBOSE:
-            print("making JME file", flush=True)
-        if "102X" in listname:
-            os.system("cp -r data/JME "+config+".")
-            JMEFOLD = "./config/JME/"
-        else:
-            JMEFOLD = '/cvmfs/cms-griddata.cern.ch/cat/metadata/JME/'
-
-        # copy JEC file
-        if VERBOSE:
-            print("making JEC file", flush=True)
-        os.system("cp data/JME/JecConfigAK4.json "+config+".")
-        JECFILE = './config/JecConfigAK4.json'
-
-        # copy JVM file
-        if VERBOSE:
-            print("making JVM file", flush=True)
-        os.system("cp data/JME/JvmConfig.json "+config+".")
-        JVMFILE = './config/JvmConfig.json'
-
-        # copy MET trigger files
-        if VERBOSE:
-            print("making Trigger file", flush=True)
-        os.system("cp -r csv/METTrigger "+config+".")
-        METFILE = "./config/METTrigger/Parameters.csv"
-
-        # copy Prefire files
-        if VERBOSE:
-            print("making Prefire file", flush=True)
-        os.system("cp -r root/Prefire "+config+".")
-        PREFIREFILE = "./config/Prefire/Prefire.root"
-
-        if VERBOSE:
-            print("Setting up working area...", flush=True)
         
         os.system("cp "+EXE+" "+config+".")
         os.system("cp "+RESTFRAMES+" "+config+".")

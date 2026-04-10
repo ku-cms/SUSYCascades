@@ -214,29 +214,37 @@ void AnalysisBase<Base>::AddPUFolder(const string& pufold){
 }
 
 template <class Base>
-void AnalysisBase<Base>::AddBtagFolder(const string& btagfold, const string& proc_rootfile, int year){
-  if(!m_IsUL and m_year < 2019)
-    m_BtagSFTool.BuildMap(btagfold, proc_rootfile, year);
+void AnalysisBase<Base>::AddBtagFolder(const string& btagfold){
+  m_Btag_eff_file = btagfold + "/BtagEff.root";
+  if(!m_IsSMS && !m_IsData) m_BtagSFTool.SetEfficiencies(m_Btag_eff_file, m_DataSet+"_"+m_FileTag);
+  if(!m_IsUL and m_year < 2019) {
+    m_BtagSFTool.BuildMap(btagfold);
+    if(m_year == 2016) m_BtagMediumWP = 0.3093;
+    else if(m_year == 2017) m_BtagMediumWP = 0.3033;
+    else if(m_year == 2018) m_BtagMediumWP = 0.2770;
+  }
+}
+
+template <class Base>
+void AnalysisBase<Base>::SetupBtagWP(){
+  std::string Btag_file = "";
+  Btag_file = find_clib_file("/cvmfs/cms-griddata.cern.ch/cat/metadata/BTV/", "btagging.json.gz");
+  m_cset_Btag = correction::CorrectionSet::from_file(Btag_file);
+  if(m_year < 2024){
+    m_BtagLooseWP = m_cset_Btag->at("deepJet_wp_values")->evaluate({"L"});
+    m_BtagMediumWP = m_cset_Btag->at("deepJet_wp_values")->evaluate({"M"});
+    m_BtagTightWP = m_cset_Btag->at("deepJet_wp_values")->evaluate({"T"});
+    if(m_year > 2018){
+      m_BtagVeryTightWP = m_cset_Btag->at("deepJet_wp_values")->evaluate({"XT"});
+      m_BtagVeryVeryTightWP = m_cset_Btag->at("deepJet_wp_values")->evaluate({"XXT"});
+    }
+  }
   else{
-    std::string Btag_file = "";
-    Btag_file = find_clib_file(btagfold, "btagging.json.gz");
-    m_cset_Btag = correction::CorrectionSet::from_file(Btag_file);
-    if(m_year < 2024){
-      m_BtagLooseWP = m_cset_Btag->at("deepJet_wp_values")->evaluate({"L"});
-      m_BtagMediumWP = m_cset_Btag->at("deepJet_wp_values")->evaluate({"M"});
-      m_BtagTightWP = m_cset_Btag->at("deepJet_wp_values")->evaluate({"T"});
-      if(m_year > 2018){
-        m_BtagVeryTightWP = m_cset_Btag->at("deepJet_wp_values")->evaluate({"XT"});
-        m_BtagVeryVeryTightWP = m_cset_Btag->at("deepJet_wp_values")->evaluate({"XXT"});
-      }
-    }
-    else{
-      m_BtagLooseWP = m_cset_Btag->at("UParTAK4_wp_values")->evaluate({"L"});
-      m_BtagMediumWP = m_cset_Btag->at("UParTAK4_wp_values")->evaluate({"M"});
-      m_BtagTightWP = m_cset_Btag->at("UParTAK4_wp_values")->evaluate({"T"});
-      m_BtagVeryTightWP = m_cset_Btag->at("UParTAK4_wp_values")->evaluate({"XT"});
-      m_BtagVeryVeryTightWP = m_cset_Btag->at("UParTAK4_wp_values")->evaluate({"XXT"});
-    }
+    m_BtagLooseWP = m_cset_Btag->at("UParTAK4_wp_values")->evaluate({"L"});
+    m_BtagMediumWP = m_cset_Btag->at("UParTAK4_wp_values")->evaluate({"M"});
+    m_BtagTightWP = m_cset_Btag->at("UParTAK4_wp_values")->evaluate({"T"});
+    m_BtagVeryTightWP = m_cset_Btag->at("UParTAK4_wp_values")->evaluate({"XT"});
+    m_BtagVeryVeryTightWP = m_cset_Btag->at("UParTAK4_wp_values")->evaluate({"XXT"});
   }
 }
 
@@ -614,10 +622,199 @@ void AnalysisBase<Base>::AddXSecJSON(const string& XSjsonfile){
 }
 
 template <class Base>
-void AnalysisBase<Base>::InitializeHistograms(vector<TH1D*>& histos){}
+const std::vector<double>& AnalysisBase<Base>::GetBtagPtBins() {
+  static const std::vector<double> bins = {
+    20., 30., 40., 50., 60., 70., 85., 100.,
+    120., 140., 170., 200., 250., 300.,
+    400., 600., 800., 1000.
+  };
+  return bins;
+}
 
 template <class Base>
-void AnalysisBase<Base>::BookHistograms(vector<TH1D*>& histos){}
+HistSet AnalysisBase<Base>::MakeHistSet(const std::string& sample) {
+  HistSet hs;
+  const auto& bins = GetBtagPtBins();
+  const int nbins = static_cast<int>(bins.size()) - 1;
+
+  if (m_year < 2019 && !m_IsUL) {
+    hs.nPU = new TH1D(
+      Form("hist_NPU_%s", sample.c_str()),
+      Form("hist_NPU_%s", sample.c_str()),
+      75, 0., 75.
+    );
+  }
+
+  for (int f = 0; f < 3; f++) {
+    auto makeName = [&](const char* tag) {
+      return std::string(Form("hist_btag_%s_flavor%d_%s", sample.c_str(), f, tag));
+    };
+    hs.btag_den[f] = new TH1D(makeName("den").c_str(), makeName("den").c_str(), nbins, bins.data());
+    hs.btag_num[f] = new TH1D(makeName("num").c_str(), makeName("num").c_str(), nbins, bins.data());
+  }
+  return hs;
+}
+
+template <class Base>
+ROOT::RDF::RNode AnalysisBase<Base>::DefineFlavorCol(ROOT::RDF::RNode& df) {
+  return df;
+}
+
+template <>
+ROOT::RDF::RNode AnalysisBase<SUSYNANOBase>::DefineFlavorCol(ROOT::RDF::RNode& df) {
+  auto flav_df = df.Define("flavor",
+      [](const ROOT::VecOps::RVec<int>& flav) {
+        ROOT::VecOps::RVec<int> out(flav.size());
+        for (size_t i = 0; i < flav.size(); i++) {
+          const int af = std::abs(flav[i]);
+          out[i] = (af == 5) ? 0 : (af == 4) ? 1 : 2;
+        }
+        return out;
+      },
+      {"Jet_partonFlavour"}
+  );
+  return flav_df;
+}
+
+template <>
+ROOT::RDF::RNode AnalysisBase<NANOULBase>::DefineFlavorCol(ROOT::RDF::RNode& df) {
+  auto flav_df = df.Define("flavor",
+      [](const ROOT::VecOps::RVec<int>& flav) {
+        ROOT::VecOps::RVec<int> out(flav.size());
+        for (size_t i = 0; i < flav.size(); i++) {
+          const int af = std::abs(flav[i]);
+          out[i] = (af == 5) ? 0 : (af == 4) ? 1 : 2;
+        }
+        return out;
+      },
+      {"Jet_partonFlavour"}
+  );
+  return flav_df;
+}
+
+template <>
+ROOT::RDF::RNode AnalysisBase<NANORun3>::DefineFlavorCol(ROOT::RDF::RNode& df) {
+  auto flav_df = df.Define("flavor",
+      [](const ROOT::VecOps::RVec<short>& flav) {
+        ROOT::VecOps::RVec<int> out(flav.size());
+        for (size_t i = 0; i < flav.size(); i++) {
+          const int af = std::abs(flav[i]);
+          out[i] = (af == 5) ? 0 : (af == 4) ? 1 : 2;
+        }
+        return out;
+      },
+      {"Jet_partonFlavour"}
+  );
+  return flav_df;
+}
+
+template <class Base>
+std::map<std::string, HistSet> AnalysisBase<Base>::BuildHistograms(ROOT::RDF::RNode df_range, std::string sample_name) {
+  const auto& bins = GetBtagPtBins();
+  const int nbins  = static_cast<int>(bins.size()) - 1;
+  // --- Assign per-event sample label ---
+  auto df_labeled = df_range.Define("sample",
+    [this, sample_name](const ROOT::VecOps::RVec<int>&   pdgId,
+           const ROOT::VecOps::RVec<float>& mass) -> std::string {
+      int  MP       = 0;
+      int  MC       = 0;
+      bool has_Slep = false;
+      bool has_Snu  = false;
+      bool is_left  = true;
+      bool is_plus  = true;
+      for (size_t i = 0; i < pdgId.size(); i++) {
+        const int id = std::abs(pdgId[i]);
+        if (id > 1000000 && id < 3000000) {
+          const int m = static_cast<int>(mass[i] + 0.5f);
+          if (id == 1000022) MC = m;
+          else if (m > MP)   MP = m;
+        }
+        if (m_IsCascades && m_IsSMS) {
+          const int mod = id % 10000;
+          if (mod == 11 || mod == 13) { has_Slep = true; if (pdgId[i] > 0) is_plus = false; }
+          else if (mod == 12 || mod == 14) { has_Snu = true; }
+          if (id > 2000000) is_left = false;
+        }
+      }
+      if (m_IsCascades && m_IsSMS) {
+        int code = 0;
+        if ( has_Slep && !has_Snu) code += 1;
+        if ( has_Slep &&  has_Snu) code += 2;
+        if (!has_Slep &&  has_Snu) code += 3;
+        code += (is_left ? 10 : 20);
+        code += (is_plus ? 100 : 200);
+        return sample_name + "_" + std::string(Form("SMS_%d_%d_%d", MP, MC, code));
+      }
+      if (m_IsSMS)
+        return sample_name + "_" + std::string(Form("SMS_%d_%d", MP, MC));
+      return sample_name;
+    },
+    {"GenPart_pdgId", "GenPart_mass"}
+  );
+  // --- Common jet columns ---
+  auto df_common = df_labeled
+    .Define("goodJet",
+      [](const ROOT::VecOps::RVec<float>& pt,
+         const ROOT::VecOps::RVec<float>& eta) {
+        return ROOT::VecOps::Map(pt, eta,
+          [](float p, float e){ return p > 20.f && std::abs(e) < 2.4f; }
+        );
+      },
+      {"Jet_pt", "Jet_eta"}
+    )
+    .Define("isBtag",
+      [this](const ROOT::VecOps::RVec<float>& btag) {
+        return ROOT::VecOps::Map(btag, [this](float b) {
+          return (b > m_BtagMediumWP);
+        });
+      },
+      {"Jet_btagDeepFlavB"}
+    );
+  df_common = DefineFlavorCol(df_common);
+  // --- Collect unique sample labels (one extra pass, by design) ---
+  auto sample_vec   = df_common.template Take<std::string>("sample");
+  const std::set<std::string> unique_samples(sample_vec->begin(), sample_vec->end());
+  // --- Build one HistSet per sample, then fill ---
+  std::map<std::string, HistSet> histMap;
+  for (const auto& s : unique_samples)
+    histMap[s] = MakeHistSet(s);
+  for (auto& [sample, hs] : histMap) {
+    auto df_s = df_common.Filter(
+      [&sample](const std::string& s) { return s == sample; },
+      {"sample"}
+    );
+    if (hs.nPU) {
+      auto h = df_s.Histo1D({"tmp_nPU", "", 75, 0., 75.}, "Pileup_nTrueInt");
+      hs.nPU->Add(h.GetPtr());
+    }
+    for (int f = 0; f < 3; f++) {
+      auto df_den = df_s
+        .Define("pt_den",
+          [f](const ROOT::VecOps::RVec<float>& pt,
+              const ROOT::VecOps::RVec<bool>&  good,
+              const ROOT::VecOps::RVec<int>&   flav) {
+            return pt[good && (flav == f)];
+          },
+          {"Jet_pt", "goodJet", "flavor"}
+        );
+      auto h_den = df_den.Histo1D({Form("tmp_den_%d", f), "", nbins, bins.data()}, "pt_den");
+      hs.btag_den[f]->Add(h_den.GetPtr());
+      auto df_num = df_s
+        .Define("pt_num",
+          [f](const ROOT::VecOps::RVec<float>& pt,
+              const ROOT::VecOps::RVec<bool>&  good,
+              const ROOT::VecOps::RVec<int>&   flav,
+              const ROOT::VecOps::RVec<bool>&  tag) {
+            return pt[good && (flav == f) && tag];
+          },
+          {"Jet_pt", "goodJet", "flavor", "isBtag"}
+        );
+      auto h_num = df_num.Histo1D({Form("tmp_num_%d", f), "", nbins, bins.data()}, "pt_num");
+      hs.btag_num[f]->Add(h_num.GetPtr());
+    }
+  }
+  return histMap;
+}
 
 template <class Base>
 double AnalysisBase<Base>::DeltaPhiMin(const vector<TLorentzVector>& JETs, const TVector3& MET, int N){
@@ -2253,7 +2450,7 @@ double AnalysisBase<SUSYNANOBase>::GetBtagSFWeight(const ParticleList& jets, boo
     if(!HForLF && iflavor != 2)
       continue;
     
-    EFF = m_BtagSFTool.EFF(jets[i].Pt(), m_year, iflavor, FastSim);
+    EFF = m_BtagSFTool.EFF(jets[i].Pt(), iflavor, FastSim);
     SF  = m_BtagSFTool.SF(jets[i].Pt(), m_year, iflavor, updown);
     if(FastSim)
       SF *= m_BtagSFTool.SF(jets[i].Pt(), m_year, iflavor, updown, FastSim);
@@ -2789,83 +2986,6 @@ double AnalysisBase<SUSYNANOBase>::GetMETTriggerSFWeight(double MET, double HT, 
 template <>
 int AnalysisBase<SUSYNANOBase>::GetMETTriggerSFCurve(double HT, int Nele, int Nmu){
   return m_METTriggerTool.Get_Curve_Index(HT, m_year, (Nele > 0), (Nmu > 0), IsData());
-}
-
-template <>
-void AnalysisBase<SUSYNANOBase>::InitializeHistograms(vector<TH1D*>& histos){
-  // nPU
-  TH1D* h_nPU = new TH1D("hist_NPU", "hist_NPU", 75, 0., 75.);
-  histos.push_back(h_nPU);
-
-  // Btag efficiencies
-  vector<double> bin_edges;
-  bin_edges.push_back(20.);
-  bin_edges.push_back(30.);
-  bin_edges.push_back(40.);
-  bin_edges.push_back(50.);
-  bin_edges.push_back(60.);
-  bin_edges.push_back(70.);
-  bin_edges.push_back(85.);
-  bin_edges.push_back(100.);
-  bin_edges.push_back(120.);
-  bin_edges.push_back(140.);
-  bin_edges.push_back(170.);
-  bin_edges.push_back(200.);
-  bin_edges.push_back(250.);
-  bin_edges.push_back(300.);
-  bin_edges.push_back(400.);
-  bin_edges.push_back(600.);
-  bin_edges.push_back(800.);
-  bin_edges.push_back(1000.);
-
-  TH1D* h_btag[3][2]; // [flavor][den/num]
-  for(int i = 0; i < 3; i++){
-    for(int j = 0; j < 2; j++){
-      h_btag[i][j] = (TH1D*) new TH1D(Form("hist_btag_flavor%d_%s", i, (j == 0 ? "den" : "num")),
-				      Form("hist_btag_flavor%d_%s", i, (j == 0 ? "den" : "num")),
-				      17, &bin_edges[0]);
-      histos.push_back(h_btag[i][j]);
-    }
-  }
-}
-
-template <>
-void AnalysisBase<SUSYNANOBase>::BookHistograms(vector<TH1D*>& histos){
-  int ihist = 0;
-
-  // nPU
-  histos[ihist]->Fill(GetNPUtrue());
-
-  ihist++;
-
-  // Btag efficiencies
-  int Njet = nJet;
-  for(int i = 0; i < Njet; i++){
-    if(Jet_pt[i] < 20. || fabs(Jet_eta[i] > 2.4))
-      continue;
-
-    bool btag = false;
-    if(m_year == 2016)
-      if(Jet_btagDeepFlavB[i] > 0.3093)
-	btag = true;
-    if(m_year == 2017)
-      if(Jet_btagDeepFlavB[i] > 0.3033)
-	btag = true;
-    if(m_year == 2018)
-      if(Jet_btagDeepFlavB[i] > 0.2770)
-	btag = true;
-
-    int flavor;
-    if(abs(Jet_partonFlavour[i]) == 5)
-      flavor = 0;
-    else if(abs(Jet_partonFlavour[i]) == 4)
-      flavor = 1;
-    else
-      flavor = 2;
-
-    histos[ihist+2*flavor]->Fill(Jet_pt[i]);
-    if(btag) histos[ihist+2*flavor+1]->Fill(Jet_pt[i]);
-  }
 }
 
 template <>
@@ -3863,46 +3983,53 @@ double AnalysisBase<NANOULBase>::GetBtagSFWeight(const ParticleList& jets, bool 
   bool FastSim = IsFastSim();
   int Njet = jets.size();
   int iflavor = 0;
+  int flavor = 2;
   double probMC = 1.;
   double probDATA = 1.;
   std::string syst = "central";
-  if(updown > 0) syst = "up";
-  else if(updown < 0) syst = "down";
-  
+  if(updown > 0) syst = "up_correlated";
+  else if(updown < 0) syst = "down_correlated";
+  if(m_IsSMS) m_BtagSFTool.SetEfficiencies(m_Btag_eff_file,
+     m_DataSet + "_" + m_FileTag + "_" + m_IndexToSample[m_SampleIndex]);
+
   for (int i = 0; i < Njet; i++) {
-      if(abs(jets[i].PDGID()) == 5)
-        iflavor = 5;
-      else if(abs(jets[i].PDGID()) == 4)
-        iflavor = 4;
-      if(HForLF && iflavor == 0)
-        continue;
-      if(!HForLF && iflavor != 0)
-        continue;
-      std::vector<std::variant<int, double, std::string>> evalArgs;
-      evalArgs.push_back(syst);
-      evalArgs.push_back("M"); // Working Point ('M' for medium)
-      evalArgs.push_back(iflavor);
-      evalArgs.push_back(abs(jets[i].Eta()));
-      evalArgs.push_back(jets[i].Pt());
+    if(abs(jets[i].PDGID()) == 5) {
+      iflavor = 5;
+      flavor = 0;
+    }
+    else if(abs(jets[i].PDGID()) == 4) {
+      iflavor = 4;
+      flavor = 1;
+    }
+    if(HForLF && iflavor == 0)
+      continue;
+    if(!HForLF && iflavor != 0)
+      continue;
+    std::vector<std::variant<int, double, std::string>> evalArgs;
+    evalArgs.push_back(syst);
+    evalArgs.push_back("M"); // Working Point ('M' for medium)
+    evalArgs.push_back(iflavor);
+    evalArgs.push_back(abs(jets[i].Eta()));
+    evalArgs.push_back(jets[i].Pt());
 
-      double SF = 1.;
-      double EFF = 1.; // need to measure the efficiencies
-      if(iflavor == 0)
-        SF = m_cset_Btag->at("deepJet_incl")->evaluate(evalArgs);
-      else
-        SF = m_cset_Btag->at("deepJet_comb")->evaluate(evalArgs);
+    double EFF = m_BtagSFTool.EFF(jets[i].Pt(), flavor, FastSim);
+    double SF = 1.;
+    if(iflavor == 0)
+      SF = m_cset_Btag->at("deepJet_incl")->evaluate(evalArgs);
+    else
+      SF = m_cset_Btag->at("deepJet_comb")->evaluate(evalArgs);
 
-      if (jets[i].BtagID() >= tag) {
-          probMC *= EFF;
-          probDATA *= SF * EFF;
-      } else {
-          probMC *= (1. - EFF);
-          probDATA *= (1. - SF * EFF);
-      }
+    if (jets[i].BtagID() >= tag) {
+        probMC *= EFF;
+        probDATA *= SF * EFF;
+    } else {
+        probMC *= (1. - EFF);
+        probDATA *= (1. - SF * EFF);
+    }
   }
 
   if (probMC <= 0. || probDATA <= 0.)
-      return 1.;
+    return 1.;
 
   return probDATA / probMC;
 }
@@ -4420,83 +4547,6 @@ int AnalysisBase<NANOULBase>::GetMETTriggerSFCurve(double HT, int Nele, int Nmu)
 }
 
 template <>
-void AnalysisBase<NANOULBase>::InitializeHistograms(vector<TH1D*>& histos){
-  // nPU
-  TH1D* h_nPU = new TH1D("hist_NPU", "hist_NPU", 75, 0., 75.);
-  histos.push_back(h_nPU);
-
-  // Btag efficiencies
-  vector<double> bin_edges;
-  bin_edges.push_back(20.);
-  bin_edges.push_back(30.);
-  bin_edges.push_back(40.);
-  bin_edges.push_back(50.);
-  bin_edges.push_back(60.);
-  bin_edges.push_back(70.);
-  bin_edges.push_back(85.);
-  bin_edges.push_back(100.);
-  bin_edges.push_back(120.);
-  bin_edges.push_back(140.);
-  bin_edges.push_back(170.);
-  bin_edges.push_back(200.);
-  bin_edges.push_back(250.);
-  bin_edges.push_back(300.);
-  bin_edges.push_back(400.);
-  bin_edges.push_back(600.);
-  bin_edges.push_back(800.);
-  bin_edges.push_back(1000.);
-
-  TH1D* h_btag[3][2]; // [flavor][den/num]
-  for(int i = 0; i < 3; i++){
-    for(int j = 0; j < 2; j++){
-      h_btag[i][j] = (TH1D*) new TH1D(Form("hist_btag_flavor%d_%s", i, (j == 0 ? "den" : "num")),
-				      Form("hist_btag_flavor%d_%s", i, (j == 0 ? "den" : "num")),
-				      17, &bin_edges[0]);
-      histos.push_back(h_btag[i][j]);
-    }
-  }
-}
-
-template <>
-void AnalysisBase<NANOULBase>::BookHistograms(vector<TH1D*>& histos){
-  int ihist = 0;
-
-  // nPU
-  histos[ihist]->Fill(GetNPUtrue());
-
-  ihist++;
-
-  // Btag efficiencies
-  int Njet = nJet;
-  for(int i = 0; i < Njet; i++){
-    if(Jet_pt[i] < 20. || fabs(Jet_eta[i] > 2.4))
-      continue;
-
-    bool btag = false;
-    if(m_year == 2016)
-      if(Jet_btagDeepFlavB[i] > 0.3093)
-	btag = true;
-    if(m_year == 2017)
-      if(Jet_btagDeepFlavB[i] > 0.3033)
-	btag = true;
-    if(m_year == 2018)
-      if(Jet_btagDeepFlavB[i] > 0.2770)
-	btag = true;
-
-    int flavor;
-    if(abs(Jet_partonFlavour[i]) == 5)
-      flavor = 0;
-    else if(abs(Jet_partonFlavour[i]) == 4)
-      flavor = 1;
-    else
-      flavor = 2;
-
-    histos[ihist+2*flavor]->Fill(Jet_pt[i]);
-    if(btag) histos[ihist+2*flavor+1]->Fill(Jet_pt[i]);
-  }
-}
-
-template <>
 void AnalysisBase<NANOULBase>::ApplyMETPhiCorrections(TLorentzVector &metOut, int runNumber, int npvGood, const std::string &variation){
   if (!m_cset_METPhi) {
     std::cerr << "[ApplyMETPhiCorrections] ERROR: m_cset_METPhi not loaded.\n";
@@ -4700,9 +4750,9 @@ ParticleList AnalysisBase<NANOULBase>::GetJetsMET(TVector3& MET, int id) {
 
     // B-tagging
     jet.SetBtag(Jet_btagDeepFlavB[i]);
-    if (jet.Btag() > m_BtagTightWP) jet.SetBtagID(kTight);
+    if (jet.Btag() > m_BtagTightWP)       jet.SetBtagID(kTight);
     else if (jet.Btag() > m_BtagMediumWP) jet.SetBtagID(kMedium);
-    else if (jet.Btag() > m_BtagLooseWP) jet.SetBtagID(kLoose);
+    else if (jet.Btag() > m_BtagLooseWP)  jet.SetBtagID(kLoose);
 
     jet.SetPDGID(Jet_partonFlavour[i]);
 
@@ -5128,17 +5178,24 @@ double AnalysisBase<NANORun3>::GetBtagSFWeight(const ParticleList& jets, bool HF
   bool FastSim = IsFastSim();
   int Njet = jets.size();
   int iflavor = 0;
+  int flavor = 2;
   double probMC = 1.;
   double probDATA = 1.;
   std::string syst = "central";
-  if(updown > 0) syst = "up";
-  else if(updown < 0) syst = "down";
+  if(updown > 0) syst = "up_correlated";
+  else if(updown < 0) syst = "down_correlated";
+  if(m_IsSMS) m_BtagSFTool.SetEfficiencies(m_Btag_eff_file,
+     m_DataSet + "_" + m_FileTag + "_" + m_IndexToSample[m_SampleIndex]);
   
   for (int i = 0; i < Njet; i++) {
-      if(abs(jets[i].PDGID()) == 5)
+      if(abs(jets[i].PDGID()) == 5) {
         iflavor = 5;
-      else if(abs(jets[i].PDGID()) == 4)
+        flavor = 0;
+      }
+      else if(abs(jets[i].PDGID()) == 4) {
         iflavor = 4;
+        flavor = 1;
+      }
       if(HForLF && iflavor == 0)
         continue;
       if(!HForLF && iflavor != 0)
@@ -5151,11 +5208,19 @@ double AnalysisBase<NANORun3>::GetBtagSFWeight(const ParticleList& jets, bool HF
       evalArgs.push_back(jets[i].Pt());
 
       double SF = 1.;
-      double EFF = 1.; // need to measure the efficiencies
-      if(iflavor == 0)
-        SF = m_cset_Btag->at("deepJet_light")->evaluate(evalArgs);
-      else
-        SF = m_cset_Btag->at("deepJet_comb")->evaluate(evalArgs);
+      double EFF = m_BtagSFTool.EFF(jets[i].Pt(), flavor, FastSim);
+      if(m_year < 2024) {
+        if(iflavor == 0)
+          SF = m_cset_Btag->at("deepJet_light")->evaluate(evalArgs);
+        else
+          SF = m_cset_Btag->at("deepJet_comb")->evaluate(evalArgs);
+      }
+      else {
+        if(iflavor == 0)
+          SF = m_cset_Btag->at("UParTAK4_light")->evaluate(evalArgs);
+        else
+          SF = m_cset_Btag->at("UParTAK4_comb")->evaluate(evalArgs);
+      }
 
       if (jets[i].BtagID() >= tag) {
           probMC *= EFF;
@@ -5167,7 +5232,7 @@ double AnalysisBase<NANORun3>::GetBtagSFWeight(const ParticleList& jets, bool HF
   }
 
   if (probMC <= 0. || probDATA <= 0.)
-      return 1.;
+    return 1.;
 
   return probDATA / probMC;
 }
@@ -5661,83 +5726,6 @@ double AnalysisBase<NANORun3>::GetMuVLIDSFWeight(const ParticleList& mus, int up
 }
 
 template <>
-void AnalysisBase<NANORun3>::InitializeHistograms(vector<TH1D*>& histos){
-  // nPU
-  TH1D* h_nPU = new TH1D("hist_NPU", "hist_NPU", 75, 0., 75.);
-  histos.push_back(h_nPU);
-
-  // Btag efficiencies
-  vector<double> bin_edges;
-  bin_edges.push_back(20.);
-  bin_edges.push_back(30.);
-  bin_edges.push_back(40.);
-  bin_edges.push_back(50.);
-  bin_edges.push_back(60.);
-  bin_edges.push_back(70.);
-  bin_edges.push_back(85.);
-  bin_edges.push_back(100.);
-  bin_edges.push_back(120.);
-  bin_edges.push_back(140.);
-  bin_edges.push_back(170.);
-  bin_edges.push_back(200.);
-  bin_edges.push_back(250.);
-  bin_edges.push_back(300.);
-  bin_edges.push_back(400.);
-  bin_edges.push_back(600.);
-  bin_edges.push_back(800.);
-  bin_edges.push_back(1000.);
-
-  TH1D* h_btag[3][2]; // [flavor][den/num]
-  for(int i = 0; i < 3; i++){
-    for(int j = 0; j < 2; j++){
-      h_btag[i][j] = (TH1D*) new TH1D(Form("hist_btag_flavor%d_%s", i, (j == 0 ? "den" : "num")),
-				      Form("hist_btag_flavor%d_%s", i, (j == 0 ? "den" : "num")),
-				      17, &bin_edges[0]);
-      histos.push_back(h_btag[i][j]);
-    }
-  }
-}
-
-template <>
-void AnalysisBase<NANORun3>::BookHistograms(vector<TH1D*>& histos){
-  int ihist = 0;
-
-  // nPU
-  histos[ihist]->Fill(GetNPUtrue());
-
-  ihist++;
-
-  // Btag efficiencies
-  int Njet = nJet;
-  for(int i = 0; i < Njet; i++){
-    if(Jet_pt[i] < 20. || fabs(Jet_eta[i] > 2.4))
-      continue;
-
-    bool btag = false;
-    if(m_year == 2016)
-      if(Jet_btagDeepFlavB[i] > 0.3093)
-	btag = true;
-    if(m_year == 2017)
-      if(Jet_btagDeepFlavB[i] > 0.3033)
-	btag = true;
-    if(m_year == 2018)
-      if(Jet_btagDeepFlavB[i] > 0.2770)
-	btag = true;
-
-    int flavor;
-    if(abs(Jet_partonFlavour[i]) == 5)
-      flavor = 0;
-    else if(abs(Jet_partonFlavour[i]) == 4)
-      flavor = 1;
-    else
-      flavor = 2;
-
-    histos[ihist+2*flavor]->Fill(Jet_pt[i]);
-    if(btag) histos[ihist+2*flavor+1]->Fill(Jet_pt[i]);
-  }
-}
-
-template <>
 void AnalysisBase<NANORun3>::ApplyMETPhiCorrections(TLorentzVector &metOut, int runNumber, int npvGood, const std::string &variation){
   if (!m_cset_METPhi) {
     std::cerr << "[ApplyMETPhiCorrections] ERROR: m_cset_METPhi not loaded.\n";
@@ -5982,11 +5970,11 @@ ParticleList AnalysisBase<NANORun3>::GetJetsMET(TVector3& MET, int id) {
 
     // --- B-tagging ---
     jet.SetBtag(Jet_btagDeepFlavB[i]);
-    if (jet.Btag() > m_BtagVeryVeryTightWP) jet.SetBtagID(kVeryVeryTight);
-    else if (jet.Btag() > m_BtagVeryTightWP)        jet.SetBtagID(kVeryTight);
-    else if (jet.Btag() > m_BtagTightWP)            jet.SetBtagID(kTight);
-    else if (jet.Btag() > m_BtagMediumWP)           jet.SetBtagID(kMedium);
-    else if (jet.Btag() > m_BtagLooseWP)            jet.SetBtagID(kLoose);
+    if (jet.Btag() > m_BtagVeryVeryTightWP)  jet.SetBtagID(kVeryVeryTight);
+    else if (jet.Btag() > m_BtagVeryTightWP) jet.SetBtagID(kVeryTight);
+    else if (jet.Btag() > m_BtagTightWP)     jet.SetBtagID(kTight);
+    else if (jet.Btag() > m_BtagMediumWP)    jet.SetBtagID(kMedium);
+    else if (jet.Btag() > m_BtagLooseWP)     jet.SetBtagID(kLoose);
 
     jet.SetPDGID(Jet_partonFlavour[i]);
 

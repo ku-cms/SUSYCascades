@@ -40,18 +40,6 @@ int main(int argc, char* argv[]) {
   char TreeName[400];
   char DataSet[400];
   char FileTag[400];
-  char EventCount[400];
-  char FilterEff[400];
-  char JSONFile[400];
-  char PUFOLD[400];
-  char BTAGFOLD[400];
-  char LEPFOLD[400];
-  char JMEFOLD[400];
-  char JECFILE[400];
-  char JVMFILE[400];
-  char METTRIGFILE[400];
-  char PREFIREFILE[400];
-  char XSJSONFILE[400];
 
   bool DO_FILE = false;
   bool DO_LIST = false;
@@ -60,30 +48,14 @@ int main(int argc, char* argv[]) {
   bool DO_SMS = false;
   bool DO_CASCADES = false;
   bool DO_PRIVATEMC = false;
-  bool DO_JSON = false;
-  bool IS_DATA = false;
-  bool IS_FASTSIM = false;
 
-  bool DO_SYS = false;
-  bool DO_SYS_JES = false;
-  bool DO_SYS_JER = false;
-  bool DO_SYS_MET = false;
-  bool DO_SYS_MMS = false;
-  bool DO_SYS_EES = false;
-
-  bool DO_slim = false;
-
-  bool DO_HISTS = false;
-  
   int ICHUNK = 1;
   int NCHUNK = 1;
 
   if ( argc < 2 ){
     cout << "Error at Input: please specify an input file name, a list of input ROOT files and/or a folder path"; 
     cout << " and an output filename:" << endl; 
-    cout << "  Example:      ./MakeReducedNtuple_NANO.x -ifile=input.root -ofile=output.root -dataset=dataset_name -filetag=sample_tag"  << endl;
-    cout << "  Example:      ./MakeReducedNtuple_NANO.x -ilist=input.list -ofile=output.root -dataset=dataset_name -filetag=sample_tag"  << endl;
-    cout << "  Example:      ./MakeReducedNtuple_NANO.x -ifold=folder_path -ofile=output.root -dataset=dataset_name -filetag=sample_tag -tree=treename -eventcount=event_count --sms" << endl;
+    cout << "  Example:      ./MakeHistograms.x -ifile=input.root -ofile=output.root -dataset=dataset_name -filetag=sample_tag"  << endl;
     
     return 1;
   }
@@ -104,43 +76,15 @@ int main(int argc, char* argv[]) {
       sscanf(argv[i],"-tree=%s",  TreeName);
       DO_TREE = true;
     }
-    if (strncmp(argv[i],"-json",5)==0){
-      sscanf(argv[i],"-json=%s",  JSONFile);
-      DO_JSON = true;
-    }
     if (strncmp(argv[i],"-ofile",6)==0) sscanf(argv[i],"-ofile=%s", outputFileName);
     
     if (strncmp(argv[i],"-dataset",8)==0)   sscanf(argv[i],"-dataset=%s", DataSet);
     if (strncmp(argv[i],"-filetag",8)==0)   sscanf(argv[i],"-filetag=%s", FileTag);
-    if (strncmp(argv[i],"-eventcount",11)==0)   sscanf(argv[i],"-eventcount=%s", EventCount);
-    if (strncmp(argv[i],"-filtereff",10)==0)   sscanf(argv[i],"-filtereff=%s", FilterEff);
-    if (strncmp(argv[i],"-pu",3)==0)   sscanf(argv[i],"-pu=%s", PUFOLD);
-    if (strncmp(argv[i],"-btag",5)==0)   sscanf(argv[i],"-btag=%s", BTAGFOLD);
-    if (strncmp(argv[i],"-lep",4)==0)   sscanf(argv[i],"-lep=%s", LEPFOLD);
-    if (strncmp(argv[i],"-jme",4)==0)   sscanf(argv[i],"-jme=%s", JMEFOLD);
-    if (strncmp(argv[i],"-jec",4)==0)   sscanf(argv[i],"-jec=%s", JECFILE);
-    if (strncmp(argv[i],"-jvm",4)==0)   sscanf(argv[i],"-jvm=%s", JVMFILE);
-    if (strncmp(argv[i],"-metfile",8)==0)   sscanf(argv[i],"-metfile=%s", METTRIGFILE);
-    if (strncmp(argv[i],"-prefirefile",12)==0)   sscanf(argv[i],"-prefirefile=%s", PREFIREFILE);
-    if (strncmp(argv[i],"-xsjsonfile",11)==0)   sscanf(argv[i],"-xsjsonfile=%s", XSJSONFILE);
     
     if (strncmp(argv[i],"--sms",5)==0)  DO_SMS = true;
-    if (strncmp(argv[i],"--data",6)==0)  IS_DATA = true;
-    if (strncmp(argv[i],"--fastsim",9)==0)  IS_FASTSIM = true;
     if (strncmp(argv[i],"--cascades",10)==0)  DO_CASCADES = true;
     if (strncmp(argv[i],"--privatemc",11)==0)  DO_PRIVATEMC = true;
     if (strncmp(argv[i],"--private",9)==0)  DO_PRIVATEMC = true;
-
-    if (strncmp(argv[i],"--slim",6)==0) DO_slim = true;
-    
-    if (strncmp(argv[i],"--hists",7)==0) DO_HISTS = true;
-
-    if (strncmp(argv[i],"--sys",5)==0)  DO_SYS = true;
-    if (strncmp(argv[i],"--sysJES",8)==0)  DO_SYS_JES = true;
-    if (strncmp(argv[i],"--sysJER",8)==0)  DO_SYS_JER = true;
-    if (strncmp(argv[i],"--sysMET",8)==0)  DO_SYS_MET = true;
-    if (strncmp(argv[i],"--sysMMS",8)==0)  DO_SYS_MMS = true;
-    if (strncmp(argv[i],"--sysEES",8)==0)  DO_SYS_EES = true;
 
     if (strncmp(argv[i],"-split",6)==0)  sscanf(argv[i],"-split=%d,%d", &ICHUNK, &NCHUNK);
   }
@@ -279,51 +223,17 @@ int main(int argc, char* argv[]) {
   NDAS = N0 - N1;
 
   if(DO_SMS) std::visit([](auto& nt) { nt->DoSMS(); }, ntuple);
-  if(IS_DATA) std::visit([](auto& nt) { nt->DoData(); }, ntuple);
-  if(IS_FASTSIM) std::visit([](auto& nt) { nt->DoFastSim(); }, ntuple);
   if(DO_CASCADES) std::visit([](auto& nt) { nt->DoCascades(); }, ntuple);
   if(DO_PRIVATEMC) std::visit([](auto& nt) { nt->DoPrivateMC(); }, ntuple);
 
   std::visit([&](auto& nt) { nt->AddLabels(string(DataSet),string(FileTag),string(DAS_filename)); }, ntuple);
-  std::visit([&](auto& nt) { nt->AddEventCountFile(string(EventCount)); }, ntuple);
-  std::visit([&](auto& nt) { nt->AddFilterEffFile(string(FilterEff)); }, ntuple);
-  std::visit([&](auto& nt) { nt->AddPUFolder(string(PUFOLD)); }, ntuple);
-  std::visit([&](auto& nt) { nt->AddBtagFolder(string(BTAGFOLD)); }, ntuple);
   std::visit([&](auto& nt) { nt->SetupBtagWP(); }, ntuple);
-  std::visit([&](auto& nt) { nt->AddLepFolder(string(LEPFOLD)); }, ntuple);
-  std::visit([&](auto& nt) { nt->AddJECFile(string(JECFILE)); }, ntuple);
-  std::visit([&](auto& nt) { nt->AddJVMFile(string(JVMFILE)); }, ntuple);
-  std::visit([&](auto& nt) { nt->AddJMEFolder(string(JMEFOLD)); }, ntuple);
-  std::visit([&](auto& nt) { nt->AddMETTriggerFile(string(METTRIGFILE)); }, ntuple);
-  std::visit([&](auto& nt) { nt->AddPrefireFile(string(PREFIREFILE)); }, ntuple);
-  std::visit([&](auto& nt) { nt->AddXSecJSON(string(XSJSONFILE)); }, ntuple);
-  #ifdef _CMSSW_
-  if(!DO_SMS && !IS_DATA && !DO_CASCADES)
-    std::visit([](auto& nt) { nt->AddLHAPDF(); }, ntuple);
-  #endif
-
-  if(DO_SYS)
-    std::visit([](auto& nt) { nt->AddSystematics(); }, ntuple);
-  if(DO_SYS_JES)
-    std::visit([](auto& nt) { nt->AddJESSystematics(); }, ntuple);
-  if(DO_SYS_JER)
-    std::visit([](auto& nt) { nt->AddJERSystematics(); }, ntuple);
-  if(DO_SYS_MET)
-    std::visit([](auto& nt) { nt->AddMETSystematics(); }, ntuple);
-  if(DO_SYS_EES)
-    std::visit([](auto& nt) { nt->AddEESSystematics(); }, ntuple);
-  if(DO_SYS_MMS)
-    std::visit([](auto& nt) { nt->AddMMSSystematics(); }, ntuple);
-  
-  if(DO_JSON)
-    std::visit([&](auto& nt) { nt->AddJSONFile(string(JSONFile)); }, ntuple);
 
   cout << "writing output with ichunk=" << ICHUNK << " nchunk=" << NCHUNK << endl;
-  bool passedDASCheck = std::visit([&](auto& nt) -> bool { return nt->WriteNtuple(string(outputFileName), ICHUNK, NCHUNK, DO_slim, NDAS, string(DAS_datasetname), string(DAS_filename), DO_HISTS, true); }, ntuple);
+  bool passedDASCheck = std::visit([&](auto& nt) -> bool { return nt->WriteNtuple(string(outputFileName), ICHUNK, NCHUNK, false, NDAS, string(DAS_datasetname), string(DAS_filename), true, false); }, ntuple);
   if(!passedDASCheck){
     std::cout << "JOB FAILED DAS CHECK!" << std::endl;
     return 1;
   }
   else return 0;
-
 }

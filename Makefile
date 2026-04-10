@@ -90,7 +90,7 @@ locallib: lib
 
 lib: lib/libKUEWKino.so
 
-alltargets: MakeReducedNtuple_NANO.x MakeEventCount_NANO.x Condor_Plot_1D_NANO.x Submit_Plot_1D_NANO.x
+alltargets: MakeReducedNtuple_NANO.x MakeEventCount_NANO.x MakeHistograms.x
 
 EventCountPlot.x:  $(SRCDIR)EventCountPlot.C $(OBJ_FILES) $(HH_FILES)
 	$(CXX) $(CXXFLAGS) -o EventCountPlot.x $(OUTOBJ)/*.o $(GLIBS) $ $<
@@ -111,6 +111,10 @@ MakeReducedNtuple_NANO.x:  $(SRCDIR)MakeReducedNtuple_NANO.C $(OBJ_FILES) $(HH_F
 MakeEventCount_NANO.x:  $(SRCDIR)MakeEventCount_NANO.C $(OBJ_FILES) $(HH_FILES)
 	$(CXX) $(CXXFLAGS) -o MakeEventCount_NANO.x $(OUTOBJ)/*.o $(GLIBS) $ $<
 	touch MakeEventCount_NANO.x
+
+MakeHistograms.x:  $(SRCDIR)MakeHistograms.C $(OBJ_FILES) $(HH_FILES)
+	$(CXX) $(CXXFLAGS) -o MakeHistograms.x $(OUTOBJ)/*.o $(GLIBS) $ $<
+	touch MakeHistograms.x
 
 BuildFit.x:  $(SRCDIR)BuildFit.C $(OBJ_FILES) $(OBJ_FILES_CMSSW) $(HH_FILES)
 	$(CXX) $(CXXFLAGS) -o BuildFit.x $(OUTOBJ)/*.o $(OUTOBJ_CMSSW)/*.o $(GLIBS) $ $<

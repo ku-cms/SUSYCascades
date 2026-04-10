@@ -201,8 +201,8 @@ bool ScaleFactorTool::DileptonEvent(b* base){
 
 }
 
-void ScaleFactorTool::AddBtagFolder(const string& btagfold, const string& proc_rootfile, int year){
-  m_BtagSFTool.BuildMap(btagfold, proc_rootfile, year);
+void ScaleFactorTool::AddBtagFolder(const string& btagfold){
+  m_BtagSFTool.BuildMap(btagfold);
 }
 SleptonFlavor ScaleFactorTool::SleptonEvent(std::vector<int> &genPDGID_susy){
 

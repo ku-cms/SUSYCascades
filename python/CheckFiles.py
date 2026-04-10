@@ -539,18 +539,18 @@ def checkJobs(workingDir, outputDir, skipEC, skipDAS, skipMissing, skipSmall,
 
         # --- .out files check ---
         if not skipOut:
-            bash = f"grep -r \"Ntree 0\" {os.path.join(workingDir, 'out', DataSetName)}"
+            bash = f"grep -rL \"Finished\" {os.path.join(workingDir, 'out', DataSetName)}"
             try:
                 outLines = subprocess.check_output(['bash', '-c', bash], text=True).splitlines()
             except subprocess.CalledProcessError:
                 outLines = []
             except Exception:
                 outLines = []
-            num_out = 0
-            for outLine in outLines:
-                if not outLine:
+            
+            num_out = 0 
+            for filename_part in outLines:
+                if not filename_part:
                     continue
-                filename_part = outLine.split(":", 1)[0]
                 tup = path_to_tuple(filename_part)
                 if tup is None:
                     continue

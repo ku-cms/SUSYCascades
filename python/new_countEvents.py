@@ -1,5 +1,3 @@
-# countEvents.py
-
 import os
 import glob
 import ROOT
@@ -83,19 +81,36 @@ class EventCount:
     
     def SetAnalysisTree(self, analysis_tree):
         self.analysis_tree = analysis_tree
+
+    def GetPara_NDAS(self, root_file):
+        file = ROOT.TFile.Open(root_file)
+        param = file.Get("NDAS")
+        val = param.GetVal()
+        file.Close()
+        return val
     
     # Gets "on-the-fly" DAS count from root file
     def GetDASCount(self, root_file):
         DAS_count = 0
-        tree = self.GetEventCountTree()
-        chain = ROOT.TChain(tree)
-        chain.Add(root_file)
-        n_entries = chain.GetEntries()
-        for i in range(n_entries):
-            chain.GetEntry(i)
-            n_DAS_Count = chain.NDAS
-            DAS_count += n_DAS_Count
-        return int(DAS_count)
+        f = ROOT.TFile.Open(root_file, "READ")
+        if not f or f.IsZombie():
+            return 0
+        tree_name = self.GetEventCountTree()
+        tree = f.Get(tree_name)
+        if tree and tree.InheritsFrom("TTree"):
+            n_entries = tree.GetEntries()
+            for i in range(n_entries):
+                tree.GetEntry(i)
+                try:
+                    DAS_count += tree.NDAS
+                except AttributeError:
+                    # If NDAS branch is missing, fallback
+                    f.Close()
+                    return self.GetPara_NDAS(root_file)
+            f.Close()
+            return int(DAS_count)
+        f.Close()
+        return self.GetPara_NDAS(root_file)
 
     def checkInternalDASCount(self, file):
         NDAS = self.GetDASCount(file)   
@@ -310,15 +325,25 @@ class EventCount:
     # iterate over entries in the event count tree
     def countTotalEvents(self, root_file):
         result = 0
-        tree = self.GetEventCountTree()
-        chain = ROOT.TChain(tree)
-        chain.Add(root_file)
-        n_entries = chain.GetEntries()
-        for i in range(n_entries):
-            chain.GetEntry(i)
-            n_events = chain.Nevent
-            result += n_events
-        return int(result)
+        f = ROOT.TFile.Open(root_file, "READ")
+        if not f or f.IsZombie():
+            return 0
+        tree_name = self.GetEventCountTree()
+        tree = f.Get(tree_name)
+        if tree and tree.InheritsFrom("TTree"):
+            n_entries = tree.GetEntries()
+            for i in range(n_entries):
+                tree.GetEntry(i)
+                try:
+                    result += tree.Nevent
+                except AttributeError:
+                    # If Nevent branch is missing, fallback
+                    f.Close()
+                    return self.GetPara_NDAS(root_file)
+            f.Close()
+            return int(result)
+        f.Close()
+        return self.GetPara_NDAS(root_file)
 
     # count saved events in a ROOT file
     # use the number of entries in the analysis tree

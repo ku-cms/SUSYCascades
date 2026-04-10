@@ -10,7 +10,7 @@ public:
   NtupleBase(TTree* tree = 0);
   virtual ~NtupleBase();
 
-  bool WriteNtuple(const std::string& filename, int ichunk = 1, int nchunch = 1, bool do_slim = false, int NDAS = 0, const string& DAS_datasetname = "", const string& DAS_filename = "");
+  bool WriteNtuple(const std::string& filename, int ichunk = 1, int nchunk = 1, bool do_slim = false, int NDAS = 0, const string& DAS_datasetname = "", const string& DAS_filename = "", bool histograms = false, bool fill_trees = false);
   void GetChunks(const Long64_t& NTOT, Long64_t& N0, Long64_t& N1, int ichunk, int nchunk);
 
 protected:
