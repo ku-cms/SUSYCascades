@@ -43,9 +43,6 @@ root://cmsxrootd.fnal.gov//store/data/Run2022D/EGamma/NANOAOD/NanoAODv15-v1/2520
 root://cmsxrootd.fnal.gov//store/data/Run2022D/EGamma/NANOAOD/NanoAODv15-v1/2520000/cf5a982a-bd75-4288-bffd-a3b1f96d3363.root
 root://cmsxrootd.fnal.gov//store/data/Run2022D/EGamma/NANOAOD/NanoAODv15-v1/2520000/3a211bfd-39a8-47e4-8dd7-bea78df41bfa.root
 root://cmsxrootd.fnal.gov//store/data/Run2022D/EGamma/NANOAOD/NanoAODv15-v1/2520000/95f65527-f7bd-4d76-8b86-190996f22d28.root
-root://cmsxrootd.fnal.gov//store/data/Run2022D/EGamma/NANOAOD/NanoAODv15-v1/110000/f8dd1373-66d0-4ef6-b9e2-c76898a03726.root
-root://cmsxrootd.fnal.gov//store/data/Run2022D/EGamma/NANOAOD/NanoAODv15-v1/110000/ccbc9c56-5088-4aff-a513-1c483a26f700.root
-root://cmsxrootd.fnal.gov//store/data/Run2022D/EGamma/NANOAOD/NanoAODv15-v1/110000/178f8d68-5c04-43cc-8942-81406dbb7232.root
 root://cmsxrootd.fnal.gov//store/data/Run2022D/EGamma/NANOAOD/NanoAODv15-v1/110000/d16e317f-baa8-41ba-b640-5640ed402e56.root
 root://cmsxrootd.fnal.gov//store/data/Run2022D/EGamma/NANOAOD/NanoAODv15-v1/110000/3efb124f-4712-44e0-9d36-4d9bc8ff0850.root
 root://cmsxrootd.fnal.gov//store/data/Run2022D/EGamma/NANOAOD/NanoAODv15-v1/110000/4851c1cc-04fe-4da0-99a3-841a50d230b7.root
@@ -78,3 +75,6 @@ root://cmsxrootd.fnal.gov//store/data/Run2022D/EGamma/NANOAOD/NanoAODv15-v1/2520
 root://cmsxrootd.fnal.gov//store/data/Run2022D/EGamma/NANOAOD/NanoAODv15-v1/2520000/7a61eca8-ec93-4f58-a014-4335acd02b1e.root
 root://cmsxrootd.fnal.gov//store/data/Run2022D/EGamma/NANOAOD/NanoAODv15-v1/2520000/8d195dfb-968e-46d1-8ec3-1f513199bb2e.root
 root://cmsxrootd.fnal.gov//store/data/Run2022D/EGamma/NANOAOD/NanoAODv15-v1/2520000/7f34ca05-12be-4e61-8e7b-fdfd3469ab7a.root
+root://cmsxrootd.fnal.gov//store/data/Run2022D/EGamma/NANOAOD/NanoAODv15-v1/110000/178f8d68-5c04-43cc-8942-81406dbb7232.root
+root://cmsxrootd.fnal.gov//store/data/Run2022D/EGamma/NANOAOD/NanoAODv15-v1/110000/f8dd1373-66d0-4ef6-b9e2-c76898a03726.root
+root://cmsxrootd.fnal.gov//store/data/Run2022D/EGamma/NANOAOD/NanoAODv15-v1/110000/ccbc9c56-5088-4aff-a513-1c483a26f700.root
