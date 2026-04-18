@@ -230,7 +230,7 @@ void AnalysisBase<Base>::SetupBtagWP(){
   std::string Btag_file = "";
   Btag_file = find_clib_file("/cvmfs/cms-griddata.cern.ch/cat/metadata/BTV/", "btagging.json.gz");
   m_cset_Btag = correction::CorrectionSet::from_file(Btag_file);
-  if(m_year < 2024){
+  if(m_year < 2024 && !m_NanoV15){
     m_BtagLooseWP = m_cset_Btag->at("deepJet_wp_values")->evaluate({"L"});
     m_BtagMediumWP = m_cset_Btag->at("deepJet_wp_values")->evaluate({"M"});
     m_BtagTightWP = m_cset_Btag->at("deepJet_wp_values")->evaluate({"T"});
@@ -1243,9 +1243,24 @@ std::string AnalysisBase<Base>::_find_clib_file(const std::string& fold, const s
         throw std::runtime_error("No matching clib file found for tag=" + filetag + " " + filename);
     }
 
-    // Pick entry with highest NanoAOD version
+    const std::vector<int> preferred_versions = {9, 12, 15};
+    auto version_priority = [&](int v) {
+        auto it = std::find(preferred_versions.begin(), preferred_versions.end(), v);
+        if (it != preferred_versions.end()) {
+            // Higher priority for earlier entries in the vector
+            return static_cast<int>(preferred_versions.size() - std::distance(preferred_versions.begin(), it));
+        }
+        return 0; // "others"
+    };
+
+    // Pick entry with best NanoAOD version
     auto best = std::max_element(matches.begin(), matches.end(),
-                                 [](const auto& a, const auto& b){ return a.first < b.first; });
+    [&](const auto& a, const auto& b) {
+        int pa = version_priority(a.first);
+        int pb = version_priority(b.first);
+        if (pa != pb) return pa < pb;   // higher priority wins
+        return a.first < b.first;       // tie-breaker: higher version wins
+    });
 
     // Check if multiple entries have the same highest version (avoid silent ambiguity)
     int max_version = best->first;
