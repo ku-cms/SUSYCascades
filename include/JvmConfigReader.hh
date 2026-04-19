@@ -1,3 +1,4 @@
+// from https://gitlab.cern.ch/cms-analysis/jme/jerc-application-tutorial
 #pragma once
 #include <nlohmann/json.hpp>
 #include <correction.h>
