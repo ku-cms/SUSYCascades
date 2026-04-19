@@ -268,64 +268,46 @@ void AnalysisBase<Base>::ExpandJESMacroSystematics() {
   const int nSys = m_Systematics.GetN();
   if (nSys == 0) return;
 
-  // mapping from macro label -> JSON section name
-  const std::unordered_map<std::string, std::string> macroToSection = {
-    {"JESUncer_Full",    "ForUncertaintyJESFull"},
-    {"JESUncer_Reduced", "ForUncertaintyJESReduced"},
-    {"JESUncer_Total",   "ForUncertaintyJESTotal"}
+  // Load uncertainty refs via new API
+  auto& jcfg   = JecConfigReader::JecConfig::defaultInstance();
+  auto uncRefs = jcfg.getJesUncSetsMcAK4Ref(m_jmeYearKey);
+
+  // mapping from macro label -> which set map to expand
+  using RefMap = std::map<std::string, correction::Correction::Ref>;
+  const std::unordered_map<std::string, const RefMap*> macroToSet = {
+    {"JESUncer_Full",    &uncRefs.full},
+    {"JESUncer_Reduced", &uncRefs.reduced},
+    {"JESUncer_Total",   &uncRefs.total}
   };
 
-  // If config missing or no JES node, nothing to expand
-  const auto &cfg = JecConfigReader::getCfgAK4();
-  if (!cfg.contains(m_jmeYearKey)) return;
-  const auto &yearObj = cfg.at(m_jmeYearKey);
-  if (!yearObj.contains("ForUncertaintyJES")) return;
-  const auto &fJES = yearObj.at("ForUncertaintyJES");
-
-  // Build a new Systematics container (same semantics as original)
   Systematics expanded(false);
 
   for (int i = 0; i < nSys; ++i) {
-    const Systematic &sys = m_Systematics[i];
+    const Systematic& sys   = m_Systematics[i];
     const std::string label = sys.Label();
 
-    auto mit = macroToSection.find(label);
-    if (mit == macroToSection.end()) {
+    auto mit = macroToSet.find(label);
+    if (mit == macroToSet.end()) {
       expanded.Add(sys);
       continue;
     }
 
-    const std::string &section = mit->second;
-    if (!fJES.contains(section)) {
-      std::cerr << "[JME] Warning: JSON missing '" << section << "' for year "
-                << m_jmeYearKey << ". Macro " << label << " will be skipped.\n";
-      continue;
-    }
-
-    const auto &arr = fJES.at(section);
-    if (!arr.is_array()) {
-      std::cerr << "[JME] Warning: '" << section << "' is not an array; skipping.\n";
+    const RefMap* setMap = mit->second;
+    if (!setMap || setMap->empty()) {
+      std::cerr << "[JME] Warning: no entries for " << label
+                << " (" << m_jmeYearKey << "). Macro will be skipped.\n";
       continue;
     }
 
     size_t nExpanded = 0;
-    // For each entry in the JSON array, create a specific Systematic label
-    for (const auto &entry : arr) {
-      if (!entry.is_array() || entry.size() < 2) continue;
-      std::string corrKey = entry.at(0).get<std::string>();
-      std::string humanLabel = entry.at(1).get<std::string>();
-
-      // Build a stable Systematic label that findJESKeyForLabel can match.
-      // Use the full humanLabel to be robust (e.g. "CMS_scale_j_FlavorQCD").
-      std::string concreteLabel = std::string("JESUncer_") + humanLabel;
-
-      // Avoid adding duplicates
+    for (const auto& [clibKey, ref] : *setMap) {
+      std::string concreteLabel = std::string("JESUncer_") + clibKey;
       if (!expanded.Contains(concreteLabel)) {
         ++nExpanded;
         expanded.Add(concreteLabel);
-        //std::cout << "[JME] Expanded macro " << label << " -> " << concreteLabel << " (CLIB: " << corrKey << ")\n";
       }
     }
+
     if (nExpanded > 0) {
       std::cout << "[JME] Expanded " << nExpanded
                 << " components for " << label
@@ -335,44 +317,24 @@ void AnalysisBase<Base>::ExpandJESMacroSystematics() {
                 << " (" << m_jmeYearKey << ")\n";
     }
   }
-  // Replace m_Systematics with expanded container
   m_Systematics = expanded;
 }
 
 template <class Base>
-std::optional<std::string> AnalysisBase<Base>::findJESKeyForLabel(const std::string &label){
-  using nlohmann::json;
-  const auto &cfg = JecConfigReader::getCfgAK4();
-  if (!cfg.contains(m_jmeYearKey)) return std::nullopt;
-  const auto &yearObj = cfg.at(m_jmeYearKey);
-  if (!yearObj.contains("ForUncertaintyJES")) return std::nullopt;
-  const auto &fJES = yearObj.at("ForUncertaintyJES");
+std::optional<std::string> AnalysisBase<Base>::findJESKeyForLabel(const std::string& label) {
+  auto& jcfg   = JecConfigReader::JecConfig::defaultInstance();
+  auto uncRefs = jcfg.getJesUncSetsMcAK4Ref(m_jmeYearKey);
 
-  const std::vector<std::string> sections = {
-    "ForUncertaintyJESFull",
-    "ForUncertaintyJESReduced",
-    "ForUncertaintyJESTotal"
-  };
-
-  // normalise label: if legacy prefix exists, strip it for matching convenience
+  // Strip legacy prefix for matching
   std::string core = label;
-  const std::string legacyPrefix = "JESUncer_";
-  if (core.rfind(legacyPrefix, 0) == 0) core = core.substr(legacyPrefix.size());
+  const std::string prefix = "JESUncer_";
+  if (core.rfind(prefix, 0) == 0) core = core.substr(prefix.size());
 
-  for (const auto &sec : sections) {
-    if (!fJES.contains(sec)) continue;
-    const auto &arr = fJES.at(sec);
-    for (const auto &entry : arr) {
-      if (!entry.is_array() || entry.size() < 2) continue;
-      std::string corrKey = entry.at(0).get<std::string>();   // CLIB key
-      std::string humanLabel = entry.at(1).get<std::string>(); // descriptive label
-      // Try strict-ish matches first: contain core as token or exact human label match
-      if (ci_find_substr(humanLabel, core) || ci_find_substr(corrKey, core)) {
-        return corrKey;
-      }
-      // fallback: match full label (in case label is something like "CMS_scale_j_Total")
-      if (ci_find_substr(humanLabel, label) || ci_find_substr(corrKey, label)) {
-        return corrKey;
+  using RefMap = std::map<std::string, correction::Correction::Ref>;
+  for (const RefMap* setMap : { &uncRefs.full, &uncRefs.reduced, &uncRefs.total }) {
+    for (const auto& [clibKey, ref] : *setMap) {
+      if (ci_find_substr(clibKey, core) || ci_find_substr(clibKey, label)) {
+        return clibKey;
       }
     }
   }
@@ -502,16 +464,8 @@ std::string AnalysisBase<Base>::getJMEDataEra() const {
   }
 
   if (m_year == 2022) {
-    // 2022Pre contains Era2022C/D; 2022Post contains Era2022E/F/G (and EE variants live in 2022Post block)
-    if (runLetter == 'C') return "Era2022C";
-    if (runLetter == 'D') return "Era2022D";
-    if (runLetter == 'E') return "Era2022E";
-    if (runLetter == 'F') return "Era2022F";
-    if (runLetter == 'G') return "Era2022G";
-    // Use EE flag as a hint (many EE payloads use RunE/F/G)
-    if (m_IsEE) return "Era2022E";
-    // default to Pre (C)
-    return "Era2022C";
+    if (m_IsEE) return "Era2022PostAll";
+    else return "Era2022PreAll";
   }
 
   if (m_year == 2023) {
@@ -572,12 +526,12 @@ void AnalysisBase<Base>::AddJECFile(const std::string& jecfile) {
     .ak4 = jecfile,
     .ak8 = ""
   };
-  JecConfigReader::setConfigPaths(cfg);
+  JecConfigReader::JecConfig::setDefaultPaths(cfg);
 }
 
 template <class Base>
-void AnalysisBase<Base>::AddJVMFile(const std::string& jecfile) {
-  JvmConfigReader::setConfigPath(jecfile);
+void AnalysisBase<Base>::AddJVMFile(const std::string& jvmfile) {
+  JvmConfigReader::setConfigPath(jvmfile);
 }
 
 template <class Base>
@@ -4668,9 +4622,7 @@ ParticleList AnalysisBase<NANOULBase>::GetJetsMET(TVector3& MET, int id) {
   std::vector<JecApplication::JerInputs> jersForMet;
   jetsForMet.reserve(static_cast<size_t>(nAk4Jets));
   jersForMet.reserve(static_cast<size_t>(nAk4Jets));
-  long long EventNum = static_cast<long long>(GetEventNum());
-  int RunNum = static_cast<int>(GetRunNum());
-  int LumiBlock = static_cast<int>(GetLumiNum());
+  long long RunNum = static_cast<int>(GetRunNum());
 
   for (int j = 0; j < nAk4Jets; ++j) {
     JecApplication::JetForMet v;
@@ -4685,9 +4637,7 @@ ParticleList AnalysisBase<NANOULBase>::GetJetsMET(TVector3& MET, int id) {
 
     // JER inputs for MET propagation
     JecApplication::JerInputs jerIn;
-    jerIn.event = EventNum;
-    jerIn.run = RunNum;
-    jerIn.lumi = LumiBlock;
+    jerIn.event = static_cast<unsigned long long>(RunNum);
     const int genIdx = Jet_genJetIdx[j];
     if (genIdx > -1 && static_cast<UInt_t>(genIdx) < static_cast<UInt_t>(nGenJet)) {
       jerIn.hasGen = true;
@@ -4711,21 +4661,35 @@ ParticleList AnalysisBase<NANOULBase>::GetJetsMET(TVector3& MET, int id) {
         m_jesClibCache.emplace(cacheKey, opt);
         cit = m_jesClibCache.find(cacheKey);
       }
-
+  
       if (cit != m_jesClibCache.end() && cit->second.has_value()) {
-        systOpts.jesSystName = cit->second.value();
-        systOpts.jesSystVar  = (CurrentSystematic().IsUp() ? "Up" : "Down");
+        const std::string& clibKey = cit->second.value();
+        const std::string  var     = CurrentSystematic().IsUp() ? "Up" : "Down";
+  
+        // Resolve the key to a Correction::Ref via JecConfig
+        auto& jcfg    = JecConfigReader::JecConfig::defaultInstance();
+  
+        correction::Correction::Ref foundRef = nullptr;
+        for (auto* setMap : { &m_uncRefs.full, &m_uncRefs.reduced, &m_uncRefs.total }) {
+          auto it = setMap->find(clibKey);
+          if (it != setMap->end()) { foundRef = it->second; break; }
+        }
+  
+        if (foundRef) {
+          systOpts.jesSystRef = foundRef;
+          systOpts.jesSystVar = var;
+        } else {
+          std::cerr << "[JME] Warning: JES key '" << clibKey << "' ("
+                    << m_jmeYearKey << ") not found in uncertainty sets. Using nominal JES.\n";
+        }
       } else {
-        systOpts.jesSystName.clear();
-        systOpts.jesSystVar.clear();
         std::cerr << "[JME] Warning: JES label '" << curLabel << "' ("
                   << m_jmeYearKey << ") configured but no CLIB key found. Using nominal JES.\n";
       }
     }
-
+  
     systOpts.jerVar = DO_JER ? (CurrentSystematic().IsUp() ? "up" : "down") : "nom";
   }
-
   // --- Process jets for analysis (apply nominal JES, JES syst, JER) ---
   for (int i = 0; i < Njet; ++i) {
     Particle jet;
@@ -4733,19 +4697,18 @@ ParticleList AnalysisBase<NANOULBase>::GetJetsMET(TVector3& MET, int id) {
     if (std::isnan(mass) || std::isinf(mass) || mass < 0.) mass = 0.;
 
     // Nominal JES
-    double ptRaw = Jet_pt[i] * (1.0 - Jet_rawFactor[i]);
     const double jesNominal = m_JMETool.GetJESFactorCLIB(
-      m_jmeYearKey, m_IsData, m_JMEera, RunNum, ptRaw,
-      Jet_eta[i], Jet_phi[i], Jet_area[i], fixedGridRhoFastjetAll
+      m_jmeYearKey, m_IsData, m_JMEera, RunNum, Jet_pt[i],
+      Jet_eta[i], Jet_phi[i], Jet_area[i], fixedGridRhoFastjetAll, Jet_rawFactor[i]
     );
-    jet.SetPtEtaPhiM(ptRaw * jesNominal, Jet_eta[i], Jet_phi[i], mass);
+    jet.SetPtEtaPhiM(Jet_pt[i] * jesNominal, Jet_eta[i], Jet_phi[i], mass);
 
     // JES syst (per-jet multiplicative)
-    if (DO_JES && !m_IsData && !systOpts.jesSystName.empty()) {
+    if (DO_JES && !m_IsData && !systOpts.jesSystVar.empty()) {
       const std::string var = CurrentSystematic().IsUp() ? "Up" : "Down";
       double jesSystFactor = m_JMETool.GetJESFactorSystCLIB(
         m_jmeYearKey, jet.Pt(), Jet_eta[i], Jet_phi[i], Jet_area[i],
-        fixedGridRhoFastjetAll, systOpts.jesSystName, m_IsData, m_JMEera, var);
+        fixedGridRhoFastjetAll, systOpts.jesSystVar, m_IsData, m_JMEera, var);
       jet.SetPtEtaPhiM(jet.Pt() * jesSystFactor, jet.Eta(), jet.Phi(), mass);
     }
 
@@ -5863,9 +5826,7 @@ ParticleList AnalysisBase<NANORun3>::GetJetsMET(TVector3& MET, int id) {
   std::vector<JecApplication::JerInputs> jersForMet;
   jetsForMet.reserve(static_cast<size_t>(nAk4Jets));
   jersForMet.reserve(static_cast<size_t>(nAk4Jets));
-  long long EventNum = static_cast<long long>(GetEventNum());
-  int RunNum = static_cast<int>(GetRunNum());
-  int LumiBlock = static_cast<int>(GetLumiNum());
+  long long RunNum = static_cast<int>(GetRunNum());
 
   for (int j = 0; j < nAk4Jets; ++j) {
     JecApplication::JetForMet v;
@@ -5880,9 +5841,7 @@ ParticleList AnalysisBase<NANORun3>::GetJetsMET(TVector3& MET, int id) {
 
     // JER inputs for MET propagation
     JecApplication::JerInputs jerIn;
-    jerIn.event = EventNum;
-    jerIn.run = RunNum;
-    jerIn.lumi = LumiBlock;
+    jerIn.event = static_cast<unsigned long long>(RunNum);
     const int genIdx = Jet_genJetIdx[j];
     if (genIdx > -1 && static_cast<UInt_t>(genIdx) < static_cast<UInt_t>(nGenJet)) {
       jerIn.hasGen = true;
@@ -5900,28 +5859,41 @@ ParticleList AnalysisBase<NANORun3>::GetJetsMET(TVector3& MET, int id) {
   JecApplication::SystematicOptions systOpts{};
   if (!m_IsData) {
     if (DO_JES) {
-      // use cached CLIB key if present, otherwise try to resolve and cache
       auto cit = m_jesClibCache.find(cacheKey);
       if (cit == m_jesClibCache.end()) {
         auto opt = findJESKeyForLabel(curLabel);
         m_jesClibCache.emplace(cacheKey, opt);
         cit = m_jesClibCache.find(cacheKey);
       }
-
+  
       if (cit != m_jesClibCache.end() && cit->second.has_value()) {
-        systOpts.jesSystName = cit->second.value();
-        systOpts.jesSystVar  = (CurrentSystematic().IsUp() ? "Up" : "Down");
+        const std::string& clibKey = cit->second.value();
+        const std::string  var     = CurrentSystematic().IsUp() ? "Up" : "Down";
+  
+        // Resolve the key to a Correction::Ref via JecConfig
+        auto& jcfg    = JecConfigReader::JecConfig::defaultInstance();
+  
+        correction::Correction::Ref foundRef = nullptr;
+        for (auto* setMap : { &m_uncRefs.full, &m_uncRefs.reduced, &m_uncRefs.total }) {
+          auto it = setMap->find(clibKey);
+          if (it != setMap->end()) { foundRef = it->second; break; }
+        }
+  
+        if (foundRef) {
+          systOpts.jesSystRef = foundRef;
+          systOpts.jesSystVar = var;
+        } else {
+          std::cerr << "[JME] Warning: JES key '" << clibKey << "' ("
+                    << m_jmeYearKey << ") not found in uncertainty sets. Using nominal JES.\n";
+        }
       } else {
-        systOpts.jesSystName.clear();
-        systOpts.jesSystVar.clear();
         std::cerr << "[JME] Warning: JES label '" << curLabel << "' ("
                   << m_jmeYearKey << ") configured but no CLIB key found. Using nominal JES.\n";
       }
     }
-
+  
     systOpts.jerVar = DO_JER ? (CurrentSystematic().IsUp() ? "up" : "down") : "nom";
   }
-
   // --- Process jets for analysis (apply nominal JES, JES syst, JER) ---
   for (int i = 0; i < Njet; ++i) {
     Particle jet;
@@ -5929,19 +5901,18 @@ ParticleList AnalysisBase<NANORun3>::GetJetsMET(TVector3& MET, int id) {
     if (std::isnan(mass) || std::isinf(mass) || mass < 0.) mass = 0.;
 
     // --- Nominal JES ---
-    double ptRaw = Jet_pt[i] * (1.0 - Jet_rawFactor[i]);
     const double jesNominal = m_JMETool.GetJESFactorCLIB(
-      m_jmeYearKey, m_IsData, m_JMEera, RunNum, ptRaw,
-      Jet_eta[i], Jet_phi[i], Jet_area[i], Rho_fixedGridRhoFastjetAll
+      m_jmeYearKey, m_IsData, m_JMEera, RunNum, Jet_pt[i],
+      Jet_eta[i], Jet_phi[i], Jet_area[i], fixedGridRhoFastjetAll, Jet_rawFactor[i]
     );
-    jet.SetPtEtaPhiM(ptRaw * jesNominal, Jet_eta[i], Jet_phi[i], mass);
+    jet.SetPtEtaPhiM(Jet_pt[i] * jesNominal, Jet_eta[i], Jet_phi[i], mass);
 
     // --- JES syst (per-jet multiplicative) ---
-    if (DO_JES && !m_IsData && !systOpts.jesSystName.empty()) {
+    if (DO_JES && !m_IsData && !systOpts.jesSystVar.empty()) {
       const std::string var = CurrentSystematic().IsUp() ? "Up" : "Down";
       double jesSystFactor = m_JMETool.GetJESFactorSystCLIB(
         m_jmeYearKey, jet.Pt(), Jet_eta[i], Jet_phi[i], Jet_area[i],
-        Rho_fixedGridRhoFastjetAll, systOpts.jesSystName, m_IsData, m_JMEera, var);
+        Rho_fixedGridRhoFastjetAll, systOpts.jesSystVar, m_IsData, m_JMEera, var);
       jet.SetPtEtaPhiM(jet.Pt() * jesSystFactor, jet.Eta(), jet.Phi(), mass);
     }
 

@@ -41,6 +41,8 @@
 #include "correction.h"
 #include "mt2_bisect.hh"
 
+#include <nlohmann/json.hpp>
+
 using namespace std;
 namespace fs = std::filesystem;
 using nlohmann::json;
@@ -289,6 +291,7 @@ private:
   void setJMEEraOverride(const std::string& s)  { m_JMEEraOverride = s;  }
   bool ci_find_substr(const std::string &hay, const std::string &needle);
   std::optional<std::string> findJESKeyForLabel(const std::string &label);
+  JecConfigReader::JesUncSetRefs m_uncRefs;
 
   virtual HistSet MakeHistSet(const std::string& sample);
   const std::vector<double>& GetBtagPtBins();

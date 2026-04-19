@@ -58,78 +58,83 @@ double JMETool::GetJERFactor(int year, double pT, double Eta, double rho) const 
   return m_JERFactors[year-2016][year]->JERSF(Eta, pT, rho); 
 }
 
-double JMETool::GetJESFactorCLIB(const std::string& year, const bool& isData, const std::string& DataEra, const int& runNumber, const double& pt, const double& eta, const double& phi, const double& area, const double& rho) {
-  auto tagsAK4 = JecConfigReader::getTagsAK4(year, isData, isData ? std::optional<std::string>(DataEra) : std::nullopt);
-  JecConfigReader::CorrectionRefs refs(tagsAK4);
-
-  JecApplication::EvalContext ctx{.year = year, .refs = refs, .isData = isData, .runNumber = isData ? std::optional<double>(runNumber) : std::nullopt, .isDebug = false};
-
-  JecApplication::JesInputs j{pt, eta, phi, area, rho, 0.0};
-  return JecApplication::getJesCorrectionNom(ctx, j);
+double JMETool::GetJESFactorCLIB(const std::string& year, const bool& isData,
+                                  const std::string& DataEra, const int& runNumber,
+                                  const double& pt, const double& eta, const double& phi,
+                                  const double& area, const double& rho,
+                                  const double& rawFactor) {
+    auto& jcfg = JecConfigReader::JecConfig::defaultInstance();
+    auto applier = isData
+        ? JecApplication::Applier::DataAK4(jcfg, year, DataEra, false,
+                                           std::optional<double>(runNumber))
+        : JecApplication::Applier::McAK4(jcfg, year);
+    JecApplication::JesInputs j{pt, eta, phi, area, rho, rawFactor};
+    return applier.jesFactorNominal(j);
 }
 
-double JMETool::GetJESFactorSystCLIB(const std::string& jmeYearKey, const double& ptAfterJes, const double& eta, const double& phi, const double& area, const double& rho, const std::string& clibSystKey, const bool& isData, const std::string& DataEra, const std::string& var /* "Up" or "Down" */) const{
-  // Build tags & refs using their reader (no era for MC here)
-  auto tags = JecConfigReader::getTagsAK4(jmeYearKey, isData, isData ? std::optional<std::string>(DataEra) : std::nullopt);
-  JecConfigReader::CorrectionRefs refs(tags);
+double JMETool::GetJESFactorSystCLIB(const std::string& jmeYearKey,
+                                      const double& ptAfterJes, const double& eta,
+                                      const double& phi, const double& area, const double& rho,
+                                      const std::string& clibSystKey, const bool& isData,
+                                      const std::string& DataEra,
+                                      const std::string& var) const {
+    // Look up the Correction::Ref for this key
+    auto& jcfg   = JecConfigReader::JecConfig::defaultInstance();
+    auto uncRefs = jcfg.getJesUncSetsMcAK4Ref(jmeYearKey);
 
-  // Forward to helper - var must be "Up" or "Down"
-  return JecApplication::getJesCorrectionSyst(refs, clibSystKey, var, eta, ptAfterJes, /*isDebug=*/false);
+    correction::Correction::Ref foundRef = nullptr;
+    for (auto* setMap : { &uncRefs.full, &uncRefs.reduced, &uncRefs.total }) {
+        auto it = setMap->find(clibSystKey);
+        if (it != setMap->end()) { foundRef = it->second; break; }
+    }
+    if (!foundRef) {
+        std::cerr << "[JME] Warning: syst key '" << clibSystKey << "' not found. Returning 1.0\n";
+        return 1.0;
+    }
+    return JecApplication::Applier::jesComponentSyst(foundRef, var, eta, ptAfterJes);
 }
 
-// Get multiplicative JER factor using JecApplication::getJerCorrectionNomOrSyst
-double JMETool::GetJERScaleFactor(const std::string& jmeYearKey, const JecApplication::JesInputs& jAfter, const JecApplication::JerInputs& jerIn, const std::string& var, const bool& isData, const std::string& DataEra) const {
-  // Build tags & refs for AK4 (MC)
-  const auto tags = JecConfigReader::getTagsAK4(jmeYearKey, isData, isData ? std::optional<std::string>(DataEra) : std::nullopt);
-  JecConfigReader::CorrectionRefs refs(tags);
+double JMETool::GetJERScaleFactor(const std::string& jmeYearKey,
+                                   const JecApplication::JesInputs& jAfter,
+                                   const JecApplication::JerInputs& jerIn,
+                                   const std::string& var,
+                                   const bool& isData,
+                                   const std::string& DataEra) const {
+    auto& jcfg   = JecConfigReader::JecConfig::defaultInstance();
+    auto applier = isData
+        ? JecApplication::Applier::DataAK4(jcfg, jmeYearKey, DataEra)
+        : JecApplication::Applier::McAK4(jcfg, jmeYearKey);
 
-  // Build EvalContext
-  JecApplication::EvalContext ctx{.year = jmeYearKey, .refs = refs, .isData = isData, .runNumber = std::nullopt, .isDebug = false};
+    JecApplication::SystematicOptions systOpts{};
+    systOpts.jerVar = (var == "up" || var == "down") ? var : "nom";
 
-  if (jerIn.run > 0 && JecApplication::requiresRunBasedResidual(jmeYearKey)) {
-      ctx.runNumber = static_cast<double>(jerIn.run);
-  }
-
-  // Build systematics options
-  JecApplication::SystematicOptions systOpts{};
-  if (var == "nom" || var == "up" || var == "down")
-      systOpts.jerVar = var;
-  else
-      systOpts.jerVar = "nom";
-
-  // Call the helper which internally handles gen-matching and smearing behavior
-  const double sJer = JecApplication::getJerCorrectionNomOrSyst(ctx, jAfter, jerIn, systOpts);
-  return sJer;
+    return applier.jerFactor(jAfter, jerIn, systOpts);
 }
 
-// Query pt-resolution from the CLIB ptResolution correction (tagNamePtResolution)
-double JMETool::GetJERResolution(const std::string& jmeYearKey, double eta, double pt, const bool& isData, const std::string& DataEra) const {
-  const auto tags = JecConfigReader::getTagsAK4(jmeYearKey, isData, isData ? std::optional<std::string>(DataEra) : std::nullopt);
-  JecConfigReader::CorrectionRefs refs(tags);
+double JMETool::GetJERResolution(const std::string& jmeYearKey, double eta, double pt, double rho,
+                                  const bool& isData, const std::string& DataEra) const {
+    auto& jcfg  = JecConfigReader::JecConfig::defaultInstance();
+    auto jerRef = jcfg.getJerNominalMcAK4Ref(jmeYearKey);
 
-  // tagNamePtResolution is present in Tags (see JecConfigAK4.json)
-  const std::string &ptResName = tags.tagNamePtResolution;
-
-  // Use safeGet helper that the JecConfigReader exposes (same pattern as JES syst)
-  auto corr = JecConfigReader::safeGet(refs.cs, ptResName);
-  if (!corr) return 0.0;
-
-  // evaluate expects vector arguments depending on the correction; typical signature: {eta, pt}
-  const double res = corr->evaluate({ eta, pt });
-  return res;
+    return jerRef.ptResolution->evaluate({ eta, pt, rho });
 }
 
-TLorentzVector JMETool::GetCorrectedMET(const std::string& jmeYearKey, bool isData, const std::string& DataEra, const std::optional<double>& runNumber, double metRawPt, double metRawPhi, const std::vector<JecApplication::JetForMet>& jetsForMet, const std::vector<JecApplication::JerInputs>& jersForMet, double rho, const JecApplication::SystematicOptions& systOpts, bool isDebug) const {
-  // Build tags & refs for AK4 (allow era/data selection if needed)
-  const auto tags = JecConfigReader::getTagsAK4(jmeYearKey, isData, isData ? std::optional<std::string>(DataEra) : std::nullopt);
-  JecConfigReader::CorrectionRefs refs(tags);
-  // Build EvalContext
-  JecApplication::EvalContext ctx{.year = jmeYearKey, .refs = refs, .isData = isData, .runNumber = std::nullopt, .isDebug = isDebug};
-  if (isData && runNumber.has_value() && JecApplication::requiresRunBasedResidual(jmeYearKey)) ctx.runNumber = runNumber;
-  // Build MetInputs and call the JecApplication helper
-  JecApplication::MetInputs metIn{ metRawPt, metRawPhi };
-  TLorentzVector p4 = JecApplication::getCorrectedMet(ctx, metIn, jetsForMet, jersForMet, rho, systOpts);
-  return p4;
+TLorentzVector JMETool::GetCorrectedMET(const std::string& jmeYearKey,
+                                         bool isData, const std::string& DataEra,
+                                         const std::optional<double>& runNumber,
+                                         double metRawPt, double metRawPhi,
+                                         const std::vector<JecApplication::JetForMet>& jetsForMet,
+                                         const std::vector<JecApplication::JerInputs>& jersForMet,
+                                         double rho,
+                                         const JecApplication::SystematicOptions& systOpts,
+                                         bool isDebug) const {
+    auto& jcfg   = JecConfigReader::JecConfig::defaultInstance();
+    auto applier = isData
+        ? JecApplication::Applier::DataAK4(jcfg, jmeYearKey, DataEra, isDebug, runNumber)
+        : JecApplication::Applier::McAK4(jcfg, jmeYearKey, isDebug);
+
+    JecApplication::MetInputs metIn{ metRawPt, metRawPhi };
+    return applier.correctedMet(metIn, jetsForMet, jersForMet, rho, systOpts);
 }
 
 bool JMETool::JetInJVM(const double& pt, const double& eta, const double& phi, const int& jetID, const double& ChEmEF, const double& NeEmEF) const{

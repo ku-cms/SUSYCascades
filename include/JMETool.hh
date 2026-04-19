@@ -26,10 +26,10 @@ public:
   
   double GetJESFactor(int year, const string& name, double pT, double Eta, double A = 0., double rho = 0.) const;
 
-  double GetJESFactorCLIB(const std::string& year, const bool& isData, const std::string& DataEra, const int& runNumber, const double& pt, const double& eta, const double& phi, const double& area, const double& rho);
+  double GetJESFactorCLIB(const std::string& year, const bool& isData, const std::string& DataEra, const int& runNumber, const double& pt, const double& eta, const double& phi, const double& area, const double& rho, const double& rawFactor);
   double GetJESFactorSystCLIB(const std::string& jmeYearKey, const double& ptAfterJes, const double& eta, const double& phi, const double& area, const double& rho, const std::string& clibSystKey, const bool& isData, const std::string& DataEra, const std::string& var /* "Up" or "Down" */) const;
   double GetJERScaleFactor(const std::string& jmeYearKey, const JecApplication::JesInputs& jAfter, const JecApplication::JerInputs& jerIn, const std::string& var, const bool& isData, const std::string& DataEra) const;
-  double GetJERResolution(const std::string& jmeYearKey, double eta, double pt, const bool& isData, const std::string& DataEra) const;
+  double GetJERResolution(const std::string& jmeYearKey, double eta, double pt, double rho, const bool& isData, const std::string& DataEra) const;
 
   TLorentzVector GetCorrectedMET(const std::string& jmeYearKey, bool isData, const std::string& DataEra, const std::optional<double>& runNumber, double metRawPt, double metRawPhi, const std::vector<JecApplication::JetForMet>& jetsForMet, const std::vector<JecApplication::JerInputs>& jersForMet, double rho, const JecApplication::SystematicOptions& systOpts, bool isDebug = false) const;
   void SetupJVM(const JvmConfigReader::Jvm& jvm);

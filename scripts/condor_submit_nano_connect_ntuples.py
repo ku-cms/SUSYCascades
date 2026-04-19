@@ -488,6 +488,7 @@ if __name__ == "__main__":
         if VERBOSE:
             print("making JEC file", flush=True)
         os.system("cp data/JME/JecConfigAK4.json "+config+".")
+        os.system("cp data/JME/jer_smear.json.gz "+config+".")
         JECFILE = './config/JecConfigAK4.json'
 
         # copy JVM file

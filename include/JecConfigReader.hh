@@ -2,7 +2,6 @@
 
 #include <nlohmann/json.hpp>
 #include <correction.h>
-#include <TRandom3.h>
 
 #include <fstream>
 #include <string>
@@ -13,334 +12,204 @@
 #include <map>
 #include <memory>
 #include <utility>
+#include <mutex>
 
 namespace JecConfigReader {
 
-// ===== One-time config path registry + cached JSONs =====
+/// Jet collection kind
+enum class JetKind { AK4, AK8 };
+
+/// File locations for config JSONs
 struct ConfigPaths {
     std::string ak4 = "data/JME/JecConfigAK4.json";
     std::string ak8 = "data/JME/JecConfigAK8.json";
 };
 
-// Internal shared state
-inline ConfigPaths& _paths_mut() {
-    static ConfigPaths p;           // single shared instance
-    return p;
-}
-inline bool& _paths_locked() {
-    static bool locked = false;     // one-time lock
-    return locked;
-}
-
-// Set the paths once (optional; defaults above are used otherwise)
-inline void setConfigPaths(const ConfigPaths& p) {
-    if (_paths_locked()) return;    // ignore subsequent changes
-    _paths_mut() = p;
-    _paths_locked() = true;
-}
-
-// Read-only accessor used everywhere else
-inline const ConfigPaths& _paths() {
-    return _paths_mut();
-}
-
-
-/** Read a JSON configuration file from disk. */
-inline nlohmann::json loadJsonConfig(const std::string& filename) {
-    std::ifstream f(filename);
-    if (!f.is_open()) {
-        throw std::runtime_error("Cannot open JSON config: " + filename);
-    }
-    nlohmann::json j;
-    f >> j;
-    return j;
-}
-
-// Internal loader with one-time caching per file path
-inline const nlohmann::json& _loadOnce(const std::string& path) {
-    static std::unordered_map<std::string, nlohmann::json> cache;
-    auto it = cache.find(path);
-    if (it != cache.end()) return it->second;
-    cache.emplace(path, loadJsonConfig(path));
-    return cache.at(path);
-}
-
-// Public: get cached configs
-inline const nlohmann::json& getCfgAK4() { return _loadOnce(_paths().ak4); }
-inline const nlohmann::json& getCfgAK8() { return _loadOnce(_paths().ak8); }
-
-/** Get a string field from a JSON object or throw. */
-inline std::string getTagName(const nlohmann::json& obj, const std::string& key) {
-    if (!obj.contains(key)) {
-        throw std::runtime_error("Missing required key in JSON: " + key);
-    }
-    return obj.at(key).get<std::string>();
-}
-
-struct Tags {
-    std::string jercJsonPath;
-    std::string tagNameL1FastJet;
-    std::string tagNameL2Relative;
-    std::string tagNameL3Absolute;
-    std::string tagNameL2Residual;
-    std::string tagNameL2L3Residual;
-    std::string tagNamePtResolution;
-    std::string tagNameJerScaleFactor;
-};
-
-/** Gather tag names for a given (year, data?, era). */
-inline Tags getTagNames(const nlohmann::json& baseJson,
-                        const std::string& year,
-                        bool isData,
-                        const std::optional<std::string>& era)
-{
-    if (!baseJson.contains(year)) {
-        throw std::runtime_error("Year key not found in JSON: " + year);
-    }
-    const auto& yearObj = baseJson.at(year);
-    Tags tags;
-
-    tags.jercJsonPath          = getTagName(yearObj, "jercJsonPath");
-    tags.tagNameL1FastJet      = getTagName(yearObj, "tagNameL1FastJet");
-    tags.tagNameL2Relative     = getTagName(yearObj, "tagNameL2Relative");
-    tags.tagNameL3Absolute     = getTagName(yearObj, "tagNameL3Absolute");
-    tags.tagNameL2Residual     = getTagName(yearObj, "tagNameL2Residual");
-    tags.tagNameL2L3Residual   = getTagName(yearObj, "tagNameL2L3Residual");
-    tags.tagNamePtResolution   = getTagName(yearObj, "tagNamePtResolution");
-    tags.tagNameJerScaleFactor = getTagName(yearObj, "tagNameJerScaleFactor");
-
-    if (isData) {
-        if (!yearObj.contains("data")) {
-            throw std::runtime_error("Requested data but no 'data' section for year: " + year);
-        }
-        if (!era.has_value()) {
-            throw std::runtime_error("Data requested but no era provided for year: " + year);
-        }
-        const std::string& eraKey = era.value();
-        const auto& dataObj = yearObj.at("data");
-        if (!dataObj.contains(eraKey)) {
-            throw std::runtime_error("Era key not found under data for year " + year + ": " + eraKey);
-        }
-        const auto& eraObj = dataObj.at(eraKey);
-        tags.tagNameL1FastJet    = getTagName(eraObj, "tagNameL1FastJet");
-        tags.tagNameL2Relative   = getTagName(eraObj, "tagNameL2Relative");
-        tags.tagNameL3Absolute   = getTagName(eraObj, "tagNameL3Absolute");
-        tags.tagNameL2Residual   = getTagName(eraObj, "tagNameL2Residual");
-        tags.tagNameL2L3Residual = getTagName(eraObj, "tagNameL2L3Residual");
-    }
-
-    return tags;
-}
-
-/** Retrieve a correction from a CorrectionSet with nice error. */
-inline correction::Correction::Ref safeGet(
-    const std::shared_ptr<correction::CorrectionSet>& cs,
-    const std::string& name)
-{
-    try {
-        return cs->at(name);
-    } catch (const std::exception& e) {
-        throw std::runtime_error("Failed to retrieve correction \"" + name + "\": " + e.what());
-    }
-}
-
-// ===== Helpers using cached JSONs =====
-inline Tags getTagsAK4(const std::string& year, bool isData,
-                       const std::optional<std::string>& era) {
-    return getTagNames(getCfgAK4(), year, isData, era);
-}
-
-inline Tags getTagsAK8OrFallbackAK4(const std::string& year, bool isData,
-                                    const std::optional<std::string>& era) {
-    const auto& cfgAK8 = getCfgAK8();
-    if (cfgAK8.contains(year)) return getTagNames(cfgAK8, year, isData, era);
-    return getTagsAK4(year, isData, era);
-}
-
-struct CorrectionRefs {
+/// Small PODs kept public for ergonomic access
+struct JesDataRefs {
     std::shared_ptr<correction::CorrectionSet> cs;
-    correction::Correction::Ref corrRefJesL1FastJet;
-    correction::Correction::Ref corrRefJesL2Relative;
-    correction::Correction::Ref corrRefJesL2ResL3Res;
-    correction::Correction::Ref corrRefJerReso;
-    correction::Correction::Ref corrRefJerSf;
-    TRandom3 randomGen;
-
-    CorrectionRefs() = default;
-    CorrectionRefs(const Tags& tags)
-        : randomGen(0)
-    {
-        static std::map<std::string, std::shared_ptr<correction::CorrectionSet>> cache;
-
-        if (cache.count(tags.jercJsonPath)) {
-            cs = cache.at(tags.jercJsonPath);
-        } else {
-            cs = correction::CorrectionSet::from_file(tags.jercJsonPath);
-            cache[tags.jercJsonPath] = cs;
-        }
-
-        corrRefJesL1FastJet   = safeGet(cs, tags.tagNameL1FastJet);
-        corrRefJesL2Relative  = safeGet(cs, tags.tagNameL2Relative);
-        corrRefJesL2ResL3Res  = safeGet(cs, tags.tagNameL2L3Residual);
-        corrRefJerReso        = safeGet(cs, tags.tagNamePtResolution);
-        corrRefJerSf          = safeGet(cs, tags.tagNameJerScaleFactor);
-    }
+    correction::Correction::Ref l1FastJet;
+    correction::Correction::Ref l2Relative;
+    correction::Correction::Ref l2l3Residual;  // required for Data
 };
 
-struct JerBin {
-    std::string label;
-    double etaMin{}, etaMax{}, ptMin{}, ptMax{};
+struct JesMcRefs {
+    std::shared_ptr<correction::CorrectionSet> cs;
+    correction::Correction::Ref l1FastJet;
+    correction::Correction::Ref l2Relative;
 };
 
-using JerSetMap = std::map<std::string, std::vector<JerBin>>;
-
-inline JerSetMap getJerUncertaintySets(const nlohmann::json& baseJson, const std::string& year) {
-    JerSetMap out;
-
-    auto itYear = baseJson.find(year);
-    if (itYear == baseJson.end()) return out;
-    const auto& y = *itYear;
-
-    auto itUncertainty = y.find("ForUncertaintyJER");
-    if (itUncertainty == y.end() || !itUncertainty->is_object()) return out;
-    const auto& j = *itUncertainty;
-
-    for (auto it = j.begin(); it != j.end(); ++it) {
-        const std::string setName = it.key();
-        const auto& obj = it.value();
-        if (!obj.is_object()) continue;
-
-        std::vector<JerBin> bins;
-        bins.reserve(obj.size());
-        for (auto it2 = obj.begin(); it2 != obj.end(); ++it2) {
-            const std::string label = it2.key();
-            const auto& arr = it2.value(); // [etaMin, etaMax, ptMin, ptMax]
-            if (!arr.is_array() || arr.size() != 4) {
-                throw std::runtime_error(
-                    "ForUncertaintyJER bin \"" + label + "\" must be an array [etaMin, etaMax, ptMin, ptMax]."
-                );
-            }
-            JerBin b;
-            b.label = label;
-            b.etaMin = arr.at(0).get<double>();
-            b.etaMax = arr.at(1).get<double>();
-            b.ptMin  = arr.at(2).get<double>();
-            b.ptMax  = arr.at(3).get<double>();
-            bins.push_back(std::move(b));
-        }
-        out.emplace(setName, std::move(bins));
-    }
-    return out;
-}
-
-// Each entry: { fullTag, base/custom name }
-using SystPairJES   = std::pair<std::string, std::string>;
-using SystSetMapJES = std::map<std::string, std::vector<SystPairJES>>;
-
-inline SystSetMapJES getSystTagNames(const nlohmann::json& baseJson, const std::string& year) {
-    SystSetMapJES out;
-    if (!baseJson.contains(year)) return out;
-
-    const auto& yearObj = baseJson.at(year);
-    if (!yearObj.contains("ForUncertaintyJES")) return out;
-
-    const auto& systs = yearObj.at("ForUncertaintyJES");
-    for (auto it = systs.begin(); it != systs.end(); ++it) {
-        const std::string setName = it.key();
-        const auto& arr = it.value();
-        if (!arr.is_array()) continue;
-
-        std::vector<SystPairJES> pairs;
-        pairs.reserve(arr.size());
-
-        for (const auto& item : arr) {
-            if (item.is_array() && item.size() >= 2 && item.at(0).is_string() && item.at(1).is_string()) {
-                pairs.emplace_back(item.at(0).get<std::string>(), item.at(1).get<std::string>());
-            }
-        }
-        out.emplace(setName, std::move(pairs));
-    }
-    return out;
-}
-
-enum class SystKind { Nominal, JES, JER };
-
-struct SystTagDetail {
-    std::string setName;
-    std::string var;   // "Up"/"Down" (empty for nominal)
-    SystKind kind{SystKind::Nominal};
-    bool isNominal() const { return kind == SystKind::Nominal; }
-    std::string systSetName() const { return isNominal() ? "Nominal" : setName; }
-    virtual std::string systName() const { return isNominal() ? "Nominal" : setName + "_" + var; }
-    virtual ~SystTagDetail() = default;
+struct JerMcRefs {
+    std::shared_ptr<correction::CorrectionSet> cs;
+    correction::Correction::Ref ptResolution;
+    correction::Correction::Ref scaleFactor;
 };
 
-struct SystTagDetailJES : public SystTagDetail {
-    std::string tagAK4;
-    std::string tagAK8;
-    std::string baseTag;
-    std::string systName() const override { return isNominal() ? "Nominal" : baseTag + "_" + var; }
+struct JerBin { double etaMin{}, etaMax{}, ptMin{}, ptMax{}; };
+
+struct JesUncSetRefs {
+    // CMS_name -> Correction::Ref
+    std::map<std::string, correction::Correction::Ref> full;
+    std::map<std::string, correction::Correction::Ref> reduced;
+    std::map<std::string, correction::Correction::Ref> total;
 };
 
-struct SystTagDetailJER : public SystTagDetail {
-    std::string baseTag;
-    JerBin jerRegion;
-    std::string systName() const override { return isNominal() ? "Nominal" : baseTag + "_" + var; }
+struct JerUncSets {
+    // label -> bin
+    std::map<std::string, JerBin> full;
+    std::map<std::string, JerBin> total;
 };
 
-inline std::vector<SystTagDetailJER> buildJerTagDetails(const JerSetMap& jerSets) {
-    std::vector<SystTagDetailJER> out;
-    for (const auto& [setName, bins] : jerSets) {
-        for (const auto& b : bins) {
-            for (const char* var : {"Up","Down"}) {
-                SystTagDetailJER d;
-                d.setName   = setName;
-                d.var       = var;
-                d.kind      = SystKind::JER;
-                d.baseTag   = b.label;
-                d.jerRegion = b;
-                out.push_back(d);
-            }
-        }
+/// Main class that owns paths, caches, and exposes query methods
+class JecConfig {
+public:
+    /// Construct with config paths and optional JER smearing JSON path
+    explicit JecConfig(ConfigPaths paths,
+                       std::string jerSmearPath = "data/JME/jer_smear.json.gz")
+      : paths_(std::move(paths)), jerSmearPath_(std::move(jerSmearPath)) {}
+
+    JecConfig(const JecConfig&)            = delete;
+    JecConfig& operator=(const JecConfig&) = delete;
+    JecConfig(JecConfig&&)                 = delete;
+    JecConfig& operator=(JecConfig&&)      = delete;
+
+    // -------------------------------
+    // Global-like default instance
+    // -------------------------------
+    static void setDefaultPaths(const ConfigPaths& p);
+    static void setDefaultJerSmearPath(const std::string& p);
+    static JecConfig& defaultInstance();
+
+    // -------------------------------
+    // JER smearing (json-based RNG (Random Number Generator)
+    // -------------------------------
+    [[nodiscard]] correction::Correction::Ref getJerSmearRef();
+    [[nodiscard]] std::shared_ptr<correction::CorrectionSet> getJerSmearCorrectionSet();
+
+    // -------------------------------
+    // JERC path (shared)
+    // -------------------------------
+    [[nodiscard]] std::string getJercJsonPath(const std::string& year, JetKind kind);
+
+    // -------------------------------
+    // DATA: JesNominal → era -> refs (shared)
+    // -------------------------------
+    [[nodiscard]] std::map<std::string, JesDataRefs>
+    getJesNominalDataRefs(const std::string& year, JetKind kind);
+
+    [[nodiscard]] JesDataRefs
+    getJesNominalDataEraRef(const std::string& year,
+                            const std::string& era,
+                            JetKind kind);
+
+    // -------------------------------
+    // MC: JesNominal / JerNominal → refs (shared)
+    // -------------------------------
+    [[nodiscard]] JesMcRefs  getJesNominalMcRefs(const std::string& year, JetKind kind);
+    [[nodiscard]] JerMcRefs  getJerNominalMcRefs(const std::string& year, JetKind kind);
+
+    // -------------------------------
+    // MC: JES uncertainty sets → refs (shared)
+    // -------------------------------
+    [[nodiscard]] JesUncSetRefs getJesUncSetRefsMc(const std::string& year, JetKind kind);
+
+    // -------------------------------
+    // MC: JER uncertainty sets → bins (shared)
+    // -------------------------------
+    [[nodiscard]] JerUncSets getJerUncSetsMc(const std::string& year, JetKind kind);
+
+    // -------------------------------
+    // Thin AK4/AK8 wrappers
+    // -------------------------------
+    [[nodiscard]] std::string getJercJsonPathAK4(const std::string& year) {
+        return getJercJsonPath(year, JetKind::AK4);
     }
-    return out;
-}
-
-inline std::vector<SystTagDetailJES> buildSystTagDetailJES(const SystSetMapJES& sAK4,
-                                                            const SystSetMapJES& sAK8)
-{
-    std::vector<SystTagDetailJES> systTagDetails;
-
-    for (const auto& [set, pairsAK4] : sAK4) {
-        auto itAK8 = sAK8.find(set);
-        if (itAK8 == sAK8.end()) continue;
-        const auto& pairsAK8 = itAK8->second;
-
-        std::unordered_map<std::string, std::string> mapAK4, mapAK8;
-        mapAK4.reserve(pairsAK4.size());
-        mapAK8.reserve(pairsAK8.size());
-
-        for (const auto& p : pairsAK4) mapAK4.emplace(p.second, p.first); // key = base/custom
-        for (const auto& p : pairsAK8) mapAK8.emplace(p.second, p.first);
-
-        for (const auto& [base, fullAK4] : mapAK4) {
-            auto itFullAK8 = mapAK8.find(base);
-            if (itFullAK8 == mapAK8.end()) continue;
-
-            for (const char* var : {"Up","Down"}) {
-                SystTagDetailJES d;
-                d.setName = set;
-                d.var = var;
-                d.kind = SystKind::JES;
-                d.tagAK4 = fullAK4;
-                d.tagAK8 = itFullAK8->second;
-                d.baseTag = base;
-                systTagDetails.push_back(d);
-            }
-        }
+    [[nodiscard]] std::string getJercJsonPathAK8(const std::string& year) {
+        return getJercJsonPath(year, JetKind::AK8);
     }
-    return systTagDetails;
-}
+
+    [[nodiscard]] std::map<std::string, JesDataRefs>
+    getJesNominalDataAK4Ref(const std::string& year) {
+        return getJesNominalDataRefs(year, JetKind::AK4);
+    }
+    [[nodiscard]] std::map<std::string, JesDataRefs>
+    getJesNominalDataAK8Ref(const std::string& year) {
+        return getJesNominalDataRefs(year, JetKind::AK8);
+    }
+
+    [[nodiscard]] JesDataRefs
+    getJesNominalDataEraAK4Ref(const std::string& year, const std::string& era) {
+        return getJesNominalDataEraRef(year, era, JetKind::AK4);
+    }
+    [[nodiscard]] JesDataRefs
+    getJesNominalDataEraAK8Ref(const std::string& year, const std::string& era) {
+        return getJesNominalDataEraRef(year, era, JetKind::AK8);
+    }
+
+    [[nodiscard]] JesMcRefs getJesNominalMcAK4Ref(const std::string& year) {
+        return getJesNominalMcRefs(year, JetKind::AK4);
+    }
+    [[nodiscard]] JesMcRefs getJesNominalMcAK8Ref(const std::string& year) {
+        return getJesNominalMcRefs(year, JetKind::AK8);
+    }
+
+    [[nodiscard]] JerMcRefs getJerNominalMcAK4Ref(const std::string& year) {
+        return getJerNominalMcRefs(year, JetKind::AK4);
+    }
+    [[nodiscard]] JerMcRefs getJerNominalMcAK8Ref(const std::string& year) {
+        return getJerNominalMcRefs(year, JetKind::AK8);
+    }
+
+    [[nodiscard]] JesUncSetRefs getJesUncSetsMcAK4Ref(const std::string& year) {
+        return getJesUncSetRefsMc(year, JetKind::AK4);
+    }
+    [[nodiscard]] JesUncSetRefs getJesUncSetsMcAK8Ref(const std::string& year) {
+        return getJesUncSetRefsMc(year, JetKind::AK8);
+    }
+
+    [[nodiscard]] JerUncSets getJerUncSetsMcAK4(const std::string& year) {
+        return getJerUncSetsMc(year, JetKind::AK4);
+    }
+    [[nodiscard]] JerUncSets getJerUncSetsMcAK8(const std::string& year) {
+        return getJerUncSetsMc(year, JetKind::AK8);
+    }
+
+private:
+    // ---------- helpers ----------
+    [[nodiscard]] const nlohmann::json& cfg(JetKind kind);
+    [[nodiscard]] const nlohmann::json& requireYear(const nlohmann::json& cfgFile,
+                                                    const std::string& year) const;
+    [[nodiscard]] const nlohmann::json& requireYear(const std::string& year,
+                                                    JetKind kind);
+    [[nodiscard]] static std::string requireString(const nlohmann::json& j, const char* key);
+
+    [[nodiscard]] static correction::Correction::Ref
+    safeAt(const std::shared_ptr<correction::CorrectionSet>& cs, const std::string& name);
+
+    [[nodiscard]] std::shared_ptr<correction::CorrectionSet>
+    loadCsCached(const std::string& path);
+
+private:
+    // instance-scoped configuration
+    ConfigPaths paths_;
+    std::string jerSmearPath_;
+
+    // caches (per instance)
+    std::unordered_map<std::string, nlohmann::json> cfgCache_;  // path -> json
+    std::map<std::string, std::shared_ptr<correction::CorrectionSet>> csCache_; // file -> CS
+
+    // JER smear CS (lazy)
+    std::shared_ptr<correction::CorrectionSet> jerSmearCs_;
+
+    // guarding lazy loads
+    std::mutex m_;
+
+    // --------- defaults for singleton (Cling-safe, no call_once) ----------
+    static ConfigPaths& defaults_paths_();
+    static std::string& defaults_jer_path_();
+    static bool&        instance_constructed_();
+};
 
 } // namespace JecConfigReader
+
 
