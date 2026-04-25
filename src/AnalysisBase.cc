@@ -173,7 +173,10 @@ void AnalysisBase<Base>::AddLabels(const string& dataset, const string& filetag,
   if(m_FileTag.find("SMS") != std::string::npos) DoSMS();
   if(m_FileTag.find("Data") != std::string::npos) DoData();
   m_XsecTool.SetFileTag(filetag);
-  if(DAS_filename.find("NANOv15") != std::string::npos) m_NanoV15 = true;
+  std::string DAS_filename_lower = DAS_filename;
+  for (char &c : DAS_filename_lower) { c = std::tolower(static_cast<unsigned char>(c)); }
+  m_NanoV15 = (DAS_filename_lower.find("nanov15") != std::string::npos ||
+               DAS_filename_lower.find("nanoaodv15") != std::string::npos); 
 }
 
 template <class Base>
@@ -230,7 +233,7 @@ void AnalysisBase<Base>::SetupBtagWP(){
   std::string Btag_file = "";
   Btag_file = find_clib_file("/cvmfs/cms-griddata.cern.ch/cat/metadata/BTV/", "btagging.json.gz");
   m_cset_Btag = correction::CorrectionSet::from_file(Btag_file);
-  if(m_year < 2024 && !m_NanoV15){
+  if(m_year < 2024){
     m_BtagLooseWP = m_cset_Btag->at("deepJet_wp_values")->evaluate({"L"});
     m_BtagMediumWP = m_cset_Btag->at("deepJet_wp_values")->evaluate({"M"});
     m_BtagTightWP = m_cset_Btag->at("deepJet_wp_values")->evaluate({"T"});
