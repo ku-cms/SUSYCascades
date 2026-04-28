@@ -273,9 +273,7 @@ void AnalysisBase<Base>::AddLepFolder(const string& lepfold){
     m_LepSFToolCascades.SetEra(m_IsEE ? "postEE" : "preEE");
   else if(m_year == 2023)
     m_LepSFToolCascades.SetEra(m_IsBPix ? "postBPix" : "preBPix");
-  else if(m_year == 2024)
-    m_LepSFToolCascades.SetEra("none");
-  else if(m_year == 2025)
+  else if(m_year >= 2024)
     m_LepSFToolCascades.SetEra("none");
 }
 
@@ -2377,7 +2375,7 @@ double AnalysisBase<Base>::Get_Mu_NOT_ID_nor_ISO(const ParticleList& mus, int up
 template <class Base>
 double AnalysisBase<Base>::Get_El_BLP_over_COL_fs(const ParticleList& els, int updown){
 
-    if(IsData()) return 1.;
+  if(IsData() || !m_IsFastSim) return 1.;
 
   double tot_SF = 1.0;
   int pdg = 11;
@@ -2399,7 +2397,7 @@ double AnalysisBase<Base>::Get_El_BLP_over_COL_fs(const ParticleList& els, int u
 template <class Base>
 double AnalysisBase<Base>::Get_El_ID_over_BLP_fs(const ParticleList& els, int updown){
 
-    if(IsData()) return 1.;
+  if(IsData() || !m_IsFastSim) return 1.;
 
   double tot_SF = 1.0;
   int pdg = 11;
@@ -2421,7 +2419,7 @@ double AnalysisBase<Base>::Get_El_ID_over_BLP_fs(const ParticleList& els, int up
 
 template <class Base>
 double AnalysisBase<Base>::Get_El_ISO_over_ID_fs(const ParticleList& els, int updown){
-  if(IsData()) return 1.;
+  if(IsData() || !m_IsFastSim) return 1.;
   double tot_SF = 1.0;
   int pdg = 11;
   for(int i = 0; i < (int)els.size(); i++){
@@ -2441,7 +2439,7 @@ double AnalysisBase<Base>::Get_El_ISO_over_ID_fs(const ParticleList& els, int up
 
 template <class Base>
 double AnalysisBase<Base>::Get_El_Prompt_ISOID_fs(const ParticleList& els, int updown){
-  if(IsData()) return 1.;
+  if(IsData() || !m_IsFastSim) return 1.;
   double tot_SF = 1.0;
   int pdg = 11;
   for(int i = 0; i < (int)els.size(); i++){
@@ -2461,7 +2459,7 @@ double AnalysisBase<Base>::Get_El_Prompt_ISOID_fs(const ParticleList& els, int u
 
 template <class Base>
 double AnalysisBase<Base>::Get_El_NOT_Prompt_ISOID_fs(const ParticleList& els, int updown){
-  if(IsData()) return 1.;
+  if(IsData() || !m_IsFastSim) return 1.;
   double tot_SF = 1.0;
   int pdg = 11;
   for(int i = 0; i < (int)els.size(); i++){
@@ -2481,7 +2479,7 @@ double AnalysisBase<Base>::Get_El_NOT_Prompt_ISOID_fs(const ParticleList& els, i
 
 template <class Base>
 double AnalysisBase<Base>::Get_El_NOT_ID_nor_ISO_fs(const ParticleList& els, int updown){
-  if(IsData()) return 1.;
+  if(IsData() || !m_IsFastSim) return 1.;
   double tot_SF = 1.0;
   int pdg = 11;
   for(int i = 0; i < (int)els.size(); i++){
@@ -2503,7 +2501,7 @@ double AnalysisBase<Base>::Get_El_NOT_ID_nor_ISO_fs(const ParticleList& els, int
 
 template <class Base>
 double AnalysisBase<Base>::Get_Mu_BLP_over_COL_fs(const ParticleList& mus, int updown){
-  if(IsData()) return 1.;
+  if(IsData() || !m_IsFastSim) return 1.;
   double tot_SF = 1.0;
   int pdg = 13;
   for(int i = 0; i < (int)mus.size(); i++){
@@ -2519,7 +2517,7 @@ double AnalysisBase<Base>::Get_Mu_BLP_over_COL_fs(const ParticleList& mus, int u
 
 template <class Base>
 double AnalysisBase<Base>::Get_Mu_ID_over_BLP_fs(const ParticleList& mus, int updown){
-  if(IsData()) return 1.;
+  if(IsData() || !m_IsFastSim) return 1.;
   double tot_SF = 1.0;
   int pdg = 13;
   for(int i = 0; i < (int)mus.size(); i++){
@@ -2535,7 +2533,7 @@ double AnalysisBase<Base>::Get_Mu_ID_over_BLP_fs(const ParticleList& mus, int up
 
 template <class Base>
 double AnalysisBase<Base>::Get_Mu_ISO_over_ID_fs(const ParticleList& mus, int updown){
-  if(IsData()) return 1.;
+  if(IsData() || !m_IsFastSim) return 1.;
   double tot_SF = 1.0;
   int pdg = 13;
   for(int i = 0; i < (int)mus.size(); i++){
@@ -2551,7 +2549,7 @@ double AnalysisBase<Base>::Get_Mu_ISO_over_ID_fs(const ParticleList& mus, int up
 
 template <class Base>
 double AnalysisBase<Base>::Get_Mu_Prompt_ISOID_fs(const ParticleList& mus, int updown){
-  if(IsData()) return 1.;
+  if(IsData() || !m_IsFastSim) return 1.;
   double tot_SF = 1.0;
   int pdg = 13;
   for(int i = 0; i < (int)mus.size(); i++){
@@ -2567,7 +2565,7 @@ double AnalysisBase<Base>::Get_Mu_Prompt_ISOID_fs(const ParticleList& mus, int u
 
 template <class Base>
 double AnalysisBase<Base>::Get_Mu_NOT_Prompt_ISOID_fs(const ParticleList& mus, int updown){
-  if(IsData()) return 1.;
+  if(IsData() || !m_IsFastSim) return 1.;
   double tot_SF = 1.0;
   int pdg = 13;
   for(int i = 0; i < (int)mus.size(); i++){
@@ -2583,7 +2581,7 @@ double AnalysisBase<Base>::Get_Mu_NOT_Prompt_ISOID_fs(const ParticleList& mus, i
 
 template <class Base>
 double AnalysisBase<Base>::Get_Mu_NOT_ID_nor_ISO_fs(const ParticleList& mus, int updown){
-  if(IsData()) return 1.;
+  if(IsData() || !m_IsFastSim) return 1.;
   double tot_SF = 1.0;
   int pdg = 13;
   for(int i = 0; i < (int)mus.size(); i++){
