@@ -359,10 +359,8 @@ Systematics SystematicsTool::GetTreeSystematics() const {
   
   Systematics list;
   
-  //list += "JESUncer_Full";
-  //list += "JESUncer_Reduced";
-  list += "JESUncer_Total";
-  list += "JERUncer_Total";
+  list += "JesUncertaintySetTotal";
+  list += "JerUncertaintySetTotal";
   list += "METUncer_UnClust";
   list += "METUncer_GenMET";
   // list += "MMSUncer_Total";
