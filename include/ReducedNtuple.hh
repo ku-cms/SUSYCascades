@@ -50,6 +50,84 @@ private:
   double m_BtagLFSFweight_up;
   double m_BtagLFSFweight_down;
 
+  // new LepSF here
+  double m_elBLP_over_COL_SFweight;
+  double m_elBLP_over_COL_SFweight_up;
+  double m_elBLP_over_COL_SFweight_down;
+  double m_elID_over_BLP_SFweight;
+  double m_elID_over_BLP_SFweight_up;
+  double m_elID_over_BLP_SFweight_down;
+  double m_elISO_over_ID_SFweight;
+  double m_elISO_over_ID_SFweight_up;
+  double m_elISO_over_ID_SFweight_down;
+  double m_elPrompt_ISOID_SFweight;
+  double m_elPrompt_ISOID_SFweight_up;
+  double m_elPrompt_ISOID_SFweight_down;
+  double m_elNOT_Prompt_ISOID_SFweight;
+  double m_elNOT_Prompt_ISOID_SFweight_up;
+  double m_elNOT_Prompt_ISOID_SFweight_down;
+  double m_elNOT_ID_nor_ISO_SFweight;
+  double m_elNOT_ID_nor_ISO_SFweight_up;
+  double m_elNOT_ID_nor_ISO_SFweight_down;
+
+  double m_muBLP_over_COL_SFweight;
+  double m_muBLP_over_COL_SFweight_up;
+  double m_muBLP_over_COL_SFweight_down;
+  double m_muID_over_BLP_SFweight;
+  double m_muID_over_BLP_SFweight_up;
+  double m_muID_over_BLP_SFweight_down;
+  double m_muISO_over_ID_SFweight;
+  double m_muISO_over_ID_SFweight_up;
+  double m_muISO_over_ID_SFweight_down;
+  double m_muPrompt_ISOID_SFweight;
+  double m_muPrompt_ISOID_SFweight_up;
+  double m_muPrompt_ISOID_SFweight_down;
+  double m_muNOT_Prompt_ISOID_SFweight;
+  double m_muNOT_Prompt_ISOID_SFweight_up;
+  double m_muNOT_Prompt_ISOID_SFweight_down;
+  double m_muNOT_ID_nor_ISO_SFweight;
+  double m_muNOT_ID_nor_ISO_SFweight_up;
+  double m_muNOT_ID_nor_ISO_SFweight_down;
+
+  // new LepSF FASTSIM here
+  double m_elBLP_over_COL_SF_fs_weight;
+  double m_elBLP_over_COL_SF_fs_weight_up;
+  double m_elBLP_over_COL_SF_fs_weight_down;
+  double m_elID_over_BLP_SF_fs_weight;
+  double m_elID_over_BLP_SF_fs_weight_up;
+  double m_elID_over_BLP_SF_fs_weight_down;
+  double m_elISO_over_ID_SF_fs_weight;
+  double m_elISO_over_ID_SF_fs_weight_up;
+  double m_elISO_over_ID_SF_fs_weight_down;
+  double m_elPrompt_ISOID_SF_fs_weight;
+  double m_elPrompt_ISOID_SF_fs_weight_up;
+  double m_elPrompt_ISOID_SF_fs_weight_down;
+  double m_elNOT_Prompt_ISOID_SF_fs_weight;
+  double m_elNOT_Prompt_ISOID_SF_fs_weight_up;
+  double m_elNOT_Prompt_ISOID_SF_fs_weight_down;
+  double m_elNOT_ID_nor_ISO_SF_fs_weight;
+  double m_elNOT_ID_nor_ISO_SF_fs_weight_up;
+  double m_elNOT_ID_nor_ISO_SF_fs_weight_down;
+
+  double m_muBLP_over_COL_SF_fs_weight;
+  double m_muBLP_over_COL_SF_fs_weight_up;
+  double m_muBLP_over_COL_SF_fs_weight_down;
+  double m_muID_over_BLP_SF_fs_weight;
+  double m_muID_over_BLP_SF_fs_weight_up;
+  double m_muID_over_BLP_SF_fs_weight_down;
+  double m_muISO_over_ID_SF_fs_weight;
+  double m_muISO_over_ID_SF_fs_weight_up;
+  double m_muISO_over_ID_SF_fs_weight_down;
+  double m_muPrompt_ISOID_SF_fs_weight;
+  double m_muPrompt_ISOID_SF_fs_weight_up;
+  double m_muPrompt_ISOID_SF_fs_weight_down;
+  double m_muNOT_Prompt_ISOID_SF_fs_weight;
+  double m_muNOT_Prompt_ISOID_SF_fs_weight_up;
+  double m_muNOT_Prompt_ISOID_SF_fs_weight_down;
+  double m_muNOT_ID_nor_ISO_SF_fs_weight;
+  double m_muNOT_ID_nor_ISO_SF_fs_weight_up;
+  double m_muNOT_ID_nor_ISO_SF_fs_weight_down;
+
   double m_elIDSFweight;
   double m_elIDSFweight_up;
   double m_elIDSFweight_down;

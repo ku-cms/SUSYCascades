@@ -276,9 +276,6 @@ double LepSFTool::getMCVLIdError(double pt, double eta, int pdg, int year){
   if(pdg == 0) pdg = 11;
   if(abs(pdg) == 1) pdg = 13;
 
-  if(pdg == 0) pdg = 11;
-  if(abs(pdg) == 1) pdg = 13;
-
   if(abs(pdg) == 11 || abs(pdg) == 0){//electron
     return vl_Zel_MC->getError(pt,eta,year);
   }
@@ -290,9 +287,6 @@ double LepSFTool::getMCVLIdError(double pt, double eta, int pdg, int year){
 }
 
 double LepSFTool::getDataVLIdError(double pt, double eta, int pdg, int year){
-  if(pdg == 0) pdg = 11;
-  if(abs(pdg) == 1) pdg = 13;
-
   if(pdg == 0) pdg = 11;
   if(abs(pdg) == 1) pdg = 13;
 
