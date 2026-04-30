@@ -153,7 +153,7 @@ private:
   double m_muVLSFweight_up;
   double m_muVLSFweight_down;
   
-  double m_MetTrigSFweight;
+  double m_MetTrigSFweight = -999;
   double m_MetTrigSFweight_up;
   double m_MetTrigSFweight_down;
   int    m_MetTrigSFCurveIndex;

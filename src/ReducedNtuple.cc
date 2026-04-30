@@ -2144,6 +2144,9 @@ void ReducedNtuple<Base>::FillOutputTree(TTree* tree, const Systematic& sys, boo
 
     } // End JET
   } // End of RJR trees analysis
+  
+  m_MET     = ETMiss.Pt();
+  m_MET_phi = ETMiss.Phi();
 
   if(!AnalysisBase<Base>::IsData()){
     m_weight = AnalysisBase<Base>::GetEventWeight();
@@ -2178,6 +2181,11 @@ void ReducedNtuple<Base>::FillOutputTree(TTree* tree, const Systematic& sys, boo
     m_BtagLFSFweight = AnalysisBase<Base>::GetBtagSFWeight(Jets, false, 0, kMedium);
     m_BtagLFSFweight_up = AnalysisBase<Base>::GetBtagSFWeight(Jets, false, 1, kMedium);
     m_BtagLFSFweight_down = AnalysisBase<Base>::GetBtagSFWeight(Jets, false, -1, kMedium);
+
+    m_MetTrigSFweight = AnalysisBase<Base>::GetMETTriggerSFWeight(m_MET, m_HT_eta5, m_Nele+m_Nlele, m_Nmu, 0);
+    m_MetTrigSFweight_up = AnalysisBase<Base>::GetMETTriggerSFWeight(m_MET, m_HT_eta5, m_Nele+m_Nlele, m_Nmu, 1);
+    m_MetTrigSFweight_down = AnalysisBase<Base>::GetMETTriggerSFWeight(m_MET, m_HT_eta5, m_Nele+m_Nlele, m_Nmu, -1);
+    m_MetTrigSFCurveIndex = AnalysisBase<Base>::GetMETTriggerSFCurve(m_HT_eta5, m_Nele+m_Nlele, m_Nmu);
 
     // new LepSF here
     m_elBLP_over_COL_SFweight      = AnalysisBase<Base>::Get_El_BLP_over_COL(Electrons+LowPtElectrons, 0);
@@ -2257,7 +2265,7 @@ void ReducedNtuple<Base>::FillOutputTree(TTree* tree, const Systematic& sys, boo
     m_muNOT_ID_nor_ISO_SF_fs_weight_up   = AnalysisBase<Base>::Get_Mu_NOT_ID_nor_ISO_fs(Muons, 1);
     m_muNOT_ID_nor_ISO_SF_fs_weight_down = AnalysisBase<Base>::Get_Mu_NOT_ID_nor_ISO_fs(Muons, -1);
     
-m_elIDSFweight = AnalysisBase<Base>::GetElIDSFWeight(Electrons, 0);
+    m_elIDSFweight = AnalysisBase<Base>::GetElIDSFWeight(Electrons, 0);
     m_elIDSFweight_up = AnalysisBase<Base>::GetElIDSFWeight(Electrons, 1);
     m_elIDSFweight_down = AnalysisBase<Base>::GetElIDSFWeight(Electrons, -1);
     m_elISOSFweight = AnalysisBase<Base>::GetElISOSFWeight(Electrons, 0);
@@ -2282,11 +2290,6 @@ m_elIDSFweight = AnalysisBase<Base>::GetElIDSFWeight(Electrons, 0);
     m_muVLSFweight = AnalysisBase<Base>::GetMuVLIDSFWeight(Muons, 0);
     m_muVLSFweight_up = AnalysisBase<Base>::GetMuVLIDSFWeight(Muons, 1);
     m_muVLSFweight_down = AnalysisBase<Base>::GetMuVLIDSFWeight(Muons, -1);
-
-    m_MetTrigSFweight = AnalysisBase<Base>::GetMETTriggerSFWeight(m_MET, m_HT_eta5, m_Nele, m_Nmu, 0);
-    m_MetTrigSFweight_up = AnalysisBase<Base>::GetMETTriggerSFWeight(m_MET, m_HT_eta5, m_Nele, m_Nmu, 1);
-    m_MetTrigSFweight_down = AnalysisBase<Base>::GetMETTriggerSFWeight(m_MET, m_HT_eta5, m_Nele, m_Nmu, -1);
-    m_MetTrigSFCurveIndex = AnalysisBase<Base>::GetMETTriggerSFCurve(m_HT_eta5, m_Nele, m_Nmu);
    
     m_NPU = AnalysisBase<Base>::GetNPUtrue();
 
@@ -2388,9 +2391,6 @@ m_elIDSFweight = AnalysisBase<Base>::GetElIDSFWeight(Electrons, 0);
   m_EMutrigger = AnalysisBase<Base>::GetEMutrigger(); 
   m_EMuMutrigger = AnalysisBase<Base>::GetEMuMutrigger(); 
   m_EMuEtrigger = AnalysisBase<Base>::GetEMuEtrigger(); 
-  
-  m_MET     = ETMiss.Pt();
-  m_MET_phi = ETMiss.Phi();
 
   // Fill Jets
   m_PT_jet.clear();
@@ -2605,6 +2605,7 @@ m_elIDSFweight = AnalysisBase<Base>::GetElIDSFWeight(Electrons, 0);
     m_LSPParents = AnalysisBase<Base>::GetLSPParents();
   }
   
+if(m_MetTrigSFweight == 1) std::cout << "Filling tree with SF: " << m_MetTrigSFweight << " in event " << m_eventnum << std::endl;
   // Fill output tree
   if(tree)
     tree->Fill();

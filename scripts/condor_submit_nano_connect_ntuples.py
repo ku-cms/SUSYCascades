@@ -500,8 +500,12 @@ if __name__ == "__main__":
         # copy MET trigger files
         if VERBOSE:
             print("making Trigger file", flush=True)
-        os.system("cp -r csv/METTrigger "+config+".")
-        METFILE = "./config/METTrigger/Parameters.csv"
+        if "102X" in listname:
+            os.system("cp -r csv/METTrigger "+config+".")
+            METFILE = "./config/METTrigger/Parameters.csv"
+        else:
+            os.system("cp -r csv/METTrigger "+config+".")
+            METFILE = "./config/METTrigger/Fit_Parameters.json"
 
         # copy Prefire files
         if VERBOSE:

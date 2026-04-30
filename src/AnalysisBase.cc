@@ -591,7 +591,10 @@ void AnalysisBase<Base>::AddJMEFolder(const std::string& jmefold) {
 
 template <class Base>
 void AnalysisBase<Base>::AddMETTriggerFile(const string& csvfile){
-  m_METTriggerTool.BuildMap(csvfile);
+  if(m_year < 2019 && !m_IsUL)
+    m_METTriggerTool.BuildMap(csvfile);
+  else
+    m_METTriggerTool.BuildMapJSON(csvfile);
 }
 
 template <class Base>
@@ -3108,12 +3111,6 @@ double AnalysisBase<SUSYNANOBase>::GetElVLIDSFWeight(const ParticleList& els, in
 
   bool FastSim = IsFastSim();
   
-  int m_year = 2016;
-  if(m_FileTag.find("17") != std::string::npos)
-    m_year = 2017;
-  if(m_FileTag.find("18") != std::string::npos)
-    m_year = 2018;
-
   int Nlep = els.size();
   int pdg = 11;
   double EFFMC, EFFData, SF;
@@ -4967,26 +4964,13 @@ double AnalysisBase<NANOULBase>::GetMuVLIDSFWeight(const ParticleList& mus, int 
 
 template <>
 double AnalysisBase<NANOULBase>::GetMETTriggerSFWeight(double MET, double HT, int Nele, int Nmu, int updown){
-  if(IsData())
-    return 1.;
-
-  if(IsFastSim()){
-    return m_METTriggerTool.Get_EFF(MET, HT, m_year,
-				    (Nele > 0), (Nmu > 0),
-				    false, updown)*
-      m_METTriggerTool.Get_SF(MET, HT, m_year,
-			      (Nele > 0), (Nmu > 0),
-			      false, updown);
-  } else {
-    return m_METTriggerTool.Get_SF(MET, HT, m_year,
-				   (Nele > 0), (Nmu > 0),
-				   false, updown);
-  }
-}
-
-template <>
-int AnalysisBase<NANOULBase>::GetMETTriggerSFCurve(double HT, int Nele, int Nmu){
-  return m_METTriggerTool.Get_Curve_Index(HT, m_year, (Nele > 0), (Nmu > 0), IsData());
+  if(IsData()) return 1.;
+  if(Nele > 2) Nele = 2;
+  if(IsFastSim())
+    return m_METTriggerTool.Get_EFF_JSON(MET, m_year, Nele, updown)*
+      m_METTriggerTool.Get_SF_JSON(MET, m_year, Nele, updown);
+  else
+    return m_METTriggerTool.Get_SF_JSON(MET, m_year, Nele, updown);
 }
 
 template <>
@@ -6175,6 +6159,17 @@ double AnalysisBase<NANORun3>::GetMuVLIDSFWeight(const ParticleList& mus, int up
     return 1.;
 
   return probDATA/probMC;
+}
+
+template <>
+double AnalysisBase<NANORun3>::GetMETTriggerSFWeight(double MET, double HT, int Nele, int Nmu, int updown){
+  if(IsData()) return 1.;
+  if(Nele > 2) Nele = 2;
+  if(IsFastSim())
+    return m_METTriggerTool.Get_EFF_JSON(MET, m_year, Nele, updown)*
+      m_METTriggerTool.Get_SF_JSON(MET, m_year, Nele, updown);
+  else
+    return m_METTriggerTool.Get_SF_JSON(MET, m_year, Nele, updown);
 }
 
 template <>
