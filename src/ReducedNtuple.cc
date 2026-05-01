@@ -350,30 +350,33 @@ TTree* ReducedNtuple<Base>::InitOutputTree(const string& sample, bool do_slim, b
   tree->Branch("muNOT_ID_nor_ISO_SF_fs_weight_up",   &m_muNOT_ID_nor_ISO_SF_fs_weight_up);
   tree->Branch("muNOT_ID_nor_ISO_SF_fs_weight_down", &m_muNOT_ID_nor_ISO_SF_fs_weight_down);
 
-  tree->Branch("elIDSFweight", &m_elIDSFweight);
-  tree->Branch("elIDSFweight_up", &m_elIDSFweight_up);
-  tree->Branch("elIDSFweight_down", &m_elIDSFweight_down);
-  tree->Branch("elISOSFweight", &m_elISOSFweight);
-  tree->Branch("elISOSFweight_up", &m_elISOSFweight_up);
-  tree->Branch("elISOSFweight_down", &m_elISOSFweight_down);
-  tree->Branch("elSIPSFweight", &m_elSIPSFweight);
-  tree->Branch("elSIPSFweight_up", &m_elSIPSFweight_up);
-  tree->Branch("elSIPSFweight_down", &m_elSIPSFweight_down);
-  tree->Branch("elVLSFweight", &m_elVLSFweight);
-  tree->Branch("elVLSFweight_up", &m_elVLSFweight_up);
-  tree->Branch("elVLSFweight_down", &m_elVLSFweight_down);
-  tree->Branch("muIDSFweight", &m_muIDSFweight);
-  tree->Branch("muIDSFweight_up", &m_muIDSFweight_up);
-  tree->Branch("muIDSFweight_down", &m_muIDSFweight_down);
-  tree->Branch("muISOSFweight", &m_muISOSFweight);
-  tree->Branch("muISOSFweight_up", &m_muISOSFweight_up);
-  tree->Branch("muISOSFweight_down", &m_muISOSFweight_down);
-  tree->Branch("muSIPSFweight", &m_muSIPSFweight);
-  tree->Branch("muSIPSFweight_up", &m_muSIPSFweight_up);
-  tree->Branch("muSIPSFweight_down", &m_muSIPSFweight_down);
-  tree->Branch("muVLSFweight", &m_muVLSFweight);
-  tree->Branch("muVLSFweight_up", &m_muVLSFweight_up);
-  tree->Branch("muVLSFweight_down", &m_muVLSFweight_down);
+  // old T&P SFs
+  if(!do_slim){
+    tree->Branch("elIDSFweight", &m_elIDSFweight);
+    tree->Branch("elIDSFweight_up", &m_elIDSFweight_up);
+    tree->Branch("elIDSFweight_down", &m_elIDSFweight_down);
+    tree->Branch("elISOSFweight", &m_elISOSFweight);
+    tree->Branch("elISOSFweight_up", &m_elISOSFweight_up);
+    tree->Branch("elISOSFweight_down", &m_elISOSFweight_down);
+    tree->Branch("elSIPSFweight", &m_elSIPSFweight);
+    tree->Branch("elSIPSFweight_up", &m_elSIPSFweight_up);
+    tree->Branch("elSIPSFweight_down", &m_elSIPSFweight_down);
+    tree->Branch("elVLSFweight", &m_elVLSFweight);
+    tree->Branch("elVLSFweight_up", &m_elVLSFweight_up);
+    tree->Branch("elVLSFweight_down", &m_elVLSFweight_down);
+    tree->Branch("muIDSFweight", &m_muIDSFweight);
+    tree->Branch("muIDSFweight_up", &m_muIDSFweight_up);
+    tree->Branch("muIDSFweight_down", &m_muIDSFweight_down);
+    tree->Branch("muISOSFweight", &m_muISOSFweight);
+    tree->Branch("muISOSFweight_up", &m_muISOSFweight_up);
+    tree->Branch("muISOSFweight_down", &m_muISOSFweight_down);
+    tree->Branch("muSIPSFweight", &m_muSIPSFweight);
+    tree->Branch("muSIPSFweight_up", &m_muSIPSFweight_up);
+    tree->Branch("muSIPSFweight_down", &m_muSIPSFweight_down);
+    tree->Branch("muVLSFweight", &m_muVLSFweight);
+    tree->Branch("muVLSFweight_up", &m_muVLSFweight_up);
+    tree->Branch("muVLSFweight_down", &m_muVLSFweight_down);
+  }
    
   tree->Branch("MetTrigSFweight", &m_MetTrigSFweight);
   tree->Branch("MetTrigSFweight_up", &m_MetTrigSFweight_up);
@@ -396,9 +399,9 @@ TTree* ReducedNtuple<Base>::InitOutputTree(const string& sample, bool do_slim, b
   if(!do_slim){
     tree->Branch("EventFlag_FailJetID", &m_EventFlag_FailJetID);
     tree->Branch("EventFlag_JetInHEM", &m_EventFlag_JetInHEM);
-    tree->Branch("EventFlag_JetInHEM_Pt20", &m_EventFlag_JetInHEM_Pt20);
     tree->Branch("EventFlag_JetInHEM_Pt20_JetID", &m_EventFlag_JetInHEM_Pt20_JetID);
   }
+  tree->Branch("EventFlag_JetInHEM_Pt20", &m_EventFlag_JetInHEM_Pt20);
   tree->Branch("HEM_Veto", &m_HEM_Veto);
 
   tree->Branch("METtrigger", &m_METtrigger);
@@ -469,7 +472,7 @@ TTree* ReducedNtuple<Base>::InitOutputTree(const string& sample, bool do_slim, b
   tree->Branch("Njet", &m_Njet);
   tree->Branch("Nbjet", &m_Nbjet);
 
-  if(!do_slim && !tree_is_sys) {
+  if(!do_slim || !tree_is_sys) {
     tree->Branch("PT_jet",  &m_PT_jet);
     tree->Branch("Eta_jet", &m_Eta_jet);
     tree->Branch("Phi_jet", &m_Phi_jet);
@@ -526,12 +529,14 @@ TTree* ReducedNtuple<Base>::InitOutputTree(const string& sample, bool do_slim, b
   // Kinematics
   tree->Branch("PTCM", &m_PTCM);
   tree->Branch("PzCM", &m_PzCM);
-  tree->Branch("cosCM", &m_cosCM);
-  tree->Branch("dphiCM", &m_dphiCM);
   tree->Branch("dphiCMI", &m_dphiCMI);
   tree->Branch("dphiMET_V", &m_dphiMET_V);
 
   if(!do_slim){
+    tree->Branch("cosCM", &m_cosCM);
+    tree->Branch("dphiCM", &m_dphiCM);
+    tree->Branch("cosCM_LEP", &m_cosCM_LEP);
+    tree->Branch("dphiCM_LEP", &m_dphiCM_LEP);
     tree->Branch("CosDecayAngle_Pa", &m_CosDecayAngle_Pa);
     tree->Branch("CosDecayAngle_Pb", &m_CosDecayAngle_Pb);
     tree->Branch("CosDecayAngle_Va", &m_CosDecayAngle_Va);
@@ -541,8 +546,6 @@ TTree* ReducedNtuple<Base>::InitOutputTree(const string& sample, bool do_slim, b
 
   tree->Branch("PTCM_LEP", &m_PTCM_LEP);
   tree->Branch("PzCM_LEP", &m_PzCM_LEP);
-  tree->Branch("cosCM_LEP", &m_cosCM_LEP);
-  tree->Branch("dphiCM_LEP", &m_dphiCM_LEP);
   tree->Branch("dphiCMI_LEP", &m_dphiCMI_LEP);
   tree->Branch("dphiMET_V_LEP", &m_dphiMET_V_LEP);
 
@@ -598,38 +601,40 @@ TTree* ReducedNtuple<Base>::InitOutputTree(const string& sample, bool do_slim, b
     tree->Branch("CosDecayAngle_S_LEP", &m_CosDecayAngle_S_LEP);
     tree->Branch("RZPara_LEP", &m_RZPara_LEP);
     tree->Branch("MINV_LEP", &m_MINV_LEP);
+    tree->Branch("MSV_LEP", &m_MSV_LEP);
+    tree->Branch("MQ_LEP", &m_MQ_LEP);
+    tree->Branch("gamma_LEP", &m_gamma_LEP);
+    tree->Branch("PX2_BoostT_LEP", &m_PX2_BoostT_LEP);
+    tree->Branch("MX2a_BoostT_LEP", &m_MX2a_BoostT_LEP);
+    tree->Branch("MX2b_BoostT_LEP", &m_MX2b_BoostT_LEP);
+    tree->Branch("RatioPerpA", &m_RatioPerpA);
+    tree->Branch("RatioPerpB", &m_RatioPerpB);
+    tree->Branch("PX20_BoostT_LEP", &m_PX20_BoostT_LEP);
+    tree->Branch("MX2a0_BoostT_LEP", &m_MX2a0_BoostT_LEP);
+    tree->Branch("MX2b0_BoostT_LEP", &m_MX2b0_BoostT_LEP);
+    tree->Branch("RatioPerp0A", &m_RatioPerp0A);
+    tree->Branch("RatioPerp0B", &m_RatioPerp0B);
   }
 
   tree->Branch("MT2", &m_MT2);
   tree->Branch("RISR_LEP", &m_RISR_LEP);
   tree->Branch("PTISR_LEP", &m_PTISR_LEP);
-  tree->Branch("MS_LEP", &m_MS_LEP);
-  tree->Branch("MSV_LEP", &m_MSV_LEP);
-  tree->Branch("MQ_LEP", &m_MQ_LEP);
-  tree->Branch("gamma_LEP", &m_gamma_LEP);
-  tree->Branch("MPa_LEP", &m_MPa_LEP);
-  tree->Branch("MPb_LEP", &m_MPb_LEP);
-  tree->Branch("MVa_LEP", &m_MVa_LEP);
-  tree->Branch("MVb_LEP", &m_MVb_LEP);
-  tree->Branch("MaRatio_LEP", &m_MaRatio_LEP);
-  tree->Branch("MbRatio_LEP", &m_MbRatio_LEP);
   tree->Branch("Mperp_LEP", &m_Mperp_LEP);
   tree->Branch("gammaT_LEP", &m_gammaT_LEP);
-  tree->Branch("MQV_LEP", &m_MQV_LEP);
-  tree->Branch("gammaV_LEP", &m_gammaV_LEP);
+  tree->Branch("MS_LEP", &m_MS_LEP);
 
-  tree->Branch("PX2_BoostT_LEP", &m_PX2_BoostT_LEP);
-  tree->Branch("MX2a_BoostT_LEP", &m_MX2a_BoostT_LEP);
-  tree->Branch("MX2b_BoostT_LEP", &m_MX2b_BoostT_LEP);
-  tree->Branch("RatioPerpA", &m_RatioPerpA);
-  tree->Branch("RatioPerpB", &m_RatioPerpB);
-  tree->Branch("PX20_BoostT_LEP", &m_PX20_BoostT_LEP);
-  tree->Branch("MX2a0_BoostT_LEP", &m_MX2a0_BoostT_LEP);
-  tree->Branch("MX2b0_BoostT_LEP", &m_MX2b0_BoostT_LEP);
-  tree->Branch("RatioPerp0A", &m_RatioPerp0A);
-  tree->Branch("RatioPerp0B", &m_RatioPerp0B);
-  tree->Branch("Mperp0_LEP", &m_Mperp0_LEP);
-  tree->Branch("gammaT0_LEP", &m_gammaT0_LEP);
+  if(!do_slim || !tree_is_sys) {
+    tree->Branch("MPa_LEP", &m_MPa_LEP);
+    tree->Branch("MPb_LEP", &m_MPb_LEP);
+    tree->Branch("MVa_LEP", &m_MVa_LEP);
+    tree->Branch("MVb_LEP", &m_MVb_LEP);
+    tree->Branch("MaRatio_LEP", &m_MaRatio_LEP);
+    tree->Branch("MbRatio_LEP", &m_MbRatio_LEP);
+    tree->Branch("MQV_LEP", &m_MQV_LEP);
+    tree->Branch("gammaV_LEP", &m_gammaV_LEP);
+    tree->Branch("Mperp0_LEP", &m_Mperp0_LEP);
+    tree->Branch("gammaT0_LEP", &m_gammaT0_LEP);
+  }
 
   if(m_aTrees >= 3){
     tree->Branch("Mperp_JET_ISR", &m_Mperp_JET_ISR);
@@ -784,12 +789,13 @@ TTree* ReducedNtuple<Base>::InitOutputTree(const string& sample, bool do_slim, b
     tree->Branch("RISRT", &m_RISRT);
     tree->Branch("MISR", &m_MISR);
   }
-
-  if(!AnalysisBase<Base>::IsData()){
+  if(!AnalysisBase<Base>::IsData()) {
     tree->Branch("NPU", &m_NPU);
     tree->Branch("genMET", &m_genMET);
     tree->Branch("genMET_phi", &m_genMET_phi);
-    
+  }
+
+  if(!AnalysisBase<Base>::IsData() && (!do_slim || !tree_is_sys)) {
     tree->Branch("genNele", &m_genNele);
     tree->Branch("genNmu", &m_genNmu);
     
