@@ -4179,7 +4179,7 @@ ParticleList AnalysisBase<SUSYNANOBase>::GetTaus(){
     tau.SetDxy(Tau_dxy[i]);
     tau.SetDz(Tau_dz[i]);
     tau.SetDecayMode(Tau_decayMode[i]); //from NanoRun3.hh
-    // tau.SetDecayModePNet(Tau_decayModePNet[i])
+    tau.SetDecayModePNet(0); //Does not exist in SUSYNanoBase
     // 'decayModePNet'
     //use new setters and getters
     tau.Set_dt_VSe_2p1_tau(Tau_idDeepTau2017v2p1VSe[i]);
@@ -5466,9 +5466,8 @@ ParticleList AnalysisBase<NANOULBase>::GetTaus(){
     tau.SetCharge((Tau_charge[i] < 0. ? -1 : 1));	
     tau.SetDxy(Tau_dxy[i]);
     tau.SetDz(Tau_dz[i]);
-    tau.SetDecayMode(Tau_decayMode[i]); //from NanoRun3.hh
-    // tau.SetDecayModePNet(Tau_decayModePNet[i])
-    // 'decayModePNet'
+    tau.SetDecayMode(Tau_decayMode[i]);
+    tau.SetDecayModePNet(0);
     //use new setters and getters
     tau.Set_dt_VSe_2p1_tau(Tau_idDeepTau2017v2p1VSe[i]);
     tau.Set_dt_VSjet_2p1_tau(Tau_idDeepTau2017v2p1VSjet[i]);
@@ -6742,6 +6741,7 @@ ParticleList AnalysisBase<NANORun3>::GetTaus(){
     tau.SetDxy(Tau_dxy[i]);
     tau.SetDz(Tau_dz[i]);
     tau.SetDecayMode(Tau_decayMode[i]);
+    tau.SetDecayModePNet(Tau_decayModePNet[i]);
     tau.Set_dt_VSe_2p1_tau(Tau_idDeepTau2017v2p1VSe[i]);
     tau.Set_dt_VSjet_2p1_tau(Tau_idDeepTau2017v2p1VSjet[i]);
     tau.Set_dt_VSmu_2p1_tau(Tau_idDeepTau2017v2p1VSmu[i]);

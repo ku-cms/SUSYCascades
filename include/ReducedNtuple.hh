@@ -279,6 +279,7 @@ private:
   vector<double> m_dxy_tau;
   vector<double> m_dz_tau;
   vector<int>    m_decayMode_tau;
+  vector<int>    m_decayModePNet_tau;
   vector<int>    m_Charge_tau;
   vector<int>    m_dt_VSe_2p1_tau;
   vector<int>    m_dt_VSjet_2p1_tau;

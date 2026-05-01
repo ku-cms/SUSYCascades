@@ -2542,6 +2542,7 @@ for(int r = 0; r < m_Ntau; r++){
   m_dxy_tau.push_back(Taus[r].Dxy());
   m_dz_tau.push_back(Taus[r].Dz());
   m_decayMode_tau.push_back(Taus[r].DecayMode());
+  m_decayModePNet_tau.push_back(Taus[r].DecayModePNet());
   m_dt_VSe_2p1_tau.push_back(Taus[r].dt_VSe_2p1_tau());
   m_dt_VSjet_2p1_tau.push_back(Taus[r].dt_VSjet_2p1_tau());
   m_dt_VSmu_2p1_tau.push_back(Taus[r].dt_VSmu_2p1_tau());
