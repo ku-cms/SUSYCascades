@@ -1039,6 +1039,11 @@ ParticleList AnalysisBase<Base>::GetMuons(){
 }
 
 template <class Base>
+ParticleList AnalysisBase<Base>::GetTaus(){
+  return ParticleList();
+}
+
+template <class Base>
 void AnalysisBase<Base>::MomTensorCalc(vector<TLorentzVector>& input, vector<double>& eigenvalues, double power, bool threeD){
   eigenvalues.clear();
   int N = input.size();
@@ -4156,61 +4161,36 @@ ParticleList AnalysisBase<SUSYNANOBase>::GetMuons(){
   }
   return list;
 
-// end test
-/*
+}
 
-
+template <>
+ParticleList AnalysisBase<SUSYNANOBase>::GetTaus(){
   ParticleList list;
 
-  int N = nMuon;
+  int N = nTau;
   for(int i = 0; i < N; i++){
     // baseline lepton definition
-    if(Muon_pt[i] < 3. || fabs(Muon_eta[i]) > 2.4)
-      continue;
-    if(fabs(Muon_dxy[i]) >= 0.05 || fabs(Muon_dz[i]) >= 0.1 || Muon_sip3d[i] >= 8.)
-      continue;
-    if(Muon_pfRelIso03_all[i]*Muon_pt[i] >= 20. + 300./Muon_pt[i])
-      continue;
     
-    Particle lep;
-    lep.SetPtEtaPhiM(Muon_pt[i], Muon_eta[i],
-		     Muon_phi[i], std::max(float(0.),Muon_mass[i]));
-    lep.SetPDGID( (Muon_charge[i] < 0. ? 13 : -13) );
-    lep.SetCharge( (Muon_charge[i] < 0. ? -1 : 1) );	
-    lep.SetDxy(Muon_dxy[i]);
-    lep.SetDxyErr(Muon_dxyErr[i]);
-    lep.SetDz(Muon_dz[i]);
-    lep.SetDzErr(Muon_dzErr[i]);
-    lep.SetIP3D(Muon_ip3d[i]);
-    lep.SetSIP3D(Muon_sip3d[i]);
-    lep.SetIsLowPt(false);
-    lep.SetTightCharge(Muon_tightCharge[i]);
-
-    lep.SetRelIso(Muon_pfRelIso03_all[i]);
-    lep.SetMiniIso(Muon_miniPFRelIso_all[i]);
-
-    // FO baseline criteria
-    lep.SetParticleID(kLoose);
-
-    if(Muon_tightId[i])
-      lep.SetParticleID(kTight);
-    else if(lep.Pt() < 0.){
-      if(Muon_softId[i])
-        lep.SetParticleID(kMedium);
-    } else {
-      if(Muon_mediumId[i])
-        lep.SetParticleID(kMedium);
-    }
-    if(lep.ParticleID() < kMedium || lep.MiniIso()*lep.Pt() >= 4. || lep.RelIso()*lep.Pt() >= 4.)
-            lep.SetLepQual(kBronze);
-          else if(lep.SIP3D() > 2.)
-            lep.SetLepQual(kSilver);
-          else
-            lep.SetLepQual(kGold);
-    list.push_back(lep);
+    Particle tau;
+    tau.SetPtEtaPhiM(Tau_pt[i], Tau_eta[i],
+		     Tau_phi[i], std::max(float(0.),Tau_mass[i]));
+    // tau.SetPDGID( (Tau_charge[i] < 0. ? 13 : -13) );
+    tau.SetCharge((Tau_charge[i] < 0. ? -1 : 1));	
+    tau.SetDxy(Tau_dxy[i]);
+    tau.SetDz(Tau_dz[i]);
+    tau.SetDecayMode(Tau_decayMode[i]); //from NanoRun3.hh
+    // tau.SetDecayModePNet(Tau_decayModePNet[i])
+    // 'decayModePNet'
+    //use new setters and getters
+    tau.Set_dt_VSe_2p1_tau(Tau_idDeepTau2017v2p1VSe[i]);
+    tau.Set_dt_VSjet_2p1_tau(Tau_idDeepTau2017v2p1VSjet[i]);
+    tau.Set_dt_VSmu_2p1_tau(Tau_idDeepTau2017v2p1VSmu[i]);
+    tau.Set_dt_VSe_2p5_tau(0);
+    tau.Set_dt_VSjet_2p5_tau(0);
+    tau.Set_dt_VSmu_2p5_tau(0);
+    list.push_back(tau);
   }
   return list;
-*/
 }
 
 /////////////////////////////////////////////////
@@ -5472,6 +5452,35 @@ ParticleList AnalysisBase<NANOULBase>::GetMuons(){
   return list;
 }
 
+template <>
+ParticleList AnalysisBase<NANOULBase>::GetTaus(){
+  ParticleList list;
+
+  int N = nTau;
+  for(int i = 0; i < N; i++){
+    
+    Particle tau;
+    tau.SetPtEtaPhiM(Tau_pt[i], Tau_eta[i],
+		     Tau_phi[i], std::max(float(0.),Tau_mass[i]));
+    // tau.SetPDGID( (Tau_charge[i] < 0. ? 13 : -13) );
+    tau.SetCharge((Tau_charge[i] < 0. ? -1 : 1));	
+    tau.SetDxy(Tau_dxy[i]);
+    tau.SetDz(Tau_dz[i]);
+    tau.SetDecayMode(Tau_decayMode[i]); //from NanoRun3.hh
+    // tau.SetDecayModePNet(Tau_decayModePNet[i])
+    // 'decayModePNet'
+    //use new setters and getters
+    tau.Set_dt_VSe_2p1_tau(Tau_idDeepTau2017v2p1VSe[i]);
+    tau.Set_dt_VSjet_2p1_tau(Tau_idDeepTau2017v2p1VSjet[i]);
+    tau.Set_dt_VSmu_2p1_tau(Tau_idDeepTau2017v2p1VSmu[i]);
+    tau.Set_dt_VSe_2p5_tau(0);
+    tau.Set_dt_VSjet_2p5_tau(0);
+    tau.Set_dt_VSmu_2p5_tau(0);
+    list.push_back(tau);
+  }
+  return list;
+}
+
 /////////////////////////////////////////////////
 // End NANOULBase specific methods
 /////////////////////////////////////////////////
@@ -6716,6 +6725,30 @@ ParticleList AnalysisBase<NANORun3>::GetMuons(){
     else
       lep.SetLepQual(kGold);
     list.push_back(lep);
+  }
+  return list;
+}
+
+template <>
+ParticleList AnalysisBase<NANORun3>::GetTaus(){
+  ParticleList list;
+  int N = nTau;
+  for(int i = 0; i < N; i++){
+    Particle tau;
+    tau.SetPtEtaPhiM(Tau_pt[i], Tau_eta[i], Tau_phi[i],
+                     std::max(float(0.), Tau_mass[i]));
+    tau.SetPDGID( (Tau_charge[i] < 0 ? 15 : -15) );
+    tau.SetCharge( (Tau_charge[i] < 0 ? -1 : 1) );
+    tau.SetDxy(Tau_dxy[i]);
+    tau.SetDz(Tau_dz[i]);
+    tau.SetDecayMode(Tau_decayMode[i]);
+    tau.Set_dt_VSe_2p1_tau(Tau_idDeepTau2017v2p1VSe[i]);
+    tau.Set_dt_VSjet_2p1_tau(Tau_idDeepTau2017v2p1VSjet[i]);
+    tau.Set_dt_VSmu_2p1_tau(Tau_idDeepTau2017v2p1VSmu[i]);
+    tau.Set_dt_VSe_2p5_tau(Tau_idDeepTau2018v2p5VSe[i]);
+    tau.Set_dt_VSjet_2p5_tau(Tau_idDeepTau2018v2p5VSjet[i]);
+    tau.Set_dt_VSmu_2p5_tau(Tau_idDeepTau2018v2p5VSmu[i]);
+    list.push_back(tau);
   }
   return list;
 }

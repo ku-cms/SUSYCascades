@@ -139,6 +139,7 @@ public:
   virtual ParticleList GetElectrons();
   virtual ParticleList GetLowPtElectrons();
   virtual ParticleList GetMuons();
+  virtual ParticleList GetTaus();
 
   virtual TVector3 GetAltMET();
   

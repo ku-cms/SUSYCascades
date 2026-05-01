@@ -16,6 +16,14 @@ Particle::Particle() : TLorentzVector() {
   m_DzErr = 0.;
   m_IP3D = 0.;
   m_SIP3D = 0.;
+  m_dt_VSe_2p1_tau = 0;
+  m_dt_VSjet_2p1_tau = 0;
+  m_dt_VSmu_2p1_tau = 0;
+  m_dt_VSe_2p5_tau = 0;
+  m_dt_VSjet_2p5_tau = 0;
+  m_dt_VSmu_2p5_tau = 0;
+  m_DecayMode = 0;
+  m_DecayModePNet = 0;
 
   m_D3d = 0.;
   m_D3dSig = 0.;
@@ -157,6 +165,46 @@ double Particle::SIP3D() const {
   return m_SIP3D;
 }
 
+int Particle::dt_VSe_2p1_tau() const {
+  return m_dt_VSe_2p1_tau;
+}
+
+int Particle::dt_VSjet_2p1_tau() const {
+  return m_dt_VSjet_2p1_tau;
+}
+
+int Particle::dt_VSmu_2p1_tau() const {
+  return m_dt_VSmu_2p1_tau;
+}
+
+int Particle::dt_VSe_2p5_tau() const {
+  return m_dt_VSe_2p5_tau;
+}
+
+int Particle::dt_VSjet_2p5_tau() const {
+  return m_dt_VSjet_2p5_tau;
+}
+
+int Particle::dt_VSmu_2p5_tau() const {
+  return m_dt_VSmu_2p5_tau;
+}
+
+int Particle::DecayMode() const {
+  return m_DecayMode;
+}
+
+void Particle::SetDecayMode(int decaymode){
+  m_DecayMode = decaymode;
+}
+
+int Particle::DecayModePNet() const {
+  return m_DecayModePNet;
+}
+
+void Particle::SetDecayModePNet(int decaymode){
+  m_DecayModePNet = decaymode;
+}
+
 double Particle::D3d() const {
   return m_D3d;
 }
@@ -215,6 +263,31 @@ void Particle::SetIP3D(const double& val){
 
 void Particle::SetSIP3D(const double& val){
   m_SIP3D = val;
+}
+
+// adding taus
+void Particle::Set_dt_VSe_2p1_tau(const int& val){
+  m_dt_VSe_2p1_tau = val;
+}
+
+void Particle::Set_dt_VSjet_2p1_tau(const int& val){
+  m_dt_VSjet_2p1_tau = val;
+}
+
+void Particle::Set_dt_VSmu_2p1_tau(const int& val){
+  m_dt_VSmu_2p1_tau = val;
+}
+
+void Particle::Set_dt_VSe_2p5_tau(const int& val){
+  m_dt_VSe_2p5_tau = val;
+}
+
+void Particle::Set_dt_VSjet_2p5_tau(const int& val){
+  m_dt_VSjet_2p5_tau = val;
+}
+
+void Particle::Set_dt_VSmu_2p5_tau(const int& val){
+  m_dt_VSmu_2p5_tau = val;
 }
 
 void Particle::SetD3d(const double& val){

@@ -1,0 +1,98 @@
+{
+  "schema_version": 2,
+  "corrections": [
+    {
+      "name": "electron_BLP_over_COL",
+      "version": 1,
+      "inputs": [
+        {
+          "name": "pt",
+          "type": "real"
+        },
+        {
+          "name": "eta",
+          "type": "real"
+        },
+        {
+          "name": "year",
+          "type": "string"
+        },
+        {
+          "name": "era",
+          "type": "string"
+        }
+      ],
+      "output": {
+        "name": "weight",
+        "type": "real"
+      },
+      "data": {
+        "nodetype": "category",
+        "input": "year",
+        "content": [
+          {
+            "key": "2016",
+            "value": {
+              "nodetype": "category",
+              "input": "era",
+              "content": [
+                {
+                  "key": "preVFP",
+                  "value": {
+                    "nodetype": "multibinning",
+                    "inputs": [
+                      "eta",
+                      "pt"
+                    ],
+                    "edges": [
+                      [
+                        0.0,
+                        0.8,
+                        1.4442,
+                        2.5
+                      ],
+                      [
+                        2.0,
+                        4.0,
+                        7.0,
+                        10.0,
+                        20.0,
+                        45.0,
+                        75.0,
+                        1000.0
+                      ]
+                    ],
+                    "content": [
+                      1.19801,
+                      1.27252,
+                      0.860787058,
+                      0.860787058,
+                      0.875624816,
+                      0.878577325,
+                      0.889646664,
+                      1.0479,
+                      1.18025,
+                      1.016651837,
+                      1.016651837,
+                      0.951591599,
+                      0.946783931,
+                      0.957023413,
+                      1.0,
+                      1.0,
+                      1.0,
+                      0.96415,
+                      0.962776183,
+                      0.968187848,
+                      0.95959855
+                    ],
+                    "flow": "clamp"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+}
