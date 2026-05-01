@@ -501,6 +501,9 @@ public :
   UChar_t         Tau_idMVAoldDM2017v1[25];   //[nTau]
   UChar_t         Tau_idMVAoldDM2017v2[25];   //[nTau]
   UChar_t         Tau_idMVAoldDMdR032017v2[25];   //[nTau]
+  UChar_t         Tau_idDeepTau2017v2p1VSe[25];   //[nTau]
+  UChar_t         Tau_idDeepTau2017v2p1VSjet[25];   //[nTau]
+  UChar_t         Tau_idDeepTau2017v2p1VSmu[25];   //[nTau]
   Float_t         TkMET_phi;
   Float_t         TkMET_pt;
   Float_t         TkMET_sumEt;
@@ -1715,6 +1718,9 @@ public :
   TBranch        *b_Tau_idMVAoldDM2017v1;   //!
   TBranch        *b_Tau_idMVAoldDM2017v2;   //!
   TBranch        *b_Tau_idMVAoldDMdR032017v2;   //!
+  TBranch        *b_Tau_idDeepTau2017v2p1VSe;   //!
+  TBranch        *b_Tau_idDeepTau2017v2p1VSjet;   //!
+  TBranch        *b_Tau_idDeepTau2017v2p1VSmu;   //!
   TBranch        *b_TkMET_phi;   //!
   TBranch        *b_TkMET_pt;   //!
   TBranch        *b_TkMET_sumEt;   //!
@@ -2992,6 +2998,9 @@ inline void SUSYNANOBase::Init(TTree *tree)
   fChain->SetBranchAddress("Tau_idMVAoldDM2017v1", Tau_idMVAoldDM2017v1, &b_Tau_idMVAoldDM2017v1);
   fChain->SetBranchAddress("Tau_idMVAoldDM2017v2", Tau_idMVAoldDM2017v2, &b_Tau_idMVAoldDM2017v2);
   fChain->SetBranchAddress("Tau_idMVAoldDMdR032017v2", Tau_idMVAoldDMdR032017v2, &b_Tau_idMVAoldDMdR032017v2);
+  fChain->SetBranchAddress("Tau_idDeepTau2017v2p1VSe", Tau_idDeepTau2017v2p1VSe, &b_Tau_idDeepTau2017v2p1VSe);
+  fChain->SetBranchAddress("Tau_idDeepTau2017v2p1VSjet", Tau_idDeepTau2017v2p1VSjet, &b_Tau_idDeepTau2017v2p1VSjet);
+  fChain->SetBranchAddress("Tau_idDeepTau2017v2p1VSmu", Tau_idDeepTau2017v2p1VSmu, &b_Tau_idDeepTau2017v2p1VSmu);
   fChain->SetBranchAddress("TkMET_phi", &TkMET_phi, &b_TkMET_phi);
   fChain->SetBranchAddress("TkMET_pt", &TkMET_pt, &b_TkMET_pt);
   fChain->SetBranchAddress("TkMET_sumEt", &TkMET_sumEt, &b_TkMET_sumEt);

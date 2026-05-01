@@ -270,6 +270,35 @@ private:
   vector<int>    m_TightCharge_lep;
   vector<int>    m_Index_lep;
 
+  //adding taus here
+  int m_Ntau;
+  vector<double> m_PT_tau;
+  vector<double> m_Eta_tau;
+  vector<double> m_Phi_tau;
+  vector<double> m_Mass_tau;
+  vector<double> m_dxy_tau;
+  vector<double> m_dz_tau;
+  vector<int>    m_decayMode_tau;
+  vector<int>    m_Charge_tau;
+  vector<int>    m_dt_VSe_2p1_tau;
+  vector<int>    m_dt_VSjet_2p1_tau;
+  vector<int>    m_dt_VSmu_2p1_tau;
+  vector<int>    m_dt_VSe_2p5_tau;
+  vector<int>    m_dt_VSjet_2p5_tau;
+  vector<int>    m_dt_VSmu_2p5_tau;
+  vector<int>    m_genPartFlav_tau;
+  
+
+//  'rawDeepTau2017v2p1VSe',
+//  'rawDeepTau2017v2p1VSjet',
+//  'rawDeepTau2017v2p1VSmu',
+//  'rawDeepTau2018v2p5VSe',
+//  'rawDeepTau2018v2p5VSjet',
+//  'rawDeepTau2018v2p5VSmu',
+//  'genPartFlav'
+
+//end taus
+
   int m_Njet;
   int m_Nbjet;
   vector<double> m_PT_jet;

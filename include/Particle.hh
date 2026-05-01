@@ -50,12 +50,25 @@ public:
   double DzErr() const;
   double IP3D() const;
   double SIP3D() const;
+  int dt_VSe_2p1_tau() const;
+  int dt_VSjet_2p1_tau() const;
+  int dt_VSmu_2p1_tau() const;
+  int dt_VSe_2p5_tau() const;
+  int dt_VSjet_2p5_tau() const;
+  int dt_VSmu_2p5_tau() const;
+
   void SetDxy(const double& val);
   void SetDxyErr(const double& val);
   void SetDz(const double& val);
   void SetDzErr(const double& val);
   void SetIP3D(const double& val);
   void SetSIP3D(const double& val);
+  void Set_dt_VSe_2p1_tau(const int& val);
+  void Set_dt_VSjet_2p1_tau(const int& val);
+  void Set_dt_VSmu_2p1_tau(const int& val);
+  void Set_dt_VSe_2p5_tau(const int& val);
+  void Set_dt_VSjet_2p5_tau(const int& val);
+  void Set_dt_VSmu_2p5_tau(const int& val);
 
   double D3d() const;
   double D3dSig() const;
@@ -76,9 +89,20 @@ public:
   void SetjetID(const int& val);
   void SetChEmEF(const double& val);
   void SetNeEmEF(const double& val);
+  
+  // vector<int>    m_decayMode_tau;
 
-  double Btag() const;
-  void SetBtag(double btag);
+  int DecayMode() const;
+  void SetDecayMode(int decaymode);
+
+  int DecayModePNet() const;
+  void SetDecayModePNet(int decaymode);
+
+
+  // setters and getters for each
+
+  double Btag() const; //getter
+  void SetBtag(double btag); //setter
 
   ParticleIDType BtagID() const;
   void SetBtagID(ParticleIDType id);
@@ -125,6 +149,16 @@ private:
   double m_DzErr;
   double m_IP3D;
   double m_SIP3D;
+
+  int m_dt_VSe_2p1_tau;
+  int m_dt_VSjet_2p1_tau;
+  int m_dt_VSmu_2p1_tau;
+  int m_dt_VSe_2p5_tau;
+  int m_dt_VSjet_2p5_tau;
+  int m_dt_VSmu_2p5_tau;
+
+  int m_DecayMode;
+  int m_DecayModePNet;
 
   double m_D3d;
   double m_D3dSig;

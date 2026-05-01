@@ -465,6 +465,29 @@ TTree* ReducedNtuple<Base>::InitOutputTree(const string& sample, bool do_slim, b
   tree->Branch("DzErr_lep", &m_DzErr_lep);
   tree->Branch("IP3D_lep", &m_IP3D_lep);
   tree->Branch("SIP3D_lep", &m_SIP3D_lep);
+
+// adding taus
+// tau branches
+tree->Branch("Ntau", &m_Ntau);
+tree->Branch("PT_tau",  &m_PT_tau);
+tree->Branch("Eta_tau", &m_Eta_tau);
+tree->Branch("Phi_tau", &m_Phi_tau);
+tree->Branch("Mass_tau", &m_Mass_tau);
+tree->Branch("dxy_tau", &m_dxy_tau);
+tree->Branch("dz_tau",  &m_dz_tau);
+tree->Branch("decayMode_tau", &m_decayMode_tau);
+tree->Branch("Charge_tau",    &m_Charge_tau);
+tree->Branch("dt_VSe_2p1_tau",   &m_dt_VSe_2p1_tau);
+tree->Branch("dt_VSjet_2p1_tau", &m_dt_VSjet_2p1_tau);
+tree->Branch("dt_VSmu_2p1_tau",  &m_dt_VSmu_2p1_tau);
+tree->Branch("dt_VSe_2p5_tau",   &m_dt_VSe_2p5_tau);
+tree->Branch("dt_VSjet_2p5_tau", &m_dt_VSjet_2p5_tau);
+tree->Branch("dt_VSmu_2p5_tau",  &m_dt_VSmu_2p5_tau);
+// tree->Branch("genPartFlav_tau",  &m_genPartFlav_tau);
+
+// end taus
+
+
   
   tree->Branch("Njet", &m_Njet);
   tree->Branch("Nbjet", &m_Nbjet);
@@ -1040,6 +1063,9 @@ void ReducedNtuple<Base>::FillOutputTree(TTree* tree, const Systematic& sys, boo
 
   m_LHE_HT = AnalysisBase<Base>::Get_LHE_HT();
   m_LHE_HTIncoming = AnalysisBase<Base>::Get_LHE_HTIncoming();
+
+  ParticleList Taus = AnalysisBase<Base>::GetTaus();
+  Taus = Taus.PtEtaCut(19.0, 3.0);
   
   ParticleList Muons = AnalysisBase<Base>::GetMuons();
   Muons = Muons.ParticleIDCut(kVeryLoose);
@@ -1077,6 +1103,7 @@ void ReducedNtuple<Base>::FillOutputTree(TTree* tree, const Systematic& sys, boo
   GenJets.SortByPt();
   
   m_Njet = Jets.size();
+  m_Ntau = Taus.size();
   m_NGenjet = GenJets.size();  
 
   ParticleList BJets;
@@ -2501,6 +2528,24 @@ m_elIDSFweight = AnalysisBase<Base>::GetElIDSFWeight(Electrons, 0);
     m_SourceID_lep.push_back(Leptons[r].SourceID());
   }
 
+// Fill tau branches
+for(int r = 0; r < m_Ntau; r++){
+  m_PT_tau.push_back(Taus[r].Pt());
+  m_Eta_tau.push_back(Taus[r].Eta());
+  m_Phi_tau.push_back(Taus[r].Phi());
+  m_Mass_tau.push_back(Taus[r].M());
+  m_Charge_tau.push_back(Taus[r].Charge());
+  m_dxy_tau.push_back(Taus[r].Dxy());
+  m_dz_tau.push_back(Taus[r].Dz());
+  m_decayMode_tau.push_back(Taus[r].DecayMode());
+  m_dt_VSe_2p1_tau.push_back(Taus[r].dt_VSe_2p1_tau());
+  m_dt_VSjet_2p1_tau.push_back(Taus[r].dt_VSjet_2p1_tau());
+  m_dt_VSmu_2p1_tau.push_back(Taus[r].dt_VSmu_2p1_tau());
+  m_dt_VSe_2p5_tau.push_back(Taus[r].dt_VSe_2p5_tau());
+  m_dt_VSjet_2p5_tau.push_back(Taus[r].dt_VSjet_2p5_tau());
+  m_dt_VSmu_2p5_tau.push_back(Taus[r].dt_VSmu_2p5_tau());
+}
+
   if(!AnalysisBase<Base>::IsData()){
     // Fill gen lepton branches
     m_genPT_lep.clear();
@@ -2611,6 +2656,25 @@ m_elIDSFweight = AnalysisBase<Base>::GetElIDSFWeight(Electrons, 0);
   if(tree)
     tree->Fill();
 }
+
+// // Default: v2p5 branches not available, fill with -1 sentinels
+// template <class Base>
+// void ReducedNtuple<Base>::FillTau_v2p5(int /*i*/){
+//   m_dt_VSe_2p5_tau.push_back(-1);
+//   m_dt_VSjet_2p5_tau.push_back(-1);
+//   m_dt_VSmu_2p5_tau.push_back(-1);
+// }
+
+// // Run 3 specialization: v2p5 branches exist
+// template <>
+// void ReducedNtuple<NANORun3>::FillTau_v2p5(int i){
+//   m_dt_VSe_2p5_tau.push_back(AnalysisBase<NANORun3>::Tau_idDeepTau2018v2p5VSe[i]);
+//   m_dt_VSjet_2p5_tau.push_back(AnalysisBase<NANORun3>::Tau_idDeepTau2018v2p5VSjet[i]);
+//   m_dt_VSmu_2p5_tau.push_back(AnalysisBase<NANORun3>::Tau_idDeepTau2018v2p5VSmu[i]);
+// }
+
+
+
 
 template class ReducedNtuple<SUSYNANOBase>;
 template class ReducedNtuple<NANOULBase>;
