@@ -2657,30 +2657,10 @@ for(int r = 0; r < m_Ntau; r++){
     m_LSPParents = AnalysisBase<Base>::GetLSPParents();
   }
   
-if(m_MetTrigSFweight == 1) std::cout << "Filling tree with SF: " << m_MetTrigSFweight << " in event " << m_eventnum << std::endl;
   // Fill output tree
   if(tree)
     tree->Fill();
 }
-
-// // Default: v2p5 branches not available, fill with -1 sentinels
-// template <class Base>
-// void ReducedNtuple<Base>::FillTau_v2p5(int /*i*/){
-//   m_dt_VSe_2p5_tau.push_back(-1);
-//   m_dt_VSjet_2p5_tau.push_back(-1);
-//   m_dt_VSmu_2p5_tau.push_back(-1);
-// }
-
-// // Run 3 specialization: v2p5 branches exist
-// template <>
-// void ReducedNtuple<NANORun3>::FillTau_v2p5(int i){
-//   m_dt_VSe_2p5_tau.push_back(AnalysisBase<NANORun3>::Tau_idDeepTau2018v2p5VSe[i]);
-//   m_dt_VSjet_2p5_tau.push_back(AnalysisBase<NANORun3>::Tau_idDeepTau2018v2p5VSjet[i]);
-//   m_dt_VSmu_2p5_tau.push_back(AnalysisBase<NANORun3>::Tau_idDeepTau2018v2p5VSmu[i]);
-// }
-
-
-
 
 template class ReducedNtuple<SUSYNANOBase>;
 template class ReducedNtuple<NANOULBase>;
