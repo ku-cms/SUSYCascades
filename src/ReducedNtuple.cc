@@ -486,8 +486,7 @@ tree->Branch("dt_VSmu_2p1_tau",  &m_dt_VSmu_2p1_tau);
 tree->Branch("dt_VSe_2p5_tau",   &m_dt_VSe_2p5_tau);
 tree->Branch("dt_VSjet_2p5_tau", &m_dt_VSjet_2p5_tau);
 tree->Branch("dt_VSmu_2p5_tau",  &m_dt_VSmu_2p5_tau);
-// tree->Branch("genPartFlav_tau",  &m_genPartFlav_tau);
-
+tree->Branch("genPartFlav_tau",  &m_genPartFlav_tau);
 // end taus
 
 
@@ -2533,6 +2532,23 @@ void ReducedNtuple<Base>::FillOutputTree(TTree* tree, const Systematic& sys, boo
   }
 
 // Fill tau branches
+// Fill tau branches
+m_PT_tau.clear();
+m_Eta_tau.clear();
+m_Phi_tau.clear();
+m_Mass_tau.clear();
+m_Charge_tau.clear();
+m_dxy_tau.clear();
+m_dz_tau.clear();
+m_decayMode_tau.clear();
+m_decayModePNet_tau.clear();
+m_dt_VSe_2p1_tau.clear();
+m_dt_VSjet_2p1_tau.clear();
+m_dt_VSmu_2p1_tau.clear();
+m_dt_VSe_2p5_tau.clear();
+m_dt_VSjet_2p5_tau.clear();
+m_dt_VSmu_2p5_tau.clear();
+m_genPartFlav_tau.clear();
 for(int r = 0; r < m_Ntau; r++){
   m_PT_tau.push_back(Taus[r].Pt());
   m_Eta_tau.push_back(Taus[r].Eta());
@@ -2549,6 +2565,7 @@ for(int r = 0; r < m_Ntau; r++){
   m_dt_VSe_2p5_tau.push_back(Taus[r].dt_VSe_2p5_tau());
   m_dt_VSjet_2p5_tau.push_back(Taus[r].dt_VSjet_2p5_tau());
   m_dt_VSmu_2p5_tau.push_back(Taus[r].dt_VSmu_2p5_tau());
+  m_genPartFlav_tau.push_back(Taus[r].GenPartFlav());
 }
 
   if(!AnalysisBase<Base>::IsData()){
@@ -2661,6 +2678,9 @@ for(int r = 0; r < m_Ntau; r++){
   if(tree)
     tree->Fill();
 }
+
+
+
 
 template class ReducedNtuple<SUSYNANOBase>;
 template class ReducedNtuple<NANOULBase>;

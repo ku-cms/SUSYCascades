@@ -98,6 +98,9 @@ public:
   int DecayModePNet() const;
   void SetDecayModePNet(int decaymode);
 
+  int GenPartFlav() const;
+  void SetGenPartFlav(int genpartflav);
+
 
   // setters and getters for each
 
@@ -159,6 +162,7 @@ private:
 
   int m_DecayMode;
   int m_DecayModePNet;
+  int m_genPartFlav;
 
   double m_D3d;
   double m_D3dSig;
