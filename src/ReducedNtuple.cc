@@ -486,8 +486,7 @@ tree->Branch("dt_VSmu_2p1_tau",  &m_dt_VSmu_2p1_tau);
 tree->Branch("dt_VSe_2p5_tau",   &m_dt_VSe_2p5_tau);
 tree->Branch("dt_VSjet_2p5_tau", &m_dt_VSjet_2p5_tau);
 tree->Branch("dt_VSmu_2p5_tau",  &m_dt_VSmu_2p5_tau);
-// tree->Branch("genPartFlav_tau",  &m_genPartFlav_tau);
-
+tree->Branch("genPartFlav_tau",  &m_genPartFlav_tau);
 // end taus
 
 
@@ -2533,6 +2532,23 @@ void ReducedNtuple<Base>::FillOutputTree(TTree* tree, const Systematic& sys, boo
   }
 
 // Fill tau branches
+// Fill tau branches
+m_PT_tau.clear();
+m_Eta_tau.clear();
+m_Phi_tau.clear();
+m_Mass_tau.clear();
+m_Charge_tau.clear();
+m_dxy_tau.clear();
+m_dz_tau.clear();
+m_decayMode_tau.clear();
+m_decayModePNet_tau.clear();
+m_dt_VSe_2p1_tau.clear();
+m_dt_VSjet_2p1_tau.clear();
+m_dt_VSmu_2p1_tau.clear();
+m_dt_VSe_2p5_tau.clear();
+m_dt_VSjet_2p5_tau.clear();
+m_dt_VSmu_2p5_tau.clear();
+m_genPartFlav_tau.clear();
 for(int r = 0; r < m_Ntau; r++){
   m_PT_tau.push_back(Taus[r].Pt());
   m_Eta_tau.push_back(Taus[r].Eta());
@@ -2549,6 +2565,7 @@ for(int r = 0; r < m_Ntau; r++){
   m_dt_VSe_2p5_tau.push_back(Taus[r].dt_VSe_2p5_tau());
   m_dt_VSjet_2p5_tau.push_back(Taus[r].dt_VSjet_2p5_tau());
   m_dt_VSmu_2p5_tau.push_back(Taus[r].dt_VSmu_2p5_tau());
+  m_genPartFlav_tau.push_back(Taus[r].GenPartFlav());
 }
 
   if(!AnalysisBase<Base>::IsData()){
@@ -2662,22 +2679,6 @@ if(m_MetTrigSFweight == 1) std::cout << "Filling tree with SF: " << m_MetTrigSFw
   if(tree)
     tree->Fill();
 }
-
-// // Default: v2p5 branches not available, fill with -1 sentinels
-// template <class Base>
-// void ReducedNtuple<Base>::FillTau_v2p5(int /*i*/){
-//   m_dt_VSe_2p5_tau.push_back(-1);
-//   m_dt_VSjet_2p5_tau.push_back(-1);
-//   m_dt_VSmu_2p5_tau.push_back(-1);
-// }
-
-// // Run 3 specialization: v2p5 branches exist
-// template <>
-// void ReducedNtuple<NANORun3>::FillTau_v2p5(int i){
-//   m_dt_VSe_2p5_tau.push_back(AnalysisBase<NANORun3>::Tau_idDeepTau2018v2p5VSe[i]);
-//   m_dt_VSjet_2p5_tau.push_back(AnalysisBase<NANORun3>::Tau_idDeepTau2018v2p5VSjet[i]);
-//   m_dt_VSmu_2p5_tau.push_back(AnalysisBase<NANORun3>::Tau_idDeepTau2018v2p5VSmu[i]);
-// }
 
 
 

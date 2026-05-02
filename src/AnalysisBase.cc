@@ -4188,6 +4188,11 @@ ParticleList AnalysisBase<SUSYNANOBase>::GetTaus(){
     tau.Set_dt_VSe_2p5_tau(0);
     tau.Set_dt_VSjet_2p5_tau(0);
     tau.Set_dt_VSmu_2p5_tau(0);
+    if(!IsData())
+      tau.SetGenPartFlav(Tau_genPartFlav[i]);
+    else
+      tau.SetGenPartFlav(-1);
+
     list.push_back(tau);
   }
   return list;
@@ -5475,6 +5480,10 @@ ParticleList AnalysisBase<NANOULBase>::GetTaus(){
     tau.Set_dt_VSe_2p5_tau(0);
     tau.Set_dt_VSjet_2p5_tau(0);
     tau.Set_dt_VSmu_2p5_tau(0);
+    if(!IsData())
+      tau.SetGenPartFlav(Tau_genPartFlav[i]);
+    else
+      tau.SetGenPartFlav(-1);
     list.push_back(tau);
   }
   return list;
@@ -6748,6 +6757,11 @@ ParticleList AnalysisBase<NANORun3>::GetTaus(){
     tau.Set_dt_VSe_2p5_tau(Tau_idDeepTau2018v2p5VSe[i]);
     tau.Set_dt_VSjet_2p5_tau(Tau_idDeepTau2018v2p5VSjet[i]);
     tau.Set_dt_VSmu_2p5_tau(Tau_idDeepTau2018v2p5VSmu[i]);
+    if(!IsData())
+      tau.SetGenPartFlav(Tau_genPartFlav[i]);
+    else
+      tau.SetGenPartFlav(-1);
+
     list.push_back(tau);
   }
   return list;

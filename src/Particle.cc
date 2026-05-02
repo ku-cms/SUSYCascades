@@ -24,6 +24,7 @@ Particle::Particle() : TLorentzVector() {
   m_dt_VSmu_2p5_tau = 0;
   m_DecayMode = 0;
   m_DecayModePNet = 0;
+  m_genPartFlav = 0;
 
   m_D3d = 0.;
   m_D3dSig = 0.;
@@ -203,6 +204,14 @@ int Particle::DecayModePNet() const {
 
 void Particle::SetDecayModePNet(int decaymode){
   m_DecayModePNet = decaymode;
+}
+
+int Particle::GenPartFlav() const {
+  return m_genPartFlav;
+}
+
+void Particle::SetGenPartFlav(int genpartflav){
+  m_genPartFlav = genpartflav;
 }
 
 double Particle::D3d() const {
