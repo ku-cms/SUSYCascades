@@ -2674,7 +2674,6 @@ for(int r = 0; r < m_Ntau; r++){
     m_LSPParents = AnalysisBase<Base>::GetLSPParents();
   }
   
-if(m_MetTrigSFweight == 1) std::cout << "Filling tree with SF: " << m_MetTrigSFweight << " in event " << m_eventnum << std::endl;
   // Fill output tree
   if(tree)
     tree->Fill();
