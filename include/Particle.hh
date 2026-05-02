@@ -96,7 +96,7 @@ public:
   void SetDecayMode(int decaymode);
 
   int DecayModePNet() const;
-  void SetDecayModePNet(int genpartflav);
+  void SetDecayModePNet(int decaymode);
 
   int GenPartFlav() const;
   void SetGenPartFlav(int genpartflav);
