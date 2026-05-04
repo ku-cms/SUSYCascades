@@ -2840,7 +2840,7 @@ template <>
 bool AnalysisBase<SUSYNANOBase>::GetDiMuEleLowPTtrigger(){
   if(IsFastSim()) return true;
   if(m_year == 2018) return HLT_DiMu4_Ele9_CaloIdL_TrackIdL_DZ_Mass3p8;
-  else return false;
+  else return true;
 }
 
 template <>
@@ -4357,7 +4357,7 @@ template <>
 bool AnalysisBase<NANOULBase>::GetDiMuEleLowPTtrigger(){
   if(IsFastSim()) return true;
   if(m_year == 2018) return HLT_DiMu4_Ele9_CaloIdL_TrackIdL_DZ_Mass3p8;
-  else return false;
+  else return true;
 }
 
 template <>
