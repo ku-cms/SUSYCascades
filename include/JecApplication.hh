@@ -19,9 +19,19 @@ inline bool hasPhiDependentL2(const std::string& year) {
     return (year == "2023Post" || year == "2024" || year == "2025");
 }
 inline bool requiresRunBasedResidual(const std::string& year) {
-    return (year == "2022Pre" || year == "2022Post" ||
-            year == "2023Pre" || year == "2023Post" ||
-            year == "2024"    || year == "2025");
+    return (
+            year == "2016Pre" || year == "2016Post" ||
+            year == "2017" || year == "2018" ||
+            year == "2022Pre" || year == "2022Post" ||
+            year == "2023Pre" || year == "2023Post" || 
+            year == "2024" || year == "2025"
+           );
+}
+inline bool requiresRunBasedL1FastJet(const std::string& year) {
+    return (
+            year == "2016Pre" || year == "2016Post" ||
+            year == "2017" || year == "2018"
+           );
 }
 inline bool usesPuppiMet(const std::string& year) {
     static const std::unordered_set<std::string> years{

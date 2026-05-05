@@ -74,17 +74,23 @@ Applier Applier::McAK8(JecConfigReader::JecConfig& cfg, const std::string& year,
 double Applier::jesFactorNominal(const JesInputs& j) const {
     const double ptStart = j.pt;
     if (ptStart <= 0.0) return 1.0;
-
     // Undo NanoAOD to raw
     const double rawSf = 1.0 - j.rawFactor;
     double ptRaw = ptStart * rawSf;
-    dbg(ctx_.isDebug, "JES: ptStart=" + std::to_string(ptStart) +
+    dbg(ctx_.isDebug, "JES: ptRaw=" + std::to_string(ptRaw) +
                       ", rawFactor=" + std::to_string(j.rawFactor) +
                       ", ptRaw=" + std::to_string(ptRaw));
 
     // L1FastJet
     double ptAfter = ptRaw;
-    const double c1 = ctx_.jes.l1FastJet->evaluate({ j.area, j.eta, ptAfter, j.rho });
+    double c1 = 1.0;
+    if (ctx_.isData && requiresRunBasedL1FastJet(ctx_.year)) {
+        const double run = ctx_.runNumber.value_or(0.0);
+        c1 = ctx_.jes.l1FastJet->evaluate({ run, j.area, j.eta, ptAfter, j.rho });
+    }
+    else{
+        c1 = ctx_.jes.l1FastJet->evaluate({ j.area, j.eta, ptAfter, j.rho });
+    }
     ptAfter *= c1;
     dbg(ctx_.isDebug, "JES L1FastJet: c1=" + std::to_string(c1) +
                       ", ptAfter=" + std::to_string(ptAfter));
@@ -130,7 +136,8 @@ double Applier::jesComponentSyst(const correction::Correction::Ref& systRef,
                                  bool isDebug) {
     const double scale = systRef->evaluate({ eta, ptAfterJes });
     const double factor = (var == "Up") ? (1.0 + scale) : (1.0 - scale);
-    dbg(isDebug, "JES syst: var=" + var +
+    dbg(isDebug,"pt After JES = "+ std::to_string(ptAfterJes)+ 
+                ", JES syst: var=" + var +
                  ", scale=" + std::to_string(scale) +
                  ", factor=" + std::to_string(factor));
     return factor;
@@ -226,7 +233,18 @@ TLorentzVector Applier::correctedMet(const MetInputs& met,
 
         // --- L1 ---
         double ptCorr = ptRawMinusMuon;
-        const double c1 = ctx_.jes.l1FastJet->evaluate({ v.area, v.eta, ptCorr, rhoForJets });
+        double c1 = 1.0;
+        
+        if (ctx_.isData && requiresRunBasedL1FastJet(ctx_.year)) {
+            const double run = ctx_.runNumber.value_or(0.0);
+            c1 = ctx_.jes.l1FastJet->evaluate(
+                { run, v.area, v.eta, ptCorr, rhoForJets }
+            );
+        } else {
+            c1 = ctx_.jes.l1FastJet->evaluate(
+                { v.area, v.eta, ptCorr, rhoForJets }
+            );
+        }
         ptCorr *= c1;
         const double ptCorrL1 = ptCorr;
         dbg(ctx_.isDebug, "  L1 c1=" + std::to_string(c1) +
