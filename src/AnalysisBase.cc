@@ -572,7 +572,7 @@ void AnalysisBase<Base>::AddJMEFolder(const std::string& jmefold) {
     else if(m_year == 2023 && !m_IsBPix) METPhi_file = find_clib_file(jmefold, "met_xyCorrections_2023_2023.json.gz");
     else if(m_year == 2023 && m_IsBPix) METPhi_file = find_clib_file(jmefold, "met_xyCorrections_2023_2023BPix.json.gz");
     // placeholder
-    else if(m_year > 2023) METPhi_file = find_clib_file("/cvmfs/cms-griddata.cern.ch/cat/metadata/JME/", "met_xyCorrections_2023_2023BPix.json.gz", normalize_filetag("Summer23BPix_130X"));
+    else if(m_year > 2023) METPhi_file = "/cvmfs/cms-griddata.cern.ch/cat/metadata/JME/Run3-23DSep23-Summer23BPix-NanoAODv12/latest/met_xyCorrections_2023_2023BPix.json.gz";
     m_cset_METPhi = correction::CorrectionSet::from_file(METPhi_file);
     m_jmeYearKey = getJMEYearKey();
     m_JMEera = getJMEDataEra();
@@ -1159,6 +1159,8 @@ bool AnalysisBase<Base>::minus_iso_hoe(int WPBitMap, int threshold, std::functio
 // Map UL campaign tokens to the Run2-style directory substrings
 template <class Base>
 std::string AnalysisBase<Base>::normalize_tag(const std::string& filetag) {
+
+    // ----- Run 2 UL -----
     if (filetag.find("Summer20UL16APV") != std::string::npos)
         return "Run2-2016preVFP-UL";
     if (filetag.find("Summer20UL16") != std::string::npos)
@@ -1168,7 +1170,22 @@ std::string AnalysisBase<Base>::normalize_tag(const std::string& filetag) {
     if (filetag.find("Summer20UL18") != std::string::npos)
         return "Run2-2018-UL";
 
-    // Keep as-is for Run 3 (Summer22, Summer23, etc.)
+    // ----- Run 3 -----
+    if (filetag.find("Summer22EE") != std::string::npos)
+        return "Run3-22EE-";
+
+    if (filetag.find("Summer22") != std::string::npos)
+        return "Run3-22-";
+
+    if (filetag.find("Summer23BPix") != std::string::npos)
+        return "Run3-23BPix-";
+
+    if (filetag.find("Summer23") != std::string::npos)
+        return "Run3-23-";
+
+    if (filetag.find("Summer24") != std::string::npos)
+        return "Run3-24";
+
     return filetag;
 }
 
