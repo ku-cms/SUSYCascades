@@ -1,5 +1,5 @@
-THRESHOLD=94000
-LIMIT=5000
+THRESHOLD=96000
+LIMIT=3000
 INDEX=0
 PAUSE=1
 nohup python3 python/CheckFiles.py -a -p ${PAUSE} -l ${LIMIT} -t ${THRESHOLD} -d /home/zflowers/CMSSW_13_3_1/src/SUSYCascades/Summer20UL16APV_106X_SMS/ -o /ospool/cms-user/zflowers/NTUPLES/Processing/Summer20UL16APV_106X_SMS/ > CheckFiles_Summer20UL16APV_106X_SMS_${INDEX}.debug 2>&1 &

@@ -458,34 +458,18 @@ std::string AnalysisBase<Base>::getJMEDataEra() const {
   // Year-specific mapping (match JSON era keys)
   if (m_year == 2016) {
     if (m_IsAPV) {
-      // APV (preVFP) has Era2016PreBCD and Era2016PreEF
-      if (runLetter == 'B' || runLetter == 'C' || runLetter == 'D') return "Era2016PreBCD";
-      if (runLetter == 'E' || runLetter == 'F') return "Era2016PreEF";
-      // fallback for APV
-      return "Era2016PreBCD";
+      return "Era2016PreAll";
     } else {
-      // post-VFP: Era2016PostFGH
-      if (runLetter == 'F' || runLetter == 'G' || runLetter == 'H') return "Era2016PostFGH";
-      return "Era2016PostFGH";
+      return "Era2016PostAll";
     }
   }
 
   if (m_year == 2017) {
-    if (runLetter >= 'B' && runLetter <= 'F') {
-      std::string s = "Era2017";
-      s.push_back(runLetter);
-      return s;
-    }
-    return "Era2017F"; // conservative fallback
+    return "Era2017All";
   }
 
   if (m_year == 2018) {
-    if (runLetter >= 'A' && runLetter <= 'D') {
-      std::string s = "Era2018";
-      s.push_back(runLetter);
-      return s;
-    }
-    return "Era2018D";
+    return "Era2018All";
   }
 
   if (m_year == 2022) {
@@ -494,13 +478,6 @@ std::string AnalysisBase<Base>::getJMEDataEra() const {
   }
 
   if (m_year == 2023) {
-    // Heuristic:
-    // - If can get a run letter: treat A..C as Pre, D..Z as Post (conservative split).
-    // - If no run letter, prefer Post if BPix flag is set or the file tag includes "BPix".
-    if (runLetter != '\0') {
-      if (runLetter <= 'C') return "Era2023PreAll";
-      return "Era2023PostAll";
-    }
     if (m_IsBPix || m_FileTag.find("BPix") != std::string::npos) return "Era2023PostAll";
     return "Era2023PreAll";
   }
