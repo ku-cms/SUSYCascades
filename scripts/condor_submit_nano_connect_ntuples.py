@@ -289,7 +289,7 @@ if __name__ == "__main__":
     if '--data' in sys.argv:
         DO_DATA = 1
         argv_pos += 1
-    if '--dry-run' in sys.argv or '--dryrun' in sys.argv:
+    if '--dry-run' in sys.argv or '--dryrun' in sys.argv or '--dry_run' in sys.argv:
         DRY_RUN = 1
         argv_pos += 1
     if '--count' in sys.argv:
