@@ -1133,7 +1133,6 @@ bool AnalysisBase<Base>::minus_iso_hoe(int WPBitMap, int threshold, std::functio
   return true; 
 }
 
-// Map UL campaign tokens to the Run2-style directory substrings
 template <class Base>
 std::string AnalysisBase<Base>::normalize_tag(const std::string& filetag) {
 
@@ -1166,7 +1165,7 @@ std::string AnalysisBase<Base>::normalize_tag(const std::string& filetag) {
 
     if (filetag.find("Summer24") != std::string::npos)
         //return "Run3-24";
-        return "Summer24";
+        return "24CDEReprocessingFGHIPrompt-Summer24";
 
     return filetag;
 }
