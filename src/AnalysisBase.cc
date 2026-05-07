@@ -1149,19 +1149,24 @@ std::string AnalysisBase<Base>::normalize_tag(const std::string& filetag) {
 
     // ----- Run 3 -----
     if (filetag.find("Summer22EE") != std::string::npos)
-        return "Run3-22EE-";
+        //return "Run3-22EE-";
+        return "Summer22EE";
 
     if (filetag.find("Summer22") != std::string::npos)
-        return "Run3-22-";
+        //return "Run3-22-";
+        return "Summer22";
 
     if (filetag.find("Summer23BPix") != std::string::npos)
-        return "Run3-23BPix-";
+        //return "Run3-23BPix-";
+        return "Summer23BPix";
 
     if (filetag.find("Summer23") != std::string::npos)
-        return "Run3-23-";
+        //return "Run3-23-";
+        return "Summer23";
 
     if (filetag.find("Summer24") != std::string::npos)
-        return "Run3-24";
+        //return "Run3-24";
+        return "Summer24";
 
     return filetag;
 }
