@@ -539,15 +539,33 @@ def checkJobs(workingDir, outputDir, skipEC, skipDAS, skipMissing, skipSmall,
 
         # --- .out files check ---
         if not skipOut:
-            bash = f"grep -rL \"Finished\" {os.path.join(workingDir, 'out', DataSetName)}"
+            outDir = os.path.join(workingDir, 'out', DataSetName)
+            grep_cmds = []
+            # Missing "Finished"
+            grep_cmds.append(
+                f'grep -rL "Finished" {outDir}'
+            )
+            # Explicit DAS failure (only for central samples)
+            if not skipDAS:
+                grep_cmds.append(
+                    f'grep -rl "JOB FAILED DAS CHECK!" {outDir}'
+                )
+            # Zero-entry jobs should always fail
+            grep_cmds.append(
+                f'grep -rl "NTOT: 0" {outDir}'
+            )
+            # Combine and uniquify
+            bash = " ; ".join(grep_cmds) + " | sort -u"
             try:
-                outLines = subprocess.check_output(['bash', '-c', bash], text=True).splitlines()
+                outLines = subprocess.check_output(
+                    ['bash', '-c', bash],
+                    text=True
+                ).splitlines()
             except subprocess.CalledProcessError:
                 outLines = []
             except Exception:
                 outLines = []
-            
-            num_out = 0 
+            num_out = 0
             for filename_part in outLines:
                 if not filename_part:
                     continue
