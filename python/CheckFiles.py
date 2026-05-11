@@ -243,7 +243,6 @@ def makeSubmitScript(tuple_pairs, submitName, resubmit, maxResub, DataSetName):
             condor_monitor = CondorJobCountMonitor(threshold=0.99*get_auto_THRESHOLD()+resubmitFiles, verbose=False)
             condor_monitor.wait_until_jobs_below()
             os.system(f"condor_submit {newFileName}")
-
     return resubmitFiles
 
 def testRootFile(root_file):
@@ -340,6 +339,7 @@ def checkJobs(workingDir, outputDir, skipEC, skipDAS, skipMissing, skipSmall,
         DataSetName = file.split(".")[0]
         resubmit_set = set()
         event_count = EventCount()
+        comp_percent = 0
 
         # --- DAS check ---
         if not skipDAS:
@@ -654,6 +654,52 @@ def checkJobs(workingDir, outputDir, skipEC, skipDAS, skipMissing, skipSmall,
                             subprocess.check_call(["bash", "-c", cmd], env=rucio_env)
                         except subprocess.CalledProcessError as e:
                             print(f"[Rucio] Failed rule for {rfile}", flush=True)
+
+        if nJobs == 0 and comp_percent != 100 and not skipDAS:
+            # Determine total number of jobs for this dataset
+            total_dataset_jobs = 0
+            try:
+                if DO_EVENTCOUNT:
+                    listDir = os.path.join(workingDir, "list", DataSetName)
+                    listFiles = [
+                        lf for lf in os.listdir(listDir)
+                        if os.path.isfile(os.path.join(listDir, lf))
+                    ]
+                    total_dataset_jobs = len(listFiles) - 1
+                else:
+                    master_list = os.path.join(
+                        workingDir,
+                        "list",
+                        DataSetName,
+                        f"{DataSetName}_list.list"
+                    )
+                    with open(master_list, "r") as f:
+                        total_dataset_jobs = sum(
+                            1 for line in f if line.strip()
+                        )
+            except Exception as e:
+                print(f"Could not determine total jobs for {DataSetName}: {e}", flush=True)
+                total_dataset_jobs = 0
+            print(
+                f'{DataSetName} failed the DAS check but could not find any jobs to resubmit!',
+                flush=True
+            )
+            if resubmit:
+                print(f'Resubmitting entire dataset ({total_dataset_jobs} jobs)...', flush=True)
+                condor_monitor = CondorJobCountMonitor(
+                    threshold=0.99 * get_auto_THRESHOLD() + total_dataset_jobs,
+                    verbose=False
+                )
+                condor_monitor.wait_until_jobs_below()
+                full_submit = os.path.join(
+                    workingDir,
+                    "src",
+                    f"{DataSetName}.submit"
+                )
+                os.system(f"condor_submit {full_submit}")
+                # Make sure accounting reflects the full dataset resubmission
+                nJobs = total_dataset_jobs
+
         total_resubmit += nJobs
     return total_resubmit
 
