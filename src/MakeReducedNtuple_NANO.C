@@ -248,7 +248,7 @@ int main(int argc, char* argv[]) {
       // try GetEntries with timeout
       NTOT = tryGetEntriesSubproc(chain, timeoutSeconds);
   
-      if (NTOT >= 0) {
+      if (NTOT > 0 || filenames.empty()) {
           success = true;
           if (attempt != 0)
               std::cout << "Got entries with prefix: " << redirectors[attempt] << std::endl;

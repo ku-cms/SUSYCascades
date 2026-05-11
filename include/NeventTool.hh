@@ -176,8 +176,8 @@ inline Long64_t tryGetEntriesSubproc(TChain* chain, int timeoutSeconds = 60)
 
     int rv = select(pipefd[0] + 1, &set, nullptr, nullptr, &tv);
     if (rv > 0) {
-        if (read(pipefd[0], &result, sizeof(result)) < 0) {
-            perror("read");
+        ssize_t nread = read(pipefd[0], &result, sizeof(result));
+        if (nread != sizeof(result)) {
             result = -1;
         }
         int status = 0;
