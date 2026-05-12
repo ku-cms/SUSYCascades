@@ -625,6 +625,13 @@ def checkJobs(workingDir, outputDir, skipEC, skipDAS, skipMissing, skipSmall,
         # create submit script(s) and count new jobs
         nJobs = makeSubmitScript(resubmit_set, os.path.join(workingDir, "src", DataSetName),
                                  resubmit, maxResub, DataSetName)
+        # if both privateMC flags passed and no jobs need to be resubmitted then this is equivalent to passing DAS check
+        if skipDAS and skipEC and nJobs == 0:
+            UpdateFilterList(
+                DataSetName,
+                f"{workingDir}/CheckFiles_FilterList.txt",
+                False
+            )
 
         # create Rucio request for bad files
         if doRucio:

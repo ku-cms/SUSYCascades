@@ -1,8 +1,8 @@
-THRESHOLD=96000
-LIMIT=3000
+THRESHOLD=94000
+LIMIT=5000
 INDEX=0
 PAUSE=1
-EXTRA="-a"
+EXTRA=""
 nohup python3 python/CheckFiles.py ${EXTRA} -p ${PAUSE} -l ${LIMIT} -t ${THRESHOLD} -d /home/zflowers/CMSSW_13_3_1/src/SUSYCascades/Summer20UL16_106X_Data/ -o /ospool/cms-user/zflowers/NTUPLES/Processing/Summer20UL16_106X_Data/ > CheckFiles_Summer20UL16_106X_Data_${INDEX}.debug 2>&1 &
 nohup python3 python/CheckFiles.py ${EXTRA} -p ${PAUSE} -l ${LIMIT} -t ${THRESHOLD} -d /home/zflowers/CMSSW_13_3_1/src/SUSYCascades/Summer20UL16APV_106X_Data/ -o /ospool/cms-user/zflowers/NTUPLES/Processing/Summer20UL16APV_106X_Data/ > CheckFiles_Summer20UL16APV_106X_Data_${INDEX}.debug 2>&1 &
 nohup python3 python/CheckFiles.py ${EXTRA} -p ${PAUSE} -l ${LIMIT} -t ${THRESHOLD} -d /home/zflowers/CMSSW_13_3_1/src/SUSYCascades/Summer20UL17_106X_Data/ -o /ospool/cms-user/zflowers/NTUPLES/Processing/Summer20UL17_106X_Data/ > CheckFiles_Summer20UL17_106X_Data_${INDEX}.debug 2>&1 &

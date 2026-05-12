@@ -321,6 +321,9 @@ if __name__ == "__main__":
     if SPLIT <= 1:
         SPLIT = 1
 
+    if DO_SMS:
+        MAX_JOBS_SUB = MAX_JOBS_SUB * 2
+
     if MAX_JOBS_SUB < MIN_JOBS_SUB:
         MIN_JOBS_SUB = 1000
         MAX_JOBS_SUB = 10000
