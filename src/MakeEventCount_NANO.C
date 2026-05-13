@@ -383,6 +383,7 @@ int main(int argc, char* argv[]) {
   param.Write();
   fout->cd();
   fout->Close();
+  std::cout << "Finished\n";
   if(passed_DAS) return 0;
   else return 1;
 }

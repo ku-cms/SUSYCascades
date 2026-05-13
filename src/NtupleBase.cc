@@ -79,7 +79,6 @@ bool NtupleBase<Base>::WriteNtuple(const string& filename, int ichunk, int nchun
         }
       }
       outfile->cd("");
-      std::cout << "Finished histograms\n";
     }
   }
 
