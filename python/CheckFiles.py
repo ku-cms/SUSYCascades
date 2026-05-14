@@ -709,7 +709,7 @@ def checkJobs(workingDir, outputDir, skipEC, skipDAS, skipMissing, skipSmall,
                 f'{DataSetName} failed the DAS check but could not find any jobs to resubmit!',
                 flush=True
             )
-            if resubmit:
+            if resubmit and not skipEC and not skipDAS and not skipMissing and not skipSmall and not skipErr and not skipOut and not skipZombie:
                 print(f'Resubmitting entire dataset ({total_dataset_jobs} jobs)...', flush=True)
                 condor_monitor = CondorJobCountMonitor(
                     threshold=0.99 * get_auto_THRESHOLD() + total_dataset_jobs,
