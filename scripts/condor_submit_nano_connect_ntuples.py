@@ -8,7 +8,7 @@ from new_countEvents import EventCount as EventCount
 event_count = EventCount()
 
 # Example submission: 
-# nohup python3 scripts/condor_submit_nano_connect_ntuples.py -split 25 -list samples/NANO/Lists/Summer23BPix_130X.list --verbose > submit_bkg.debug 2>&1 &
+# nohup python3 scripts/condor_submit_nano_connect_ntuples.py -list samples/NANO/Lists/Summer23BPix_130X.list --verbose > submit_bkg.debug 2>&1 &
 
 # ----------------------------------------------------------- #
 # Parameters
@@ -19,19 +19,17 @@ RUN_DIR      = pwd
 jobEXE       = "execute_script.sh"
 EXE          = "MakeReducedNtuple_NANO.x"
 RESTFRAMES   = './scripts/setup_RestFrames_connect.sh'
-#CMSSW_SETUP  = './scripts/cmssw_setup_connect.sh'
 CMSSW_SETUP  = './scripts/cmssw_setup_connect_el9.sh'
 TREE         = "Events"
 USER         = os.environ['USER']
 OUT_BASE     = "/ospool/cms-user/"+USER+"/NTUPLES/Processing"
-#OUT_BASE     = "/local-scratch/"+USER+"/NTUPLES/Processing"
 LIST         = "default.list"
 QUEUE        = ""
 SPLIT        = 100
-THRESHOLD    = 95000
+THRESHOLD    = 96000
 MAX_JOBS_SUB = 3000 # Max jobs/submission (Connect max is 20000)
-MIN_JOBS_SUB = 200 # Min jobs/submission
-MAX_MATERIALIZE = MAX_JOBS_SUB+1 # (MAX_JOBS_SUB - MIN_JOBS_SUB) / 2 # Max jobs to show up in scheduler
+MIN_JOBS_SUB = SPLIT*2 # Min jobs/submission
+MAX_MATERIALIZE = MAX_JOBS_SUB+1 # Max jobs to show up in scheduler
 # ----------------------------------------------------------- #
 
 def get_auto_THRESHOLD():
@@ -394,11 +392,6 @@ if __name__ == "__main__":
     config = TARGET+"config/"
     if not COUNT:
         os.system("mkdir -p "+config)
-
-    # NOTE: there is a bug for setting the hadd verbosity level, "hadd -v 0".
-    # The hadd verbosity option only works in ROOT 6.18/00 and later.
-    # https://github.com/root-project/root/issues/11372
-    # https://github.com/root-project/root/pull/3914
 
     if not COUNT:
         if has_uncommitted_changes(sub_dir="src/") or has_uncommitted_changes(sub_dir="include/"):
