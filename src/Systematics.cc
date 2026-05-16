@@ -363,8 +363,6 @@ Systematics SystematicsTool::GetTreeSystematics() const {
   list += "JerUncertaintySetTotal";
   list += "METUncer_UnClust";
   list += "METUncer_GenMET";
-  // list += "MMSUncer_Total";
-  // list += "EESUncer_Total";
 
   return list;
 }

@@ -300,9 +300,9 @@ void AnalysisBase<Base>::ExpandJESMacroSystematics() {
   // mapping from macro label -> which set map to expand
   using RefMap = std::map<std::string, correction::Correction::Ref>;
   const std::unordered_map<std::string, const RefMap*> macroToSet = {
-    {"JESUncer_Full",    &uncRefs.full},
-    {"JESUncer_Reduced", &uncRefs.reduced},
-    {"JESUncer_Total",   &uncRefs.total}
+    {"JesUncertaintySetFull",    &uncRefs.full},
+    {"JesUncertaintySetReduced", &uncRefs.reduced},
+    {"JesUncertaintySetTotal",   &uncRefs.total}
   };
 
   Systematics expanded(false);
@@ -326,7 +326,7 @@ void AnalysisBase<Base>::ExpandJESMacroSystematics() {
 
     size_t nExpanded = 0;
     for (const auto& [clibKey, ref] : *setMap) {
-      std::string concreteLabel = std::string("JESUncer_") + clibKey;
+      std::string concreteLabel = "JesUncer_" + clibKey;
       if (!expanded.Contains(concreteLabel)) {
         ++nExpanded;
         expanded.Add(concreteLabel);
@@ -343,22 +343,79 @@ void AnalysisBase<Base>::ExpandJESMacroSystematics() {
     }
   }
   m_Systematics = expanded;
+  m_uncRefs = uncRefs;
 }
 
 template <class Base>
-std::optional<std::string> AnalysisBase<Base>::findJESKeyForLabel(const std::string& label) {
-  auto& jcfg   = JecConfigReader::JecConfig::defaultInstance();
+std::optional<std::string>
+AnalysisBase<Base>::findJESKeyForLabel(const std::string& label) {
+
+  auto& jcfg = JecConfigReader::JecConfig::defaultInstance();
   auto uncRefs = jcfg.getJesUncSetsMcAK4Ref(m_jmeYearKey);
 
-  // Strip legacy prefix for matching
-  std::string core = label;
-  const std::string prefix = "JESUncer_";
-  if (core.rfind(prefix, 0) == 0) core = core.substr(prefix.size());
+  // -----------------------------
+  // 1. Special case: TOTAL macro
+  // -----------------------------
+  if (ci_find_substr(label, "JesUncertaintySetTotal") ||
+      ci_find_substr(label, "JESUncertaintySetTotal")) {
+    // CLIB schema uses CMS_scale_j_Total
+    return "CMS_scale_j_Total";
+  }
 
+  // -----------------------------
+  // 2. Normalize label prefix
+  // -----------------------------
+  std::string core = label;
+
+  const std::vector<std::string> prefixes = {
+    "JesUncer_",
+    "JESUncer_",
+    "JesUncer",
+    "JESUncer"
+  };
+
+  for (const auto& p : prefixes) {
+    if (core.rfind(p, 0) == 0) {
+      core = core.substr(p.size());
+      break;
+    }
+  }
+
+  // -----------------------------
+  // 3. Exact lookup first 
+  // -----------------------------
   using RefMap = std::map<std::string, correction::Correction::Ref>;
-  for (const RefMap* setMap : { &uncRefs.full, &uncRefs.reduced, &uncRefs.total }) {
+
+  auto tryExact = [&](const RefMap& m) -> std::optional<std::string> {
+    auto it = m.find(core);
+    if (it != m.end()) return it->first;
+    return std::nullopt;
+  };
+
+  for (const RefMap* setMap : {
+        &uncRefs.full,
+        &uncRefs.reduced,
+        &uncRefs.total }) {
+
+    if (!setMap) continue;
+
+    if (auto hit = tryExact(*setMap))
+      return hit;
+  }
+
+  // -----------------------------
+  // 4. Fallback: controlled fuzzy match
+  // -----------------------------
+  for (const RefMap* setMap : {
+        &uncRefs.full,
+        &uncRefs.reduced,
+        &uncRefs.total }) {
+
     for (const auto& [clibKey, ref] : *setMap) {
-      if (ci_find_substr(clibKey, core) || ci_find_substr(clibKey, label)) {
+
+      // ONLY allow safe directional matching
+      // (avoid reverse substring explosions)
+      if (ci_find_substr(clibKey, core)) {
         return clibKey;
       }
     }
@@ -3601,7 +3658,7 @@ ParticleList AnalysisBase<SUSYNANOBase>::GetJetsMET(TVector3& MET, int id){
     MET += deltaMET;
   }
 
-  if(CurrentSystematic() == Systematic("METUncer_GenMET"))
+  if (!m_IsData && CurrentSystematic() == Systematic("METUncer_GenMET"))
     MET.SetPtEtaPhi(GenMET_pt,0.,GenMET_phi);
   
   return list;
@@ -4148,12 +4205,12 @@ ParticleList AnalysisBase<NANOULBase>::GetJetsMET(TVector3& MET, int id) {
   bool IS_JER_LABEL  = (m_jerLabelsCache.find(cacheKey) != m_jerLabelsCache.end());
 
   if (!IS_JES_LABEL && !IS_JER_LABEL) {
-    if (curLabel.rfind("JESUncer_", 0) == 0 || ci_find_substr(curLabel, "JESUncer_")) {
+    if (curLabel.rfind("JesUncer", 0) == 0 || ci_find_substr(curLabel, "JesUncer")) {
       m_jesLabelsCache.insert(cacheKey);
       IS_JES_LABEL = true;
       if (m_jesClibCache.find(cacheKey) == m_jesClibCache.end())
         m_jesClibCache.emplace(cacheKey, findJESKeyForLabel(curLabel));
-    } else if (curLabel.rfind("JERUncer_", 0) == 0 || ci_find_substr(curLabel, "JERUncer_")) {
+    } else if (curLabel.rfind("JerUncer", 0) == 0 || ci_find_substr(curLabel, "JerUncer")) {
       m_jerLabelsCache.insert(cacheKey);
       IS_JER_LABEL = true;
     }
@@ -4197,6 +4254,7 @@ ParticleList AnalysisBase<NANOULBase>::GetJetsMET(TVector3& MET, int id) {
     jersForMet.push_back(jerIn);
   }
 
+  std::string clibKey;
   // Build SystematicOptions for MET helper (JES & JER)
   JecApplication::SystematicOptions systOpts{};
   if (!m_IsData) {
@@ -4209,12 +4267,10 @@ ParticleList AnalysisBase<NANOULBase>::GetJetsMET(TVector3& MET, int id) {
       }
   
       if (cit != m_jesClibCache.end() && cit->second.has_value()) {
-        const std::string& clibKey = cit->second.value();
+        clibKey = cit->second.value();
         const std::string  var     = CurrentSystematic().IsUp() ? "Up" : "Down";
-  
         // Resolve the key to a Correction::Ref via JecConfig
         auto& jcfg    = JecConfigReader::JecConfig::defaultInstance();
-  
         correction::Correction::Ref foundRef = nullptr;
         for (auto* setMap : { &m_uncRefs.full, &m_uncRefs.reduced, &m_uncRefs.total }) {
           auto it = setMap->find(clibKey);
@@ -4254,7 +4310,7 @@ ParticleList AnalysisBase<NANOULBase>::GetJetsMET(TVector3& MET, int id) {
       const std::string var = CurrentSystematic().IsUp() ? "Up" : "Down";
       double jesSystFactor = m_JMETool.GetJESFactorSystCLIB(
         m_jmeYearKey, jet.Pt(), Jet_eta[i], Jet_phi[i], Jet_area[i],
-        fixedGridRhoFastjetAll, systOpts.jesSystVar, m_IsData, m_JMEera, var);
+        fixedGridRhoFastjetAll, clibKey, m_IsData, m_JMEera, var);
       jet.SetPtEtaPhiM(jet.Pt() * jesSystFactor, jet.Eta(), jet.Phi(), mass);
     }
 
@@ -4905,14 +4961,12 @@ ParticleList AnalysisBase<NANORun3>::GetJetsMET(TVector3& MET, int id) {
 
   // Lazy populate caches if BuildJmeSystematicMappings() wasn't called
   if (!IS_JES_LABEL && !IS_JER_LABEL) {
-    if (curLabel.rfind("JESUncer_", 0) == 0 || ci_find_substr(curLabel, "JESUncer_")) {
+    if (curLabel.rfind("JesUncer", 0) == 0 || ci_find_substr(curLabel, "JesUncer")) {
       m_jesLabelsCache.insert(cacheKey);
       IS_JES_LABEL = true;
-      // try resolving CLIB key once (store negative result too)
-      if (m_jesClibCache.find(cacheKey) == m_jesClibCache.end()) {
+      if (m_jesClibCache.find(cacheKey) == m_jesClibCache.end())
         m_jesClibCache.emplace(cacheKey, findJESKeyForLabel(curLabel));
-      }
-    } else if (curLabel.rfind("JERUncer_", 0) == 0 || ci_find_substr(curLabel, "JERUncer_")) {
+    } else if (curLabel.rfind("JerUncer", 0) == 0 || ci_find_substr(curLabel, "JerUncer")) {
       m_jerLabelsCache.insert(cacheKey);
       IS_JER_LABEL = true;
     }
@@ -4956,6 +5010,7 @@ ParticleList AnalysisBase<NANORun3>::GetJetsMET(TVector3& MET, int id) {
     jersForMet.push_back(jerIn);
   }
 
+  std::string clibKey;
   // Build SystematicOptions for MET helper (JES & JER)
   JecApplication::SystematicOptions systOpts{};
   if (!m_IsData) {
@@ -4968,12 +5023,10 @@ ParticleList AnalysisBase<NANORun3>::GetJetsMET(TVector3& MET, int id) {
       }
   
       if (cit != m_jesClibCache.end() && cit->second.has_value()) {
-        const std::string& clibKey = cit->second.value();
+        clibKey = cit->second.value();
         const std::string  var     = CurrentSystematic().IsUp() ? "Up" : "Down";
-  
         // Resolve the key to a Correction::Ref via JecConfig
         auto& jcfg    = JecConfigReader::JecConfig::defaultInstance();
-  
         correction::Correction::Ref foundRef = nullptr;
         for (auto* setMap : { &m_uncRefs.full, &m_uncRefs.reduced, &m_uncRefs.total }) {
           auto it = setMap->find(clibKey);
@@ -5013,7 +5066,7 @@ ParticleList AnalysisBase<NANORun3>::GetJetsMET(TVector3& MET, int id) {
       const std::string var = CurrentSystematic().IsUp() ? "Up" : "Down";
       double jesSystFactor = m_JMETool.GetJESFactorSystCLIB(
         m_jmeYearKey, jet.Pt(), Jet_eta[i], Jet_phi[i], Jet_area[i],
-        Rho_fixedGridRhoFastjetAll, systOpts.jesSystVar, m_IsData, m_JMEera, var);
+        Rho_fixedGridRhoFastjetAll, clibKey, m_IsData, m_JMEera, var);
       jet.SetPtEtaPhiM(jet.Pt() * jesSystFactor, jet.Eta(), jet.Phi(), mass);
     }
 
