@@ -119,21 +119,37 @@ class EventCount:
 
     def getDASDatasetsHelper(self, u_file):
         dataset_dict = {}
-        if os.path.exists(u_file):
-            try:
-                file = ROOT.TFile.Open(u_file, "READ")
-            except Exception:
+        resolved_cache = {}
+        try:
+            file = ROOT.TFile.Open(u_file, "READ")
+            if not file or file.IsZombie():
                 return dataset_dict
-        else:
+        except Exception as e:
             return dataset_dict
         tree = file.Get("EventCount")
-        if not tree: return dataset_dict
+        if not tree:
+            return dataset_dict
         for entry in tree:
             key = f"{str(entry.dataset)}_{str(entry.filetag)}"
-            das_name = str(entry.DAS_datasetname)
+            das_name = str(entry.DAS_datasetname).strip()
+            if not das_name:
+                try:
+                    das_filename = str(entry.DAS_filename).strip()
+                except AttributeError:
+                    das_filename = ""
+                if das_filename:
+                    if das_filename not in resolved_cache:
+                        resolved_cache[das_filename] = self.GetDatasetFromFile(das_filename)
+                    for name in resolved_cache[das_filename]:
+                        if name:
+                            if key not in dataset_dict:
+                                dataset_dict[key] = set()
+                            dataset_dict[key].add(name)
+                continue
             if key not in dataset_dict:
                 dataset_dict[key] = set()
             dataset_dict[key].add(das_name)
+        file.Close()
         return dataset_dict
 
     def getFullDASDatasetNames(self, u_file):
@@ -155,7 +171,8 @@ class EventCount:
         dataset_dict = self.getDASDatasetNames(u_file)
         for key, das_list in dataset_dict.items():
             for das_name in das_list:
-                events += self.EventsInDASDataset(das_name)
+                n = self.EventsInDASDataset(das_name)
+                events += n
         return events
 
     # Gets events directly from DAS
@@ -182,7 +199,6 @@ class EventCount:
 
     # Gets events directly from DAS
     def EventsInDASDataset(self, u_dataset):
-        """Get the number of events in DAS for the given dataset."""
         events = 0
         try:
             query = f'dataset={u_dataset}'
@@ -191,9 +207,11 @@ class EventCount:
                 text=True
             )
             das_data = json.loads(das_output)
-            # Extract number of events from JSON
-            if "nevents" in das_output:
-                events = int(das_output.split('"nevents":', 1)[1].split(',', 1)[0])
+            for block in das_data:
+                for dataset_info in block.get("dataset", []):
+                    nevents = dataset_info.get("nevents", 0)
+                    if nevents:
+                        events += nevents
         except (subprocess.CalledProcessError, ValueError, json.JSONDecodeError) as e:
             print(f"Error querying DAS: {e}")
         return events
@@ -276,42 +294,55 @@ class EventCount:
         """Get dataset name from file"""
         pos = u_file.find("/store/")
         if pos != -1:
-            filename = u_file[pos:]  # Remove everything before "/store/"
+            filename = u_file[pos:]
         else:
             filename = u_file
+    
+        def query_dataset(dataset_name, campaign_tags, aod_version):
+            """Try dataset query, falling back to status=* if needed."""
+            for prefix in ["", "status=* "]:
+                query = f'{prefix}dataset=/{dataset_name}/{campaign_tags}/{aod_version}'
+                try:
+                    result = subprocess.check_output(
+                        ["dasgoclient", "-query", query],
+                        text=True,
+                        stderr=subprocess.STDOUT
+                    ).strip()
+                    result = self.CleanDASDatasetOutputParsing(result)
+                    if result and result != ['']:
+                        return result
+                except subprocess.CalledProcessError:
+                    continue
+            return []
+    
         try:
             das_output = subprocess.check_output(
-                ["dasgoclient", "-query", f'dataset file={filename}'],
+                ["dasgoclient", "-query", f'file={filename}', "-json"],
                 text=True,
                 stderr=subprocess.STDOUT
             ).strip()
-            das_output = das_output.split('/')
-            if(len(das_output) < 4): return []
-            dataset_name = das_output[1]
-            campaign_tags = das_output[2]
-            aod_version = das_output[3]
-            # need to search more generically to check for exts
-            if "SIM" in aod_version:
-                campaign_tags = campaign_tags.split('-')[0]+'*'
-            query = f'dataset=/{dataset_name}/{campaign_tags}/{aod_version}'
-            das_output = subprocess.check_output(
-                ["dasgoclient", "-query", query],
-                text=True,
-                stderr=subprocess.STDOUT
-            ).strip()
-            das_output = self.CleanDASDatasetOutputParsing(das_output)
-            if das_output == ['']:
-                query = f'status=* dataset=/{dataset_name}/{campaign_tags}/{aod_version}'
-                das_output = subprocess.check_output(
-                    ["dasgoclient", "-query", query],
-                    text=True,
-                    stderr=subprocess.STDOUT
-                ).strip()
-                das_output = self.CleanDASDatasetOutputParsing(das_output)
-            return das_output
+            das_data = json.loads(das_output)
+            for block in das_data:
+                for file_info in block.get("file", []):
+                    dataset = file_info.get("dataset")
+                    if dataset:
+                        parts = dataset.split('/')
+                        if len(parts) >= 4:
+                            dataset_name  = parts[1]
+                            campaign_tags = parts[2]
+                            aod_version   = parts[3]
+                            if "SIM" in aod_version:
+                                campaign_tags = campaign_tags.split('-')[0]+'*'
+                            result = query_dataset(dataset_name, campaign_tags, aod_version)
+                            if result:
+                                return result
+                        # Last resort: return the single dataset name from JSON as-is
+                        return self.CleanDASDatasetOutputParsing(dataset)
         except subprocess.CalledProcessError as e:
             print(f"Error querying DAS: {e.output.strip()}")
-            return []
+        except (ValueError, json.JSONDecodeError) as e:
+            print(f"Error parsing DAS JSON: {e}")
+        return []
 
     # Assume user is passing file, user can override to check for entire dataset
     def EventsInDAS(self, u_input, file=True):

@@ -384,7 +384,9 @@ def checkJobs(workingDir, outputDir, skipEC, skipDAS, skipMissing, skipSmall,
                         for f in files:
                             if not f:
                                 continue
-                            file_datasets = event_count.getFullDASDatasetNames(f)
+                            if f not in seen_datasets_cache:
+                                seen_datasets_cache[f] = event_count.getFullDASDatasetNames(f)
+                            file_datasets = seen_datasets_cache[f]
                             for ds in file_datasets:
                                 if "jsonparser" in ds:
                                     tup = path_to_tuple(f)
@@ -394,6 +396,9 @@ def checkJobs(workingDir, outputDir, skipEC, skipDAS, skipMissing, skipSmall,
                                         resubmit_set.add(tup)
                                         nDAS_fail += 1
                                 files_datasets.add(ds)
+                            # No need to keep checking once we've confirmed all datasets are present
+                            if files_datasets == dataset_set and nDAS_fail == 0:
+                                break
                     except Exception:
                         files_datasets = set()
 
@@ -510,11 +515,11 @@ def checkJobs(workingDir, outputDir, skipEC, skipDAS, skipMissing, skipSmall,
             
                 awk_cmd = (
                     f"awk -v marker='{marker}' "
-                    "'{ if (found) { print FILENAME \":\" $0 } } "
+                    "'FNR==1 { found=0 } "
+                    "{ if (found) { print FILENAME \":\" $0 } } "
                     "$0 ~ marker { found=1 }' "
                     f"{file_list}"
-                )
-            
+                ) 
                 bash = f"{awk_cmd} | grep -v {grep_ignore}"
             
                 try:
@@ -710,20 +715,24 @@ def checkJobs(workingDir, outputDir, skipEC, skipDAS, skipMissing, skipSmall,
                 flush=True
             )
             if resubmit and not skipEC and not skipDAS and not skipMissing and not skipSmall and not skipErr and not skipOut and not skipZombie:
-                print(f'Resubmitting entire dataset ({total_dataset_jobs} jobs)...', flush=True)
-                condor_monitor = CondorJobCountMonitor(
-                    threshold=0.99 * get_auto_THRESHOLD() + total_dataset_jobs,
-                    verbose=False
-                )
-                condor_monitor.wait_until_jobs_below()
-                full_submit = os.path.join(
-                    workingDir,
-                    "src",
-                    f"{DataSetName}.submit"
-                )
-                os.system(f"condor_submit {full_submit}")
-                # Make sure accounting reflects the full dataset resubmission
-                nJobs = total_dataset_jobs
+                if total_dataset_jobs < maxResub:
+                    print(f'Resubmitting entire dataset ({total_dataset_jobs} jobs)...', flush=True)
+                    condor_monitor = CondorJobCountMonitor(
+                        threshold=0.99 * get_auto_THRESHOLD() + total_dataset_jobs,
+                        verbose=False
+                    )
+                    condor_monitor.wait_until_jobs_below()
+                    full_submit = os.path.join(
+                        workingDir,
+                        "src",
+                        f"{DataSetName}.submit"
+                    )
+                    os.system(f"condor_submit {full_submit}")
+                    # Make sure accounting reflects the full dataset resubmission
+                    nJobs = total_dataset_jobs
+                else:
+                    print(f'Total number of jobs for this dataset ({total_dataset_jobs}) is greater than the maximum allowed submission ({maxResub})!', flush=True)
+                    print(f'In order to resubmit please rerun this script with -l {total_dataset_jobs+1}')
 
         total_resubmit += nJobs
     return total_resubmit
@@ -813,6 +822,7 @@ def main():
                 if f.endswith(".root") and os.path.isfile(os.path.join(output, f))
             ]
 
+        count_check_debug = 0
         for full_path in file_list:
             totalEvents = event_count.countTotalEvents(full_path)
             DAS_events = event_count.getEventsFromDASDatasetNames(full_path)
@@ -823,6 +833,10 @@ def main():
                 print(f'{full_path} failed the DAS check! ({comp_percent}%) Use other options to investigate', flush=True)
             else:
                 print(f'{full_path} passed the DAS check!', flush=True)
+            count_check_debug = count_check_debug + 1
+            if count_check_debug > 99:
+                print("DEBUG stopping for now...")
+                break # debug
 
     else:
         # default checking that's robust

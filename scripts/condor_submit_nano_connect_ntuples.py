@@ -23,6 +23,7 @@ CMSSW_SETUP  = './scripts/cmssw_setup_connect_el9.sh'
 TREE         = "Events"
 USER         = os.environ['USER']
 OUT_BASE     = "/ospool/cms-user/"+USER+"/NTUPLES/Processing"
+#OUT_BASE     = "/stash/user/"+USER+"/NTUPLES/Processing"
 LIST         = "default.list"
 QUEUE        = ""
 SPLIT        = 100
