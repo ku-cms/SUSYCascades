@@ -25,25 +25,17 @@ def process_event_count_dirs(input_dir, output_dir, dryrun):
     print("Subdirs to process",subdirs)
     
     for subdir in subdirs:
-        # Remove '_EventCount' from the subdirectory name
         subdir_cleaned = subdir.replace("_EventCount", "")
-        
-        # Construct and execute hadd command
-        # First hadd intermediate datasets (reduce arg list for final hadd)
-        command = f"python3 scripts/DO_hadd_Meta.py -idir {input_dir}{subdir} -odir {input_dir}../HADD/{subdir} | tee HADD_logs/HADD_{subdir}.debug"
-        run_command(command,dryrun)
-        
-        # Construct input and output paths
-        input_path = os.path.join(input_dir, "../HADD/", subdir, "*.root")
-        output_path = os.path.join(output_dir, f"EventCount_NANO_{subdir_cleaned}.root")
-        
-        # Construct and execute hadd command
-        # Second hadd for entire filetag
-        command = f"hadd -v 1 -f {output_path} {input_path}"
-        run_command(command,dryrun)
-        if not dryrun:
-            unique_hashes = collect_unique_hashes(glob.glob(input_path))
-            write_git_hashes_to_output(output_path, unique_hashes)
+        input_path = os.path.join(input_dir, subdir)
+        output_path = os.path.join(output_dir, subdir_cleaned)
+        os.makedirs(output_path, exist_ok=True)
+        command = (
+            f"python3 scripts/DO_hadd_Meta.py "
+            f"-idir {input_path} "
+            f"-odir {output_path} "
+            f"| tee HADD_logs/HADD_{subdir}.debug"
+        )
+        run_command(command, dryrun) 
 
 if __name__ == "__main__":
     start_time = time.time()
