@@ -822,7 +822,6 @@ def main():
                 if f.endswith(".root") and os.path.isfile(os.path.join(output, f))
             ]
 
-        count_check_debug = 0
         for full_path in file_list:
             totalEvents = event_count.countTotalEvents(full_path)
             DAS_events = event_count.getEventsFromDASDatasetNames(full_path)
@@ -833,10 +832,6 @@ def main():
                 print(f'{full_path} failed the DAS check! ({comp_percent}%) Use other options to investigate', flush=True)
             else:
                 print(f'{full_path} passed the DAS check!', flush=True)
-            count_check_debug = count_check_debug + 1
-            if count_check_debug > 99:
-                print("DEBUG stopping for now...")
-                break # debug
 
     else:
         # default checking that's robust
