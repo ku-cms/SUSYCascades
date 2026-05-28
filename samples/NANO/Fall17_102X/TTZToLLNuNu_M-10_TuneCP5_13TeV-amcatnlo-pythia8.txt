@@ -1,5 +1,5 @@
 root://cmsxrootd.fnal.gov//store/mc/RunIIFall17NanoAODv7/TTZToLLNuNu_M-10_TuneCP5_13TeV-amcatnlo-pythia8/NANOAODSIM/PU2017_12Apr2018_Nano02Apr2020_102X_mc2017_realistic_v8-v1/20000/24AB74CB-E0DE-0043-A108-B680AB592833.root
-davs://eoscms.cern.ch:443/eos/cms/store/mc/RunIIFall17NanoAODv7/TTZToLLNuNu_M-10_TuneCP5_13TeV-amcatnlo-pythia8/NANOAODSIM/PU2017_12Apr2018_Nano02Apr2020_102X_mc2017_realistic_v8-v1/20000/DDDB987D-8EDB-0948-88DD-B8CE28933C23.root
+root://cmsxrootd.fnal.gov//store/mc/RunIIFall17NanoAODv7/TTZToLLNuNu_M-10_TuneCP5_13TeV-amcatnlo-pythia8/NANOAODSIM/PU2017_12Apr2018_Nano02Apr2020_102X_mc2017_realistic_v8-v1/20000/DDDB987D-8EDB-0948-88DD-B8CE28933C23.root
 root://cmsxrootd.fnal.gov//store/mc/RunIIFall17NanoAODv7/TTZToLLNuNu_M-10_TuneCP5_13TeV-amcatnlo-pythia8/NANOAODSIM/PU2017_12Apr2018_Nano02Apr2020_102X_mc2017_realistic_v8-v1/240000/3542A3F1-3E05-5B42-8867-63E6A905C601.root
 root://cmsxrootd.fnal.gov//store/mc/RunIIFall17NanoAODv7/TTZToLLNuNu_M-10_TuneCP5_13TeV-amcatnlo-pythia8/NANOAODSIM/PU2017_12Apr2018_Nano02Apr2020_102X_mc2017_realistic_v8-v1/240000/0B9601B6-2F8D-904C-889A-D708D3F702F7.root
 root://cmsxrootd.fnal.gov//store/mc/RunIIFall17NanoAODv7/TTZToLLNuNu_M-10_TuneCP5_13TeV-amcatnlo-pythia8/NANOAODSIM/PU2017_12Apr2018_Nano02Apr2020_102X_mc2017_realistic_v8-v1/240000/6E8C83B8-D476-3541-956C-30FA2064B7A6.root
