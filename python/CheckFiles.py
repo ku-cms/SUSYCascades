@@ -309,6 +309,7 @@ def checkJobs(workingDir, outputDir, skipEC, skipDAS, skipMissing, skipSmall,
 
     srcDir = os.listdir(os.path.join(workingDir, "src"))
     total_resubmit = 0
+    seen_datasets_cache = {}
 
     # helper to parse tuples from a file path (base filename without extension)
     def path_to_tuple(path):
@@ -378,6 +379,7 @@ def checkJobs(workingDir, outputDir, skipEC, skipDAS, skipMissing, skipSmall,
                 print(f'{DataSetName} failed the DAS check! ({comp_percent}%)\nMissing {NDAS_true-NDAS} events', flush=True)
                 if (not skipDASDataset) and dataset:
                     files_datasets = set()
+                    dataset_set = set(dataset)
                     try:
                         bash = f"find {os.path.join(outputDir, DataSetName)} -type f"
                         files = subprocess.check_output(['bash', '-c', bash], text=True).splitlines()
@@ -401,8 +403,6 @@ def checkJobs(workingDir, outputDir, skipEC, skipDAS, skipMissing, skipSmall,
                                 break
                     except Exception:
                         files_datasets = set()
-
-                    dataset_set = set(dataset)
                     if files_datasets != dataset_set:
                         print(f'{DataSetName} dataset mismatch!', flush=True)
                         print(f'From files:   {sorted(files_datasets)}', flush=True)

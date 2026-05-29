@@ -1,5 +1,5 @@
-make clean
-make cmssw -j 8
+#make clean
+#make cmssw -j 8
 python3 scripts/condor_submit_nano_connect_histograms.py -list samples/NANO/Lists/Summer20UL16APV_106X_SMS.list --verbose --sms
 python3 scripts/condor_submit_nano_connect_histograms.py -list samples/NANO/Lists/Summer20UL16_106X_SMS.list --verbose --sms
 python3 scripts/condor_submit_nano_connect_histograms.py -list samples/NANO/Lists/Summer20UL17_106X_SMS.list --verbose --sms
@@ -15,3 +15,10 @@ python3 scripts/condor_submit_nano_connect_histograms.py -list samples/NANO/List
 python3 scripts/condor_submit_nano_connect_histograms.py -list samples/NANO/Lists/Summer22EE_130X.list --verbose
 python3 scripts/condor_submit_nano_connect_histograms.py -list samples/NANO/Lists/Summer23_130X.list --verbose
 python3 scripts/condor_submit_nano_connect_histograms.py -list samples/NANO/Lists/Summer23BPix_130X.list --verbose
+python3 scripts/condor_submit_nano_connect_histograms.py -list samples/NANO/Lists/Summer24_130X.list --verbose
+#python3 scripts/condor_submit_nano_connect_histograms.py -list samples/NANO/Lists/Summer16_102X.list --verbose
+#python3 scripts/condor_submit_nano_connect_histograms.py -list samples/NANO/Lists/Fall17_102X.list --verbose
+#python3 scripts/condor_submit_nano_connect_histograms.py -list samples/NANO/Lists/Autumn18_102X.list --verbose
+#python3 scripts/condor_submit_nano_connect_histograms.py -list samples/NANO/Lists/Summer16_102X_SMS.list --sms --verbose
+#python3 scripts/condor_submit_nano_connect_histograms.py -list samples/NANO/Lists/Fall17_102X_SMS.list --sms --verbose
+#python3 scripts/condor_submit_nano_connect_histograms.py -list samples/NANO/Lists/Autumn18_102X_SMS.list --sms --verbose

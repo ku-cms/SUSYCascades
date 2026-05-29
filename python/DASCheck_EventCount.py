@@ -58,7 +58,7 @@ if __name__ == "__main__":
     parser.add_argument("-d", action='store_true', help="Check directory of output root files from condor jobs")
     parser.add_argument("-f", action='store_true', help="Check final hadded root files")
     parser.add_argument("-a", "--check_all", action='store_true', help="Check all condor job datasets (passes -a to CheckFiles.py)")
-    parser.add_argument("--threshold", "-t", default=1000, help="min number of jobs running before starting checker")
+    parser.add_argument("--threshold", "-t", default=95000, help="min number of jobs running before starting checker")
     parser.add_argument("--sleep", "-p", default=1, help="time to sleep before starting checker")
     
     args = parser.parse_args()
