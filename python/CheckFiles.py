@@ -673,13 +673,14 @@ def checkJobs(workingDir, outputDir, skipEC, skipDAS, skipMissing, skipSmall,
                                 if store_idx == -1:
                                     continue
                                 rucio_path = "cms:" + rootline[store_idx:]
-                                if has_rule(rucio_path, "T2_US_Nebraska", rucio_env):
+                                if has_rule(rucio_path, "T2_US_Nebraska", rucio_env) or has_rule(rucio_path, "T3_US_FNALLPC", rucio_env):
                                     continue
                                 rucio_files.add(rucio_path)
                 if len(rucio_files) > 0:
                     print(f"Creating {len(rucio_files)} rucio rules")
                     for rfile in sorted(rucio_files):
                         cmd = f'rucio rule add --copies 1 --rses T2_US_Nebraska {rfile}'
+                        #cmd = f'rucio rule add --copies 1 --ask-approval --rses T3_US_FNALLPC {rfile}'
                         try:
                             subprocess.check_call(["bash", "-c", cmd], env=rucio_env)
                         except subprocess.CalledProcessError as e:
