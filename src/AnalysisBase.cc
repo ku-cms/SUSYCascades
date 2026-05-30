@@ -176,7 +176,9 @@ void AnalysisBase<Base>::AddLabels(const string& dataset, const string& filetag,
   std::string DAS_filename_lower = DAS_filename;
   for (char &c : DAS_filename_lower) { c = std::tolower(static_cast<unsigned char>(c)); }
   m_NanoV15 = (DAS_filename_lower.find("nanov15") != std::string::npos ||
-               DAS_filename_lower.find("nanoaodv15") != std::string::npos); 
+               DAS_filename_lower.find("nanoaodv15") != std::string::npos ||
+               m_year >= 2024
+              ); 
 }
 
 template <class Base>
