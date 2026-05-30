@@ -163,6 +163,17 @@ Check that all ECs pass DAS check.
 ```
 nohup python3 python/CheckFiles.py -o root/EventCount/ > final_NTUPLE_check_EC.debug 2>&1 &
 ```
+
+
+### Making btag histograms
+Launch all jobs:
+```
+nohup ./scripts/hist_submitter.sh > submit_hists.debug 2>&1 &
+```
+Helper to check jobs:
+```
+./scripts/hist_checkfiles.sh
+```
 #### User quotas
 Connect:
 
