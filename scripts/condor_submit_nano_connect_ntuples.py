@@ -409,8 +409,8 @@ if __name__ == "__main__":
             extra_EC_str = "*SMS*"
         elif DO_CASCADES:
             extra_EC_str = "*Cascade*"
-        os.system("hadd "+config+"EventCount.root root/EventCount/*"+filetag+extra_EC_str+".root > /dev/null")
-        unique_hashes = collect_unique_hashes(glob.glob("root/EventCount/*"+filetag+extra_EC_str+".root"))
+        os.system("hadd "+config+"EventCount.root root/EventCount/*"+filetag+extra_EC_str+"/*.root > /dev/null")
+        unique_hashes = collect_unique_hashes(glob.glob("root/EventCount/*"+filetag+extra_EC_str+"/*.root"))
         write_git_hashes_to_output(config+"EventCount.root", unique_hashes)
         EVTCNT = "./config/EventCount.root"
 
