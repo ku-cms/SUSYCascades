@@ -522,6 +522,22 @@ std::map<std::string,double> XsecTool::InitMap_Xsec_BKG(){
   return Label2Xsec;
 }
 
+// Helper to normalize "Bin-" style process names to the canonical ordering
+// Remove this once the 2024 "Bin-" style cross sections are available
+std::string XsecTool::NormalizeProcessName(const std::string& process_name) {
+  // Match: <prefix>_Bin-HT-<ht>_<massVar>-<mass>_<suffix>
+  // Rewrite to: <prefix>_<massVar>-<mass>_HT-<ht>_<suffix>
+  static const std::regex binPattern(
+    R"(^((?:DYto2L|WtoLNu)-4Jets)_Bin-(HT-[^_]+)_((?:MLL|MLNu)-[^_]+)_(.+)$)"
+  );
+  std::smatch m;
+  if (std::regex_match(process_name, m, binPattern)) {
+    // m[1]=prefix, m[2]=HT-range, m[3]=mass-range, m[4]=suffix
+    return m[1].str() + "_" + m[3].str() + "_" + m[2].str() + "_" + m[4].str();
+  }
+  return process_name;  // unchanged if pattern doesn't match
+}
+
 void XsecTool::UpdateXsecFromJSON(const std::string& filename){
   std::ifstream file(filename);
   if (!file.is_open()) {
@@ -532,7 +548,10 @@ void XsecTool::UpdateXsecFromJSON(const std::string& filename){
   file >> m_jsonData;  // Read JSON file
 
   for (const auto& item : m_jsonData) {
-    std::string process_name = item["process_name"].get<std::string>();
+    std::string process_name = NormalizeProcessName(
+      item["process_name"].get<std::string>() // remove this when all Bin style 2024 xsecs are available
+    );
+    //std::string process_name = item["process_name"].get<std::string>();
     if (m_Label2Xsec_BKG.find(process_name) != m_Label2Xsec_BKG.end()) {
         // If process is already in the initial map, keep the existing value and continue.
         continue;
@@ -563,7 +582,9 @@ std::vector<ProcessInfo> conflicts;
 
   // Gather all conflicting entries for the process
   for (const auto& item : m_jsonData) {
-    if (item["process_name"] == process_name) {
+    //if (item["process_name"] == process_name) {
+    // remove this when all Bin style 2024 xsecs are available
+    if (NormalizeProcessName(item["process_name"].get<std::string>()) == process_name) {
       ProcessInfo conflict = {
         std::stod(item["cross_section"].get<std::string>()),
         item["accuracy"].get<std::string>(),
