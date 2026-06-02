@@ -681,6 +681,7 @@ def checkJobs(workingDir, outputDir, skipEC, skipDAS, skipMissing, skipSmall,
                     for rfile in sorted(rucio_files):
                         cmd = f'rucio rule add --copies 1 --rses T2_US_Nebraska {rfile}'
                         #cmd = f'rucio rule add --copies 1 --ask-approval --rses T3_US_FNALLPC {rfile}'
+                        #cmd = f'rucio did content add --to-did user.zflowers:/Analyses/Cascades_dataset/USER#datasets {rfile}'
                         try:
                             subprocess.check_call(["bash", "-c", cmd], env=rucio_env)
                         except subprocess.CalledProcessError as e:

@@ -2,7 +2,7 @@ import os
 import ROOT
 
 # Directory where subdirectories and root files are located
-base_dir = "/ospool/cms-user/zflowers/NTUPLES/Processing/Summer23BPix_130X_Essentials/"
+base_dir = "/ospool/cms-user/zflowers/NTUPLES/Processing/Summer24_130X_Quick/"
 
 # List of branch names to check
 branches_to_check = ["weight", "XSec", "Nweight", "Nevent"]

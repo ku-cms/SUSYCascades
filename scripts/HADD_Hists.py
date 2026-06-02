@@ -22,7 +22,7 @@ def process_event_count_dirs(input_dir, output_dir, dryrun):
     subdirs = [d for d in os.listdir(input_dir)
               if os.path.isdir(os.path.join(input_dir, d))
               and not any(excluded in d for excluded in excluded_dirs)]
-    print("Subdirs to process",subdirs)
+    print("Subdirs to process",subdirs,flush=True)
     
     for subdir in subdirs:
         # Construct and execute hadd command
