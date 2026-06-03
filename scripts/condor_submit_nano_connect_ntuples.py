@@ -431,7 +431,10 @@ if __name__ == "__main__":
         XSJSONFILENAME = 'info_XSDB_2025-03-30_14-22.json'
         command = ["xrdfs", "root://cmseos.fnal.gov/", "ls", "/store/user/z374f439/XSectionJSONs/"]
         result = subprocess.run(command, capture_output=True, text=True, check=True)
-        pattern = re.compile(r"/store/user/z374f439/XSectionJSONs/info_XSDB_(\d{4}-\d{2}-\d{2}_\d{2}-\d{2})\.json")
+        #pattern = re.compile(r"/store/user/z374f439/XSectionJSONs/info_XSDB_(\d{4}-\d{2}-\d{2}_\d{2}-\d{2})\.json")
+        # hack to ignore newer json files
+        # remove this hack and go back to the above pattern when xs_json is fixed/updated
+        pattern = re.compile(r"/store/user/z374f439/XSectionJSONs/info_XSDB_(202[0-5]-\d{2}-\d{2}_\d{2}-\d{2})\.json")
         files = pattern.findall(result.stdout)
         if files:
             newest_timestamp = max(files)
