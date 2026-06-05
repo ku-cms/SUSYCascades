@@ -602,11 +602,13 @@ void AnalysisBase<Base>::AddJMEFolder(const std::string& jmefold) {
     m_JMETool.BuildJERMap(jmefold);
   } else {
     std::string METPhi_file;
-    if(m_year < 2019) METPhi_file = find_clib_file(jmefold, "met.json.gz");
-    else if(m_year == 2022 && !m_IsEE) METPhi_file = find_clib_file(jmefold, "met_xyCorrections_2022_2022.json.gz");
-    else if(m_year == 2022 && m_IsEE) METPhi_file = find_clib_file(jmefold, "met_xyCorrections_2022_2022EE.json.gz");
-    else if(m_year == 2023 && !m_IsBPix) METPhi_file = find_clib_file(jmefold, "met_xyCorrections_2023_2023.json.gz");
-    else if(m_year == 2023 && m_IsBPix) METPhi_file = find_clib_file(jmefold, "met_xyCorrections_2023_2023BPix.json.gz");
+    std::string use_jmefold = jmefold;
+    //if(m_year == 2024) use_jmefold = "/cvmfs/cms-griddata.cern.ch/cat/metadata/JME/Run3-24CDEReprocessingFGHIPrompt-Summer24-NanoAODv15/2025-12-02";
+    if(m_year < 2019) METPhi_file = find_clib_file(use_jmefold, "met.json.gz");
+    else if(m_year == 2022 && !m_IsEE) METPhi_file = find_clib_file(use_jmefold, "met_xyCorrections_2022_2022.json.gz");
+    else if(m_year == 2022 && m_IsEE) METPhi_file = find_clib_file(use_jmefold, "met_xyCorrections_2022_2022EE.json.gz");
+    else if(m_year == 2023 && !m_IsBPix) METPhi_file = find_clib_file(use_jmefold, "met_xyCorrections_2023_2023.json.gz");
+    else if(m_year == 2023 && m_IsBPix) METPhi_file = find_clib_file(use_jmefold, "met_xyCorrections_2023_2023BPix.json.gz");
     // placeholder
     else if(m_year > 2023) METPhi_file = "/cvmfs/cms-griddata.cern.ch/cat/metadata/JME/Run3-23DSep23-Summer23BPix-NanoAODv12/latest/met_xyCorrections_2023_2023BPix.json.gz";
     m_cset_METPhi = correction::CorrectionSet::from_file(METPhi_file);
@@ -4228,6 +4230,7 @@ ParticleList AnalysisBase<NANOULBase>::GetJetsMET(TVector3& MET, int id) {
   jetsForMet.reserve(static_cast<size_t>(nAk4Jets));
   jersForMet.reserve(static_cast<size_t>(nAk4Jets));
   long long RunNum = static_cast<int>(GetRunNum());
+  long long EventNum = static_cast<int>(GetEventNum());
 
   for (int j = 0; j < nAk4Jets; ++j) {
     JecApplication::JetForMet v;
@@ -4242,7 +4245,7 @@ ParticleList AnalysisBase<NANOULBase>::GetJetsMET(TVector3& MET, int id) {
 
     // JER inputs for MET propagation
     JecApplication::JerInputs jerIn;
-    jerIn.event = static_cast<unsigned long long>(RunNum);
+    jerIn.event = static_cast<unsigned long long>(EventNum);
     const int genIdx = Jet_genJetIdx[j];
     if (genIdx > -1 && static_cast<UInt_t>(genIdx) < static_cast<UInt_t>(nGenJet)) {
       jerIn.hasGen = true;
@@ -4353,7 +4356,7 @@ ParticleList AnalysisBase<NANOULBase>::GetJetsMET(TVector3& MET, int id) {
     m_jmeYearKey, m_IsData, m_JMEera, RunNum, RawMET_pt, RawMET_phi, jetsForMet, jersForMet, fixedGridRhoFastjetAll, systOpts, false);
 
   //int NPV = static_cast<int>(GetNPV());
-  //ApplyMETPhiCorrections(p4CorrectedMET, static_cast<double>(RunNum), static_cast<double>(NPV), "nom");
+  //ApplyMETPhiCorrections(p4CorrectedMET, static_cast<double>(EventNum), static_cast<double>(NPV), "nom");
 
   MET.SetPtEtaPhi(p4CorrectedMET.Pt(), 0.0, p4CorrectedMET.Phi());
 
@@ -4853,6 +4856,7 @@ double AnalysisBase<NANORun3>::GetBtagSFWeight(const ParticleList& jets, bool HF
 
 template <>
 double AnalysisBase<NANORun3>::GetMETTriggerSFWeight(double MET, double HT, int Nele, int Nmu, int updown){
+if(m_year >= 2024) return 1.; // hack until 2024 SFs available
   if(IsData()) return 1.;
   if(Nele > 2) Nele = 2;
   if(IsFastSim())
@@ -4984,6 +4988,7 @@ ParticleList AnalysisBase<NANORun3>::GetJetsMET(TVector3& MET, int id) {
   jetsForMet.reserve(static_cast<size_t>(nAk4Jets));
   jersForMet.reserve(static_cast<size_t>(nAk4Jets));
   long long RunNum = static_cast<int>(GetRunNum());
+  long long EventNum = static_cast<int>(GetEventNum());
 
   for (int j = 0; j < nAk4Jets; ++j) {
     JecApplication::JetForMet v;
@@ -4998,7 +5003,7 @@ ParticleList AnalysisBase<NANORun3>::GetJetsMET(TVector3& MET, int id) {
 
     // JER inputs for MET propagation
     JecApplication::JerInputs jerIn;
-    jerIn.event = static_cast<unsigned long long>(RunNum);
+    jerIn.event = static_cast<unsigned long long>(EventNum);
     const int genIdx = Jet_genJetIdx[j];
     if (genIdx > -1 && static_cast<UInt_t>(genIdx) < static_cast<UInt_t>(nGenJet)) {
       jerIn.hasGen = true;

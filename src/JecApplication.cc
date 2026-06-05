@@ -6,7 +6,7 @@ namespace JecApplication {
 
 // ---------------- Debug helper ----------------
 static inline void dbg(bool on, const std::string& msg) {
-    if (on) std::cout << "     " << msg << '\n';
+    //if (on) std::cout << "     " << msg << '\n';
 }
 
 // ---------------- Context builders ----------------
@@ -30,7 +30,7 @@ JecContext Applier::makeContextData(JecConfigReader::JecConfig& cfg,
     ctx.isDebug = debug;
     ctx.runNumber = run;
     ctx.jes = JesHandles{ jesEra.l1FastJet, jesEra.l2Relative, jesEra.l2l3Residual };
-    ctx.jer = JerHandles{ std::nullopt, std::nullopt, cfg.getJerSmearRef() };
+    ctx.jer = JerHandles{ std::nullopt, std::nullopt, std::nullopt, cfg.getJerSmearRef() };
     return ctx;
 }
 
@@ -48,7 +48,7 @@ JecContext Applier::makeContextMc(JecConfigReader::JecConfig& cfg,
     ctx.isData = false;
     ctx.isDebug = debug;
     ctx.jes = JesHandles{ jes.l1FastJet, jes.l2Relative, std::nullopt };
-    ctx.jer = JerHandles{ jer.ptResolution, jer.scaleFactor, cfg.getJerSmearRef() };
+    ctx.jer = JerHandles{ jer.ptResolution, jer.scaleFactor, jer.sfUncertainty, cfg.getJerSmearRef() };
     return ctx;
 }
 
@@ -83,14 +83,7 @@ double Applier::jesFactorNominal(const JesInputs& j) const {
 
     // L1FastJet
     double ptAfter = ptRaw;
-    double c1 = 1.0;
-    if (ctx_.isData && requiresRunBasedL1FastJet(ctx_.year)) {
-        const double run = ctx_.runNumber.value_or(0.0);
-        c1 = ctx_.jes.l1FastJet->evaluate({ run, j.area, j.eta, ptAfter, j.rho });
-    }
-    else{
-        c1 = ctx_.jes.l1FastJet->evaluate({ j.area, j.eta, ptAfter, j.rho });
-    }
+    const double c1 = ctx_.jes.l1FastJet->evaluate({ j.area, j.eta, ptAfter, j.rho });
     ptAfter *= c1;
     dbg(ctx_.isDebug, "JES L1FastJet: c1=" + std::to_string(c1) +
                       ", ptAfter=" + std::to_string(ptAfter));
@@ -162,17 +155,36 @@ double Applier::jerFactor(const JesInputs& jAfterJes,
 
     const double reso = (*ctx_.jer.ptResolution)->evaluate({ jAfterJes.eta, jAfterJes.pt, jAfterJes.rho });
 
+    auto evalScaleFactor = [&](const std::string& var) {
+        try {
+            return (*ctx_.jer.scaleFactor)->evaluate({ jAfterJes.eta, jAfterJes.pt });
+        } catch (const std::exception&) {
+            if (usesPuppiMet(ctx_.year)) {
+                return (*ctx_.jer.scaleFactor)->evaluate({ jAfterJes.eta, jAfterJes.pt, var });
+            }
+            return (*ctx_.jer.scaleFactor)->evaluate({ jAfterJes.eta, var });
+        }
+    };
+
     double sf = 1.0;
-    if (usesPuppiMet(ctx_.year)) {
-        sf = (*ctx_.jer.scaleFactor)->evaluate({ jAfterJes.eta, jAfterJes.pt, useVar });
+    double sfUnc = 0.0;
+    if (ctx_.jer.sfUncertainty) {
+        sf = evalScaleFactor("nom");
+        sfUnc = (*ctx_.jer.sfUncertainty)->evaluate({ jAfterJes.eta, jAfterJes.pt });
+        if (useVar == "up") {
+            sf = sf*(1+sfUnc);
+        } else if (useVar == "down") {
+            sf = sf*(1-sfUnc);
+        }
     } else {
-        sf = (*ctx_.jer.scaleFactor)->evaluate({ jAfterJes.eta, useVar });
+        sf = evalScaleFactor(useVar);
     }
 
     dbg(ctx_.isDebug, "JER inputs: useVar=" + useVar +
                       ", pT=" + std::to_string(jAfterJes.pt) +
                       ", reso=" + std::to_string(reso) +
-                      ", sf=" + std::to_string(sf));
+                      ", sf=" + std::to_string(sf) +
+                      ", sfUnc=" + std::to_string(sfUnc));
 
     bool matched = false;
     double genPtForSmear = -1.0;
@@ -233,18 +245,7 @@ TLorentzVector Applier::correctedMet(const MetInputs& met,
 
         // --- L1 ---
         double ptCorr = ptRawMinusMuon;
-        double c1 = 1.0;
-        
-        if (ctx_.isData && requiresRunBasedL1FastJet(ctx_.year)) {
-            const double run = ctx_.runNumber.value_or(0.0);
-            c1 = ctx_.jes.l1FastJet->evaluate(
-                { run, v.area, v.eta, ptCorr, rhoForJets }
-            );
-        } else {
-            c1 = ctx_.jes.l1FastJet->evaluate(
-                { v.area, v.eta, ptCorr, rhoForJets }
-            );
-        }
+        const double c1 = ctx_.jes.l1FastJet->evaluate({ v.area, v.eta, ptCorr, rhoForJets });
         ptCorr *= c1;
         const double ptCorrL1 = ptCorr;
         dbg(ctx_.isDebug, "  L1 c1=" + std::to_string(c1) +
@@ -321,5 +322,4 @@ TLorentzVector Applier::correctedMet(const MetInputs& met,
 }
 
 } // namespace JecApplication
-
 

@@ -3,6 +3,7 @@
 #include <nlohmann/json.hpp>
 #include <correction.h>
 
+#include <iostream>
 #include <fstream>
 #include <string>
 #include <optional>
@@ -43,6 +44,7 @@ struct JerMcRefs {
     std::shared_ptr<correction::CorrectionSet> cs;
     correction::Correction::Ref ptResolution;
     correction::Correction::Ref scaleFactor;
+    std::optional<correction::Correction::Ref> sfUncertainty;
 };
 
 struct JerBin { double etaMin{}, etaMax{}, ptMin{}, ptMax{}; };
@@ -65,7 +67,7 @@ class JecConfig {
 public:
     /// Construct with config paths and optional JER smearing JSON path
     explicit JecConfig(ConfigPaths paths,
-                       std::string jerSmearPath = "data/JME/jer_smear.json.gz")
+                       std::string jerSmearPath = "../jer_smear.json.gz")
       : paths_(std::move(paths)), jerSmearPath_(std::move(jerSmearPath)) {}
 
     JecConfig(const JecConfig&)            = delete;
@@ -182,6 +184,8 @@ private:
     [[nodiscard]] const nlohmann::json& requireYear(const std::string& year,
                                                     JetKind kind);
     [[nodiscard]] static std::string requireString(const nlohmann::json& j, const char* key);
+    [[nodiscard]] static std::optional<std::string> optionalString(const nlohmann::json& j,
+                                                                   const char* key);
 
     [[nodiscard]] static correction::Correction::Ref
     safeAt(const std::shared_ptr<correction::CorrectionSet>& cs, const std::string& name);
@@ -211,5 +215,4 @@ private:
 };
 
 } // namespace JecConfigReader
-
 

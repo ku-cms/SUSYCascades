@@ -53,7 +53,7 @@ private:
   ProcessInfo ResolveXsecConflict(const std::string& process_name);
   bool IsMCMMatchFileTag(const std::string& MCM);
   // remove this when all Bin style 2024 xsecs are available
-  std::string NormalizeProcessName(const std::string& process_name);
+  std::string NormalizeProcessName(const std::string& process_name) const;
   
 };
 

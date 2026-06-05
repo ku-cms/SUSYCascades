@@ -79,6 +79,7 @@ JecConfig::requireYear(const std::string& year, JetKind kind){
         return *it;
     }
 
+/*
     // 2) Fallback: if AK8 is missing this year, try AK4
     if (kind == JetKind::AK8) {
         const auto& fallbackCfg = cfg(JetKind::AK4);
@@ -89,6 +90,7 @@ JecConfig::requireYear(const std::string& year, JetKind kind){
             return *it2;
         }
     }
+*/
 
     // 3) Nothing found → hard error
     throw std::runtime_error(
@@ -106,12 +108,20 @@ std::string JecConfig::requireString(const nlohmann::json& j, const char* key) {
     return it->get<std::string>();
 }
 
+std::optional<std::string> JecConfig::optionalString(const nlohmann::json& j, const char* key) {
+    auto it = j.find(key);
+    if (it == j.end() || it->is_null()) return std::nullopt;
+    if (!it->is_string())
+        throw std::runtime_error(std::string("Optional key must be a string when present: ") + key);
+    return it->get<std::string>();
+}
+
 correction::Correction::Ref
 JecConfig::safeAt(const std::shared_ptr<correction::CorrectionSet>& cs,
                   const std::string& name) {
     try { return cs->at(name); }
     catch (const std::exception& e) {
-        throw std::runtime_error("Failed to retrieve correction \"" + name + "\": " + std::string(e.what()));
+        throw std::runtime_error("[JecConfig::safeAt]: Failed to retrieve correction \"" + name + "\": " + std::string(e.what()));
     }
 }
 
@@ -241,6 +251,7 @@ JerMcRefs JecConfig::getJerNominalMcRefs(const std::string& year, JetKind kind) 
 
     const auto reso = requireString(jer, "tagNamePtResolution");
     const auto sf   = requireString(jer, "tagNameJerScaleFactor");
+    const auto sfUnc = optionalString(jer, "tagNameJerSFUncertainty");
 
     const auto jercPath = requireString(y, "jercJsonPath");
     auto cs = loadCsCached(jercPath);
@@ -249,6 +260,16 @@ JerMcRefs JecConfig::getJerNominalMcRefs(const std::string& year, JetKind kind) 
     r.cs           = cs;
     r.ptResolution = safeAt(cs, reso);
     r.scaleFactor  = safeAt(cs, sf);
+    if (sfUnc) {
+        try {
+            r.sfUncertainty = safeAt(cs, *sfUnc);
+        } catch (const std::exception& e) {
+            std::cerr << "[JecConfig] Warning: JER SF uncertainty correction \""
+                      << *sfUnc << "\" is not available in " << jercPath
+                      << ". JER up/down variations will fall back to the scale-factor payload only: "
+                      << e.what() << '\n';
+        }
+    }
     return r;
 }
 
@@ -318,5 +339,4 @@ JerUncSets JecConfig::getJerUncSetsMc(const std::string& year, JetKind kind) {
 }
 
 } // namespace JecConfigReader
-
 

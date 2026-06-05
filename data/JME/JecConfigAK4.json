@@ -472,66 +472,67 @@
     "ApplyOnData": {
       "JesNominal": {
         "Era2022PreAll": {
-          "tagNameL1FastJet": "Summer22_22Sep2023_V3_DATA_L1FastJet_AK4PFPuppi",
-          "tagNameL2Relative": "Summer22_22Sep2023_V3_DATA_L2Relative_AK4PFPuppi",
-          "tagNameL2L3Residual": "Summer22_22Sep2023_V3_DATA_L2L3Residual_AK4PFPuppi"
+          "tagNameL1FastJet": "Summer22_22Sep2023_V4_DATA_L1FastJet_AK4PFPuppi",
+          "tagNameL2Relative": "Summer22_22Sep2023_V4_DATA_L2Relative_AK4PFPuppi",
+          "tagNameL2L3Residual": "Summer22_22Sep2023_V4_DATA_L2L3Residual_AK4PFPuppi"
         }
       }
     },
     "ApplyOnMC": {
       "JesNominal": {
-        "tagNameL1FastJet": "Summer22_22Sep2023_V3_MC_L1FastJet_AK4PFPuppi",
-        "tagNameL2Relative": "Summer22_22Sep2023_V3_MC_L2Relative_AK4PFPuppi"
+        "tagNameL1FastJet": "Summer22_22Sep2023_V4_MC_L1FastJet_AK4PFPuppi",
+        "tagNameL2Relative": "Summer22_22Sep2023_V4_MC_L2Relative_AK4PFPuppi"
       },
       "JerNominal": {
-        "tagNamePtResolution": "Summer22_22Sep2023_JRV1_MC_PtResolution_AK4PFPuppi",
-        "tagNameJerScaleFactor": "Summer22_22Sep2023_JRV1_MC_ScaleFactor_AK4PFPuppi"
+        "tagNamePtResolution": "Summer22_22Sep2023_JRV2_MC_PtResolution_AK4PFPuppi",
+        "tagNameJerScaleFactor": "Summer22_22Sep2023_JRV2_MC_ScaleFactor_AK4PFPuppi",
+        "tagNameJerSFUncertainty": "Summer22_22Sep2023_JRV2_MC_SFUncertainty_AK4PFPuppi"
       },
       "JesUncertaintySet": {
         "JesUncertaintySetFull": {
-          "CMS_scale_j_AbsoluteMPFBias": "Summer22_22Sep2023_V3_MC_AbsoluteMPFBias_AK4PFPuppi",
-          "CMS_scale_j_AbsoluteScale": "Summer22_22Sep2023_V3_MC_AbsoluteScale_AK4PFPuppi",
-          "CMS_scale_j_AbsoluteStat_2022": "Summer22_22Sep2023_V3_MC_AbsoluteStat_AK4PFPuppi",
-          "CMS_scale_j_FlavorQCD": "Summer22_22Sep2023_V3_MC_FlavorQCD_AK4PFPuppi",
-          "CMS_scale_j_Fragmentation": "Summer22_22Sep2023_V3_MC_Fragmentation_AK4PFPuppi",
-          "CMS_scale_j_PileUpDataMC": "Summer22_22Sep2023_V3_MC_PileUpDataMC_AK4PFPuppi",
-          "CMS_scale_j_PileUpPtBB": "Summer22_22Sep2023_V3_MC_PileUpPtBB_AK4PFPuppi",
-          "CMS_scale_j_PileUpPtEC1": "Summer22_22Sep2023_V3_MC_PileUpPtEC1_AK4PFPuppi",
-          "CMS_scale_j_PileUpPtEC2": "Summer22_22Sep2023_V3_MC_PileUpPtEC2_AK4PFPuppi",
-          "CMS_scale_j_PileUpPtHF": "Summer22_22Sep2023_V3_MC_PileUpPtHF_AK4PFPuppi",
-          "CMS_scale_j_PileUpPtRef": "Summer22_22Sep2023_V3_MC_PileUpPtRef_AK4PFPuppi",
-          "CMS_scale_j_RelativeFSR": "Summer22_22Sep2023_V3_MC_RelativeFSR_AK4PFPuppi",
-          "CMS_scale_j_RelativeJEREC1_2022": "Summer22_22Sep2023_V3_MC_RelativeJEREC1_AK4PFPuppi",
-          "CMS_scale_j_RelativeJEREC2_2022": "Summer22_22Sep2023_V3_MC_RelativeJEREC2_AK4PFPuppi",
-          "CMS_scale_j_RelativeJERHF": "Summer22_22Sep2023_V3_MC_RelativeJERHF_AK4PFPuppi",
-          "CMS_scale_j_RelativePtBB": "Summer22_22Sep2023_V3_MC_RelativePtBB_AK4PFPuppi",
-          "CMS_scale_j_RelativePtEC1_2022": "Summer22_22Sep2023_V3_MC_RelativePtEC1_AK4PFPuppi",
-          "CMS_scale_j_RelativePtEC2_2022": "Summer22_22Sep2023_V3_MC_RelativePtEC2_AK4PFPuppi",
-          "CMS_scale_j_RelativePtHF": "Summer22_22Sep2023_V3_MC_RelativePtHF_AK4PFPuppi",
-          "CMS_scale_j_RelativeBal": "Summer22_22Sep2023_V3_MC_RelativeBal_AK4PFPuppi",
-          "CMS_scale_j_RelativeSample_2022": "Summer22_22Sep2023_V3_MC_RelativeSample_AK4PFPuppi",
-          "CMS_scale_j_RelativeStatEC_2022": "Summer22_22Sep2023_V3_MC_RelativeStatEC_AK4PFPuppi",
-          "CMS_scale_j_RelativeStatFSR_2022": "Summer22_22Sep2023_V3_MC_RelativeStatFSR_AK4PFPuppi",
-          "CMS_scale_j_RelativeStatHF_2022": "Summer22_22Sep2023_V3_MC_RelativeStatHF_AK4PFPuppi",
-          "CMS_scale_j_SinglePionECAL": "Summer22_22Sep2023_V3_MC_SinglePionECAL_AK4PFPuppi",
-          "CMS_scale_j_SinglePionHCAL": "Summer22_22Sep2023_V3_MC_SinglePionHCAL_AK4PFPuppi",
-          "CMS_scale_j_TimePtEta_2022": "Summer22_22Sep2023_V3_MC_TimePtEta_AK4PFPuppi"
+          "CMS_scale_j_AbsoluteMPFBias": "Summer22_22Sep2023_V4_MC_AbsoluteMPFBias_AK4PFPuppi",
+          "CMS_scale_j_AbsoluteScale": "Summer22_22Sep2023_V4_MC_AbsoluteScale_AK4PFPuppi",
+          "CMS_scale_j_AbsoluteStat_2022": "Summer22_22Sep2023_V4_MC_AbsoluteStat_AK4PFPuppi",
+          "CMS_scale_j_FlavorQCD": "Summer22_22Sep2023_V4_MC_FlavorQCD_AK4PFPuppi",
+          "CMS_scale_j_Fragmentation": "Summer22_22Sep2023_V4_MC_Fragmentation_AK4PFPuppi",
+          "CMS_scale_j_PileUpDataMC": "Summer22_22Sep2023_V4_MC_PileUpDataMC_AK4PFPuppi",
+          "CMS_scale_j_PileUpPtBB": "Summer22_22Sep2023_V4_MC_PileUpPtBB_AK4PFPuppi",
+          "CMS_scale_j_PileUpPtEC1": "Summer22_22Sep2023_V4_MC_PileUpPtEC1_AK4PFPuppi",
+          "CMS_scale_j_PileUpPtEC2": "Summer22_22Sep2023_V4_MC_PileUpPtEC2_AK4PFPuppi",
+          "CMS_scale_j_PileUpPtHF": "Summer22_22Sep2023_V4_MC_PileUpPtHF_AK4PFPuppi",
+          "CMS_scale_j_PileUpPtRef": "Summer22_22Sep2023_V4_MC_PileUpPtRef_AK4PFPuppi",
+          "CMS_scale_j_RelativeFSR": "Summer22_22Sep2023_V4_MC_RelativeFSR_AK4PFPuppi",
+          "CMS_scale_j_RelativeJEREC1_2022": "Summer22_22Sep2023_V4_MC_RelativeJEREC1_AK4PFPuppi",
+          "CMS_scale_j_RelativeJEREC2_2022": "Summer22_22Sep2023_V4_MC_RelativeJEREC2_AK4PFPuppi",
+          "CMS_scale_j_RelativeJERHF": "Summer22_22Sep2023_V4_MC_RelativeJERHF_AK4PFPuppi",
+          "CMS_scale_j_RelativePtBB": "Summer22_22Sep2023_V4_MC_RelativePtBB_AK4PFPuppi",
+          "CMS_scale_j_RelativePtEC1_2022": "Summer22_22Sep2023_V4_MC_RelativePtEC1_AK4PFPuppi",
+          "CMS_scale_j_RelativePtEC2_2022": "Summer22_22Sep2023_V4_MC_RelativePtEC2_AK4PFPuppi",
+          "CMS_scale_j_RelativePtHF": "Summer22_22Sep2023_V4_MC_RelativePtHF_AK4PFPuppi",
+          "CMS_scale_j_RelativeBal": "Summer22_22Sep2023_V4_MC_RelativeBal_AK4PFPuppi",
+          "CMS_scale_j_RelativeSample_2022": "Summer22_22Sep2023_V4_MC_RelativeSample_AK4PFPuppi",
+          "CMS_scale_j_RelativeStatEC_2022": "Summer22_22Sep2023_V4_MC_RelativeStatEC_AK4PFPuppi",
+          "CMS_scale_j_RelativeStatFSR_2022": "Summer22_22Sep2023_V4_MC_RelativeStatFSR_AK4PFPuppi",
+          "CMS_scale_j_RelativeStatHF_2022": "Summer22_22Sep2023_V4_MC_RelativeStatHF_AK4PFPuppi",
+          "CMS_scale_j_SinglePionECAL": "Summer22_22Sep2023_V4_MC_SinglePionECAL_AK4PFPuppi",
+          "CMS_scale_j_SinglePionHCAL": "Summer22_22Sep2023_V4_MC_SinglePionHCAL_AK4PFPuppi",
+          "CMS_scale_j_TimePtEta_2022": "Summer22_22Sep2023_V4_MC_TimePtEta_AK4PFPuppi"
         },
         "JesUncertaintySetReduced": {
-          "CMS_scale_j_FlavorQCD": "Summer22_22Sep2023_V3_MC_Regrouped_FlavorQCD_AK4PFPuppi",
-          "CMS_scale_j_RelativeBal": "Summer22_22Sep2023_V3_MC_Regrouped_RelativeBal_AK4PFPuppi",
-          "CMS_scale_j_HF": "Summer22_22Sep2023_V3_MC_Regrouped_HF_AK4PFPuppi",
-          "CMS_scale_j_BBEC1": "Summer22_22Sep2023_V3_MC_Regrouped_BBEC1_AK4PFPuppi",
-          "CMS_scale_j_EC2": "Summer22_22Sep2023_V3_MC_Regrouped_EC2_AK4PFPuppi",
-          "CMS_scale_j_Absolute": "Summer22_22Sep2023_V3_MC_Regrouped_Absolute_AK4PFPuppi",
-          "CMS_scale_j_BBEC1_2022": "Summer22_22Sep2023_V3_MC_Regrouped_BBEC1_2022_AK4PFPuppi",
-          "CMS_scale_j_RelativeSample_2022": "Summer22_22Sep2023_V3_MC_Regrouped_RelativeSample_2022_AK4PFPuppi",
-          "CMS_scale_j_EC2_2022": "Summer22_22Sep2023_V3_MC_Regrouped_EC2_2022_AK4PFPuppi",
-          "CMS_scale_j_HF_2022": "Summer22_22Sep2023_V3_MC_Regrouped_HF_2022_AK4PFPuppi",
-          "CMS_scale_j_Absolute_2022": "Summer22_22Sep2023_V3_MC_Regrouped_Absolute_2022_AK4PFPuppi"
+          "CMS_scale_j_FlavorQCD": "Summer22_22Sep2023_V4_MC_Regrouped_FlavorQCD_AK4PFPuppi",
+          "CMS_scale_j_RelativeBal": "Summer22_22Sep2023_V4_MC_Regrouped_RelativeBal_AK4PFPuppi",
+          "CMS_scale_j_HF": "Summer22_22Sep2023_V4_MC_Regrouped_HF_AK4PFPuppi",
+          "CMS_scale_j_BBEC1": "Summer22_22Sep2023_V4_MC_Regrouped_BBEC1_AK4PFPuppi",
+          "CMS_scale_j_EC2": "Summer22_22Sep2023_V4_MC_Regrouped_EC2_AK4PFPuppi",
+          "CMS_scale_j_Absolute": "Summer22_22Sep2023_V4_MC_Regrouped_Absolute_AK4PFPuppi",
+          "CMS_scale_j_BBEC1_2022": "Summer22_22Sep2023_V4_MC_Regrouped_BBEC1_2022_AK4PFPuppi",
+          "CMS_scale_j_RelativeSample_2022": "Summer22_22Sep2023_V4_MC_Regrouped_RelativeSample_2022_AK4PFPuppi",
+          "CMS_scale_j_EC2_2022": "Summer22_22Sep2023_V4_MC_Regrouped_EC2_2022_AK4PFPuppi",
+          "CMS_scale_j_HF_2022": "Summer22_22Sep2023_V4_MC_Regrouped_HF_2022_AK4PFPuppi",
+          "CMS_scale_j_Absolute_2022": "Summer22_22Sep2023_V4_MC_Regrouped_Absolute_2022_AK4PFPuppi"
         },
         "JesUncertaintySetTotal": {
-          "CMS_scale_j_Total": "Summer22_22Sep2023_V3_MC_Total_AK4PFPuppi"
+          "CMS_scale_j_Total": "Summer22_22Sep2023_V4_MC_Total_AK4PFPuppi"
         }
       },
       "JerUncertaintySet": {
@@ -589,66 +590,67 @@
     "ApplyOnData": {
       "JesNominal": {
         "Era2022PostAll": {
-          "tagNameL1FastJet": "Summer22EE_22Sep2023_V3_DATA_L1FastJet_AK4PFPuppi",
-          "tagNameL2Relative": "Summer22EE_22Sep2023_V3_DATA_L2Relative_AK4PFPuppi",
-          "tagNameL2L3Residual": "Summer22EE_22Sep2023_V3_DATA_L2L3Residual_AK4PFPuppi"
+          "tagNameL1FastJet": "Summer22EE_22Sep2023_V4_DATA_L1FastJet_AK4PFPuppi",
+          "tagNameL2Relative": "Summer22EE_22Sep2023_V4_DATA_L2Relative_AK4PFPuppi",
+          "tagNameL2L3Residual": "Summer22EE_22Sep2023_V4_DATA_L2L3Residual_AK4PFPuppi"
         }
       }
     },
     "ApplyOnMC": {
       "JesNominal": {
-        "tagNameL1FastJet": "Summer22EE_22Sep2023_V3_MC_L1FastJet_AK4PFPuppi",
-        "tagNameL2Relative": "Summer22EE_22Sep2023_V3_MC_L2Relative_AK4PFPuppi"
+        "tagNameL1FastJet": "Summer22EE_22Sep2023_V4_MC_L1FastJet_AK4PFPuppi",
+        "tagNameL2Relative": "Summer22EE_22Sep2023_V4_MC_L2Relative_AK4PFPuppi"
       },
       "JerNominal": {
-        "tagNamePtResolution": "Summer22EE_22Sep2023_JRV1_MC_PtResolution_AK4PFPuppi",
-        "tagNameJerScaleFactor": "Summer22EE_22Sep2023_JRV1_MC_ScaleFactor_AK4PFPuppi"
+        "tagNamePtResolution": "Summer22EE_22Sep2023_JRV2_MC_PtResolution_AK4PFPuppi",
+        "tagNameJerScaleFactor": "Summer22EE_22Sep2023_JRV2_MC_ScaleFactor_AK4PFPuppi",
+        "tagNameJerSFUncertainty": "Summer22EE_22Sep2023_JRV2_MC_SFUncertainty_AK4PFPuppi"
       },
       "JesUncertaintySet": {
         "JesUncertaintySetFull": {
-          "CMS_scale_j_AbsoluteMPFBias": "Summer22EE_22Sep2023_V3_MC_AbsoluteMPFBias_AK4PFPuppi",
-          "CMS_scale_j_AbsoluteScale": "Summer22EE_22Sep2023_V3_MC_AbsoluteScale_AK4PFPuppi",
-          "CMS_scale_j_AbsoluteStat_2022EE": "Summer22EE_22Sep2023_V3_MC_AbsoluteStat_AK4PFPuppi",
-          "CMS_scale_j_FlavorQCD": "Summer22EE_22Sep2023_V3_MC_FlavorQCD_AK4PFPuppi",
-          "CMS_scale_j_Fragmentation": "Summer22EE_22Sep2023_V3_MC_Fragmentation_AK4PFPuppi",
-          "CMS_scale_j_PileUpDataMC": "Summer22EE_22Sep2023_V3_MC_PileUpDataMC_AK4PFPuppi",
-          "CMS_scale_j_PileUpPtBB": "Summer22EE_22Sep2023_V3_MC_PileUpPtBB_AK4PFPuppi",
-          "CMS_scale_j_PileUpPtEC1": "Summer22EE_22Sep2023_V3_MC_PileUpPtEC1_AK4PFPuppi",
-          "CMS_scale_j_PileUpPtEC2": "Summer22EE_22Sep2023_V3_MC_PileUpPtEC2_AK4PFPuppi",
-          "CMS_scale_j_PileUpPtHF": "Summer22EE_22Sep2023_V3_MC_PileUpPtHF_AK4PFPuppi",
-          "CMS_scale_j_PileUpPtRef": "Summer22EE_22Sep2023_V3_MC_PileUpPtRef_AK4PFPuppi",
-          "CMS_scale_j_RelativeFSR": "Summer22EE_22Sep2023_V3_MC_RelativeFSR_AK4PFPuppi",
-          "CMS_scale_j_RelativeJEREC1_2022EE": "Summer22EE_22Sep2023_V3_MC_RelativeJEREC1_AK4PFPuppi",
-          "CMS_scale_j_RelativeJEREC2_2022EE": "Summer22EE_22Sep2023_V3_MC_RelativeJEREC2_AK4PFPuppi",
-          "CMS_scale_j_RelativeJERHF": "Summer22EE_22Sep2023_V3_MC_RelativeJERHF_AK4PFPuppi",
-          "CMS_scale_j_RelativePtBB": "Summer22EE_22Sep2023_V3_MC_RelativePtBB_AK4PFPuppi",
-          "CMS_scale_j_RelativePtEC1_2022EE": "Summer22EE_22Sep2023_V3_MC_RelativePtEC1_AK4PFPuppi",
-          "CMS_scale_j_RelativePtEC2_2022EE": "Summer22EE_22Sep2023_V3_MC_RelativePtEC2_AK4PFPuppi",
-          "CMS_scale_j_RelativePtHF": "Summer22EE_22Sep2023_V3_MC_RelativePtHF_AK4PFPuppi",
-          "CMS_scale_j_RelativeBal": "Summer22EE_22Sep2023_V3_MC_RelativeBal_AK4PFPuppi",
-          "CMS_scale_j_RelativeSample_2022EE": "Summer22EE_22Sep2023_V3_MC_RelativeSample_AK4PFPuppi",
-          "CMS_scale_j_RelativeStatEC_2022EE": "Summer22EE_22Sep2023_V3_MC_RelativeStatEC_AK4PFPuppi",
-          "CMS_scale_j_RelativeStatFSR_2022EE": "Summer22EE_22Sep2023_V3_MC_RelativeStatFSR_AK4PFPuppi",
-          "CMS_scale_j_RelativeStatHF_2022EE": "Summer22EE_22Sep2023_V3_MC_RelativeStatHF_AK4PFPuppi",
-          "CMS_scale_j_SinglePionECAL": "Summer22EE_22Sep2023_V3_MC_SinglePionECAL_AK4PFPuppi",
-          "CMS_scale_j_SinglePionHCAL": "Summer22EE_22Sep2023_V3_MC_SinglePionHCAL_AK4PFPuppi",
-          "CMS_scale_j_TimePtEta_2022EE": "Summer22EE_22Sep2023_V3_MC_TimePtEta_AK4PFPuppi"
+          "CMS_scale_j_AbsoluteMPFBias": "Summer22EE_22Sep2023_V4_MC_AbsoluteMPFBias_AK4PFPuppi",
+          "CMS_scale_j_AbsoluteScale": "Summer22EE_22Sep2023_V4_MC_AbsoluteScale_AK4PFPuppi",
+          "CMS_scale_j_AbsoluteStat_2022EE": "Summer22EE_22Sep2023_V4_MC_AbsoluteStat_AK4PFPuppi",
+          "CMS_scale_j_FlavorQCD": "Summer22EE_22Sep2023_V4_MC_FlavorQCD_AK4PFPuppi",
+          "CMS_scale_j_Fragmentation": "Summer22EE_22Sep2023_V4_MC_Fragmentation_AK4PFPuppi",
+          "CMS_scale_j_PileUpDataMC": "Summer22EE_22Sep2023_V4_MC_PileUpDataMC_AK4PFPuppi",
+          "CMS_scale_j_PileUpPtBB": "Summer22EE_22Sep2023_V4_MC_PileUpPtBB_AK4PFPuppi",
+          "CMS_scale_j_PileUpPtEC1": "Summer22EE_22Sep2023_V4_MC_PileUpPtEC1_AK4PFPuppi",
+          "CMS_scale_j_PileUpPtEC2": "Summer22EE_22Sep2023_V4_MC_PileUpPtEC2_AK4PFPuppi",
+          "CMS_scale_j_PileUpPtHF": "Summer22EE_22Sep2023_V4_MC_PileUpPtHF_AK4PFPuppi",
+          "CMS_scale_j_PileUpPtRef": "Summer22EE_22Sep2023_V4_MC_PileUpPtRef_AK4PFPuppi",
+          "CMS_scale_j_RelativeFSR": "Summer22EE_22Sep2023_V4_MC_RelativeFSR_AK4PFPuppi",
+          "CMS_scale_j_RelativeJEREC1_2022EE": "Summer22EE_22Sep2023_V4_MC_RelativeJEREC1_AK4PFPuppi",
+          "CMS_scale_j_RelativeJEREC2_2022EE": "Summer22EE_22Sep2023_V4_MC_RelativeJEREC2_AK4PFPuppi",
+          "CMS_scale_j_RelativeJERHF": "Summer22EE_22Sep2023_V4_MC_RelativeJERHF_AK4PFPuppi",
+          "CMS_scale_j_RelativePtBB": "Summer22EE_22Sep2023_V4_MC_RelativePtBB_AK4PFPuppi",
+          "CMS_scale_j_RelativePtEC1_2022EE": "Summer22EE_22Sep2023_V4_MC_RelativePtEC1_AK4PFPuppi",
+          "CMS_scale_j_RelativePtEC2_2022EE": "Summer22EE_22Sep2023_V4_MC_RelativePtEC2_AK4PFPuppi",
+          "CMS_scale_j_RelativePtHF": "Summer22EE_22Sep2023_V4_MC_RelativePtHF_AK4PFPuppi",
+          "CMS_scale_j_RelativeBal": "Summer22EE_22Sep2023_V4_MC_RelativeBal_AK4PFPuppi",
+          "CMS_scale_j_RelativeSample_2022EE": "Summer22EE_22Sep2023_V4_MC_RelativeSample_AK4PFPuppi",
+          "CMS_scale_j_RelativeStatEC_2022EE": "Summer22EE_22Sep2023_V4_MC_RelativeStatEC_AK4PFPuppi",
+          "CMS_scale_j_RelativeStatFSR_2022EE": "Summer22EE_22Sep2023_V4_MC_RelativeStatFSR_AK4PFPuppi",
+          "CMS_scale_j_RelativeStatHF_2022EE": "Summer22EE_22Sep2023_V4_MC_RelativeStatHF_AK4PFPuppi",
+          "CMS_scale_j_SinglePionECAL": "Summer22EE_22Sep2023_V4_MC_SinglePionECAL_AK4PFPuppi",
+          "CMS_scale_j_SinglePionHCAL": "Summer22EE_22Sep2023_V4_MC_SinglePionHCAL_AK4PFPuppi",
+          "CMS_scale_j_TimePtEta_2022EE": "Summer22EE_22Sep2023_V4_MC_TimePtEta_AK4PFPuppi"
         },
         "JesUncertaintySetReduced": {
-          "CMS_scale_j_FlavorQCD": "Summer22EE_22Sep2023_V3_MC_Regrouped_FlavorQCD_AK4PFPuppi",
-          "CMS_scale_j_RelativeBal": "Summer22EE_22Sep2023_V3_MC_Regrouped_RelativeBal_AK4PFPuppi",
-          "CMS_scale_j_HF": "Summer22EE_22Sep2023_V3_MC_Regrouped_HF_AK4PFPuppi",
-          "CMS_scale_j_BBEC1": "Summer22EE_22Sep2023_V3_MC_Regrouped_BBEC1_AK4PFPuppi",
-          "CMS_scale_j_EC2": "Summer22EE_22Sep2023_V3_MC_Regrouped_EC2_AK4PFPuppi",
-          "CMS_scale_j_Absolute": "Summer22EE_22Sep2023_V3_MC_Regrouped_Absolute_AK4PFPuppi",
-          "CMS_scale_j_BBEC1_2022EE": "Summer22EE_22Sep2023_V3_MC_Regrouped_BBEC1_2022EE_AK4PFPuppi",
-          "CMS_scale_j_RelativeSample_2022EE": "Summer22EE_22Sep2023_V3_MC_Regrouped_RelativeSample_2022EE_AK4PFPuppi",
-          "CMS_scale_j_EC2_2022EE": "Summer22EE_22Sep2023_V3_MC_Regrouped_EC2_2022EE_AK4PFPuppi",
-          "CMS_scale_j_HF_2022EE": "Summer22EE_22Sep2023_V3_MC_Regrouped_HF_2022EE_AK4PFPuppi",
-          "CMS_scale_j_Absolute_2022EE": "Summer22EE_22Sep2023_V3_MC_Regrouped_Absolute_2022EE_AK4PFPuppi"
+          "CMS_scale_j_FlavorQCD": "Summer22EE_22Sep2023_V4_MC_Regrouped_FlavorQCD_AK4PFPuppi",
+          "CMS_scale_j_RelativeBal": "Summer22EE_22Sep2023_V4_MC_Regrouped_RelativeBal_AK4PFPuppi",
+          "CMS_scale_j_HF": "Summer22EE_22Sep2023_V4_MC_Regrouped_HF_AK4PFPuppi",
+          "CMS_scale_j_BBEC1": "Summer22EE_22Sep2023_V4_MC_Regrouped_BBEC1_AK4PFPuppi",
+          "CMS_scale_j_EC2": "Summer22EE_22Sep2023_V4_MC_Regrouped_EC2_AK4PFPuppi",
+          "CMS_scale_j_Absolute": "Summer22EE_22Sep2023_V4_MC_Regrouped_Absolute_AK4PFPuppi",
+          "CMS_scale_j_BBEC1_2022EE": "Summer22EE_22Sep2023_V4_MC_Regrouped_BBEC1_2022EE_AK4PFPuppi",
+          "CMS_scale_j_RelativeSample_2022EE": "Summer22EE_22Sep2023_V4_MC_Regrouped_RelativeSample_2022EE_AK4PFPuppi",
+          "CMS_scale_j_EC2_2022EE": "Summer22EE_22Sep2023_V4_MC_Regrouped_EC2_2022EE_AK4PFPuppi",
+          "CMS_scale_j_HF_2022EE": "Summer22EE_22Sep2023_V4_MC_Regrouped_HF_2022EE_AK4PFPuppi",
+          "CMS_scale_j_Absolute_2022EE": "Summer22EE_22Sep2023_V4_MC_Regrouped_Absolute_2022EE_AK4PFPuppi"
         },
         "JesUncertaintySetTotal": {
-          "CMS_scale_j_Total": "Summer22EE_22Sep2023_V3_MC_Total_AK4PFPuppi"
+          "CMS_scale_j_Total": "Summer22EE_22Sep2023_V4_MC_Total_AK4PFPuppi"
         }
       },
       "JerUncertaintySet": {
@@ -706,66 +708,67 @@
     "ApplyOnData": {
       "JesNominal": {
         "Era2023PreAll": {
-          "tagNameL1FastJet": "Summer23Prompt23_V3_DATA_L1FastJet_AK4PFPuppi",
-          "tagNameL2Relative": "Summer23Prompt23_V3_DATA_L2Relative_AK4PFPuppi",
-          "tagNameL2L3Residual": "Summer23Prompt23_V3_DATA_L2L3Residual_AK4PFPuppi"
+          "tagNameL1FastJet": "Summer23Prompt23_V4_DATA_L1FastJet_AK4PFPuppi",
+          "tagNameL2Relative": "Summer23Prompt23_V4_DATA_L2Relative_AK4PFPuppi",
+          "tagNameL2L3Residual": "Summer23Prompt23_V4_DATA_L2L3Residual_AK4PFPuppi"
         }
       }
     },
     "ApplyOnMC": {
       "JesNominal": {
-        "tagNameL1FastJet": "Summer23Prompt23_V3_MC_L1FastJet_AK4PFPuppi",
-        "tagNameL2Relative": "Summer23Prompt23_V3_MC_L2Relative_AK4PFPuppi"
+        "tagNameL1FastJet": "Summer23Prompt23_V4_MC_L1FastJet_AK4PFPuppi",
+        "tagNameL2Relative": "Summer23Prompt23_V4_MC_L2Relative_AK4PFPuppi"
       },
       "JerNominal": {
-        "tagNamePtResolution": "Summer23Prompt23_RunCv1234_JRV1_MC_PtResolution_AK4PFPuppi",
-        "tagNameJerScaleFactor": "Summer23Prompt23_RunCv1234_JRV1_MC_ScaleFactor_AK4PFPuppi"
+        "tagNamePtResolution": "Summer23Prompt23_RunCv1234_JRV2_MC_PtResolution_AK4PFPuppi",
+        "tagNameJerScaleFactor": "Summer23Prompt23_RunCv1234_JRV2_MC_ScaleFactor_AK4PFPuppi",
+        "tagNameJerSFUncertainty": "Summer23Prompt23_RunCv1234_JRV2_MC_SFUncertainty_AK4PFPuppi"
       },
       "JesUncertaintySet": {
         "JesUncertaintySetFull": {
-          "CMS_scale_j_AbsoluteMPFBias": "Summer23Prompt23_V3_MC_AbsoluteMPFBias_AK4PFPuppi",
-          "CMS_scale_j_AbsoluteScale": "Summer23Prompt23_V3_MC_AbsoluteScale_AK4PFPuppi",
-          "CMS_scale_j_AbsoluteStat_2023": "Summer23Prompt23_V3_MC_AbsoluteStat_AK4PFPuppi",
-          "CMS_scale_j_FlavorQCD": "Summer23Prompt23_V3_MC_FlavorQCD_AK4PFPuppi",
-          "CMS_scale_j_Fragmentation": "Summer23Prompt23_V3_MC_Fragmentation_AK4PFPuppi",
-          "CMS_scale_j_PileUpDataMC": "Summer23Prompt23_V3_MC_PileUpDataMC_AK4PFPuppi",
-          "CMS_scale_j_PileUpPtBB": "Summer23Prompt23_V3_MC_PileUpPtBB_AK4PFPuppi",
-          "CMS_scale_j_PileUpPtEC1": "Summer23Prompt23_V3_MC_PileUpPtEC1_AK4PFPuppi",
-          "CMS_scale_j_PileUpPtEC2": "Summer23Prompt23_V3_MC_PileUpPtEC2_AK4PFPuppi",
-          "CMS_scale_j_PileUpPtHF": "Summer23Prompt23_V3_MC_PileUpPtHF_AK4PFPuppi",
-          "CMS_scale_j_PileUpPtRef": "Summer23Prompt23_V3_MC_PileUpPtRef_AK4PFPuppi",
-          "CMS_scale_j_RelativeFSR": "Summer23Prompt23_V3_MC_RelativeFSR_AK4PFPuppi",
-          "CMS_scale_j_RelativeJEREC1_2023": "Summer23Prompt23_V3_MC_RelativeJEREC1_AK4PFPuppi",
-          "CMS_scale_j_RelativeJEREC2_2023": "Summer23Prompt23_V3_MC_RelativeJEREC2_AK4PFPuppi",
-          "CMS_scale_j_RelativeJERHF": "Summer23Prompt23_V3_MC_RelativeJERHF_AK4PFPuppi",
-          "CMS_scale_j_RelativePtBB": "Summer23Prompt23_V3_MC_RelativePtBB_AK4PFPuppi",
-          "CMS_scale_j_RelativePtEC1_2023": "Summer23Prompt23_V3_MC_RelativePtEC1_AK4PFPuppi",
-          "CMS_scale_j_RelativePtEC2_2023": "Summer23Prompt23_V3_MC_RelativePtEC2_AK4PFPuppi",
-          "CMS_scale_j_RelativePtHF": "Summer23Prompt23_V3_MC_RelativePtHF_AK4PFPuppi",
-          "CMS_scale_j_RelativeBal": "Summer23Prompt23_V3_MC_RelativeBal_AK4PFPuppi",
-          "CMS_scale_j_RelativeSample_2023": "Summer23Prompt23_V3_MC_RelativeSample_AK4PFPuppi",
-          "CMS_scale_j_RelativeStatEC_2023": "Summer23Prompt23_V3_MC_RelativeStatEC_AK4PFPuppi",
-          "CMS_scale_j_RelativeStatFSR_2023": "Summer23Prompt23_V3_MC_RelativeStatFSR_AK4PFPuppi",
-          "CMS_scale_j_RelativeStatHF_2023": "Summer23Prompt23_V3_MC_RelativeStatHF_AK4PFPuppi",
-          "CMS_scale_j_SinglePionECAL": "Summer23Prompt23_V3_MC_SinglePionECAL_AK4PFPuppi",
-          "CMS_scale_j_SinglePionHCAL": "Summer23Prompt23_V3_MC_SinglePionHCAL_AK4PFPuppi",
-          "CMS_scale_j_TimePtEta_2023": "Summer23Prompt23_V3_MC_TimePtEta_AK4PFPuppi"
+          "CMS_scale_j_AbsoluteMPFBias": "Summer23Prompt23_V4_MC_AbsoluteMPFBias_AK4PFPuppi",
+          "CMS_scale_j_AbsoluteScale": "Summer23Prompt23_V4_MC_AbsoluteScale_AK4PFPuppi",
+          "CMS_scale_j_AbsoluteStat_2023": "Summer23Prompt23_V4_MC_AbsoluteStat_AK4PFPuppi",
+          "CMS_scale_j_FlavorQCD": "Summer23Prompt23_V4_MC_FlavorQCD_AK4PFPuppi",
+          "CMS_scale_j_Fragmentation": "Summer23Prompt23_V4_MC_Fragmentation_AK4PFPuppi",
+          "CMS_scale_j_PileUpDataMC": "Summer23Prompt23_V4_MC_PileUpDataMC_AK4PFPuppi",
+          "CMS_scale_j_PileUpPtBB": "Summer23Prompt23_V4_MC_PileUpPtBB_AK4PFPuppi",
+          "CMS_scale_j_PileUpPtEC1": "Summer23Prompt23_V4_MC_PileUpPtEC1_AK4PFPuppi",
+          "CMS_scale_j_PileUpPtEC2": "Summer23Prompt23_V4_MC_PileUpPtEC2_AK4PFPuppi",
+          "CMS_scale_j_PileUpPtHF": "Summer23Prompt23_V4_MC_PileUpPtHF_AK4PFPuppi",
+          "CMS_scale_j_PileUpPtRef": "Summer23Prompt23_V4_MC_PileUpPtRef_AK4PFPuppi",
+          "CMS_scale_j_RelativeFSR": "Summer23Prompt23_V4_MC_RelativeFSR_AK4PFPuppi",
+          "CMS_scale_j_RelativeJEREC1_2023": "Summer23Prompt23_V4_MC_RelativeJEREC1_AK4PFPuppi",
+          "CMS_scale_j_RelativeJEREC2_2023": "Summer23Prompt23_V4_MC_RelativeJEREC2_AK4PFPuppi",
+          "CMS_scale_j_RelativeJERHF": "Summer23Prompt23_V4_MC_RelativeJERHF_AK4PFPuppi",
+          "CMS_scale_j_RelativePtBB": "Summer23Prompt23_V4_MC_RelativePtBB_AK4PFPuppi",
+          "CMS_scale_j_RelativePtEC1_2023": "Summer23Prompt23_V4_MC_RelativePtEC1_AK4PFPuppi",
+          "CMS_scale_j_RelativePtEC2_2023": "Summer23Prompt23_V4_MC_RelativePtEC2_AK4PFPuppi",
+          "CMS_scale_j_RelativePtHF": "Summer23Prompt23_V4_MC_RelativePtHF_AK4PFPuppi",
+          "CMS_scale_j_RelativeBal": "Summer23Prompt23_V4_MC_RelativeBal_AK4PFPuppi",
+          "CMS_scale_j_RelativeSample_2023": "Summer23Prompt23_V4_MC_RelativeSample_AK4PFPuppi",
+          "CMS_scale_j_RelativeStatEC_2023": "Summer23Prompt23_V4_MC_RelativeStatEC_AK4PFPuppi",
+          "CMS_scale_j_RelativeStatFSR_2023": "Summer23Prompt23_V4_MC_RelativeStatFSR_AK4PFPuppi",
+          "CMS_scale_j_RelativeStatHF_2023": "Summer23Prompt23_V4_MC_RelativeStatHF_AK4PFPuppi",
+          "CMS_scale_j_SinglePionECAL": "Summer23Prompt23_V4_MC_SinglePionECAL_AK4PFPuppi",
+          "CMS_scale_j_SinglePionHCAL": "Summer23Prompt23_V4_MC_SinglePionHCAL_AK4PFPuppi",
+          "CMS_scale_j_TimePtEta_2023": "Summer23Prompt23_V4_MC_TimePtEta_AK4PFPuppi"
         },
         "JesUncertaintySetReduced": {
-          "CMS_scale_j_FlavorQCD": "Summer23Prompt23_V3_MC_Regrouped_FlavorQCD_AK4PFPuppi",
-          "CMS_scale_j_RelativeBal": "Summer23Prompt23_V3_MC_Regrouped_RelativeBal_AK4PFPuppi",
-          "CMS_scale_j_HF": "Summer23Prompt23_V3_MC_Regrouped_HF_AK4PFPuppi",
-          "CMS_scale_j_BBEC1": "Summer23Prompt23_V3_MC_Regrouped_BBEC1_AK4PFPuppi",
-          "CMS_scale_j_EC2": "Summer23Prompt23_V3_MC_Regrouped_EC2_AK4PFPuppi",
-          "CMS_scale_j_Absolute": "Summer23Prompt23_V3_MC_Regrouped_Absolute_AK4PFPuppi",
-          "CMS_scale_j_BBEC1_2023": "Summer23Prompt23_V3_MC_Regrouped_BBEC1_2023_AK4PFPuppi",
-          "CMS_scale_j_RelativeSample_2023": "Summer23Prompt23_V3_MC_Regrouped_RelativeSample_2023_AK4PFPuppi",
-          "CMS_scale_j_EC2_2023": "Summer23Prompt23_V3_MC_Regrouped_EC2_2023_AK4PFPuppi",
-          "CMS_scale_j_HF_2023": "Summer23Prompt23_V3_MC_Regrouped_HF_2023_AK4PFPuppi",
-          "CMS_scale_j_Absolute_2023": "Summer23Prompt23_V3_MC_Regrouped_Absolute_2023_AK4PFPuppi"
+          "CMS_scale_j_FlavorQCD": "Summer23Prompt23_V4_MC_Regrouped_FlavorQCD_AK4PFPuppi",
+          "CMS_scale_j_RelativeBal": "Summer23Prompt23_V4_MC_Regrouped_RelativeBal_AK4PFPuppi",
+          "CMS_scale_j_HF": "Summer23Prompt23_V4_MC_Regrouped_HF_AK4PFPuppi",
+          "CMS_scale_j_BBEC1": "Summer23Prompt23_V4_MC_Regrouped_BBEC1_AK4PFPuppi",
+          "CMS_scale_j_EC2": "Summer23Prompt23_V4_MC_Regrouped_EC2_AK4PFPuppi",
+          "CMS_scale_j_Absolute": "Summer23Prompt23_V4_MC_Regrouped_Absolute_AK4PFPuppi",
+          "CMS_scale_j_BBEC1_2023": "Summer23Prompt23_V4_MC_Regrouped_BBEC1_2023_AK4PFPuppi",
+          "CMS_scale_j_RelativeSample_2023": "Summer23Prompt23_V4_MC_Regrouped_RelativeSample_2023_AK4PFPuppi",
+          "CMS_scale_j_EC2_2023": "Summer23Prompt23_V4_MC_Regrouped_EC2_2023_AK4PFPuppi",
+          "CMS_scale_j_HF_2023": "Summer23Prompt23_V4_MC_Regrouped_HF_2023_AK4PFPuppi",
+          "CMS_scale_j_Absolute_2023": "Summer23Prompt23_V4_MC_Regrouped_Absolute_2023_AK4PFPuppi"
         },
         "JesUncertaintySetTotal": {
-          "CMS_scale_j_Total": "Summer23Prompt23_V3_MC_Total_AK4PFPuppi"
+          "CMS_scale_j_Total": "Summer23Prompt23_V4_MC_Total_AK4PFPuppi"
         }
       },
       "JerUncertaintySet": {
@@ -823,66 +826,67 @@
     "ApplyOnData": {
       "JesNominal": {
         "Era2023PostAll": {
-          "tagNameL1FastJet": "Summer23BPixPrompt23_V3_DATA_L1FastJet_AK4PFPuppi",
-          "tagNameL2Relative": "Summer23BPixPrompt23_V3_DATA_L2Relative_AK4PFPuppi",
-          "tagNameL2L3Residual": "Summer23BPixPrompt23_V3_DATA_L2L3Residual_AK4PFPuppi"
+          "tagNameL1FastJet": "Summer23BPixPrompt23_V4_DATA_L1FastJet_AK4PFPuppi",
+          "tagNameL2Relative": "Summer23BPixPrompt23_V4_DATA_L2Relative_AK4PFPuppi",
+          "tagNameL2L3Residual": "Summer23BPixPrompt23_V4_DATA_L2L3Residual_AK4PFPuppi"
         }
       }
     },
     "ApplyOnMC": {
       "JesNominal": {
-        "tagNameL1FastJet": "Summer23BPixPrompt23_V3_MC_L1FastJet_AK4PFPuppi",
-        "tagNameL2Relative": "Summer23BPixPrompt23_V3_MC_L2Relative_AK4PFPuppi"
+        "tagNameL1FastJet": "Summer23BPixPrompt23_V4_MC_L1FastJet_AK4PFPuppi",
+        "tagNameL2Relative": "Summer23BPixPrompt23_V4_MC_L2Relative_AK4PFPuppi"
       },
       "JerNominal": {
-        "tagNamePtResolution": "Summer23BPixPrompt23_RunD_JRV1_MC_PtResolution_AK4PFPuppi",
-        "tagNameJerScaleFactor": "Summer23BPixPrompt23_RunD_JRV1_MC_ScaleFactor_AK4PFPuppi"
+        "tagNamePtResolution": "Summer23BPixPrompt23_RunD_JRV2_MC_PtResolution_AK4PFPuppi",
+        "tagNameJerScaleFactor": "Summer23BPixPrompt23_RunD_JRV2_MC_ScaleFactor_AK4PFPuppi",
+        "tagNameJerSFUncertainty": "Summer23BPixPrompt23_RunD_JRV2_MC_SFUncertainty_AK4PFPuppi"
       },
       "JesUncertaintySet": {
         "JesUncertaintySetFull": {
-          "CMS_scale_j_AbsoluteMPFBias": "Summer23BPixPrompt23_V3_MC_AbsoluteMPFBias_AK4PFPuppi",
-          "CMS_scale_j_AbsoluteScale": "Summer23BPixPrompt23_V3_MC_AbsoluteScale_AK4PFPuppi",
-          "CMS_scale_j_AbsoluteStat_2023BPix": "Summer23BPixPrompt23_V3_MC_AbsoluteStat_AK4PFPuppi",
-          "CMS_scale_j_FlavorQCD": "Summer23BPixPrompt23_V3_MC_FlavorQCD_AK4PFPuppi",
-          "CMS_scale_j_Fragmentation": "Summer23BPixPrompt23_V3_MC_Fragmentation_AK4PFPuppi",
-          "CMS_scale_j_PileUpDataMC": "Summer23BPixPrompt23_V3_MC_PileUpDataMC_AK4PFPuppi",
-          "CMS_scale_j_PileUpPtBB": "Summer23BPixPrompt23_V3_MC_PileUpPtBB_AK4PFPuppi",
-          "CMS_scale_j_PileUpPtEC1": "Summer23BPixPrompt23_V3_MC_PileUpPtEC1_AK4PFPuppi",
-          "CMS_scale_j_PileUpPtEC2": "Summer23BPixPrompt23_V3_MC_PileUpPtEC2_AK4PFPuppi",
-          "CMS_scale_j_PileUpPtHF": "Summer23BPixPrompt23_V3_MC_PileUpPtHF_AK4PFPuppi",
-          "CMS_scale_j_PileUpPtRef": "Summer23BPixPrompt23_V3_MC_PileUpPtRef_AK4PFPuppi",
-          "CMS_scale_j_RelativeFSR": "Summer23BPixPrompt23_V3_MC_RelativeFSR_AK4PFPuppi",
-          "CMS_scale_j_RelativeJEREC1_2023BPix": "Summer23BPixPrompt23_V3_MC_RelativeJEREC1_AK4PFPuppi",
-          "CMS_scale_j_RelativeJEREC2_2023BPix": "Summer23BPixPrompt23_V3_MC_RelativeJEREC2_AK4PFPuppi",
-          "CMS_scale_j_RelativeJERHF": "Summer23BPixPrompt23_V3_MC_RelativeJERHF_AK4PFPuppi",
-          "CMS_scale_j_RelativePtBB": "Summer23BPixPrompt23_V3_MC_RelativePtBB_AK4PFPuppi",
-          "CMS_scale_j_RelativePtEC1_2023BPix": "Summer23BPixPrompt23_V3_MC_RelativePtEC1_AK4PFPuppi",
-          "CMS_scale_j_RelativePtEC2_2023BPix": "Summer23BPixPrompt23_V3_MC_RelativePtEC2_AK4PFPuppi",
-          "CMS_scale_j_RelativePtHF": "Summer23BPixPrompt23_V3_MC_RelativePtHF_AK4PFPuppi",
-          "CMS_scale_j_RelativeBal": "Summer23BPixPrompt23_V3_MC_RelativeBal_AK4PFPuppi",
-          "CMS_scale_j_RelativeSample_2023BPix": "Summer23BPixPrompt23_V3_MC_RelativeSample_AK4PFPuppi",
-          "CMS_scale_j_RelativeStatEC_2023BPix": "Summer23BPixPrompt23_V3_MC_RelativeStatEC_AK4PFPuppi",
-          "CMS_scale_j_RelativeStatFSR_2023BPix": "Summer23BPixPrompt23_V3_MC_RelativeStatFSR_AK4PFPuppi",
-          "CMS_scale_j_RelativeStatHF_2023BPix": "Summer23BPixPrompt23_V3_MC_RelativeStatHF_AK4PFPuppi",
-          "CMS_scale_j_SinglePionECAL": "Summer23BPixPrompt23_V3_MC_SinglePionECAL_AK4PFPuppi",
-          "CMS_scale_j_SinglePionHCAL": "Summer23BPixPrompt23_V3_MC_SinglePionHCAL_AK4PFPuppi",
-          "CMS_scale_j_TimePtEta_2023BPix": "Summer23BPixPrompt23_V3_MC_TimePtEta_AK4PFPuppi"
+          "CMS_scale_j_AbsoluteMPFBias": "Summer23BPixPrompt23_V4_MC_AbsoluteMPFBias_AK4PFPuppi",
+          "CMS_scale_j_AbsoluteScale": "Summer23BPixPrompt23_V4_MC_AbsoluteScale_AK4PFPuppi",
+          "CMS_scale_j_AbsoluteStat_2023BPix": "Summer23BPixPrompt23_V4_MC_AbsoluteStat_AK4PFPuppi",
+          "CMS_scale_j_FlavorQCD": "Summer23BPixPrompt23_V4_MC_FlavorQCD_AK4PFPuppi",
+          "CMS_scale_j_Fragmentation": "Summer23BPixPrompt23_V4_MC_Fragmentation_AK4PFPuppi",
+          "CMS_scale_j_PileUpDataMC": "Summer23BPixPrompt23_V4_MC_PileUpDataMC_AK4PFPuppi",
+          "CMS_scale_j_PileUpPtBB": "Summer23BPixPrompt23_V4_MC_PileUpPtBB_AK4PFPuppi",
+          "CMS_scale_j_PileUpPtEC1": "Summer23BPixPrompt23_V4_MC_PileUpPtEC1_AK4PFPuppi",
+          "CMS_scale_j_PileUpPtEC2": "Summer23BPixPrompt23_V4_MC_PileUpPtEC2_AK4PFPuppi",
+          "CMS_scale_j_PileUpPtHF": "Summer23BPixPrompt23_V4_MC_PileUpPtHF_AK4PFPuppi",
+          "CMS_scale_j_PileUpPtRef": "Summer23BPixPrompt23_V4_MC_PileUpPtRef_AK4PFPuppi",
+          "CMS_scale_j_RelativeFSR": "Summer23BPixPrompt23_V4_MC_RelativeFSR_AK4PFPuppi",
+          "CMS_scale_j_RelativeJEREC1_2023BPix": "Summer23BPixPrompt23_V4_MC_RelativeJEREC1_AK4PFPuppi",
+          "CMS_scale_j_RelativeJEREC2_2023BPix": "Summer23BPixPrompt23_V4_MC_RelativeJEREC2_AK4PFPuppi",
+          "CMS_scale_j_RelativeJERHF": "Summer23BPixPrompt23_V4_MC_RelativeJERHF_AK4PFPuppi",
+          "CMS_scale_j_RelativePtBB": "Summer23BPixPrompt23_V4_MC_RelativePtBB_AK4PFPuppi",
+          "CMS_scale_j_RelativePtEC1_2023BPix": "Summer23BPixPrompt23_V4_MC_RelativePtEC1_AK4PFPuppi",
+          "CMS_scale_j_RelativePtEC2_2023BPix": "Summer23BPixPrompt23_V4_MC_RelativePtEC2_AK4PFPuppi",
+          "CMS_scale_j_RelativePtHF": "Summer23BPixPrompt23_V4_MC_RelativePtHF_AK4PFPuppi",
+          "CMS_scale_j_RelativeBal": "Summer23BPixPrompt23_V4_MC_RelativeBal_AK4PFPuppi",
+          "CMS_scale_j_RelativeSample_2023BPix": "Summer23BPixPrompt23_V4_MC_RelativeSample_AK4PFPuppi",
+          "CMS_scale_j_RelativeStatEC_2023BPix": "Summer23BPixPrompt23_V4_MC_RelativeStatEC_AK4PFPuppi",
+          "CMS_scale_j_RelativeStatFSR_2023BPix": "Summer23BPixPrompt23_V4_MC_RelativeStatFSR_AK4PFPuppi",
+          "CMS_scale_j_RelativeStatHF_2023BPix": "Summer23BPixPrompt23_V4_MC_RelativeStatHF_AK4PFPuppi",
+          "CMS_scale_j_SinglePionECAL": "Summer23BPixPrompt23_V4_MC_SinglePionECAL_AK4PFPuppi",
+          "CMS_scale_j_SinglePionHCAL": "Summer23BPixPrompt23_V4_MC_SinglePionHCAL_AK4PFPuppi",
+          "CMS_scale_j_TimePtEta_2023BPix": "Summer23BPixPrompt23_V4_MC_TimePtEta_AK4PFPuppi"
         },
         "JesUncertaintySetReduced": {
-          "CMS_scale_j_FlavorQCD": "Summer23BPixPrompt23_V3_MC_Regrouped_FlavorQCD_AK4PFPuppi",
-          "CMS_scale_j_RelativeBal": "Summer23BPixPrompt23_V3_MC_Regrouped_RelativeBal_AK4PFPuppi",
-          "CMS_scale_j_HF": "Summer23BPixPrompt23_V3_MC_Regrouped_HF_AK4PFPuppi",
-          "CMS_scale_j_BBEC1": "Summer23BPixPrompt23_V3_MC_Regrouped_BBEC1_AK4PFPuppi",
-          "CMS_scale_j_EC2": "Summer23BPixPrompt23_V3_MC_Regrouped_EC2_AK4PFPuppi",
-          "CMS_scale_j_Absolute": "Summer23BPixPrompt23_V3_MC_Regrouped_Absolute_AK4PFPuppi",
-          "CMS_scale_j_BBEC1_2023BPix": "Summer23BPixPrompt23_V3_MC_Regrouped_BBEC1_2023BPix_AK4PFPuppi",
-          "CMS_scale_j_RelativeSample_2023BPix": "Summer23BPixPrompt23_V3_MC_Regrouped_RelativeSample_2023BPix_AK4PFPuppi",
-          "CMS_scale_j_EC2_2023BPix": "Summer23BPixPrompt23_V3_MC_Regrouped_EC2_2023BPix_AK4PFPuppi",
-          "CMS_scale_j_HF_2023BPix": "Summer23BPixPrompt23_V3_MC_Regrouped_HF_2023BPix_AK4PFPuppi",
-          "CMS_scale_j_Absolute_2023BPix": "Summer23BPixPrompt23_V3_MC_Regrouped_Absolute_2023BPix_AK4PFPuppi"
+          "CMS_scale_j_FlavorQCD": "Summer23BPixPrompt23_V4_MC_Regrouped_FlavorQCD_AK4PFPuppi",
+          "CMS_scale_j_RelativeBal": "Summer23BPixPrompt23_V4_MC_Regrouped_RelativeBal_AK4PFPuppi",
+          "CMS_scale_j_HF": "Summer23BPixPrompt23_V4_MC_Regrouped_HF_AK4PFPuppi",
+          "CMS_scale_j_BBEC1": "Summer23BPixPrompt23_V4_MC_Regrouped_BBEC1_AK4PFPuppi",
+          "CMS_scale_j_EC2": "Summer23BPixPrompt23_V4_MC_Regrouped_EC2_AK4PFPuppi",
+          "CMS_scale_j_Absolute": "Summer23BPixPrompt23_V4_MC_Regrouped_Absolute_AK4PFPuppi",
+          "CMS_scale_j_BBEC1_2023BPix": "Summer23BPixPrompt23_V4_MC_Regrouped_BBEC1_2023BPix_AK4PFPuppi",
+          "CMS_scale_j_RelativeSample_2023BPix": "Summer23BPixPrompt23_V4_MC_Regrouped_RelativeSample_2023BPix_AK4PFPuppi",
+          "CMS_scale_j_EC2_2023BPix": "Summer23BPixPrompt23_V4_MC_Regrouped_EC2_2023BPix_AK4PFPuppi",
+          "CMS_scale_j_HF_2023BPix": "Summer23BPixPrompt23_V4_MC_Regrouped_HF_2023BPix_AK4PFPuppi",
+          "CMS_scale_j_Absolute_2023BPix": "Summer23BPixPrompt23_V4_MC_Regrouped_Absolute_2023BPix_AK4PFPuppi"
         },
         "JesUncertaintySetTotal": {
-          "CMS_scale_j_Total": "Summer23BPixPrompt23_V3_MC_Total_AK4PFPuppi"
+          "CMS_scale_j_Total": "Summer23BPixPrompt23_V4_MC_Total_AK4PFPuppi"
         }
       },
       "JerUncertaintySet": {
@@ -940,66 +944,67 @@
     "ApplyOnData": {
       "JesNominal": {
         "Era2024All": {
-          "tagNameL1FastJet": "Summer24Prompt24_V2_DATA_L1FastJet_AK4PFPuppi",
-          "tagNameL2Relative": "Summer24Prompt24_V2_DATA_L2Relative_AK4PFPuppi",
-          "tagNameL2L3Residual": "Summer24Prompt24_V2_DATA_L2L3Residual_AK4PFPuppi"
+          "tagNameL1FastJet": "Summer24Prompt24_V3_DATA_L1FastJet_AK4PFPuppi",
+          "tagNameL2Relative": "Summer24Prompt24_V3_DATA_L2Relative_AK4PFPuppi",
+          "tagNameL2L3Residual": "Summer24Prompt24_V3_DATA_L2L3Residual_AK4PFPuppi"
         }
       }
     },
     "ApplyOnMC": {
       "JesNominal": {
-        "tagNameL1FastJet": "Summer24Prompt24_V2_MC_L1FastJet_AK4PFPuppi",
-        "tagNameL2Relative": "Summer24Prompt24_V2_MC_L2Relative_AK4PFPuppi"
+        "tagNameL1FastJet": "Summer24Prompt24_V3_MC_L1FastJet_AK4PFPuppi",
+        "tagNameL2Relative": "Summer24Prompt24_V3_MC_L2Relative_AK4PFPuppi"
       },
       "JerNominal": {
-        "tagNamePtResolution": "Summer23BPixPrompt23_RunD_JRV1_MC_PtResolution_AK4PFPuppi",
-        "tagNameJerScaleFactor": "Summer23BPixPrompt23_RunD_JRV1_MC_ScaleFactor_AK4PFPuppi"
+        "tagNamePtResolution": "Summer24Prompt24_JRV1_MC_PtResolution_AK4PFPuppi",
+        "tagNameJerScaleFactor": "Summer24Prompt24_JRV1_MC_ScaleFactor_AK4PFPuppi",
+        "tagNameJerSFUncertainty": "Summer24Prompt24_JRV1_MC_SFUncertainty_AK4PFPuppi"
       },
       "JesUncertaintySet": {
         "JesUncertaintySetFull": {
-          "CMS_scale_j_AbsoluteMPFBias": "Summer24Prompt24_V2_MC_AbsoluteMPFBias_AK4PFPuppi",
-          "CMS_scale_j_AbsoluteScale": "Summer24Prompt24_V2_MC_AbsoluteScale_AK4PFPuppi",
-          "CMS_scale_j_AbsoluteStat_2024": "Summer24Prompt24_V2_MC_AbsoluteStat_AK4PFPuppi",
-          "CMS_scale_j_FlavorQCD": "Summer24Prompt24_V2_MC_FlavorQCD_AK4PFPuppi",
-          "CMS_scale_j_Fragmentation": "Summer24Prompt24_V2_MC_Fragmentation_AK4PFPuppi",
-          "CMS_scale_j_PileUpDataMC": "Summer24Prompt24_V2_MC_PileUpDataMC_AK4PFPuppi",
-          "CMS_scale_j_PileUpPtBB": "Summer24Prompt24_V2_MC_PileUpPtBB_AK4PFPuppi",
-          "CMS_scale_j_PileUpPtEC1": "Summer24Prompt24_V2_MC_PileUpPtEC1_AK4PFPuppi",
-          "CMS_scale_j_PileUpPtEC2": "Summer24Prompt24_V2_MC_PileUpPtEC2_AK4PFPuppi",
-          "CMS_scale_j_PileUpPtHF": "Summer24Prompt24_V2_MC_PileUpPtHF_AK4PFPuppi",
-          "CMS_scale_j_PileUpPtRef": "Summer24Prompt24_V2_MC_PileUpPtRef_AK4PFPuppi",
-          "CMS_scale_j_RelativeFSR": "Summer24Prompt24_V2_MC_RelativeFSR_AK4PFPuppi",
-          "CMS_scale_j_RelativeJEREC1_2024": "Summer24Prompt24_V2_MC_RelativeJEREC1_AK4PFPuppi",
-          "CMS_scale_j_RelativeJEREC2_2024": "Summer24Prompt24_V2_MC_RelativeJEREC2_AK4PFPuppi",
-          "CMS_scale_j_RelativeJERHF": "Summer24Prompt24_V2_MC_RelativeJERHF_AK4PFPuppi",
-          "CMS_scale_j_RelativePtBB": "Summer24Prompt24_V2_MC_RelativePtBB_AK4PFPuppi",
-          "CMS_scale_j_RelativePtEC1_2024": "Summer24Prompt24_V2_MC_RelativePtEC1_AK4PFPuppi",
-          "CMS_scale_j_RelativePtEC2_2024": "Summer24Prompt24_V2_MC_RelativePtEC2_AK4PFPuppi",
-          "CMS_scale_j_RelativePtHF": "Summer24Prompt24_V2_MC_RelativePtHF_AK4PFPuppi",
-          "CMS_scale_j_RelativeBal": "Summer24Prompt24_V2_MC_RelativeBal_AK4PFPuppi",
-          "CMS_scale_j_RelativeSample_2024": "Summer24Prompt24_V2_MC_RelativeSample_AK4PFPuppi",
-          "CMS_scale_j_RelativeStatEC_2024": "Summer24Prompt24_V2_MC_RelativeStatEC_AK4PFPuppi",
-          "CMS_scale_j_RelativeStatFSR_2024": "Summer24Prompt24_V2_MC_RelativeStatFSR_AK4PFPuppi",
-          "CMS_scale_j_RelativeStatHF_2024": "Summer24Prompt24_V2_MC_RelativeStatHF_AK4PFPuppi",
-          "CMS_scale_j_SinglePionECAL": "Summer24Prompt24_V2_MC_SinglePionECAL_AK4PFPuppi",
-          "CMS_scale_j_SinglePionHCAL": "Summer24Prompt24_V2_MC_SinglePionHCAL_AK4PFPuppi",
-          "CMS_scale_j_TimePtEta_2024": "Summer24Prompt24_V2_MC_TimePtEta_AK4PFPuppi"
+          "CMS_scale_j_AbsoluteMPFBias": "Summer24Prompt24_V3_MC_AbsoluteMPFBias_AK4PFPuppi",
+          "CMS_scale_j_AbsoluteScale": "Summer24Prompt24_V3_MC_AbsoluteScale_AK4PFPuppi",
+          "CMS_scale_j_AbsoluteStat_2024": "Summer24Prompt24_V3_MC_AbsoluteStat_AK4PFPuppi",
+          "CMS_scale_j_FlavorQCD": "Summer24Prompt24_V3_MC_FlavorQCD_AK4PFPuppi",
+          "CMS_scale_j_Fragmentation": "Summer24Prompt24_V3_MC_Fragmentation_AK4PFPuppi",
+          "CMS_scale_j_PileUpDataMC": "Summer24Prompt24_V3_MC_PileUpDataMC_AK4PFPuppi",
+          "CMS_scale_j_PileUpPtBB": "Summer24Prompt24_V3_MC_PileUpPtBB_AK4PFPuppi",
+          "CMS_scale_j_PileUpPtEC1": "Summer24Prompt24_V3_MC_PileUpPtEC1_AK4PFPuppi",
+          "CMS_scale_j_PileUpPtEC2": "Summer24Prompt24_V3_MC_PileUpPtEC2_AK4PFPuppi",
+          "CMS_scale_j_PileUpPtHF": "Summer24Prompt24_V3_MC_PileUpPtHF_AK4PFPuppi",
+          "CMS_scale_j_PileUpPtRef": "Summer24Prompt24_V3_MC_PileUpPtRef_AK4PFPuppi",
+          "CMS_scale_j_RelativeFSR": "Summer24Prompt24_V3_MC_RelativeFSR_AK4PFPuppi",
+          "CMS_scale_j_RelativeJEREC1_2024": "Summer24Prompt24_V3_MC_RelativeJEREC1_AK4PFPuppi",
+          "CMS_scale_j_RelativeJEREC2_2024": "Summer24Prompt24_V3_MC_RelativeJEREC2_AK4PFPuppi",
+          "CMS_scale_j_RelativeJERHF": "Summer24Prompt24_V3_MC_RelativeJERHF_AK4PFPuppi",
+          "CMS_scale_j_RelativePtBB": "Summer24Prompt24_V3_MC_RelativePtBB_AK4PFPuppi",
+          "CMS_scale_j_RelativePtEC1_2024": "Summer24Prompt24_V3_MC_RelativePtEC1_AK4PFPuppi",
+          "CMS_scale_j_RelativePtEC2_2024": "Summer24Prompt24_V3_MC_RelativePtEC2_AK4PFPuppi",
+          "CMS_scale_j_RelativePtHF": "Summer24Prompt24_V3_MC_RelativePtHF_AK4PFPuppi",
+          "CMS_scale_j_RelativeBal": "Summer24Prompt24_V3_MC_RelativeBal_AK4PFPuppi",
+          "CMS_scale_j_RelativeSample_2024": "Summer24Prompt24_V3_MC_RelativeSample_AK4PFPuppi",
+          "CMS_scale_j_RelativeStatEC_2024": "Summer24Prompt24_V3_MC_RelativeStatEC_AK4PFPuppi",
+          "CMS_scale_j_RelativeStatFSR_2024": "Summer24Prompt24_V3_MC_RelativeStatFSR_AK4PFPuppi",
+          "CMS_scale_j_RelativeStatHF_2024": "Summer24Prompt24_V3_MC_RelativeStatHF_AK4PFPuppi",
+          "CMS_scale_j_SinglePionECAL": "Summer24Prompt24_V3_MC_SinglePionECAL_AK4PFPuppi",
+          "CMS_scale_j_SinglePionHCAL": "Summer24Prompt24_V3_MC_SinglePionHCAL_AK4PFPuppi",
+          "CMS_scale_j_TimePtEta_2024": "Summer24Prompt24_V3_MC_TimePtEta_AK4PFPuppi"
         },
         "JesUncertaintySetReduced": {
-          "CMS_scale_j_FlavorQCD": "Summer24Prompt24_V2_MC_Regrouped_FlavorQCD_AK4PFPuppi",
-          "CMS_scale_j_RelativeBal": "Summer24Prompt24_V2_MC_Regrouped_RelativeBal_AK4PFPuppi",
-          "CMS_scale_j_HF": "Summer24Prompt24_V2_MC_Regrouped_HF_AK4PFPuppi",
-          "CMS_scale_j_BBEC1": "Summer24Prompt24_V2_MC_Regrouped_BBEC1_AK4PFPuppi",
-          "CMS_scale_j_EC2": "Summer24Prompt24_V2_MC_Regrouped_EC2_AK4PFPuppi",
-          "CMS_scale_j_Absolute": "Summer24Prompt24_V2_MC_Regrouped_Absolute_AK4PFPuppi",
-          "CMS_scale_j_BBEC1_2024": "Summer24Prompt24_V2_MC_Regrouped_BBEC1_2024_AK4PFPuppi",
-          "CMS_scale_j_RelativeSample_2024": "Summer24Prompt24_V2_MC_Regrouped_RelativeSample_2024_AK4PFPuppi",
-          "CMS_scale_j_EC2_2024": "Summer24Prompt24_V2_MC_Regrouped_EC2_2024_AK4PFPuppi",
-          "CMS_scale_j_HF_2024": "Summer24Prompt24_V2_MC_Regrouped_HF_2024_AK4PFPuppi",
-          "CMS_scale_j_Absolute_2024": "Summer24Prompt24_V2_MC_Regrouped_Absolute_2024_AK4PFPuppi"
+          "CMS_scale_j_FlavorQCD": "Summer24Prompt24_V3_MC_Regrouped_FlavorQCD_AK4PFPuppi",
+          "CMS_scale_j_RelativeBal": "Summer24Prompt24_V3_MC_Regrouped_RelativeBal_AK4PFPuppi",
+          "CMS_scale_j_HF": "Summer24Prompt24_V3_MC_Regrouped_HF_AK4PFPuppi",
+          "CMS_scale_j_BBEC1": "Summer24Prompt24_V3_MC_Regrouped_BBEC1_AK4PFPuppi",
+          "CMS_scale_j_EC2": "Summer24Prompt24_V3_MC_Regrouped_EC2_AK4PFPuppi",
+          "CMS_scale_j_Absolute": "Summer24Prompt24_V3_MC_Regrouped_Absolute_AK4PFPuppi",
+          "CMS_scale_j_BBEC1_2024": "Summer24Prompt24_V3_MC_Regrouped_BBEC1_2024_AK4PFPuppi",
+          "CMS_scale_j_RelativeSample_2024": "Summer24Prompt24_V3_MC_Regrouped_RelativeSample_2024_AK4PFPuppi",
+          "CMS_scale_j_EC2_2024": "Summer24Prompt24_V3_MC_Regrouped_EC2_2024_AK4PFPuppi",
+          "CMS_scale_j_HF_2024": "Summer24Prompt24_V3_MC_Regrouped_HF_2024_AK4PFPuppi",
+          "CMS_scale_j_Absolute_2024": "Summer24Prompt24_V3_MC_Regrouped_Absolute_2024_AK4PFPuppi"
         },
         "JesUncertaintySetTotal": {
-          "CMS_scale_j_Total": "Summer24Prompt24_V2_MC_Total_AK4PFPuppi"
+          "CMS_scale_j_Total": "Summer24Prompt24_V3_MC_Total_AK4PFPuppi"
         }
       },
       "JerUncertaintySet": {
@@ -1069,8 +1074,9 @@
         "tagNameL2Relative": "Winter25Prompt25_V3_MC_L2Relative_AK4PFPuppi"
       },
       "JerNominal": {
-        "tagNamePtResolution": "Summer23BPixPrompt23_RunD_JRV1_MC_PtResolution_AK4PFPuppi",
-        "tagNameJerScaleFactor": "Summer23BPixPrompt23_RunD_JRV1_MC_ScaleFactor_AK4PFPuppi"
+        "tagNamePtResolution": "Summer24Prompt25_JRV1_MC_PtResolution_AK4PFPuppi",
+        "tagNameJerScaleFactor": "Summer24Prompt25_JRV1_MC_ScaleFactor_AK4PFPuppi",
+        "tagNameJerSFUncertainty": "Summer24Prompt25_JRV1_MC_SFUncertainty_AK4PFPuppi"
       },
       "JesUncertaintySet": {
         "JesUncertaintySetFull": {

@@ -14,11 +14,17 @@ void XsecTool::SetFileTag(const std::string& filetag){
 }
 
 double XsecTool::GetXsec_BKG(const std::string& dataset) const {
-  if(m_Label2Xsec_BKG.count(dataset) == 0){
+  std::string normalized = dataset;
+  if (normalized.find("Bin") != std::string::npos && 
+     (normalized.find("WtoLNu") != std::string::npos ||
+      normalized.find("DY") != std::string::npos)
+     )
+       normalized = NormalizeProcessName(dataset);
+  if(m_Label2Xsec_BKG.count(normalized) == 0){
     return 0.;
   }
 
-  return m_Label2Xsec_BKG[dataset]*1000.;
+  return m_Label2Xsec_BKG[normalized]*1000.;
 }
 
 double XsecTool::GetXsec_SMS(const std::string& dataset, double MP) const {
@@ -524,18 +530,23 @@ std::map<std::string,double> XsecTool::InitMap_Xsec_BKG(){
 
 // Helper to normalize "Bin-" style process names to the canonical ordering
 // Remove this once the 2024 "Bin-" style cross sections are available
-std::string XsecTool::NormalizeProcessName(const std::string& process_name) {
-  // Match: <prefix>_Bin-HT-<ht>_<massVar>-<mass>_<suffix>
-  // Rewrite to: <prefix>_<massVar>-<mass>_HT-<ht>_<suffix>
-  static const std::regex binPattern(
-    R"(^((?:DYto2L|WtoLNu)-4Jets)_Bin-(HT-[^_]+)_((?:MLL|MLNu)-[^_]+)_(.+)$)"
+std::string XsecTool::NormalizeProcessName(const std::string& process_name) const {
+  // WtoLNu: _Bin-HT-<ht>-MLNu-<mlnu>_  (dash-separated bins)
+  static const std::regex wPattern(
+    R"(^(WtoLNu-4Jets)_Bin-(HT-[^-]+)-(MLNu-[^_]+)_(.+)$)"
   );
+  // DYto2L: _Bin-HT-<ht>-MLL-<mll>_  (dash-separated bins)  
+  static const std::regex dyPattern(
+    R"(^(DYto2L-4Jets)_Bin-(HT-[^-]+)-(MLL-[^_]+)_(.+)$)"
+  );
+
   std::smatch m;
-  if (std::regex_match(process_name, m, binPattern)) {
+  if (std::regex_match(process_name, m, wPattern) ||
+      std::regex_match(process_name, m, dyPattern)) {
     // m[1]=prefix, m[2]=HT-range, m[3]=mass-range, m[4]=suffix
     return m[1].str() + "_" + m[3].str() + "_" + m[2].str() + "_" + m[4].str();
   }
-  return process_name;  // unchanged if pattern doesn't match
+  return process_name;
 }
 
 void XsecTool::UpdateXsecFromJSON(const std::string& filename){
