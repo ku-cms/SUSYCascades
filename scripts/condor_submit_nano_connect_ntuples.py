@@ -471,9 +471,8 @@ if __name__ == "__main__":
             print("making LEP file", flush=True)
         if "102X" in listname:
             os.system("cp -r root/LepSF/ "+config+".")
-        else:
-            os.system("mkdir -p "+config+"LepSF/")
-            os.system("cp -r root/LepSF/*.json "+config+"LepSF/")
+        os.system("mkdir -p "+config+"LepSF/")
+        os.system("cp -r root/LepSF/*.json "+config+"LepSF/")
         LEPFOLD = "./config/LepSF/"
 
         # copy JME files

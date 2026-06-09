@@ -232,6 +232,7 @@ void AnalysisBase<Base>::AddBtagFolder(const string& btagfold){
 
 template <class Base>
 void AnalysisBase<Base>::SetupBtagWP(){
+  if(m_year < 2019 && !m_IsUL) return;
   std::string Btag_file = "";
   Btag_file = find_clib_file("/cvmfs/cms-griddata.cern.ch/cat/metadata/BTV/", "btagging.json.gz");
   m_cset_Btag = correction::CorrectionSet::from_file(Btag_file);
@@ -256,7 +257,7 @@ void AnalysisBase<Base>::SetupBtagWP(){
 template <class Base>
 void AnalysisBase<Base>::AddLepFolder(const string& lepfold){
   if(m_year < 2019 && !m_IsUL) m_LepSFTool.BuildMap(lepfold);
-  else {
+  //else {
     std::string SF_file = lepfold + "/LepSFs_fixed.json";
     m_LepSFToolCascades.BuildMap(SF_file);
     m_LepSFToolCascades.SetYear(std::to_string(m_year));
@@ -277,7 +278,7 @@ void AnalysisBase<Base>::AddLepFolder(const string& lepfold){
       m_LepSFToolCascades.SetEra(m_IsBPix ? "postBPix" : "preBPix");
     else if(m_year >= 2024)
       m_LepSFToolCascades.SetEra("none");
-  }
+  //}
 }
 
 template <class Base>
@@ -2212,8 +2213,6 @@ double AnalysisBase<Base>::GetPDFWeight(int updown){
   }
   return 1.;
 }
-
-// new LepSF here
 
 template <class Base>
 double AnalysisBase<Base>::Get_El_BLP_over_COL(const ParticleList& els, int updown){
