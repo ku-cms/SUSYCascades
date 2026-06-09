@@ -83,7 +83,14 @@ double Applier::jesFactorNominal(const JesInputs& j) const {
 
     // L1FastJet
     double ptAfter = ptRaw;
-    const double c1 = ctx_.jes.l1FastJet->evaluate({ j.area, j.eta, ptAfter, j.rho });
+    double c1 = 1.0;
+    if (ctx_.isData && requiresRunBasedL1FastJet(ctx_.year)) {
+        const double run = ctx_.runNumber.value_or(0.0);
+        c1 = ctx_.jes.l1FastJet->evaluate({ run, j.area, j.eta, ptAfter, j.rho });
+    }
+    else{
+        c1 = ctx_.jes.l1FastJet->evaluate({ j.area, j.eta, ptAfter, j.rho });
+    }
     ptAfter *= c1;
     dbg(ctx_.isDebug, "JES L1FastJet: c1=" + std::to_string(c1) +
                       ", ptAfter=" + std::to_string(ptAfter));
@@ -155,14 +162,15 @@ double Applier::jerFactor(const JesInputs& jAfterJes,
 
     const double reso = (*ctx_.jer.ptResolution)->evaluate({ jAfterJes.eta, jAfterJes.pt, jAfterJes.rho });
 
-    auto evalScaleFactor = [&](const std::string& var) {
+    auto evalScaleFactor = [&](const std::string& variation) {
         try {
-            return (*ctx_.jer.scaleFactor)->evaluate({ jAfterJes.eta, jAfterJes.pt });
-        } catch (const std::exception&) {
             if (usesPuppiMet(ctx_.year)) {
-                return (*ctx_.jer.scaleFactor)->evaluate({ jAfterJes.eta, jAfterJes.pt, var });
+                return (*ctx_.jer.scaleFactor)->evaluate({ jAfterJes.eta, jAfterJes.pt, variation });
             }
-            return (*ctx_.jer.scaleFactor)->evaluate({ jAfterJes.eta, var });
+            return (*ctx_.jer.scaleFactor)->evaluate({ jAfterJes.eta, variation });
+        } catch (const std::exception&) {
+            // Fallback: no variation axis (e.g. Run3 separate SFUncertainty format)
+            return (*ctx_.jer.scaleFactor)->evaluate({ jAfterJes.eta, jAfterJes.pt });
         }
     };
 
@@ -245,7 +253,18 @@ TLorentzVector Applier::correctedMet(const MetInputs& met,
 
         // --- L1 ---
         double ptCorr = ptRawMinusMuon;
-        const double c1 = ctx_.jes.l1FastJet->evaluate({ v.area, v.eta, ptCorr, rhoForJets });
+        double c1 = 1.0;
+        
+        if (ctx_.isData && requiresRunBasedL1FastJet(ctx_.year)) {
+            const double run = ctx_.runNumber.value_or(0.0);
+            c1 = ctx_.jes.l1FastJet->evaluate(
+                { run, v.area, v.eta, ptCorr, rhoForJets }
+            );
+        } else {
+            c1 = ctx_.jes.l1FastJet->evaluate(
+                { v.area, v.eta, ptCorr, rhoForJets }
+            );
+        }
         ptCorr *= c1;
         const double ptCorrL1 = ptCorr;
         dbg(ctx_.isDebug, "  L1 c1=" + std::to_string(c1) +

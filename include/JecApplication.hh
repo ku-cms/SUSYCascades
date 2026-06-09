@@ -33,6 +33,12 @@ inline bool usesPuppiMet(const std::string& year) {
     };
     return years.count(year) != 0;
 }
+inline bool requiresRunBasedL1FastJet(const std::string& year) {
+    return (
+            year == "2016Pre" || year == "2016Post" ||
+            year == "2017" || year == "2018"
+           );
+}
 inline double deltaR(double eta1, double phi1, double eta2, double phi2) {
     const double dEta = eta1 - eta2;
     const double dPhi = TVector2::Phi_mpi_pi(phi1 - phi2);
