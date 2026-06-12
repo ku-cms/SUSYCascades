@@ -4855,7 +4855,6 @@ double AnalysisBase<NANORun3>::GetBtagSFWeight(const ParticleList& jets, bool HF
 
 template <>
 double AnalysisBase<NANORun3>::GetMETTriggerSFWeight(double MET, double HT, int Nele, int Nmu, int updown){
-if(m_year >= 2024) return 1.; // hack until 2024 SFs available
   if(IsData()) return 1.;
   if(Nele > 2) Nele = 2;
   if(IsFastSim())
