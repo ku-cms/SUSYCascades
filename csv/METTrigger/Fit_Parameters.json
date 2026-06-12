@@ -1,112 +1,57 @@
 {
-    "Electron0__Data_DoubleMuon_2016Comb": {
-        "fDGauss_Electron0__Data_DoubleMuon_2016Comb": {
-            "chi2": 4.93,
+    "Electron0__Data_SingleMuon_2023Comb": {
+        "fDGauss_Electron0__Data_SingleMuon_2023Comb": {
+            "chi2": 15.2,
             "ndf": 10,
             "parameters": {
                 "Mean": {
-                    "error": 6.59,
-                    "value": 107.0
+                    "error": 1.42,
+                    "value": 142.0
                 },
                 "Norm": {
-                    "error": 0.104,
-                    "value": 1.12
+                    "error": 0.00235,
+                    "value": 0.998
                 },
                 "Scale": {
                     "error": 0.0,
                     "value": 0.0
                 },
                 "Sigma": {
-                    "error": 3.74,
-                    "value": 45.4
+                    "error": 5.17,
+                    "value": 29.3
                 },
                 "Weight": {
-                    "error": 0.186,
-                    "value": 0.769
+                    "error": 0.175,
+                    "value": 0.506
                 }
             },
-            "status": "CALL LIMIT"
+            "status": "SUCCESSFUL"
         },
-        "fGauss_Electron0__Data_DoubleMuon_2016Comb": {
-            "chi2": 5.15,
+        "fGauss_Electron0__Data_SingleMuon_2023Comb": {
+            "chi2": 23.3,
             "ndf": 12,
             "parameters": {
                 "Mean": {
-                    "error": 4.54,
-                    "value": 100.0
+                    "error": 1.11,
+                    "value": 138.0
                 },
                 "Norm": {
-                    "error": 0.00171,
-                    "value": 0.997
+                    "error": 0.00181,
+                    "value": 0.996
                 },
                 "Sigma": {
-                    "error": 3.42,
-                    "value": 47.8
+                    "error": 1.5,
+                    "value": 44.8
                 }
             },
             "status": "SUCCESSFUL"
         },
         "fit": {
-            "mean": 100.30889334881314,
-            "norm": 0.997081829084167,
-            "scale": 0.0,
-            "sigma": 47.841704218444455,
-            "weight": 0.0
-        }
-    },
-    "Electron0__Data_DoubleMuon_2017": {
-        "fDGauss_Electron0__Data_DoubleMuon_2017": {
-            "chi2": 19.8,
-            "ndf": 10,
-            "parameters": {
-                "Mean": {
-                    "error": 0.91,
-                    "value": 133.0
-                },
-                "Norm": {
-                    "error": 0.00241,
-                    "value": 0.995
-                },
-                "Scale": {
-                    "error": 0.0,
-                    "value": 0.0
-                },
-                "Sigma": {
-                    "error": 1.04,
-                    "value": 41.0
-                },
-                "Weight": {
-                    "error": 0.0679,
-                    "value": 1.0
-                }
-            },
-            "status": "SUCCESSFUL"
-        },
-        "fGauss_Electron0__Data_DoubleMuon_2017": {
-            "chi2": 19.8,
-            "ndf": 12,
-            "parameters": {
-                "Mean": {
-                    "error": 1.83,
-                    "value": 133.0
-                },
-                "Norm": {
-                    "error": 0.00266,
-                    "value": 0.995
-                },
-                "Sigma": {
-                    "error": 2.2,
-                    "value": 41.0
-                }
-            },
-            "status": "SUCCESSFUL"
-        },
-        "fit": {
-            "mean": 133.18398924519536,
-            "norm": 0.9949579564297579,
-            "scale": 0.0,
-            "sigma": 40.96066835535224,
-            "weight": 0.0
+            "mean": 141.55850552765466,
+            "norm": 0.9984583854484376,
+            "scale": 26.949769882130976,
+            "sigma": 29.327404154947782,
+            "weight": 0.7793696841018884
         }
     },
     "Electron0__Data_DoubleMuon_2018": {
@@ -164,72 +109,80 @@
             "weight": 0.0
         }
     },
-    "Electron0__Data_SingleMuon_2022Comb": {
-        "fDGauss_Electron0__Data_SingleMuon_2022Comb": {
-            "chi2": 39.6,
+    "Electron2__Data_SingleElectron_2022Comb": {
+        "fDGauss_Electron2__Data_SingleElectron_2022Comb": {
+            "chi2": 21.7,
             "ndf": 10,
             "parameters": {
                 "Mean": {
-                    "error": 0.667,
-                    "value": 131.0
+                    "error": 0.493,
+                    "value": 186.0
                 },
                 "Norm": {
-                    "error": 0.000741,
-                    "value": 0.998
+                    "error": 0.00425,
+                    "value": 0.994
                 },
                 "Scale": {
                     "error": 0.0,
                     "value": 0.0
                 },
                 "Sigma": {
-                    "error": 0.731,
-                    "value": 44.1
+                    "error": 3.3,
+                    "value": 30.4
                 },
                 "Weight": {
-                    "error": 0.0179,
-                    "value": 1.0
+                    "error": 0.144,
+                    "value": 0.651
                 }
             },
             "status": "SUCCESSFUL"
         },
-        "fGauss_Electron0__Data_SingleMuon_2022Comb": {
-            "chi2": 39.6,
+        "fGauss_Electron2__Data_SingleElectron_2022Comb": {
+            "chi2": 39.3,
             "ndf": 12,
             "parameters": {
                 "Mean": {
-                    "error": 0.886,
-                    "value": 131.0
+                    "error": 0.447,
+                    "value": 186.0
                 },
                 "Norm": {
-                    "error": 0.000762,
-                    "value": 0.998
+                    "error": 0.00288,
+                    "value": 0.984
                 },
                 "Sigma": {
-                    "error": 0.977,
-                    "value": 44.1
+                    "error": 0.716,
+                    "value": 40.0
                 }
             },
             "status": "SUCCESSFUL"
         },
         "fit": {
-            "mean": 130.86948557091483,
-            "norm": 0.997647273320692,
-            "scale": 0.0,
-            "sigma": 44.1486314525383,
-            "weight": 0.0
+            "mean": 186.3225217643032,
+            "norm": 0.9939730557297519,
+            "scale": 41.47686111249903,
+            "sigma": 30.41227972091641,
+            "weight": 0.6317165775315222
         }
     },
-    "Electron0__Data_SingleMuon_2023Comb": {
-        "fDGauss_Electron0__Data_SingleMuon_2023Comb": {
-            "chi2": 14.7,
+    "Electron2__bkg_2018": {
+        "bands": {
+            "a1": 9.8e-06,
+            "a2": -4.5e-06,
+            "b1": 260.0,
+            "b2": 260.0,
+            "c1": 1.01,
+            "c2": 0.98
+        },
+        "fDGauss_Electron2__bkg_2018": {
+            "chi2": 40.5,
             "ndf": 10,
             "parameters": {
                 "Mean": {
-                    "error": 1.49,
-                    "value": 141.0
+                    "error": 0.133,
+                    "value": 176.0
                 },
                 "Norm": {
-                    "error": 0.00257,
+                    "error": 0.000423,
                     "value": 0.997
                 },
                 "Scale": {
@@ -237,44 +190,217 @@
                     "value": 0.0
                 },
                 "Sigma": {
-                    "error": 6.09,
-                    "value": 30.7
+                    "error": 1.94,
+                    "value": 45.9
                 },
                 "Weight": {
-                    "error": 0.216,
-                    "value": 0.499
+                    "error": 0.0668,
+                    "value": 0.553
                 }
             },
             "status": "SUCCESSFUL"
         },
-        "fGauss_Electron0__Data_SingleMuon_2023Comb": {
-            "chi2": 20.8,
+        "fGauss_Electron2__bkg_2018": {
+            "chi2": 242.0,
             "ndf": 12,
             "parameters": {
                 "Mean": {
-                    "error": 1.12,
-                    "value": 138.0
+                    "error": 0.122,
+                    "value": 177.0
                 },
                 "Norm": {
-                    "error": 0.00202,
-                    "value": 0.994
+                    "error": 0.000371,
+                    "value": 0.995
                 },
                 "Sigma": {
-                    "error": 1.54,
-                    "value": 45.5
+                    "error": 0.21,
+                    "value": 33.1
                 }
             },
             "status": "SUCCESSFUL"
         },
         "fit": {
-            "mean": 140.75297334724547,
-            "norm": 0.9965950570426506,
-            "scale": 25.79984577526114,
-            "sigma": 30.67991839303878,
-            "weight": 0.7867791566737007
+            "mean": 176.35781977886202,
+            "norm": 0.9965033575840005,
+            "scale": -24.76911434115953,
+            "sigma": 45.94221914327225,
+            "weight": 0.7325668429299972
         }
     },
-    "Electron0__bkg_2016Comb": {
+    "Electron2__bkg_2022Comb": {
+        "bands": {
+            "a1": 1.9e-05,
+            "a2": -4.8e-06,
+            "b1": 220.0,
+            "b2": 240.0,
+            "c1": 1.005,
+            "c2": 0.991
+        },
+        "fDGauss_Electron2__bkg_2022Comb": {
+            "chi2": 49.1,
+            "ndf": 10,
+            "parameters": {
+                "Mean": {
+                    "error": 0.107,
+                    "value": 177.0
+                },
+                "Norm": {
+                    "error": 0.000342,
+                    "value": 0.998
+                },
+                "Scale": {
+                    "error": 0.0,
+                    "value": 0.0
+                },
+                "Sigma": {
+                    "error": 1.13,
+                    "value": 29.5
+                },
+                "Weight": {
+                    "error": 0.0508,
+                    "value": 0.619
+                }
+            },
+            "status": "SUCCESSFUL"
+        },
+        "fGauss_Electron2__bkg_2022Comb": {
+            "chi2": 492.0,
+            "ndf": 12,
+            "parameters": {
+                "Mean": {
+                    "error": 0.101,
+                    "value": 178.0
+                },
+                "Norm": {
+                    "error": 0.000282,
+                    "value": 0.996
+                },
+                "Sigma": {
+                    "error": 0.183,
+                    "value": 40.3
+                }
+            },
+            "status": "SUCCESSFUL"
+        },
+        "fit": {
+            "mean": 177.1900996007263,
+            "norm": 0.9981118470079556,
+            "scale": 34.999731964469476,
+            "sigma": 29.54014848823917,
+            "weight": 0.6652331233051156
+        }
+    },
+    "Muon0__Data_SingleElectron_2024": {
+        "fDGauss_Muon0__Data_SingleElectron_2024": {
+            "chi2": 8.62,
+            "ndf": 10,
+            "parameters": {
+                "Mean": {
+                    "error": 0.514,
+                    "value": 191.0
+                },
+                "Norm": {
+                    "error": 0.00502,
+                    "value": 0.996
+                },
+                "Scale": {
+                    "error": 0.0,
+                    "value": 0.0
+                },
+                "Sigma": {
+                    "error": 4.47,
+                    "value": 32.2
+                },
+                "Weight": {
+                    "error": 0.258,
+                    "value": 0.685
+                }
+            },
+            "status": "SUCCESSFUL"
+        },
+        "fGauss_Muon0__Data_SingleElectron_2024": {
+            "chi2": 17.6,
+            "ndf": 12,
+            "parameters": {
+                "Mean": {
+                    "error": 0.449,
+                    "value": 191.0
+                },
+                "Norm": {
+                    "error": 0.00298,
+                    "value": 0.988
+                },
+                "Sigma": {
+                    "error": 0.644,
+                    "value": 40.0
+                }
+            },
+            "status": "SUCCESSFUL"
+        },
+        "fit": {
+            "mean": 191.46864877815915,
+            "norm": 0.9960502849868944,
+            "scale": 34.840190112937016,
+            "sigma": 32.21462474459237,
+            "weight": 0.5962510307904211
+        }
+    },
+    "Muon0__Data_SingleElectron_2023Comb": {
+        "fDGauss_Muon0__Data_SingleElectron_2023Comb": {
+            "chi2": 27.6,
+            "ndf": 10,
+            "parameters": {
+                "Mean": {
+                    "error": 1.03,
+                    "value": 188.0
+                },
+                "Norm": {
+                    "error": 0.0135,
+                    "value": 0.992
+                },
+                "Scale": {
+                    "error": 0.0,
+                    "value": 0.0
+                },
+                "Sigma": {
+                    "error": 3.75,
+                    "value": 38.9
+                },
+                "Weight": {
+                    "error": 0.255,
+                    "value": 0.95
+                }
+            },
+            "status": "FAILURE   "
+        },
+        "fGauss_Muon0__Data_SingleElectron_2023Comb": {
+            "chi2": 27.8,
+            "ndf": 12,
+            "parameters": {
+                "Mean": {
+                    "error": 0.821,
+                    "value": 188.0
+                },
+                "Norm": {
+                    "error": 0.00632,
+                    "value": 0.988
+                },
+                "Sigma": {
+                    "error": 1.17,
+                    "value": 40.2
+                }
+            },
+            "status": "SUCCESSFUL"
+        },
+        "fit": {
+            "mean": 188.07039995863875,
+            "norm": 0.987934317357059,
+            "scale": 0.0,
+            "sigma": 40.156404526274066,
+            "weight": 0.0
+        }
+    },
+    "Muon2__bkg_2016Comb": {
         "bands": {
             "a1": 4e-06,
             "a2": -6e-06,
@@ -283,16 +409,16 @@
             "c1": 1.01,
             "c2": 0.99
         },
-        "fDGauss_Electron0__bkg_2016Comb": {
-            "chi2": 23.0,
+        "fDGauss_Muon2__bkg_2016Comb": {
+            "chi2": 9.23,
             "ndf": 10,
             "parameters": {
                 "Mean": {
-                    "error": 1.28,
-                    "value": 30.0
+                    "error": 12.1,
+                    "value": 54.0
                 },
                 "Norm": {
-                    "error": 0.000139,
+                    "error": 0.000325,
                     "value": 0.999
                 },
                 "Scale": {
@@ -300,938 +426,222 @@
                     "value": 0.0
                 },
                 "Sigma": {
-                    "error": 0.646,
-                    "value": 61.7
+                    "error": 6.8,
+                    "value": 49.4
                 },
                 "Weight": {
-                    "error": 0.00294,
+                    "error": 0.0259,
+                    "value": 0.975
+                }
+            },
+            "status": "SUCCESSFUL"
+        },
+        "fGauss_Muon2__bkg_2016Comb": {
+            "chi2": 21.2,
+            "ndf": 12,
+            "parameters": {
+                "Mean": {
+                    "error": 6.82,
+                    "value": 25.4
+                },
+                "Norm": {
+                    "error": 0.000154,
+                    "value": 0.999
+                },
+                "Sigma": {
+                    "error": 3.16,
+                    "value": 65.2
+                }
+            },
+            "status": "SUCCESSFUL"
+        },
+        "fit": {
+            "mean": 53.988867103935405,
+            "norm": 0.9994332912657393,
+            "scale": 69.25788433692826,
+            "sigma": 49.407289700194546,
+            "weight": 0.1593614381487197
+        }
+    },
+    "Muon2__bkg_2023Comb": {
+        "bands": {
+            "a1": 4.1434875326145434e-08,
+            "a2": -4.175045250333311e-08,
+            "b1": 187.6222611321071,
+            "b2": 187.6222611321071,
+            "c1": 1.005,
+            "c2": 0.994961918893842
+        },
+        "fDGauss_Muon2__bkg_2023Comb": {
+            "chi2": 41.2,
+            "ndf": 10,
+            "parameters": {
+                "Mean": {
+                    "error": 1.69,
+                    "value": 129.0
+                },
+                "Norm": {
+                    "error": 0.000296,
+                    "value": 0.998
+                },
+                "Scale": {
+                    "error": 0.0,
+                    "value": 0.0
+                },
+                "Sigma": {
+                    "error": 2.16,
+                    "value": 53.6
+                },
+                "Weight": {
+                    "error": 0.0696,
+                    "value": 0.649
+                }
+            },
+            "status": "SUCCESSFUL"
+        },
+        "fGauss_Muon2__bkg_2023Comb": {
+            "chi2": 78.6,
+            "ndf": 12,
+            "parameters": {
+                "Mean": {
+                    "error": 0.48,
+                    "value": 122.0
+                },
+                "Norm": {
+                    "error": 0.000263,
+                    "value": 0.997
+                },
+                "Sigma": {
+                    "error": 0.486,
+                    "value": 50.2
+                }
+            },
+            "status": "SUCCESSFUL"
+        },
+        "fit": {
+            "mean": 128.75889635389004,
+            "norm": 0.997619345600596,
+            "scale": -25.744234790029584,
+            "sigma": 53.589586068880394,
+            "weight": 0.6346178136469522
+        }
+    },
+    "Muon1__bkg_2016Comb": {
+        "bands": {
+            "a1": 3.462603878116344e-08,
+            "a2": -3.462603878116344e-08,
+            "b1": 155.0,
+            "b2": 155.0,
+            "c1": 1.005,
+            "c2": 0.995
+        },
+        "fDGauss_Muon1__bkg_2016Comb": {
+            "chi2": 94.6,
+            "ndf": 10,
+            "parameters": {
+                "Mean": {
+                    "error": 0.894,
+                    "value": 76.6
+                },
+                "Norm": {
+                    "error": 0.000105,
+                    "value": 0.998
+                },
+                "Scale": {
+                    "error": 0.0,
+                    "value": 0.0
+                },
+                "Sigma": {
+                    "error": 0.521,
+                    "value": 51.9
+                },
+                "Weight": {
+                    "error": 0.000644,
                     "value": 1.0
                 }
             },
             "status": "SUCCESSFUL"
         },
-        "fGauss_Electron0__bkg_2016Comb": {
-            "chi2": 23.0,
+        "fGauss_Muon1__bkg_2016Comb": {
+            "chi2": 94.6,
             "ndf": 12,
             "parameters": {
                 "Mean": {
-                    "error": 7.94,
-                    "value": 30.0
+                    "error": 1.3,
+                    "value": 76.6
                 },
                 "Norm": {
-                    "error": 0.000159,
-                    "value": 0.999
+                    "error": 0.000111,
+                    "value": 0.998
                 },
                 "Sigma": {
-                    "error": 3.62,
-                    "value": 61.7
+                    "error": 0.75,
+                    "value": 51.9
                 }
             },
             "status": "SUCCESSFUL"
         },
         "fit": {
-            "mean": 29.9644589291732,
-            "norm": 0.9989170157210584,
+            "mean": 76.62999709372473,
+            "norm": 0.9982697252896559,
             "scale": 0.0,
-            "sigma": 61.72482667548442,
+            "sigma": 51.93103133341903,
             "weight": 0.0
         }
     },
-    "Electron0__bkg_2017": {
-        "bands": {
-            "a1": 1.4e-05,
-            "a2": -2.2e-05,
-            "b1": 235.0,
-            "b2": 200.0,
-            "c1": 1.01,
-            "c2": 0.98
-        },
-        "fDGauss_Electron0__bkg_2017": {
-            "chi2": 5.04,
-            "ndf": 10,
-            "parameters": {
-                "Mean": {
-                    "error": 3.14,
-                    "value": 120.0
-                },
-                "Norm": {
-                    "error": 0.000557,
-                    "value": 0.998
-                },
-                "Scale": {
-                    "error": 0.0,
-                    "value": 0.0
-                },
-                "Sigma": {
-                    "error": 21.8,
-                    "value": 56.5
-                },
-                "Weight": {
-                    "error": 0.233,
-                    "value": 0.191
-                }
-            },
-            "status": "SUCCESSFUL"
-        },
-        "fGauss_Electron0__bkg_2017": {
-            "chi2": 11.4,
-            "ndf": 12,
-            "parameters": {
-                "Mean": {
-                    "error": 1.22,
-                    "value": 116.0
-                },
-                "Norm": {
-                    "error": 0.000376,
-                    "value": 0.997
-                },
-                "Sigma": {
-                    "error": 0.985,
-                    "value": 42.8
-                }
-            },
-            "status": "SUCCESSFUL"
-        },
-        "fit": {
-            "mean": 120.0040941386167,
-            "norm": 0.9977617445753323,
-            "scale": -20.91866321891209,
-            "sigma": 56.52511037161796,
-            "weight": 1.1182477711299692
-        }
-    },
-    "Electron0__bkg_2018": {
-        "bands": {
-            "a1": 1.2e-05,
-            "a2": -1.8e-05,
-            "b1": 230.0,
-            "b2": 205.0,
-            "c1": 1.005,
-            "c2": 0.99
-        },
-        "fDGauss_Electron0__bkg_2018": {
-            "chi2": 8.55,
-            "ndf": 10,
-            "parameters": {
-                "Mean": {
-                    "error": 0.845,
-                    "value": 126.0
-                },
-                "Norm": {
-                    "error": 0.00226,
-                    "value": 1.01
-                },
-                "Scale": {
-                    "error": 0.0,
-                    "value": 0.0
-                },
-                "Sigma": {
-                    "error": 3.02,
-                    "value": 814.0
-                },
-                "Weight": {
-                    "error": 0.00607,
-                    "value": 0.0353
-                }
-            },
-            "status": "PROBLEMS  "
-        },
-        "fGauss_Electron0__bkg_2018": {
-            "chi2": 28.9,
-            "ndf": 12,
-            "parameters": {
-                "Mean": {
-                    "error": 0.851,
-                    "value": 124.0
-                },
-                "Norm": {
-                    "error": 0.000295,
-                    "value": 0.998
-                },
-                "Sigma": {
-                    "error": 0.754,
-                    "value": 41.7
-                }
-            },
-            "status": "SUCCESSFUL"
-        },
-        "fit": {
-            "mean": 126.32710262733494,
-            "norm": 1.011366245392743,
-            "scale": -774.2253542170333,
-            "sigma": 813.8829396847291,
-            "weight": -1.3818480040792518
-        }
-    },
-    "Electron0__bkg_2022Comb": {
-        "bands": {
-            "a1": 9.9e-06,
-            "a2": -9.9e-06,
-            "b1": 230.0,
-            "b2": 230.0,
-            "c1": 1.005,
-            "c2": 0.992
-        },
-        "fDGauss_Electron0__bkg_2022Comb": {
-            "chi2": 1100.0,
-            "ndf": 10,
-            "parameters": {
-                "Mean": {
-                    "error": 0.111,
-                    "value": 130.0
-                },
-                "Norm": {
-                    "error": 0.00139,
-                    "value": 1.03
-                },
-                "Scale": {
-                    "error": 0.0,
-                    "value": 0.0
-                },
-                "Sigma": {
-                    "error": 0.161,
-                    "value": 37.4
-                },
-                "Weight": {
-                    "error": 0.000776,
-                    "value": 0.974
-                }
-            },
-            "status": "FAILED    "
-        },
-        "fGauss_Electron0__bkg_2022Comb": {
-            "chi2": 90.6,
-            "ndf": 12,
-            "parameters": {
-                "Mean": {
-                    "error": 0.458,
-                    "value": 118.0
-                },
-                "Norm": {
-                    "error": 0.000114,
-                    "value": 0.999
-                },
-                "Sigma": {
-                    "error": 0.404,
-                    "value": 48.6
-                }
-            },
-            "status": "SUCCESSFUL"
-        },
-        "fit": {
-            "mean": 117.8188915907526,
-            "norm": 0.9988821672659828,
-            "scale": 0.0,
-            "sigma": 48.636993900164434,
-            "weight": 0.0
-        }
-    },
-    "Electron0__bkg_2023Comb": {
-        "bands": {
-            "a1": 9.1e-06,
-            "a2": -9.6e-06,
-            "b1": 200.0,
-            "b2": 200.0,
-            "c1": 1.005,
-            "c2": 0.993
-        },
-        "fDGauss_Electron0__bkg_2023Comb": {
-            "chi2": 28.6,
-            "ndf": 10,
-            "parameters": {
-                "Mean": {
-                    "error": 2.03,
-                    "value": 131.0
-                },
-                "Norm": {
-                    "error": 0.000292,
-                    "value": 0.998
-                },
-                "Scale": {
-                    "error": 0.0,
-                    "value": 0.0
-                },
-                "Sigma": {
-                    "error": 1.56,
-                    "value": 51.0
-                },
-                "Weight": {
-                    "error": 0.0363,
-                    "value": 0.68
-                }
-            },
-            "status": "SUCCESSFUL"
-        },
-        "fGauss_Electron0__bkg_2023Comb": {
-            "chi2": 64.0,
-            "ndf": 12,
-            "parameters": {
-                "Mean": {
-                    "error": 0.501,
-                    "value": 122.0
-                },
-                "Norm": {
-                    "error": 0.000269,
-                    "value": 0.997
-                },
-                "Sigma": {
-                    "error": 0.503,
-                    "value": 49.5
-                }
-            },
-            "status": "SUCCESSFUL"
-        },
-        "fit": {
-            "mean": 130.74723603188195,
-            "norm": 0.9977572898630728,
-            "scale": -28.350916608266026,
-            "sigma": 50.99737136495335,
-            "weight": 0.6008582662242032
-        }
-    },
-    "Electron1__Data_MuonEG_2016Comb": {
-        "fDGauss_Electron1__Data_MuonEG_2016Comb": {
-            "chi2": 13.9,
-            "ndf": 10,
-            "parameters": {
-                "Mean": {
-                    "error": 14.6,
-                    "value": 124.0
-                },
-                "Norm": {
-                    "error": 0.282,
-                    "value": 1.06
-                },
-                "Scale": {
-                    "error": 0.0,
-                    "value": 0.0
-                },
-                "Sigma": {
-                    "error": 5.64,
-                    "value": 46.2
-                },
-                "Weight": {
-                    "error": 0.185,
-                    "value": 0.841
-                }
-            },
-            "status": "PROBLEMS  "
-        },
-        "fGauss_Electron1__Data_MuonEG_2016Comb": {
-            "chi2": 18.1,
-            "ndf": 12,
-            "parameters": {
-                "Mean": {
-                    "error": 2.04,
-                    "value": 119.0
-                },
-                "Norm": {
-                    "error": 0.00197,
-                    "value": 0.993
-                },
-                "Sigma": {
-                    "error": 2.17,
-                    "value": 51.3
-                }
-            },
-            "status": "SUCCESSFUL"
-        },
-        "fit": {
-            "mean": 124.17278568529541,
-            "norm": 1.0607404384613226,
-            "scale": 695.0394004989752,
-            "sigma": 46.21439057538356,
-            "weight": 2.7312069933682785
-        }
-    },
-    "Electron1__Data_MuonEG_2017": {
-        "fDGauss_Electron1__Data_MuonEG_2017": {
-            "chi2": 4.85,
-            "ndf": 10,
-            "parameters": {
-                "Mean": {
-                    "error": 0.975,
-                    "value": 154.0
-                },
-                "Norm": {
-                    "error": 0.005,
-                    "value": 0.994
-                },
-                "Scale": {
-                    "error": 0.0,
-                    "value": 0.0
-                },
-                "Sigma": {
-                    "error": 12.9,
-                    "value": 21.1
-                },
-                "Weight": {
-                    "error": 0.265,
-                    "value": 0.261
-                }
-            },
-            "status": "SUCCESSFUL"
-        },
-        "fGauss_Electron1__Data_MuonEG_2017": {
-            "chi2": 13.0,
-            "ndf": 12,
-            "parameters": {
-                "Mean": {
-                    "error": 0.892,
-                    "value": 152.0
-                },
-                "Norm": {
-                    "error": 0.00376,
-                    "value": 0.989
-                },
-                "Sigma": {
-                    "error": 1.73,
-                    "value": 46.4
-                }
-            },
-            "status": "SUCCESSFUL"
-        },
-        "fit": {
-            "mean": 153.70389641805917,
-            "norm": 0.993919273685044,
-            "scale": 33.950325533560125,
-            "sigma": 21.082210827752622,
-            "weight": 5.248643529414279
-        }
-    },
-    "Electron1__Data_MuonEG_2018": {
-        "fDGauss_Electron1__Data_MuonEG_2018": {
-            "chi2": 12.4,
-            "ndf": 10,
-            "parameters": {
-                "Mean": {
-                    "error": 0.608,
-                    "value": 157.0
-                },
-                "Norm": {
-                    "error": 0.00206,
-                    "value": 0.998
-                },
-                "Scale": {
-                    "error": 0.0,
-                    "value": 0.0
-                },
-                "Sigma": {
-                    "error": 5.97,
-                    "value": 34.5
-                },
-                "Weight": {
-                    "error": 0.221,
-                    "value": 0.481
-                }
-            },
-            "status": "SUCCESSFUL"
-        },
-        "fGauss_Electron1__Data_MuonEG_2018": {
-            "chi2": 21.5,
-            "ndf": 12,
-            "parameters": {
-                "Mean": {
-                    "error": 0.61,
-                    "value": 157.0
-                },
-                "Norm": {
-                    "error": 0.00192,
-                    "value": 0.995
-                },
-                "Sigma": {
-                    "error": 1.18,
-                    "value": 48.6
-                }
-            },
-            "status": "SUCCESSFUL"
-        },
-        "fit": {
-            "mean": 157.42373970617584,
-            "norm": 0.9979994777610374,
-            "scale": 28.418835872014462,
-            "sigma": 34.52772930114664,
-            "weight": 0.804586919137379
-        }
-    },
-    "Electron1__Data_MuonEG_2022Comb": {
-        "fDGauss_Electron1__Data_MuonEG_2022Comb": {
-            "chi2": 33.8,
-            "ndf": 10,
-            "parameters": {
-                "Mean": {
-                    "error": 0.687,
-                    "value": 157.0
-                },
-                "Norm": {
-                    "error": 0.00387,
-                    "value": 0.996
-                },
-                "Scale": {
-                    "error": 0.0,
-                    "value": 0.0
-                },
-                "Sigma": {
-                    "error": 6.6,
-                    "value": 44.3
-                },
-                "Weight": {
-                    "error": 0.355,
-                    "value": 0.684
-                }
-            },
-            "status": "SUCCESSFUL"
-        },
-        "fGauss_Electron1__Data_MuonEG_2022Comb": {
-            "chi2": 38.1,
-            "ndf": 12,
-            "parameters": {
-                "Mean": {
-                    "error": 0.633,
-                    "value": 157.0
-                },
-                "Norm": {
-                    "error": 0.00259,
-                    "value": 0.991
-                },
-                "Sigma": {
-                    "error": 1.29,
-                    "value": 53.2
-                }
-            },
-            "status": "SUCCESSFUL"
-        },
-        "fit": {
-            "mean": 156.5885319846575,
-            "norm": 0.9911867720475749,
-            "scale": 0.0,
-            "sigma": 53.156344728383914,
-            "weight": 0.0
-        }
-    },
-    "Electron1__Data_MuonEG_2023Comb": {
-        "fDGauss_Electron1__Data_MuonEG_2023Comb": {
+    "Electron2__Data_SingleElectron_2024": {
+        "fDGauss_Electron2__Data_SingleElectron_2024": {
             "chi2": 8.48,
             "ndf": 10,
             "parameters": {
                 "Mean": {
-                    "error": 0.943,
-                    "value": 163.0
+                    "error": 0.508,
+                    "value": 191.0
                 },
                 "Norm": {
-                    "error": 0.00673,
-                    "value": 0.993
-                },
-                "Scale": {
-                    "error": 0.0,
-                    "value": 0.0
-                },
-                "Sigma": {
-                    "error": 22.9,
-                    "value": 34.0
-                },
-                "Weight": {
-                    "error": 0.3,
-                    "value": 0.236
-                }
-            },
-            "status": "SUCCESSFUL"
-        },
-        "fGauss_Electron1__Data_MuonEG_2023Comb": {
-            "chi2": 10.4,
-            "ndf": 12,
-            "parameters": {
-                "Mean": {
-                    "error": 0.884,
-                    "value": 162.0
-                },
-                "Norm": {
-                    "error": 0.00498,
-                    "value": 0.988
-                },
-                "Sigma": {
-                    "error": 2.05,
-                    "value": 56.3
-                }
-            },
-            "status": "SUCCESSFUL"
-        },
-        "fit": {
-            "mean": 162.80297824724906,
-            "norm": 0.993132662847893,
-            "scale": 31.0566720572361,
-            "sigma": 34.00406218024363,
-            "weight": 1.064041554632528
-        }
-    },
-    "Electron1__bkg_2016Comb": {
-        "bands": {
-            "a1": 2.4e-06,
-            "a2": -9.5e-06,
-            "b1": 200.0,
-            "b2": 230.0,
-            "c1": 1.005,
-            "c2": 0.995
-        },
-        "fDGauss_Electron1__bkg_2016Comb": {
-            "chi2": 56.3,
-            "ndf": 10,
-            "parameters": {
-                "Mean": {
-                    "error": 1.81,
-                    "value": 71.7
-                },
-                "Norm": {
-                    "error": 0.0141,
-                    "value": 1.05
-                },
-                "Scale": {
-                    "error": 0.0,
-                    "value": 0.0
-                },
-                "Sigma": {
-                    "error": 1.05,
-                    "value": 54.9
-                },
-                "Weight": {
-                    "error": 0.0133,
-                    "value": 0.949
-                }
-            },
-            "status": "CALL LIMIT"
-        },
-        "fGauss_Electron1__bkg_2016Comb": {
-            "chi2": 55.4,
-            "ndf": 12,
-            "parameters": {
-                "Mean": {
-                    "error": 1.81,
-                    "value": 69.3
-                },
-                "Norm": {
-                    "error": 0.000146,
-                    "value": 0.998
-                },
-                "Sigma": {
-                    "error": 1.03,
-                    "value": 55.5
-                }
-            },
-            "status": "SUCCESSFUL"
-        },
-        "fit": {
-            "mean": 69.3361786967978,
-            "norm": 0.9981894276524383,
-            "scale": 0.0,
-            "sigma": 55.48085021536704,
-            "weight": 0.0
-        }
-    },
-    "Electron1__bkg_2017": {
-        "bands": {
-            "a1": 8.7e-06,
-            "a2": -1.2e-05,
-            "b1": 200.0,
-            "b2": 240.0,
-            "c1": 1.006,
-            "c2": 0.995
-        },
-        "fDGauss_Electron1__bkg_2017": {
-            "chi2": 1080.0,
-            "ndf": 10,
-            "parameters": {
-                "Mean": {
-                    "error": 0.296,
-                    "value": 138.0
-                },
-                "Norm": {
-                    "error": 0.00271,
-                    "value": 1.04
-                },
-                "Scale": {
-                    "error": 0.0,
-                    "value": 0.0
-                },
-                "Sigma": {
-                    "error": 0.000173,
-                    "value": 35.8
-                },
-                "Weight": {
-                    "error": 0.000935,
-                    "value": 0.953
-                }
-            },
-            "status": "FAILED    "
-        },
-        "fGauss_Electron1__bkg_2017": {
-            "chi2": 64.8,
-            "ndf": 12,
-            "parameters": {
-                "Mean": {
-                    "error": 0.504,
-                    "value": 127.0
-                },
-                "Norm": {
-                    "error": 0.000256,
-                    "value": 0.998
-                },
-                "Sigma": {
-                    "error": 0.509,
-                    "value": 50.1
-                }
-            },
-            "status": "SUCCESSFUL"
-        },
-        "fit": {
-            "mean": 126.59906733482583,
-            "norm": 0.9975269308296603,
-            "scale": 0.0,
-            "sigma": 50.08146542688905,
-            "weight": 0.0
-        }
-    },
-    "Electron1__bkg_2018": {
-        "bands": {
-            "a1": 2.9e-05,
-            "a2": -1.2e-05,
-            "b1": 190.0,
-            "b2": 250.0,
-            "c1": 1.006,
-            "c2": 0.996
-        },
-        "fDGauss_Electron1__bkg_2018": {
-            "chi2": 41.9,
-            "ndf": 10,
-            "parameters": {
-                "Mean": {
-                    "error": 0.494,
-                    "value": 136.0
-                },
-                "Norm": {
-                    "error": 0.000658,
-                    "value": 0.998
-                },
-                "Scale": {
-                    "error": 0.0,
-                    "value": 0.0
-                },
-                "Sigma": {
-                    "error": 1.32,
-                    "value": 44.1
-                },
-                "Weight": {
-                    "error": 0.0425,
-                    "value": 0.945
-                }
-            },
-            "status": "SUCCESSFUL"
-        },
-        "fGauss_Electron1__bkg_2018": {
-            "chi2": 41.9,
-            "ndf": 12,
-            "parameters": {
-                "Mean": {
-                    "error": 0.378,
-                    "value": 135.0
-                },
-                "Norm": {
-                    "error": 0.000276,
-                    "value": 0.997
-                },
-                "Sigma": {
-                    "error": 0.426,
-                    "value": 47.4
-                }
-            },
-            "status": "SUCCESSFUL"
-        },
-        "fit": {
-            "mean": 134.6391149091923,
-            "norm": 0.9968686872296177,
-            "scale": 0.0,
-            "sigma": 47.431271768669774,
-            "weight": 0.0
-        }
-    },
-    "Electron1__bkg_2022Comb": {
-        "bands": {
-            "a1": 4.4e-08,
-            "a2": -8.5e-07,
-            "b1": 140.0,
-            "b2": 300.0,
-            "c1": 1.01,
-            "c2": 0.98
-        },
-        "fDGauss_Electron1__bkg_2022Comb": {
-            "chi2": 33.3,
-            "ndf": 10,
-            "parameters": {
-                "Mean": {
-                    "error": 0.233,
-                    "value": 142.0
-                },
-                "Norm": {
-                    "error": 0.000257,
-                    "value": 0.999
-                },
-                "Scale": {
-                    "error": 0.0,
-                    "value": 0.0
-                },
-                "Sigma": {
-                    "error": 1.22,
-                    "value": 46.7
-                },
-                "Weight": {
-                    "error": 0.0522,
-                    "value": 0.776
-                }
-            },
-            "status": "SUCCESSFUL"
-        },
-        "fGauss_Electron1__bkg_2022Comb": {
-            "chi2": 231.0,
-            "ndf": 12,
-            "parameters": {
-                "Mean": {
-                    "error": 0.187,
-                    "value": 140.0
-                },
-                "Norm": {
-                    "error": 0.00015,
-                    "value": 0.997
-                },
-                "Sigma": {
-                    "error": 0.244,
-                    "value": 55.5
-                }
-            },
-            "status": "SUCCESSFUL"
-        },
-        "fit": {
-            "mean": 141.72082232468952,
-            "norm": 0.9987837333120388,
-            "scale": 34.20912754026811,
-            "sigma": 46.741154702282515,
-            "weight": 0.4933552904318274
-        }
-    },
-    "Electron1__bkg_2023Comb": {
-        "bands": {
-            "a1": 4.9e-06,
-            "a2": -5.4e-06,
-            "b1": 220.0,
-            "b2": 220.0,
-            "c1": 1.005,
-            "c2": 0.993
-        },
-        "fDGauss_Electron1__bkg_2023Comb": {
-            "chi2": 15.0,
-            "ndf": 10,
-            "parameters": {
-                "Mean": {
-                    "error": 0.219,
-                    "value": 149.0
-                },
-                "Norm": {
-                    "error": 0.000811,
-                    "value": 0.998
-                },
-                "Scale": {
-                    "error": 0.0,
-                    "value": 0.0
-                },
-                "Sigma": {
-                    "error": 1.16,
-                    "value": 52.0
-                },
-                "Weight": {
-                    "error": 0.0423,
-                    "value": 0.93
-                }
-            },
-            "status": "SUCCESSFUL"
-        },
-        "fGauss_Electron1__bkg_2023Comb": {
-            "chi2": 55.9,
-            "ndf": 12,
-            "parameters": {
-                "Mean": {
-                    "error": 0.2,
-                    "value": 148.0
-                },
-                "Norm": {
-                    "error": 0.000328,
+                    "error": 0.00516,
                     "value": 0.996
                 },
-                "Sigma": {
-                    "error": 0.327,
-                    "value": 55.4
-                }
-            },
-            "status": "SUCCESSFUL"
-        },
-        "fit": {
-            "mean": 148.8329509874367,
-            "norm": 0.9982184507605345,
-            "scale": 61.689259787077674,
-            "sigma": 52.03888073912196,
-            "weight": 0.2676952965100852
-        }
-    },
-    "Electron2__Data_DoubleElectron_2016Comb": {
-        "fDGauss_Electron2__Data_DoubleElectron_2016Comb": {
-            "chi2": 21.9,
-            "ndf": 10,
-            "parameters": {
-                "Mean": {
-                    "error": 1.53,
-                    "value": 154.0
-                },
-                "Norm": {
-                    "error": 0.00208,
-                    "value": 0.995
-                },
                 "Scale": {
                     "error": 0.0,
                     "value": 0.0
                 },
                 "Sigma": {
-                    "error": 5.24,
-                    "value": 3.88
+                    "error": 4.88,
+                    "value": 35.1
                 },
                 "Weight": {
-                    "error": 0.031,
-                    "value": 0.175
+                    "error": 0.345,
+                    "value": 0.752
                 }
             },
             "status": "SUCCESSFUL"
         },
-        "fGauss_Electron2__Data_DoubleElectron_2016Comb": {
-            "chi2": 37.2,
+        "fGauss_Electron2__Data_SingleElectron_2024": {
+            "chi2": 14.1,
             "ndf": 12,
             "parameters": {
                 "Mean": {
-                    "error": 0.876,
-                    "value": 148.0
+                    "error": 0.423,
+                    "value": 191.0
                 },
                 "Norm": {
-                    "error": 0.0022,
-                    "value": 0.993
+                    "error": 0.00279,
+                    "value": 0.989
                 },
                 "Sigma": {
-                    "error": 1.45,
-                    "value": 44.8
+                    "error": 0.618,
+                    "value": 40.9
                 }
             },
             "status": "SUCCESSFUL"
         },
         "fit": {
-            "mean": 153.57179181149792,
-            "norm": 0.9946096386484429,
-            "scale": 42.50901379484024,
-            "sigma": 3.883241107851803,
-            "weight": 2.00179025017462
+            "mean": 191.17936203434616,
+            "norm": 0.9958084175907126,
+            "scale": 34.13758794502225,
+            "sigma": 35.077113789464086,
+            "weight": 0.520958876605926
         }
     },
     "Electron2__Data_DoubleElectron_2017": {
@@ -1289,539 +699,185 @@
             "weight": 1.0623802475059536
         }
     },
-    "Electron2__Data_SingleElectron_2018": {
-        "fDGauss_Electron2__Data_SingleElectron_2018": {
-            "chi2": 14.5,
-            "ndf": 10,
-            "parameters": {
-                "Mean": {
-                    "error": 0.325,
-                    "value": 187.0
-                },
-                "Norm": {
-                    "error": 0.00284,
-                    "value": 0.995
-                },
-                "Scale": {
-                    "error": 0.0,
-                    "value": 0.0
-                },
-                "Sigma": {
-                    "error": 6.91,
-                    "value": 54.3
-                },
-                "Weight": {
-                    "error": 0.117,
-                    "value": 0.446
-                }
-            },
-            "status": "SUCCESSFUL"
-        },
-        "fGauss_Electron2__Data_SingleElectron_2018": {
-            "chi2": 52.9,
-            "ndf": 12,
-            "parameters": {
-                "Mean": {
-                    "error": 0.303,
-                    "value": 187.0
-                },
-                "Norm": {
-                    "error": 0.00195,
-                    "value": 0.987
-                },
-                "Sigma": {
-                    "error": 0.434,
-                    "value": 33.5
-                }
-            },
-            "status": "SUCCESSFUL"
-        },
-        "fit": {
-            "mean": 187.1830771629828,
-            "norm": 0.9948949528095741,
-            "scale": -31.440206983584048,
-            "sigma": 54.32016325820172,
-            "weight": 0.8393155555317563
-        }
-    },
-    "Electron2__Data_SingleElectron_2022Comb": {
-        "fDGauss_Electron2__Data_SingleElectron_2022Comb": {
-            "chi2": 20.5,
-            "ndf": 10,
-            "parameters": {
-                "Mean": {
-                    "error": 0.485,
-                    "value": 186.0
-                },
-                "Norm": {
-                    "error": 0.00407,
-                    "value": 0.994
-                },
-                "Scale": {
-                    "error": 0.0,
-                    "value": 0.0
-                },
-                "Sigma": {
-                    "error": 3.32,
-                    "value": 28.8
-                },
-                "Weight": {
-                    "error": 0.135,
-                    "value": 0.597
-                }
-            },
-            "status": "SUCCESSFUL"
-        },
-        "fGauss_Electron2__Data_SingleElectron_2022Comb": {
-            "chi2": 42.7,
-            "ndf": 12,
-            "parameters": {
-                "Mean": {
-                    "error": 0.455,
-                    "value": 186.0
-                },
-                "Norm": {
-                    "error": 0.00314,
-                    "value": 0.984
-                },
-                "Sigma": {
-                    "error": 0.726,
-                    "value": 40.1
-                }
-            },
-            "status": "SUCCESSFUL"
-        },
-        "fit": {
-            "mean": 186.31426418879357,
-            "norm": 0.9941363195738256,
-            "scale": 40.84419653972092,
-            "sigma": 28.80799577882082,
-            "weight": 0.6882236171334121
-        }
-    },
-    "Electron2__Data_SingleElectron_2023Comb": {
-        "fDGauss_Electron2__Data_SingleElectron_2023Comb": {
-            "chi2": 28.0,
-            "ndf": 10,
-            "parameters": {
-                "Mean": {
-                    "error": 0.996,
-                    "value": 189.0
-                },
-                "Norm": {
-                    "error": 0.0133,
-                    "value": 0.994
-                },
-                "Scale": {
-                    "error": 0.0,
-                    "value": 0.0
-                },
-                "Sigma": {
-                    "error": 3.42,
-                    "value": 40.0
-                },
-                "Weight": {
-                    "error": 0.254,
-                    "value": 0.968
-                }
-            },
-            "status": "FAILURE   "
-        },
-        "fGauss_Electron2__Data_SingleElectron_2023Comb": {
-            "chi2": 28.0,
-            "ndf": 12,
-            "parameters": {
-                "Mean": {
-                    "error": 0.751,
-                    "value": 189.0
-                },
-                "Norm": {
-                    "error": 0.00547,
-                    "value": 0.991
-                },
-                "Sigma": {
-                    "error": 1.08,
-                    "value": 40.8
-                }
-            },
-            "status": "SUCCESSFUL"
-        },
-        "fit": {
-            "mean": 188.66772889393465,
-            "norm": 0.990673839704715,
-            "scale": 0.0,
-            "sigma": 40.82042175073652,
-            "weight": 0.0
-        }
-    },
-    "Electron2__bkg_2016Comb": {
+    "Muon2__bkg_2017": {
         "bands": {
-            "a1": 1.9e-05,
-            "a2": -8.1e-06,
-            "b1": 190.0,
-            "b2": 230.0,
-            "c1": 1.005,
+            "a1": 4.883066256648073e-08,
+            "a2": -3.843392529202293e-08,
+            "b1": 174.31537381186658,
+            "b2": 174.31537381186658,
+            "c1": 1.0063525468964545,
             "c2": 0.995
         },
-        "fDGauss_Electron2__bkg_2016Comb": {
-            "chi2": 19.6,
+        "fDGauss_Muon2__bkg_2017": {
+            "chi2": 5.79,
             "ndf": 10,
             "parameters": {
                 "Mean": {
-                    "error": 1.35,
-                    "value": 127.0
-                },
-                "Norm": {
-                    "error": 0.000309,
-                    "value": 0.997
-                },
-                "Scale": {
-                    "error": 0.0,
-                    "value": 0.0
-                },
-                "Sigma": {
-                    "error": 3.85,
-                    "value": 55.2
-                },
-                "Weight": {
-                    "error": 0.0637,
-                    "value": 0.294
-                }
-            },
-            "status": "SUCCESSFUL"
-        },
-        "fGauss_Electron2__bkg_2016Comb": {
-            "chi2": 110.0,
-            "ndf": 12,
-            "parameters": {
-                "Mean": {
-                    "error": 0.644,
+                    "error": 1.8,
                     "value": 119.0
                 },
                 "Norm": {
-                    "error": 0.000241,
-                    "value": 0.996
+                    "error": 0.000458,
+                    "value": 0.999
+                },
+                "Scale": {
+                    "error": 0.0,
+                    "value": 0.0
                 },
                 "Sigma": {
-                    "error": 0.544,
-                    "value": 43.1
+                    "error": 29.3,
+                    "value": 86.2
+                },
+                "Weight": {
+                    "error": 0.0618,
+                    "value": 0.0537
                 }
             },
             "status": "SUCCESSFUL"
         },
-        "fit": {
-            "mean": 127.25852967665962,
-            "norm": 0.9974191533923995,
-            "scale": -26.515373756094824,
-            "sigma": 55.1617064637628,
-            "weight": 0.9973735485819069
-        }
-    },
-    "Electron2__bkg_2017": {
-        "bands": {
-            "a1": 3.8e-06,
-            "a2": -2.9e-06,
-            "b1": 300.0,
-            "b2": 300.0,
-            "c1": 1.005,
-            "c2": 0.99
-        },
-        "fDGauss_Electron2__bkg_2017": {
-            "chi2": 13.5,
-            "ndf": 10,
+        "fGauss_Muon2__bkg_2017": {
+            "chi2": 26.5,
+            "ndf": 12,
             "parameters": {
                 "Mean": {
-                    "error": 0.155,
-                    "value": 172.0
+                    "error": 1.1,
+                    "value": 115.0
                 },
                 "Norm": {
-                    "error": 0.000467,
+                    "error": 0.00029,
                     "value": 0.998
                 },
-                "Scale": {
-                    "error": 0.0,
-                    "value": 0.0
-                },
                 "Sigma": {
-                    "error": 5.68,
-                    "value": 67.3
-                },
-                "Weight": {
-                    "error": 0.048,
-                    "value": 0.227
-                }
-            },
-            "status": "SUCCESSFUL"
-        },
-        "fGauss_Electron2__bkg_2017": {
-            "chi2": 172.0,
-            "ndf": 12,
-            "parameters": {
-                "Mean": {
-                    "error": 0.155,
-                    "value": 172.0
-                },
-                "Norm": {
-                    "error": 0.000377,
-                    "value": 0.996
-                },
-                "Sigma": {
-                    "error": 0.279,
-                    "value": 35.8
+                    "error": 0.879,
+                    "value": 43.9
                 }
             },
             "status": "SUCCESSFUL"
         },
         "fit": {
-            "mean": 172.21979249685012,
-            "norm": 0.9978357760851362,
-            "scale": -37.95281853561118,
-            "sigma": 67.2790863798712,
-            "weight": 1.074437821255646
+            "mean": 119.03148231367777,
+            "norm": 0.9986453558651942,
+            "scale": -47.61381073786344,
+            "sigma": 86.24000424420782,
+            "weight": -1.3369695592763369
         }
     },
-    "Electron2__bkg_2018": {
-        "bands": {
-            "a1": 9.8e-06,
-            "a2": -4.5e-06,
-            "b1": 260.0,
-            "b2": 260.0,
-            "c1": 1.01,
-            "c2": 0.98
-        },
-        "fDGauss_Electron2__bkg_2018": {
-            "chi2": 43.8,
+    "Muon0__Data_SingleElectron_2018": {
+        "fDGauss_Muon0__Data_SingleElectron_2018": {
+            "chi2": 13.0,
             "ndf": 10,
             "parameters": {
                 "Mean": {
-                    "error": 0.146,
-                    "value": 176.0
+                    "error": 0.345,
+                    "value": 188.0
                 },
                 "Norm": {
-                    "error": 0.000466,
-                    "value": 0.996
+                    "error": 0.00318,
+                    "value": 0.994
                 },
                 "Scale": {
                     "error": 0.0,
                     "value": 0.0
                 },
                 "Sigma": {
-                    "error": 1.96,
-                    "value": 22.1
+                    "error": 7.92,
+                    "value": 54.9
                 },
                 "Weight": {
-                    "error": 0.0918,
-                    "value": 0.468
+                    "error": 0.12,
+                    "value": 0.417
                 }
             },
             "status": "SUCCESSFUL"
         },
-        "fGauss_Electron2__bkg_2018": {
-            "chi2": 194.0,
+        "fGauss_Muon0__Data_SingleElectron_2018": {
+            "chi2": 46.8,
             "ndf": 12,
             "parameters": {
                 "Mean": {
-                    "error": 0.134,
-                    "value": 177.0
+                    "error": 0.32,
+                    "value": 188.0
                 },
                 "Norm": {
-                    "error": 0.000401,
-                    "value": 0.995
+                    "error": 0.00212,
+                    "value": 0.986
                 },
                 "Sigma": {
-                    "error": 0.228,
-                    "value": 33.2
+                    "error": 0.447,
+                    "value": 32.8
                 }
             },
             "status": "SUCCESSFUL"
         },
         "fit": {
-            "mean": 176.14721178183277,
-            "norm": 0.9962209069966047,
-            "scale": 23.817651041828636,
-            "sigma": 22.13338672888395,
-            "weight": -0.816947142868852
+            "mean": 187.68171705126568,
+            "norm": 0.9941760597306044,
+            "scale": -31.94651850219849,
+            "sigma": 54.89714448401017,
+            "weight": 0.8689689518976561
         }
     },
-    "Electron2__bkg_2022Comb": {
+    "Muon1__bkg_2023Comb": {
         "bands": {
-            "a1": 1.9e-05,
-            "a2": -4.8e-06,
-            "b1": 220.0,
-            "b2": 240.0,
-            "c1": 1.005,
-            "c2": 0.991
+            "a1": 6.353621788553611e-08,
+            "a2": -5.9565515629818455e-08,
+            "b1": 207.304076168801,
+            "b2": 207.304076168801,
+            "c1": 1.0068228125182905,
+            "c2": 0.9936035798285993
         },
-        "fDGauss_Electron2__bkg_2022Comb": {
-            "chi2": 37.1,
+        "fDGauss_Muon1__bkg_2023Comb": {
+            "chi2": 7.77,
             "ndf": 10,
             "parameters": {
                 "Mean": {
-                    "error": 0.109,
-                    "value": 177.0
+                    "error": 0.205,
+                    "value": 151.0
                 },
                 "Norm": {
-                    "error": 0.000354,
-                    "value": 0.998
+                    "error": 0.000717,
+                    "value": 0.999
                 },
                 "Scale": {
                     "error": 0.0,
                     "value": 0.0
                 },
                 "Sigma": {
-                    "error": 1.27,
-                    "value": 26.8
+                    "error": 1.19,
+                    "value": 50.6
                 },
                 "Weight": {
-                    "error": 0.0493,
-                    "value": 0.493
+                    "error": 0.0427,
+                    "value": 0.909
                 }
             },
             "status": "SUCCESSFUL"
         },
-        "fGauss_Electron2__bkg_2022Comb": {
-            "chi2": 467.0,
+        "fGauss_Muon1__bkg_2023Comb": {
+            "chi2": 79.7,
             "ndf": 12,
             "parameters": {
                 "Mean": {
-                    "error": 0.101,
-                    "value": 178.0
+                    "error": 0.191,
+                    "value": 150.0
                 },
                 "Norm": {
-                    "error": 0.00028,
-                    "value": 0.996
-                },
-                "Sigma": {
-                    "error": 0.186,
-                    "value": 40.4
-                }
-            },
-            "status": "SUCCESSFUL"
-        },
-        "fit": {
-            "mean": 177.23007784541576,
-            "norm": 0.9978626856587908,
-            "scale": 31.46485215551629,
-            "sigma": 26.781906831125784,
-            "weight": 0.7921296429141463
-        }
-    },
-    "Electron2__bkg_2023Comb": {
-        "bands": {
-            "a1": 9.6e-06,
-            "a2": -2.1e-06,
-            "b1": 250.0,
-            "b2": 290.0,
-            "c1": 1.01,
-            "c2": 0.98
-        },
-        "fDGauss_Electron2__bkg_2023Comb": {
-            "chi2": 39.0,
-            "ndf": 10,
-            "parameters": {
-                "Mean": {
-                    "error": 0.156,
-                    "value": 181.0
-                },
-                "Norm": {
-                    "error": 0.00045,
-                    "value": 0.998
-                },
-                "Scale": {
-                    "error": 0.0,
-                    "value": 0.0
-                },
-                "Sigma": {
-                    "error": 1.8,
-                    "value": 21.5
-                },
-                "Weight": {
-                    "error": 0.0421,
-                    "value": 0.307
-                }
-            },
-            "status": "SUCCESSFUL"
-        },
-        "fGauss_Electron2__bkg_2023Comb": {
-            "chi2": 245.0,
-            "ndf": 12,
-            "parameters": {
-                "Mean": {
-                    "error": 0.144,
-                    "value": 182.0
-                },
-                "Norm": {
-                    "error": 0.000423,
+                    "error": 0.000308,
                     "value": 0.997
                 },
                 "Sigma": {
-                    "error": 0.267,
-                    "value": 41.7
+                    "error": 0.321,
+                    "value": 55.0
                 }
             },
             "status": "SUCCESSFUL"
         },
         "fit": {
-            "mean": 181.12420917226223,
-            "norm": 0.9980220212619636,
-            "scale": 33.18775283438745,
-            "sigma": 21.485550770837957,
-            "weight": 0.9832212974283145
-        }
-    },
-    "Muon0__Data_DoubleElectron_2016Comb": {
-        "fDGauss_Muon0__Data_DoubleElectron_2016Comb": {
-            "chi2": 14.1,
-            "ndf": 10,
-            "parameters": {
-                "Mean": {
-                    "error": 1.57,
-                    "value": 154.0
-                },
-                "Norm": {
-                    "error": 0.00219,
-                    "value": 0.995
-                },
-                "Scale": {
-                    "error": 0.0,
-                    "value": 0.0
-                },
-                "Sigma": {
-                    "error": 5.88,
-                    "value": 3.9
-                },
-                "Weight": {
-                    "error": 0.0283,
-                    "value": 0.182
-                }
-            },
-            "status": "SUCCESSFUL"
-        },
-        "fGauss_Muon0__Data_DoubleElectron_2016Comb": {
-            "chi2": 33.2,
-            "ndf": 12,
-            "parameters": {
-                "Mean": {
-                    "error": 0.933,
-                    "value": 148.0
-                },
-                "Norm": {
-                    "error": 0.0021,
-                    "value": 0.993
-                },
-                "Sigma": {
-                    "error": 1.53,
-                    "value": 45.3
-                }
-            },
-            "status": "SUCCESSFUL"
-        },
-        "fit": {
-            "mean": 153.6906265673436,
-            "norm": 0.9949446491045849,
-            "scale": 43.32367349326046,
-            "sigma": 3.904722303281,
-            "weight": 1.1294961683856506
+            "mean": 150.91793652236828,
+            "norm": 0.9989954573213666,
+            "scale": 60.849043986793156,
+            "sigma": 50.60931146269657,
+            "weight": 0.3060342623480204
         }
     },
     "Muon0__Data_DoubleElectron_2017": {
@@ -1879,127 +935,308 @@
             "weight": 1.03596977888179
         }
     },
-    "Muon0__Data_SingleElectron_2018": {
-        "fDGauss_Muon0__Data_SingleElectron_2018": {
-            "chi2": 13.2,
+    "Electron1__Data_MuonEG_2024": {
+        "fDGauss_Electron1__Data_MuonEG_2024": {
+            "chi2": 7.66,
             "ndf": 10,
             "parameters": {
                 "Mean": {
-                    "error": 0.345,
-                    "value": 188.0
+                    "error": 0.504,
+                    "value": 163.0
                 },
                 "Norm": {
-                    "error": 0.00317,
-                    "value": 0.994
+                    "error": 0.00279,
+                    "value": 0.997
                 },
                 "Scale": {
                     "error": 0.0,
                     "value": 0.0
                 },
                 "Sigma": {
-                    "error": 7.81,
-                    "value": 54.7
+                    "error": 8.83,
+                    "value": 43.5
                 },
                 "Weight": {
-                    "error": 0.12,
-                    "value": 0.421
+                    "error": 0.361,
+                    "value": 0.53
                 }
             },
             "status": "SUCCESSFUL"
         },
-        "fGauss_Muon0__Data_SingleElectron_2018": {
-            "chi2": 47.2,
+        "fGauss_Electron1__Data_MuonEG_2024": {
+            "chi2": 13.9,
             "ndf": 12,
             "parameters": {
                 "Mean": {
-                    "error": 0.321,
-                    "value": 188.0
+                    "error": 0.491,
+                    "value": 162.0
                 },
                 "Norm": {
-                    "error": 0.00213,
-                    "value": 0.986
+                    "error": 0.00242,
+                    "value": 0.992
                 },
                 "Sigma": {
-                    "error": 0.448,
-                    "value": 32.8
+                    "error": 1.07,
+                    "value": 55.9
                 }
             },
             "status": "SUCCESSFUL"
         },
         "fit": {
-            "mean": 187.68918455603657,
-            "norm": 0.9941397402228538,
-            "scale": -31.877542591669023,
-            "sigma": 54.74563752315949,
-            "weight": 0.8651043726258782
+            "mean": 162.67007784919087,
+            "norm": 0.9965656732400134,
+            "scale": 29.882345059501166,
+            "sigma": 43.47611754675515,
+            "weight": 11.81049955750518
         }
     },
-    "Muon0__Data_SingleElectron_2022Comb": {
-        "fDGauss_Muon0__Data_SingleElectron_2022Comb": {
-            "chi2": 15.0,
+    "Electron0__bkg_2022Comb": {
+        "bands": {
+            "a1": 9.9e-06,
+            "a2": -9.9e-06,
+            "b1": 230.0,
+            "b2": 230.0,
+            "c1": 1.005,
+            "c2": 0.992
+        },
+        "fDGauss_Electron0__bkg_2022Comb": {
+            "chi2": 128.0,
             "ndf": 10,
             "parameters": {
                 "Mean": {
-                    "error": 0.512,
-                    "value": 187.0
+                    "error": 0.794,
+                    "value": 122.0
                 },
                 "Norm": {
-                    "error": 0.00468,
-                    "value": 0.994
+                    "error": 0.000129,
+                    "value": 1.0
                 },
                 "Scale": {
                     "error": 0.0,
                     "value": 0.0
                 },
                 "Sigma": {
-                    "error": 2.92,
-                    "value": 29.4
+                    "error": 1.59,
+                    "value": 40.4
                 },
                 "Weight": {
-                    "error": 0.122,
-                    "value": 0.653
+                    "error": 0.0434,
+                    "value": 0.875
                 }
             },
             "status": "SUCCESSFUL"
         },
-        "fGauss_Muon0__Data_SingleElectron_2022Comb": {
-            "chi2": 34.4,
+        "fGauss_Electron0__bkg_2022Comb": {
+            "chi2": 128.0,
             "ndf": 12,
             "parameters": {
                 "Mean": {
-                    "error": 0.484,
-                    "value": 187.0
+                    "error": 0.46,
+                    "value": 117.0
                 },
                 "Norm": {
-                    "error": 0.00346,
-                    "value": 0.982
+                    "error": 0.000104,
+                    "value": 0.999
                 },
                 "Sigma": {
-                    "error": 0.755,
-                    "value": 39.3
+                    "error": 0.401,
+                    "value": 48.3
                 }
             },
             "status": "SUCCESSFUL"
         },
         "fit": {
-            "mean": 186.86807927052178,
-            "norm": 0.9939193316692895,
-            "scale": 44.844966382513945,
-            "sigma": 29.411104318376445,
-            "weight": 0.6299545402513296
+            "mean": 117.3484086033678,
+            "norm": 0.9990242701079441,
+            "scale": 0.0,
+            "sigma": 48.272412225990784,
+            "weight": 0.0
         }
     },
-    "Muon0__Data_SingleElectron_2023Comb": {
-        "fDGauss_Muon0__Data_SingleElectron_2023Comb": {
-            "chi2": 28.5,
+    "Electron1__Data_MuonEG_2018": {
+        "fDGauss_Electron1__Data_MuonEG_2018": {
+            "chi2": 12.4,
             "ndf": 10,
             "parameters": {
                 "Mean": {
-                    "error": 1.16,
-                    "value": 189.0
+                    "error": 0.608,
+                    "value": 157.0
                 },
                 "Norm": {
-                    "error": 0.0159,
+                    "error": 0.00206,
+                    "value": 0.998
+                },
+                "Scale": {
+                    "error": 0.0,
+                    "value": 0.0
+                },
+                "Sigma": {
+                    "error": 5.97,
+                    "value": 34.5
+                },
+                "Weight": {
+                    "error": 0.221,
+                    "value": 0.481
+                }
+            },
+            "status": "SUCCESSFUL"
+        },
+        "fGauss_Electron1__Data_MuonEG_2018": {
+            "chi2": 21.5,
+            "ndf": 12,
+            "parameters": {
+                "Mean": {
+                    "error": 0.61,
+                    "value": 157.0
+                },
+                "Norm": {
+                    "error": 0.00192,
+                    "value": 0.995
+                },
+                "Sigma": {
+                    "error": 1.18,
+                    "value": 48.6
+                }
+            },
+            "status": "SUCCESSFUL"
+        },
+        "fit": {
+            "mean": 157.42373970617584,
+            "norm": 0.9979994777610374,
+            "scale": 28.418835872014462,
+            "sigma": 34.52772930114664,
+            "weight": 0.804586919137379
+        }
+    },
+    "Electron0__Data_DoubleMuon_2016Comb": {
+        "fDGauss_Electron0__Data_DoubleMuon_2016Comb": {
+            "chi2": 4.93,
+            "ndf": 10,
+            "parameters": {
+                "Mean": {
+                    "error": 6.59,
+                    "value": 107.0
+                },
+                "Norm": {
+                    "error": 0.104,
+                    "value": 1.12
+                },
+                "Scale": {
+                    "error": 0.0,
+                    "value": 0.0
+                },
+                "Sigma": {
+                    "error": 3.74,
+                    "value": 45.4
+                },
+                "Weight": {
+                    "error": 0.186,
+                    "value": 0.769
+                }
+            },
+            "status": "CALL LIMIT"
+        },
+        "fGauss_Electron0__Data_DoubleMuon_2016Comb": {
+            "chi2": 5.15,
+            "ndf": 12,
+            "parameters": {
+                "Mean": {
+                    "error": 4.54,
+                    "value": 100.0
+                },
+                "Norm": {
+                    "error": 0.00171,
+                    "value": 0.997
+                },
+                "Sigma": {
+                    "error": 3.42,
+                    "value": 47.8
+                }
+            },
+            "status": "SUCCESSFUL"
+        },
+        "fit": {
+            "mean": 100.30889334881314,
+            "norm": 0.997081829084167,
+            "scale": 0.0,
+            "sigma": 47.841704218444455,
+            "weight": 0.0
+        }
+    },
+    "Electron2__bkg_2023Comb": {
+        "bands": {
+            "a1": 9.6e-06,
+            "a2": -2.1e-06,
+            "b1": 250.0,
+            "b2": 290.0,
+            "c1": 1.01,
+            "c2": 0.98
+        },
+        "fDGauss_Electron2__bkg_2023Comb": {
+            "chi2": 36.4,
+            "ndf": 10,
+            "parameters": {
+                "Mean": {
+                    "error": 0.156,
+                    "value": 181.0
+                },
+                "Norm": {
+                    "error": 0.000446,
+                    "value": 0.998
+                },
+                "Scale": {
+                    "error": 0.0,
+                    "value": 0.0
+                },
+                "Sigma": {
+                    "error": 1.78,
+                    "value": 22.0
+                },
+                "Weight": {
+                    "error": 0.0446,
+                    "value": 0.336
+                }
+            },
+            "status": "SUCCESSFUL"
+        },
+        "fGauss_Electron2__bkg_2023Comb": {
+            "chi2": 271.0,
+            "ndf": 12,
+            "parameters": {
+                "Mean": {
+                    "error": 0.144,
+                    "value": 182.0
+                },
+                "Norm": {
+                    "error": 0.000416,
+                    "value": 0.997
+                },
+                "Sigma": {
+                    "error": 0.268,
+                    "value": 41.6
+                }
+            },
+            "status": "SUCCESSFUL"
+        },
+        "fit": {
+            "mean": 181.11318539164333,
+            "norm": 0.9982194568294129,
+            "scale": 34.174101140649434,
+            "sigma": 21.99269080935483,
+            "weight": 0.9520564013169551
+        }
+    },
+    "Electron2__Data_SingleElectron_2018": {
+        "fDGauss_Electron2__Data_SingleElectron_2018": {
+            "chi2": 14.4,
+            "ndf": 10,
+            "parameters": {
+                "Mean": {
+                    "error": 0.325,
+                    "value": 187.0
+                },
+                "Norm": {
+                    "error": 0.00285,
                     "value": 0.995
                 },
                 "Scale": {
@@ -2007,62 +1244,463 @@
                     "value": 0.0
                 },
                 "Sigma": {
-                    "error": 3.5,
-                    "value": 39.1
+                    "error": 6.98,
+                    "value": 54.4
                 },
                 "Weight": {
-                    "error": 0.198,
-                    "value": 0.947
+                    "error": 0.117,
+                    "value": 0.444
+                }
+            },
+            "status": "SUCCESSFUL"
+        },
+        "fGauss_Electron2__Data_SingleElectron_2018": {
+            "chi2": 52.7,
+            "ndf": 12,
+            "parameters": {
+                "Mean": {
+                    "error": 0.303,
+                    "value": 187.0
+                },
+                "Norm": {
+                    "error": 0.00195,
+                    "value": 0.987
+                },
+                "Sigma": {
+                    "error": 0.433,
+                    "value": 33.5
+                }
+            },
+            "status": "SUCCESSFUL"
+        },
+        "fit": {
+            "mean": 187.16995295275817,
+            "norm": 0.9949170757620645,
+            "scale": -31.483194398756556,
+            "sigma": 54.41281676340446,
+            "weight": 0.8420082523199436
+        }
+    },
+    "Muon2__bkg_2022Comb": {
+        "bands": {
+            "a1": 4.055709470062841e-08,
+            "a2": -3.980636091260656e-08,
+            "b1": 180.5877177908818,
+            "b2": 180.5877177908818,
+            "c1": 1.0050942982190296,
+            "c2": 0.995
+        },
+        "fDGauss_Muon2__bkg_2022Comb": {
+            "chi2": 1580.0,
+            "ndf": 10,
+            "parameters": {
+                "Mean": {
+                    "error": 0.156,
+                    "value": 130.0
+                },
+                "Norm": {
+                    "error": 0.00111,
+                    "value": 1.02
+                },
+                "Scale": {
+                    "error": 0.0,
+                    "value": 0.0
+                },
+                "Sigma": {
+                    "error": 0.000138,
+                    "value": 36.6
+                },
+                "Weight": {
+                    "error": 0.000404,
+                    "value": 0.982
+                }
+            },
+            "status": "FAILED    "
+        },
+        "fGauss_Muon2__bkg_2022Comb": {
+            "chi2": 185.0,
+            "ndf": 12,
+            "parameters": {
+                "Mean": {
+                    "error": 0.441,
+                    "value": 117.0
+                },
+                "Norm": {
+                    "error": 0.000101,
+                    "value": 0.999
+                },
+                "Sigma": {
+                    "error": 0.387,
+                    "value": 49.6
+                }
+            },
+            "status": "SUCCESSFUL"
+        },
+        "fit": {
+            "mean": 116.71661077091296,
+            "norm": 0.9988753975988605,
+            "scale": 0.0,
+            "sigma": 49.553674607655786,
+            "weight": 0.0
+        }
+    },
+    "Electron1__bkg_2022Comb": {
+        "bands": {
+            "a1": 4.4e-08,
+            "a2": -8.5e-07,
+            "b1": 140.0,
+            "b2": 300.0,
+            "c1": 1.01,
+            "c2": 0.98
+        },
+        "fDGauss_Electron1__bkg_2022Comb": {
+            "chi2": 24.6,
+            "ndf": 10,
+            "parameters": {
+                "Mean": {
+                    "error": 0.23,
+                    "value": 142.0
+                },
+                "Norm": {
+                    "error": 0.00024,
+                    "value": 0.999
+                },
+                "Scale": {
+                    "error": 0.0,
+                    "value": 0.0
+                },
+                "Sigma": {
+                    "error": 1.13,
+                    "value": 45.0
+                },
+                "Weight": {
+                    "error": 0.0443,
+                    "value": 0.748
+                }
+            },
+            "status": "SUCCESSFUL"
+        },
+        "fGauss_Electron1__bkg_2022Comb": {
+            "chi2": 276.0,
+            "ndf": 12,
+            "parameters": {
+                "Mean": {
+                    "error": 0.188,
+                    "value": 140.0
+                },
+                "Norm": {
+                    "error": 0.000148,
+                    "value": 0.997
+                },
+                "Sigma": {
+                    "error": 0.246,
+                    "value": 55.0
+                }
+            },
+            "status": "SUCCESSFUL"
+        },
+        "fit": {
+            "mean": 142.07016715298673,
+            "norm": 0.9987843930199841,
+            "scale": 35.06804831727838,
+            "sigma": 45.019350013635815,
+            "weight": 0.5261124155237099
+        }
+    },
+    "Electron1__Data_MuonEG_2023Comb": {
+        "fDGauss_Electron1__Data_MuonEG_2023Comb": {
+            "chi2": 6.78,
+            "ndf": 10,
+            "parameters": {
+                "Mean": {
+                    "error": 0.932,
+                    "value": 163.0
+                },
+                "Norm": {
+                    "error": 0.00693,
+                    "value": 0.993
+                },
+                "Scale": {
+                    "error": 0.0,
+                    "value": 0.0
+                },
+                "Sigma": {
+                    "error": 17.9,
+                    "value": 34.2
+                },
+                "Weight": {
+                    "error": 0.318,
+                    "value": 0.285
+                }
+            },
+            "status": "SUCCESSFUL"
+        },
+        "fGauss_Electron1__Data_MuonEG_2023Comb": {
+            "chi2": 9.39,
+            "ndf": 12,
+            "parameters": {
+                "Mean": {
+                    "error": 0.878,
+                    "value": 163.0
+                },
+                "Norm": {
+                    "error": 0.00505,
+                    "value": 0.988
+                },
+                "Sigma": {
+                    "error": 2.05,
+                    "value": 55.5
+                }
+            },
+            "status": "SUCCESSFUL"
+        },
+        "fit": {
+            "mean": 163.32995516205645,
+            "norm": 0.9932332721011568,
+            "scale": 32.489430165608994,
+            "sigma": 34.201887010951175,
+            "weight": 1.0076706712267558
+        }
+    },
+    "Muon0__Data_DoubleElectron_2016Comb": {
+        "fDGauss_Muon0__Data_DoubleElectron_2016Comb": {
+            "chi2": 14.1,
+            "ndf": 10,
+            "parameters": {
+                "Mean": {
+                    "error": 1.57,
+                    "value": 154.0
+                },
+                "Norm": {
+                    "error": 0.00219,
+                    "value": 0.995
+                },
+                "Scale": {
+                    "error": 0.0,
+                    "value": 0.0
+                },
+                "Sigma": {
+                    "error": 5.88,
+                    "value": 3.9
+                },
+                "Weight": {
+                    "error": 0.0283,
+                    "value": 0.182
+                }
+            },
+            "status": "SUCCESSFUL"
+        },
+        "fGauss_Muon0__Data_DoubleElectron_2016Comb": {
+            "chi2": 33.2,
+            "ndf": 12,
+            "parameters": {
+                "Mean": {
+                    "error": 0.933,
+                    "value": 148.0
+                },
+                "Norm": {
+                    "error": 0.0021,
+                    "value": 0.993
+                },
+                "Sigma": {
+                    "error": 1.53,
+                    "value": 45.3
+                }
+            },
+            "status": "SUCCESSFUL"
+        },
+        "fit": {
+            "mean": 153.6906265673436,
+            "norm": 0.9949446491045849,
+            "scale": 43.32367349326046,
+            "sigma": 3.904722303281,
+            "weight": 1.1294961683856506
+        }
+    },
+    "Electron0__Data_SingleMuon_2024": {
+        "fDGauss_Electron0__Data_SingleMuon_2024": {
+            "chi2": 13.5,
+            "ndf": 10,
+            "parameters": {
+                "Mean": {
+                    "error": 0.724,
+                    "value": 139.0
+                },
+                "Norm": {
+                    "error": 0.00322,
+                    "value": 0.996
+                },
+                "Scale": {
+                    "error": 0.0,
+                    "value": 0.0
+                },
+                "Sigma": {
+                    "error": 2.79,
+                    "value": 41.7
+                },
+                "Weight": {
+                    "error": 0.114,
+                    "value": 0.905
+                }
+            },
+            "status": "SUCCESSFUL"
+        },
+        "fGauss_Electron0__Data_SingleMuon_2024": {
+            "chi2": 25.5,
+            "ndf": 12,
+            "parameters": {
+                "Mean": {
+                    "error": 0.571,
+                    "value": 138.0
+                },
+                "Norm": {
+                    "error": 0.00102,
+                    "value": 0.991
+                },
+                "Sigma": {
+                    "error": 0.772,
+                    "value": 46.1
+                }
+            },
+            "status": "SUCCESSFUL"
+        },
+        "fit": {
+            "mean": 138.96087271809193,
+            "norm": 0.9960001414776428,
+            "scale": 55.266413618934045,
+            "sigma": 41.74644035415028,
+            "weight": 0.3133339698470866
+        }
+    },
+    "Muon1__Data_MuonEG_2016Comb": {
+        "fDGauss_Muon1__Data_MuonEG_2016Comb": {
+            "chi2": 8.72,
+            "ndf": 10,
+            "parameters": {
+                "Mean": {
+                    "error": 19.8,
+                    "value": 140.0
+                },
+                "Norm": {
+                    "error": 0.296,
+                    "value": 1.29
+                },
+                "Scale": {
+                    "error": 0.0,
+                    "value": 0.0
+                },
+                "Sigma": {
+                    "error": 8.13,
+                    "value": 41.5
+                },
+                "Weight": {
+                    "error": 0.348,
+                    "value": 0.52
                 }
             },
             "status": "FAILURE   "
         },
-        "fGauss_Muon0__Data_SingleElectron_2023Comb": {
-            "chi2": 28.7,
+        "fGauss_Muon1__Data_MuonEG_2016Comb": {
+            "chi2": 14.4,
             "ndf": 12,
             "parameters": {
                 "Mean": {
-                    "error": 0.813,
-                    "value": 189.0
+                    "error": 1.58,
+                    "value": 122.0
                 },
                 "Norm": {
-                    "error": 0.00624,
-                    "value": 0.989
+                    "error": 0.00166,
+                    "value": 0.994
                 },
                 "Sigma": {
-                    "error": 1.15,
-                    "value": 40.6
+                    "error": 1.74,
+                    "value": 51.1
                 }
             },
             "status": "SUCCESSFUL"
         },
         "fit": {
-            "mean": 188.94660830147657,
-            "norm": 0.9889738875245124,
+            "mean": 140.16128732823066,
+            "norm": 1.2862048799232955,
+            "scale": 2614.2660328566735,
+            "sigma": 41.47501645024982,
+            "weight": 2.3764754438752056
+        }
+    },
+    "Muon2__Data_DoubleMuon_2017": {
+        "fDGauss_Muon2__Data_DoubleMuon_2017": {
+            "chi2": 12.4,
+            "ndf": 10,
+            "parameters": {
+                "Mean": {
+                    "error": 3.06,
+                    "value": 133.0
+                },
+                "Norm": {
+                    "error": 0.0519,
+                    "value": 1.0
+                },
+                "Scale": {
+                    "error": 0.0,
+                    "value": 0.0
+                },
+                "Sigma": {
+                    "error": 3.17,
+                    "value": 41.1
+                },
+                "Weight": {
+                    "error": 0.0429,
+                    "value": 0.958
+                }
+            },
+            "status": "FAILURE   "
+        },
+        "fGauss_Muon2__Data_DoubleMuon_2017": {
+            "chi2": 12.8,
+            "ndf": 12,
+            "parameters": {
+                "Mean": {
+                    "error": 1.85,
+                    "value": 132.0
+                },
+                "Norm": {
+                    "error": 0.00331,
+                    "value": 0.992
+                },
+                "Sigma": {
+                    "error": 2.28,
+                    "value": 42.6
+                }
+            },
+            "status": "SUCCESSFUL"
+        },
+        "fit": {
+            "mean": 131.55817851667825,
+            "norm": 0.9917234899821367,
             "scale": 0.0,
-            "sigma": 40.55382231762957,
+            "sigma": 42.55084019402879,
             "weight": 0.0
         }
     },
-    "Muon0__bkg_2016Comb": {
+    "Muon0__bkg_2023Comb": {
         "bands": {
-            "a1": 3.84422641435461e-08,
-            "a2": -3.84422641435461e-08,
-            "b1": 174.35449557973897,
-            "b2": 174.35449557973897,
-            "c1": 1.005,
-            "c2": 0.995
+            "a1": 1.3655172881784725e-07,
+            "a2": -1.6533990000065892e-07,
+            "b1": 210.06189770880016,
+            "b2": 210.06189770880016,
+            "c1": 1.014417782924114,
+            "c2": 0.9825426246335984
         },
-        "fDGauss_Muon0__bkg_2016Comb": {
-            "chi2": 23.1,
+        "fDGauss_Muon0__bkg_2023Comb": {
+            "chi2": 47.4,
             "ndf": 10,
             "parameters": {
                 "Mean": {
-                    "error": 1.26,
-                    "value": 126.0
+                    "error": 0.164,
+                    "value": 182.0
                 },
                 "Norm": {
-                    "error": 0.000325,
+                    "error": 0.000479,
                     "value": 0.998
                 },
                 "Scale": {
@@ -2070,166 +1708,268 @@
                     "value": 0.0
                 },
                 "Sigma": {
-                    "error": 6.11,
-                    "value": 61.8
+                    "error": 1.77,
+                    "value": 21.9
                 },
                 "Weight": {
-                    "error": 0.0609,
-                    "value": 0.199
+                    "error": 0.045,
+                    "value": 0.333
                 }
             },
             "status": "SUCCESSFUL"
         },
-        "fGauss_Muon0__bkg_2016Comb": {
-            "chi2": 109.0,
+        "fGauss_Muon0__bkg_2023Comb": {
+            "chi2": 236.0,
             "ndf": 12,
             "parameters": {
                 "Mean": {
-                    "error": 0.669,
-                    "value": 119.0
+                    "error": 0.151,
+                    "value": 183.0
                 },
                 "Norm": {
-                    "error": 0.000239,
+                    "error": 0.000447,
                     "value": 0.997
                 },
                 "Sigma": {
-                    "error": 0.564,
-                    "value": 43.0
+                    "error": 0.275,
+                    "value": 40.8
                 }
             },
             "status": "SUCCESSFUL"
         },
         "fit": {
-            "mean": 126.20463235116507,
-            "norm": 0.9979050053427825,
-            "scale": -30.200236336730825,
-            "sigma": 61.807589859263935,
-            "weight": 1.107858108612816
+            "mean": 182.10556871020526,
+            "norm": 0.9981011241479183,
+            "scale": 32.79770478561317,
+            "sigma": 21.87130162251189,
+            "weight": 0.9553626168581028
         }
     },
-    "Muon0__bkg_2017": {
+    "Muon2__bkg_2018": {
         "bands": {
-            "a1": 6.45887762894975e-08,
-            "a2": -9.365633327910705e-08,
-            "b1": 209.23579126376183,
-            "b2": 209.23579126376183,
-            "c1": 1.006854310766009,
-            "c2": 0.9900609726584292
+            "a1": 3.834496959814566e-08,
+            "a2": -3.976676537537221e-08,
+            "b1": 173.89724380966874,
+            "b2": 173.89724380966874,
+            "c1": 1.005,
+            "c2": 0.9948146046545183
         },
-        "fDGauss_Muon0__bkg_2017": {
-            "chi2": 12.7,
+        "fDGauss_Muon2__bkg_2018": {
+            "chi2": 9.21,
             "ndf": 10,
             "parameters": {
                 "Mean": {
-                    "error": 0.162,
-                    "value": 173.0
+                    "error": 0.716,
+                    "value": 125.0
                 },
                 "Norm": {
-                    "error": 0.000493,
+                    "error": 0.000711,
+                    "value": 1.0
+                },
+                "Scale": {
+                    "error": 0.0,
+                    "value": 0.0
+                },
+                "Sigma": {
+                    "error": 2.43,
+                    "value": 320.0
+                },
+                "Weight": {
+                    "error": 0.00296,
+                    "value": 0.0182
+                }
+            },
+            "status": "PROBLEMS  "
+        },
+        "fGauss_Muon2__bkg_2018": {
+            "chi2": 39.6,
+            "ndf": 12,
+            "parameters": {
+                "Mean": {
+                    "error": 0.719,
+                    "value": 124.0
+                },
+                "Norm": {
+                    "error": 0.00025,
                     "value": 0.998
                 },
-                "Scale": {
-                    "error": 0.0,
-                    "value": 0.0
-                },
                 "Sigma": {
-                    "error": 6.5,
-                    "value": 69.3
-                },
-                "Weight": {
-                    "error": 0.0453,
-                    "value": 0.2
-                }
-            },
-            "status": "SUCCESSFUL"
-        },
-        "fGauss_Muon0__bkg_2017": {
-            "chi2": 147.0,
-            "ndf": 12,
-            "parameters": {
-                "Mean": {
-                    "error": 0.161,
-                    "value": 173.0
-                },
-                "Norm": {
-                    "error": 0.000395,
-                    "value": 0.996
-                },
-                "Sigma": {
-                    "error": 0.287,
-                    "value": 35.3
+                    "error": 0.636,
+                    "value": 42.5
                 }
             },
             "status": "SUCCESSFUL"
         },
         "fit": {
-            "mean": 172.78771343456836,
-            "norm": 0.9978835731966132,
-            "scale": -39.706092117778084,
-            "sigma": 69.25435140066708,
-            "weight": 1.1075294813945853
+            "mean": 125.39683100200658,
+            "norm": 1.0019836951151544,
+            "scale": -279.4258345304774,
+            "sigma": 319.8599759303074,
+            "weight": 1.435511491657449
         }
     },
-    "Muon0__bkg_2018": {
-        "bands": {
-            "a1": 1.769297632015226e-07,
-            "a2": -1.0077041536872462e-07,
-            "b1": 198.85586184830944,
-            "b2": 198.85586184830944,
-            "c1": 1.0199918037873772,
-            "c2": 0.988613660386074
-        },
-        "fDGauss_Muon0__bkg_2018": {
-            "chi2": 182.0,
+    "Muon2__Data_SingleMuon_2024": {
+        "fDGauss_Muon2__Data_SingleMuon_2024": {
+            "chi2": 11.6,
             "ndf": 10,
             "parameters": {
                 "Mean": {
-                    "error": 0.138,
-                    "value": 177.0
+                    "error": 0.651,
+                    "value": 139.0
                 },
                 "Norm": {
-                    "error": 0.000409,
-                    "value": 0.995
+                    "error": 0.002,
+                    "value": 0.997
                 },
                 "Scale": {
                     "error": 0.0,
                     "value": 0.0
                 },
                 "Sigma": {
-                    "error": 0.231,
-                    "value": 32.8
+                    "error": 1.79,
+                    "value": 42.1
                 },
                 "Weight": {
-                    "error": 0.000538,
-                    "value": 1.0
+                    "error": 0.0479,
+                    "value": 0.909
                 }
             },
             "status": "SUCCESSFUL"
         },
-        "fGauss_Muon0__bkg_2018": {
-            "chi2": 182.0,
+        "fGauss_Muon2__Data_SingleMuon_2024": {
+            "chi2": 30.5,
             "ndf": 12,
             "parameters": {
                 "Mean": {
-                    "error": 0.139,
-                    "value": 177.0
+                    "error": 0.56,
+                    "value": 138.0
                 },
                 "Norm": {
-                    "error": 0.000409,
-                    "value": 0.995
+                    "error": 0.00107,
+                    "value": 0.991
                 },
                 "Sigma": {
-                    "error": 0.234,
-                    "value": 32.8
+                    "error": 0.775,
+                    "value": 46.8
                 }
             },
             "status": "SUCCESSFUL"
         },
         "fit": {
-            "mean": 177.0175865568065,
-            "norm": 0.9947183955173019,
+            "mean": 139.15610263654065,
+            "norm": 0.9972244013575884,
+            "scale": 70.64033328934158,
+            "sigma": 42.1376982980487,
+            "weight": 0.3069071168708017
+        }
+    },
+    "Electron0__Data_DoubleMuon_2017": {
+        "fDGauss_Electron0__Data_DoubleMuon_2017": {
+            "chi2": 14.1,
+            "ndf": 10,
+            "parameters": {
+                "Mean": {
+                    "error": 0.00319,
+                    "value": 155.0
+                },
+                "Norm": {
+                    "error": 0.00229,
+                    "value": 0.996
+                },
+                "Scale": {
+                    "error": 0.0,
+                    "value": 0.0
+                },
+                "Sigma": {
+                    "error": 0.00211,
+                    "value": 36.4
+                },
+                "Weight": {
+                    "error": 0.0191,
+                    "value": 0.518
+                }
+            },
+            "status": "PROBLEMS  "
+        },
+        "fGauss_Electron0__Data_DoubleMuon_2017": {
+            "chi2": 19.8,
+            "ndf": 12,
+            "parameters": {
+                "Mean": {
+                    "error": 1.83,
+                    "value": 133.0
+                },
+                "Norm": {
+                    "error": 0.00266,
+                    "value": 0.995
+                },
+                "Sigma": {
+                    "error": 2.2,
+                    "value": 41.0
+                }
+            },
+            "status": "SUCCESSFUL"
+        },
+        "fit": {
+            "mean": 154.99521594828298,
+            "norm": 0.9955867128985094,
+            "scale": -36.4311950950748,
+            "sigma": 36.43497973554976,
+            "weight": -0.7677627619075426
+        }
+    },
+    "Muon1__Data_MuonEG_2022Comb": {
+        "fDGauss_Muon1__Data_MuonEG_2022Comb": {
+            "chi2": 25.9,
+            "ndf": 10,
+            "parameters": {
+                "Mean": {
+                    "error": 0.705,
+                    "value": 158.0
+                },
+                "Norm": {
+                    "error": 0.00361,
+                    "value": 0.997
+                },
+                "Scale": {
+                    "error": 0.0,
+                    "value": 0.0
+                },
+                "Sigma": {
+                    "error": 9.6,
+                    "value": 40.5
+                },
+                "Weight": {
+                    "error": 0.355,
+                    "value": 0.457
+                }
+            },
+            "status": "SUCCESSFUL"
+        },
+        "fGauss_Muon1__Data_MuonEG_2022Comb": {
+            "chi2": 29.9,
+            "ndf": 12,
+            "parameters": {
+                "Mean": {
+                    "error": 0.656,
+                    "value": 157.0
+                },
+                "Norm": {
+                    "error": 0.00258,
+                    "value": 0.994
+                },
+                "Sigma": {
+                    "error": 1.34,
+                    "value": 54.5
+                }
+            },
+            "status": "SUCCESSFUL"
+        },
+        "fit": {
+            "mean": 157.1224464058652,
+            "norm": 0.9936534989591616,
             "scale": 0.0,
-            "sigma": 32.75500147349092,
+            "sigma": 54.497279241642644,
             "weight": 0.0
         }
     },
@@ -2243,15 +1983,15 @@
             "c2": 0.9903353023179755
         },
         "fDGauss_Muon0__bkg_2022Comb": {
-            "chi2": 34.8,
+            "chi2": 44.1,
             "ndf": 10,
             "parameters": {
                 "Mean": {
-                    "error": 0.115,
+                    "error": 0.113,
                     "value": 178.0
                 },
                 "Norm": {
-                    "error": 0.000378,
+                    "error": 0.000362,
                     "value": 0.998
                 },
                 "Scale": {
@@ -2259,214 +1999,403 @@
                     "value": 0.0
                 },
                 "Sigma": {
-                    "error": 1.36,
-                    "value": 25.8
+                    "error": 1.26,
+                    "value": 28.2
                 },
                 "Weight": {
-                    "error": 0.0513,
-                    "value": 0.478
+                    "error": 0.055,
+                    "value": 0.584
                 }
             },
             "status": "SUCCESSFUL"
         },
         "fGauss_Muon0__bkg_2022Comb": {
-            "chi2": 439.0,
+            "chi2": 466.0,
             "ndf": 12,
             "parameters": {
                 "Mean": {
-                    "error": 0.106,
+                    "error": 0.105,
                     "value": 178.0
                 },
                 "Norm": {
-                    "error": 0.0003,
-                    "value": 0.995
+                    "error": 0.000301,
+                    "value": 0.996
                 },
                 "Sigma": {
-                    "error": 0.192,
+                    "error": 0.189,
                     "value": 39.8
                 }
             },
             "status": "SUCCESSFUL"
         },
         "fit": {
-            "mean": 177.91406581782084,
-            "norm": 0.9977648521698899,
-            "scale": 31.434509368745175,
-            "sigma": 25.830400645341083,
-            "weight": 0.8077762944615846
+            "mean": 177.85117671009218,
+            "norm": 0.9979944486679757,
+            "scale": 34.12202317503944,
+            "sigma": 28.177789972140776,
+            "weight": 0.7011515912156278
         }
     },
-    "Muon0__bkg_2023Comb": {
-        "bands": {
-            "a1": 1.3655172881784725e-07,
-            "a2": -1.6533990000065892e-07,
-            "b1": 210.06189770880016,
-            "b2": 210.06189770880016,
-            "c1": 1.014417782924114,
-            "c2": 0.9825426246335984
-        },
-        "fDGauss_Muon0__bkg_2023Comb": {
-            "chi2": 56.9,
+    "Electron2__Data_DoubleElectron_2016Comb": {
+        "fDGauss_Electron2__Data_DoubleElectron_2016Comb": {
+            "chi2": 21.9,
             "ndf": 10,
             "parameters": {
                 "Mean": {
-                    "error": 0.164,
-                    "value": 182.0
+                    "error": 1.53,
+                    "value": 154.0
                 },
                 "Norm": {
-                    "error": 0.000478,
-                    "value": 0.998
+                    "error": 0.00208,
+                    "value": 0.995
                 },
                 "Scale": {
                     "error": 0.0,
                     "value": 0.0
                 },
                 "Sigma": {
-                    "error": 1.79,
-                    "value": 21.3
+                    "error": 5.24,
+                    "value": 3.88
                 },
                 "Weight": {
-                    "error": 0.0423,
-                    "value": 0.301
+                    "error": 0.031,
+                    "value": 0.175
                 }
             },
             "status": "SUCCESSFUL"
         },
-        "fGauss_Muon0__bkg_2023Comb": {
-            "chi2": 217.0,
+        "fGauss_Electron2__Data_DoubleElectron_2016Comb": {
+            "chi2": 37.2,
             "ndf": 12,
             "parameters": {
                 "Mean": {
-                    "error": 0.151,
-                    "value": 183.0
+                    "error": 0.876,
+                    "value": 148.0
                 },
                 "Norm": {
-                    "error": 0.000452,
-                    "value": 0.996
+                    "error": 0.0022,
+                    "value": 0.993
                 },
                 "Sigma": {
-                    "error": 0.273,
-                    "value": 40.9
+                    "error": 1.45,
+                    "value": 44.8
                 }
             },
             "status": "SUCCESSFUL"
         },
         "fit": {
-            "mean": 182.12809848811327,
-            "norm": 0.9977647198154754,
-            "scale": 31.59666578755551,
-            "sigma": 21.32829702372009,
-            "weight": 0.9905872694942083
+            "mean": 153.57179181149792,
+            "norm": 0.9946096386484429,
+            "scale": 42.50901379484024,
+            "sigma": 3.883241107851803,
+            "weight": 2.00179025017462
         }
     },
-    "Muon1__Data_MuonEG_2016Comb": {
-        "fDGauss_Muon1__Data_MuonEG_2016Comb": {
-            "chi2": 10.2,
+    "Electron1__bkg_2018": {
+        "bands": {
+            "a1": 2.9e-05,
+            "a2": -1.2e-05,
+            "b1": 190.0,
+            "b2": 250.0,
+            "c1": 1.006,
+            "c2": 0.996
+        },
+        "fDGauss_Electron1__bkg_2018": {
+            "chi2": 42.6,
             "ndf": 10,
             "parameters": {
                 "Mean": {
-                    "error": 18.0,
-                    "value": 150.0
+                    "error": 0.344,
+                    "value": 134.0
                 },
                 "Norm": {
-                    "error": 0.207,
-                    "value": 1.44
+                    "error": 0.00343,
+                    "value": 1.06
                 },
                 "Scale": {
                     "error": 0.0,
                     "value": 0.0
                 },
                 "Sigma": {
-                    "error": 8.59,
-                    "value": 38.5
+                    "error": 0.387,
+                    "value": 47.5
                 },
                 "Weight": {
-                    "error": 0.185,
-                    "value": 0.349
+                    "error": 0.00309,
+                    "value": 0.942
                 }
             },
             "status": "FAILURE   "
         },
-        "fGauss_Muon1__Data_MuonEG_2016Comb": {
-            "chi2": 15.1,
+        "fGauss_Electron1__bkg_2018": {
+            "chi2": 42.6,
             "ndf": 12,
             "parameters": {
                 "Mean": {
-                    "error": 2.0,
-                    "value": 118.0
+                    "error": 0.349,
+                    "value": 134.0
                 },
                 "Norm": {
-                    "error": 0.00194,
-                    "value": 0.994
+                    "error": 0.000263,
+                    "value": 0.997
                 },
                 "Sigma": {
-                    "error": 2.15,
-                    "value": 54.3
+                    "error": 0.392,
+                    "value": 47.5
                 }
             },
             "status": "SUCCESSFUL"
         },
         "fit": {
-            "mean": 149.56063479269417,
-            "norm": 1.444222529574066,
-            "scale": 3006.1697947319767,
-            "sigma": 38.469564894902796,
-            "weight": 4.080548253217325
+            "mean": 134.36748992889954,
+            "norm": 0.9968964455314967,
+            "scale": 0.0,
+            "sigma": 47.53508241323186,
+            "weight": 0.0
         }
     },
-    "Muon1__Data_MuonEG_2017": {
-        "fDGauss_Muon1__Data_MuonEG_2017": {
-            "chi2": 8.78,
+    "Muon1__Data_MuonEG_2024": {
+        "fDGauss_Muon1__Data_MuonEG_2024": {
+            "chi2": 11.3,
             "ndf": 10,
             "parameters": {
                 "Mean": {
-                    "error": 0.786,
-                    "value": 155.0
+                    "error": 0.525,
+                    "value": 163.0
                 },
                 "Norm": {
-                    "error": 0.00405,
-                    "value": 0.994
+                    "error": 0.00313,
+                    "value": 0.996
                 },
                 "Scale": {
                     "error": 0.0,
                     "value": 0.0
                 },
                 "Sigma": {
-                    "error": 5.07,
-                    "value": 14.1
+                    "error": 8.6,
+                    "value": 48.0
                 },
                 "Weight": {
-                    "error": 0.0747,
-                    "value": 0.174
+                    "error": 0.366,
+                    "value": 0.7
                 }
             },
             "status": "SUCCESSFUL"
         },
-        "fGauss_Muon1__Data_MuonEG_2017": {
-            "chi2": 19.1,
+        "fGauss_Muon1__Data_MuonEG_2024": {
+            "chi2": 14.3,
             "ndf": 12,
             "parameters": {
                 "Mean": {
-                    "error": 0.834,
-                    "value": 153.0
+                    "error": 0.5,
+                    "value": 163.0
                 },
                 "Norm": {
-                    "error": 0.00355,
-                    "value": 0.99
+                    "error": 0.00259,
+                    "value": 0.992
                 },
                 "Sigma": {
-                    "error": 1.61,
-                    "value": 46.0
+                    "error": 1.09,
+                    "value": 55.4
                 }
             },
             "status": "SUCCESSFUL"
         },
         "fit": {
-            "mean": 154.82837321153553,
-            "norm": 0.994370567573955,
-            "scale": 37.36069429071849,
-            "sigma": 14.081847530267849,
-            "weight": 5.1422439605320625
+            "mean": 163.13747647663442,
+            "norm": 0.9958220769766555,
+            "scale": 29.61522568126012,
+            "sigma": 47.98199212754366,
+            "weight": 8.84492987936564
+        }
+    },
+    "Electron0__bkg_2017": {
+        "bands": {
+            "a1": 1.1e-05,
+            "a2": -2.1e-05,
+            "b1": 235.0,
+            "b2": 200.0,
+            "c1": 1.01,
+            "c2": 0.98
+        },
+        "fDGauss_Electron0__bkg_2017": {
+            "chi2": 7.62,
+            "ndf": 10,
+            "parameters": {
+                "Mean": {
+                    "error": 2.01,
+                    "value": 119.0
+                },
+                "Norm": {
+                    "error": 0.000562,
+                    "value": 0.999
+                },
+                "Scale": {
+                    "error": 0.0,
+                    "value": 0.0
+                },
+                "Sigma": {
+                    "error": 2.74,
+                    "value": 38.4
+                },
+                "Weight": {
+                    "error": 0.066,
+                    "value": 0.962
+                }
+            },
+            "status": "SUCCESSFUL"
+        },
+        "fGauss_Electron0__bkg_2017": {
+            "chi2": 20.0,
+            "ndf": 12,
+            "parameters": {
+                "Mean": {
+                    "error": 1.21,
+                    "value": 116.0
+                },
+                "Norm": {
+                    "error": 0.000318,
+                    "value": 0.998
+                },
+                "Sigma": {
+                    "error": 0.965,
+                    "value": 42.4
+                }
+            },
+            "status": "SUCCESSFUL"
+        },
+        "fit": {
+            "mean": 119.1988796768703,
+            "norm": 0.9985078516600115,
+            "scale": 51.98906951029619,
+            "sigma": 38.37586892558941,
+            "weight": 0.19547139308580197
+        }
+    },
+    "Electron0__bkg_2016Comb": {
+        "bands": {
+            "a1": 4e-06,
+            "a2": -9e-06,
+            "b1": 220.0,
+            "b2": 220.0,
+            "c1": 1.01,
+            "c2": 0.99
+        },
+        "fDGauss_Electron0__bkg_2016Comb": {
+            "chi2": 7.06,
+            "ndf": 10,
+            "parameters": {
+                "Mean": {
+                    "error": 15.7,
+                    "value": 63.2
+                },
+                "Norm": {
+                    "error": 0.0003,
+                    "value": 0.999
+                },
+                "Scale": {
+                    "error": 0.0,
+                    "value": 0.0
+                },
+                "Sigma": {
+                    "error": 8.65,
+                    "value": 43.6
+                },
+                "Weight": {
+                    "error": 0.0383,
+                    "value": 0.971
+                }
+            },
+            "status": "SUCCESSFUL"
+        },
+        "fGauss_Electron0__bkg_2016Comb": {
+            "chi2": 15.6,
+            "ndf": 12,
+            "parameters": {
+                "Mean": {
+                    "error": 7.96,
+                    "value": 32.0
+                },
+                "Norm": {
+                    "error": 0.000166,
+                    "value": 0.999
+                },
+                "Sigma": {
+                    "error": 3.61,
+                    "value": 60.5
+                }
+            },
+            "status": "SUCCESSFUL"
+        },
+        "fit": {
+            "mean": 63.180671631029846,
+            "norm": 0.9992779342592557,
+            "scale": 55.79393816800829,
+            "sigma": 43.64553870356492,
+            "weight": 0.17176763109290077
+        }
+    },
+    "Electron1__bkg_2023Comb": {
+        "bands": {
+            "a1": 4.9e-06,
+            "a2": -5.4e-06,
+            "b1": 220.0,
+            "b2": 220.0,
+            "c1": 1.005,
+            "c2": 0.993
+        },
+        "fDGauss_Electron1__bkg_2023Comb": {
+            "chi2": 10.4,
+            "ndf": 10,
+            "parameters": {
+                "Mean": {
+                    "error": 0.211,
+                    "value": 149.0
+                },
+                "Norm": {
+                    "error": 0.00104,
+                    "value": 0.999
+                },
+                "Scale": {
+                    "error": 0.0,
+                    "value": 0.0
+                },
+                "Sigma": {
+                    "error": 1.06,
+                    "value": 51.8
+                },
+                "Weight": {
+                    "error": 0.033,
+                    "value": 0.938
+                }
+            },
+            "status": "SUCCESSFUL"
+        },
+        "fGauss_Electron1__bkg_2023Comb": {
+            "chi2": 65.1,
+            "ndf": 12,
+            "parameters": {
+                "Mean": {
+                    "error": 0.197,
+                    "value": 149.0
+                },
+                "Norm": {
+                    "error": 0.000305,
+                    "value": 0.997
+                },
+                "Sigma": {
+                    "error": 0.323,
+                    "value": 55.2
+                }
+            },
+            "status": "SUCCESSFUL"
+        },
+        "fit": {
+            "mean": 149.3205672484785,
+            "norm": 0.9989758846200175,
+            "scale": 74.86751486054965,
+            "sigma": 51.84392083547787,
+            "weight": 0.2512679994364706
         }
     },
     "Muon1__Data_MuonEG_2018": {
@@ -2524,240 +2453,67 @@
             "weight": 0.8457412909223347
         }
     },
-    "Muon1__Data_MuonEG_2022Comb": {
-        "fDGauss_Muon1__Data_MuonEG_2022Comb": {
-            "chi2": 25.8,
-            "ndf": 10,
-            "parameters": {
-                "Mean": {
-                    "error": 0.687,
-                    "value": 158.0
-                },
-                "Norm": {
-                    "error": 0.00362,
-                    "value": 0.998
-                },
-                "Scale": {
-                    "error": 0.0,
-                    "value": 0.0
-                },
-                "Sigma": {
-                    "error": 8.3,
-                    "value": 38.2
-                },
-                "Weight": {
-                    "error": 0.265,
-                    "value": 0.432
-                }
-            },
-            "status": "SUCCESSFUL"
-        },
-        "fGauss_Muon1__Data_MuonEG_2022Comb": {
-            "chi2": 32.2,
-            "ndf": 12,
-            "parameters": {
-                "Mean": {
-                    "error": 0.652,
-                    "value": 157.0
-                },
-                "Norm": {
-                    "error": 0.00257,
-                    "value": 0.993
-                },
-                "Sigma": {
-                    "error": 1.35,
-                    "value": 54.4
-                }
-            },
-            "status": "SUCCESSFUL"
-        },
-        "fit": {
-            "mean": 157.98077740366878,
-            "norm": 0.9978346136152598,
-            "scale": 30.695025765572847,
-            "sigma": 38.215656593641334,
-            "weight": 3.9948798917787838
-        }
-    },
-    "Muon1__Data_MuonEG_2023Comb": {
-        "fDGauss_Muon1__Data_MuonEG_2023Comb": {
-            "chi2": 5.16,
-            "ndf": 10,
-            "parameters": {
-                "Mean": {
-                    "error": 1.69,
-                    "value": 164.0
-                },
-                "Norm": {
-                    "error": 0.0219,
-                    "value": 1.0
-                },
-                "Scale": {
-                    "error": 0.0,
-                    "value": 0.0
-                },
-                "Sigma": {
-                    "error": 19.0,
-                    "value": 34.3
-                },
-                "Weight": {
-                    "error": 0.453,
-                    "value": 0.374
-                }
-            },
-            "status": "SUCCESSFUL"
-        },
-        "fGauss_Muon1__Data_MuonEG_2023Comb": {
-            "chi2": 11.1,
-            "ndf": 12,
-            "parameters": {
-                "Mean": {
-                    "error": 0.908,
-                    "value": 163.0
-                },
-                "Norm": {
-                    "error": 0.00531,
-                    "value": 0.991
-                },
-                "Sigma": {
-                    "error": 2.15,
-                    "value": 56.7
-                }
-            },
-            "status": "SUCCESSFUL"
-        },
-        "fit": {
-            "mean": 164.16393039890622,
-            "norm": 1.0028614750813636,
-            "scale": 42.550501702323096,
-            "sigma": 34.284411051858434,
-            "weight": 0.9129773966086426
-        }
-    },
-    "Muon1__bkg_2017": {
+    "Electron0__bkg_2024": {
         "bands": {
-            "a1": 5.8028124025506394e-08,
-            "a2": -4.1357767910771926e-08,
-            "b1": 187.29858642834617,
-            "b2": 187.29858642834617,
-            "c1": 1.0070153839238496,
-            "c2": 0.995
+            "a1": 2.6e-06,
+            "a2": -3.4e-06,
+            "b1": 230.0,
+            "b2": 230.0,
+            "c1": 1.01,
+            "c2": 0.99
         },
-        "fDGauss_Muon1__bkg_2017": {
-            "chi2": 729.0,
+        "fDGauss_Electron0__bkg_2024": {
+            "chi2": 9.52,
             "ndf": 10,
             "parameters": {
                 "Mean": {
-                    "error": 0.178,
-                    "value": 137.0
+                    "error": 1.12,
+                    "value": 122.0
                 },
                 "Norm": {
-                    "error": 0.00292,
-                    "value": 1.04
+                    "error": 0.0014,
+                    "value": 0.995
                 },
                 "Scale": {
                     "error": 0.0,
                     "value": 0.0
                 },
                 "Sigma": {
-                    "error": 0.319,
-                    "value": 38.6
+                    "error": 2.04,
+                    "value": 40.7
                 },
                 "Weight": {
-                    "error": 0.00158,
-                    "value": 0.953
+                    "error": 0.0566,
+                    "value": 0.947
                 }
             },
-            "status": "FAILED    "
+            "status": "SUCCESSFUL"
         },
-        "fGauss_Muon1__bkg_2017": {
-            "chi2": 73.4,
+        "fGauss_Electron0__bkg_2024": {
+            "chi2": 24.0,
             "ndf": 12,
             "parameters": {
                 "Mean": {
-                    "error": 0.475,
-                    "value": 128.0
+                    "error": 0.711,
+                    "value": 120.0
                 },
                 "Norm": {
-                    "error": 0.000256,
-                    "value": 0.997
+                    "error": 0.000533,
+                    "value": 0.992
                 },
                 "Sigma": {
-                    "error": 0.492,
-                    "value": 50.0
+                    "error": 0.663,
+                    "value": 44.3
                 }
             },
             "status": "SUCCESSFUL"
         },
         "fit": {
-            "mean": 128.19013237677203,
-            "norm": 0.9973503505574394,
-            "scale": 0.0,
-            "sigma": 49.96272432487729,
-            "weight": 0.0
-        }
-    },
-    "Muon1__bkg_2018": {
-        "bands": {
-            "a1": 6.282179497394412e-08,
-            "a2": -4.337186452625521e-08,
-            "b1": 195.4678090656323,
-            "b2": 195.4678090656323,
-            "c1": 1.0072422289957024,
-            "c2": 0.995
-        },
-        "fDGauss_Muon1__bkg_2018": {
-            "chi2": 48.6,
-            "ndf": 10,
-            "parameters": {
-                "Mean": {
-                    "error": 0.447,
-                    "value": 137.0
-                },
-                "Norm": {
-                    "error": 0.000637,
-                    "value": 0.999
-                },
-                "Scale": {
-                    "error": 0.0,
-                    "value": 0.0
-                },
-                "Sigma": {
-                    "error": 1.16,
-                    "value": 43.9
-                },
-                "Weight": {
-                    "error": 0.0343,
-                    "value": 0.942
-                }
-            },
-            "status": "SUCCESSFUL"
-        },
-        "fGauss_Muon1__bkg_2018": {
-            "chi2": 48.6,
-            "ndf": 12,
-            "parameters": {
-                "Mean": {
-                    "error": 0.358,
-                    "value": 136.0
-                },
-                "Norm": {
-                    "error": 0.000279,
-                    "value": 0.997
-                },
-                "Sigma": {
-                    "error": 0.413,
-                    "value": 47.4
-                }
-            },
-            "status": "SUCCESSFUL"
-        },
-        "fit": {
-            "mean": 135.90351965249323,
-            "norm": 0.9967099438264969,
-            "scale": 0.0,
-            "sigma": 47.37379967520393,
-            "weight": 0.0
+            "mean": 122.06517503581843,
+            "norm": 0.9949656180321199,
+            "scale": 57.53707295775424,
+            "sigma": 40.65973389532366,
+            "weight": 0.23120790619334936
         }
     },
     "Muon1__bkg_2022Comb": {
@@ -2770,15 +2526,15 @@
             "c2": 0.995
         },
         "fDGauss_Muon1__bkg_2022Comb": {
-            "chi2": 35.2,
+            "chi2": 34.8,
             "ndf": 10,
             "parameters": {
                 "Mean": {
-                    "error": 0.223,
+                    "error": 0.22,
                     "value": 143.0
                 },
                 "Norm": {
-                    "error": 0.000253,
+                    "error": 0.000242,
                     "value": 0.999
                 },
                 "Scale": {
@@ -2786,62 +2542,125 @@
                     "value": 0.0
                 },
                 "Sigma": {
-                    "error": 1.22,
-                    "value": 46.6
+                    "error": 1.15,
+                    "value": 45.0
                 },
                 "Weight": {
-                    "error": 0.0532,
-                    "value": 0.771
+                    "error": 0.0465,
+                    "value": 0.746
                 }
             },
             "status": "SUCCESSFUL"
         },
         "fGauss_Muon1__bkg_2022Comb": {
-            "chi2": 229.0,
+            "chi2": 275.0,
             "ndf": 12,
             "parameters": {
                 "Mean": {
-                    "error": 0.181,
+                    "error": 0.182,
                     "value": 141.0
                 },
                 "Norm": {
-                    "error": 0.000149,
+                    "error": 0.00015,
                     "value": 0.997
                 },
                 "Sigma": {
-                    "error": 0.24,
-                    "value": 55.2
+                    "error": 0.241,
+                    "value": 54.7
                 }
             },
             "status": "SUCCESSFUL"
         },
         "fit": {
-            "mean": 142.8561366152895,
-            "norm": 0.9988294068563256,
-            "scale": 33.532497929599415,
-            "sigma": 46.55406893380755,
-            "weight": 0.499311906006426
+            "mean": 143.1569808032878,
+            "norm": 0.9987705203306861,
+            "scale": 34.46370578882878,
+            "sigma": 44.97025706070946,
+            "weight": 0.527832388545906
         }
     },
-    "Muon1__bkg_2023Comb": {
+    "Electron1__bkg_2024": {
         "bands": {
-            "a1": 6.353621788553611e-08,
-            "a2": -5.9565515629818455e-08,
-            "b1": 207.304076168801,
-            "b2": 207.304076168801,
-            "c1": 1.0068228125182905,
-            "c2": 0.9936035798285993
+            "a1": 4.8e-06,
+            "a2": -5.2e-06,
+            "b1": 220.0,
+            "b2": 220.0,
+            "c1": 1.005,
+            "c2": 0.993
         },
-        "fDGauss_Muon1__bkg_2023Comb": {
-            "chi2": 16.0,
+        "fDGauss_Electron1__bkg_2024": {
+            "chi2": 4.62,
             "ndf": 10,
             "parameters": {
                 "Mean": {
-                    "error": 0.21,
-                    "value": 150.0
+                    "error": 0.314,
+                    "value": 144.0
                 },
                 "Norm": {
-                    "error": 0.0006489999999999999,
+                    "error": 0.000591,
+                    "value": 0.997
+                },
+                "Scale": {
+                    "error": 0.0,
+                    "value": 0.0
+                },
+                "Sigma": {
+                    "error": 1.52,
+                    "value": 44.4
+                },
+                "Weight": {
+                    "error": 0.0585,
+                    "value": 0.801
+                }
+            },
+            "status": "SUCCESSFUL"
+        },
+        "fGauss_Electron1__bkg_2024": {
+            "chi2": 133.0,
+            "ndf": 12,
+            "parameters": {
+                "Mean": {
+                    "error": 0.266,
+                    "value": 142.0
+                },
+                "Norm": {
+                    "error": 0.000306,
+                    "value": 0.995
+                },
+                "Sigma": {
+                    "error": 0.362,
+                    "value": 53.4
+                }
+            },
+            "status": "SUCCESSFUL"
+        },
+        "fit": {
+            "mean": 143.6209329346568,
+            "norm": 0.9969894900773081,
+            "scale": 42.99329706252521,
+            "sigma": 44.42016577961436,
+            "weight": 0.46280727525032805
+        }
+    },
+    "Electron1__bkg_2016Comb": {
+        "bands": {
+            "a1": 2.4e-06,
+            "a2": -9.5e-06,
+            "b1": 200.0,
+            "b2": 230.0,
+            "c1": 1.005,
+            "c2": 0.995
+        },
+        "fDGauss_Electron1__bkg_2016Comb": {
+            "chi2": 87.5,
+            "ndf": 10,
+            "parameters": {
+                "Mean": {
+                    "error": 0.921,
+                    "value": 75.8
+                },
+                "Norm": {
+                    "error": 0.000106,
                     "value": 0.998
                 },
                 "Scale": {
@@ -2849,150 +2668,221 @@
                     "value": 0.0
                 },
                 "Sigma": {
-                    "error": 1.2,
-                    "value": 50.7
+                    "error": 0.53,
+                    "value": 51.7
                 },
                 "Weight": {
-                    "error": 0.0467,
-                    "value": 0.899
+                    "error": 0.000612,
+                    "value": 1.0
                 }
             },
             "status": "SUCCESSFUL"
         },
-        "fGauss_Muon1__bkg_2023Comb": {
-            "chi2": 74.5,
+        "fGauss_Electron1__bkg_2016Comb": {
+            "chi2": 87.5,
             "ndf": 12,
             "parameters": {
                 "Mean": {
-                    "error": 0.194,
-                    "value": 150.0
+                    "error": 1.39,
+                    "value": 75.8
                 },
                 "Norm": {
-                    "error": 0.000333,
-                    "value": 0.996
+                    "error": 0.000112,
+                    "value": 0.998
                 },
                 "Sigma": {
-                    "error": 0.326,
-                    "value": 55.2
+                    "error": 0.795,
+                    "value": 51.7
                 }
             },
             "status": "SUCCESSFUL"
         },
         "fit": {
-            "mean": 150.4876678868941,
-            "norm": 0.9984433344732516,
-            "scale": 53.831681790333214,
-            "sigma": 50.72993562708373,
-            "weight": 0.3230493323972865
-        }
-    },
-    "Muon2__Data_DoubleMuon_2016Comb": {
-        "fDGauss_Muon2__Data_DoubleMuon_2016Comb": {
-            "chi2": 6.38,
-            "ndf": 10,
-            "parameters": {
-                "Mean": {
-                    "error": 45.0,
-                    "value": 126.0
-                },
-                "Norm": {
-                    "error": 0.546,
-                    "value": 1.49
-                },
-                "Scale": {
-                    "error": 0.0,
-                    "value": 0.0
-                },
-                "Sigma": {
-                    "error": 15.4,
-                    "value": 41.6
-                },
-                "Weight": {
-                    "error": 0.584,
-                    "value": 0.334
-                }
-            },
-            "status": "SUCCESSFUL"
-        },
-        "fGauss_Muon2__Data_DoubleMuon_2016Comb": {
-            "chi2": 6.38,
-            "ndf": 12,
-            "parameters": {
-                "Mean": {
-                    "error": 4.36,
-                    "value": 96.7
-                },
-                "Norm": {
-                    "error": 0.00164,
-                    "value": 0.997
-                },
-                "Sigma": {
-                    "error": 3.31,
-                    "value": 50.9
-                }
-            },
-            "status": "SUCCESSFUL"
-        },
-        "fit": {
-            "mean": 96.65667472784266,
-            "norm": 0.9966739392324372,
+            "mean": 75.79624803763056,
+            "norm": 0.9983121702030082,
             "scale": 0.0,
-            "sigma": 50.87663602736458,
+            "sigma": 51.664226380031145,
             "weight": 0.0
         }
     },
-    "Muon2__Data_DoubleMuon_2017": {
-        "fDGauss_Muon2__Data_DoubleMuon_2017": {
-            "chi2": 12.5,
+    "Muon0__bkg_2018": {
+        "bands": {
+            "a1": 1.769297632015226e-07,
+            "a2": -1.0077041536872462e-07,
+            "b1": 198.85586184830944,
+            "b2": 198.85586184830944,
+            "c1": 1.0199918037873772,
+            "c2": 0.988613660386074
+        },
+        "fDGauss_Muon0__bkg_2018": {
+            "chi2": 50.6,
             "ndf": 10,
             "parameters": {
                 "Mean": {
-                    "error": 2.99,
-                    "value": 133.0
+                    "error": 0.138,
+                    "value": 177.0
                 },
                 "Norm": {
-                    "error": 0.0495,
-                    "value": 1.0
+                    "error": 0.000423,
+                    "value": 0.997
                 },
                 "Scale": {
                     "error": 0.0,
                     "value": 0.0
                 },
                 "Sigma": {
-                    "error": 3.17,
-                    "value": 41.0
+                    "error": 1.86,
+                    "value": 45.3
                 },
                 "Weight": {
-                    "error": 0.0434,
-                    "value": 0.958
+                    "error": 0.0651,
+                    "value": 0.555
+                }
+            },
+            "status": "SUCCESSFUL"
+        },
+        "fGauss_Muon0__bkg_2018": {
+            "chi2": 236.0,
+            "ndf": 12,
+            "parameters": {
+                "Mean": {
+                    "error": 0.128,
+                    "value": 177.0
+                },
+                "Norm": {
+                    "error": 0.000375,
+                    "value": 0.995
+                },
+                "Sigma": {
+                    "error": 0.216,
+                    "value": 32.6
+                }
+            },
+            "status": "SUCCESSFUL"
+        },
+        "fit": {
+            "mean": 176.78123402858634,
+            "norm": 0.9966310651715087,
+            "scale": -24.47752444578333,
+            "sigma": 45.25236360565553,
+            "weight": 0.72999390254039
+        }
+    },
+    "Muon0__bkg_2017": {
+        "bands": {
+            "a1": 6.45887762894975e-08,
+            "a2": -9.365633327910705e-08,
+            "b1": 209.23579126376183,
+            "b2": 209.23579126376183,
+            "c1": 1.006854310766009,
+            "c2": 0.9900609726584292
+        },
+        "fDGauss_Muon0__bkg_2017": {
+            "chi2": 21.6,
+            "ndf": 10,
+            "parameters": {
+                "Mean": {
+                    "error": 0.163,
+                    "value": 173.0
+                },
+                "Norm": {
+                    "error": 0.000481,
+                    "value": 0.998
+                },
+                "Scale": {
+                    "error": 0.0,
+                    "value": 0.0
+                },
+                "Sigma": {
+                    "error": 4.95,
+                    "value": 59.7
+                },
+                "Weight": {
+                    "error": 0.068,
+                    "value": 0.3
+                }
+            },
+            "status": "SUCCESSFUL"
+        },
+        "fGauss_Muon0__bkg_2017": {
+            "chi2": 163.0,
+            "ndf": 12,
+            "parameters": {
+                "Mean": {
+                    "error": 0.16,
+                    "value": 173.0
+                },
+                "Norm": {
+                    "error": 0.000394,
+                    "value": 0.996
+                },
+                "Sigma": {
+                    "error": 0.285,
+                    "value": 35.2
+                }
+            },
+            "status": "SUCCESSFUL"
+        },
+        "fit": {
+            "mean": 172.74689256404216,
+            "norm": 0.9976474780372767,
+            "scale": -32.2036632313603,
+            "sigma": 59.681452137140944,
+            "weight": 0.9909631664333817
+        }
+    },
+    "Electron2__Data_SingleElectron_2023Comb": {
+        "fDGauss_Electron2__Data_SingleElectron_2023Comb": {
+            "chi2": 29.1,
+            "ndf": 10,
+            "parameters": {
+                "Mean": {
+                    "error": 0.884,
+                    "value": 188.0
+                },
+                "Norm": {
+                    "error": 0.0111,
+                    "value": 0.991
+                },
+                "Scale": {
+                    "error": 0.0,
+                    "value": 0.0
+                },
+                "Sigma": {
+                    "error": 3.82,
+                    "value": 40.0
+                },
+                "Weight": {
+                    "error": 0.429,
+                    "value": 0.976
                 }
             },
             "status": "FAILURE   "
         },
-        "fGauss_Muon2__Data_DoubleMuon_2017": {
-            "chi2": 13.0,
+        "fGauss_Electron2__Data_SingleElectron_2023Comb": {
+            "chi2": 29.2,
             "ndf": 12,
             "parameters": {
                 "Mean": {
-                    "error": 1.85,
-                    "value": 132.0
+                    "error": 0.754,
+                    "value": 188.0
                 },
                 "Norm": {
-                    "error": 0.00331,
-                    "value": 0.992
+                    "error": 0.00554,
+                    "value": 0.99
                 },
                 "Sigma": {
-                    "error": 2.28,
-                    "value": 42.5
+                    "error": 1.09,
+                    "value": 40.5
                 }
             },
             "status": "SUCCESSFUL"
         },
         "fit": {
-            "mean": 131.5741242545445,
-            "norm": 0.9916970337349849,
+            "mean": 187.96454034675276,
+            "norm": 0.9897349910717644,
             "scale": 0.0,
-            "sigma": 42.53058180838349,
+            "sigma": 40.547869446554465,
             "weight": 0.0
         }
     },
@@ -3051,198 +2941,127 @@
             "weight": 0.7033893131847697
         }
     },
-    "Muon2__Data_SingleMuon_2022Comb": {
-        "fDGauss_Muon2__Data_SingleMuon_2022Comb": {
-            "chi2": 36.7,
+    "Electron1__Data_MuonEG_2016Comb": {
+        "fDGauss_Electron1__Data_MuonEG_2016Comb": {
+            "chi2": 18.7,
             "ndf": 10,
             "parameters": {
                 "Mean": {
-                    "error": 0.654,
-                    "value": 131.0
+                    "error": 7.38,
+                    "value": 127.0
                 },
                 "Norm": {
-                    "error": 0.000761,
-                    "value": 0.997
+                    "error": 0.149,
+                    "value": 1.04
                 },
                 "Scale": {
                     "error": 0.0,
                     "value": 0.0
                 },
                 "Sigma": {
-                    "error": 0.724,
-                    "value": 44.7
+                    "error": 3.28,
+                    "value": 44.5
                 },
                 "Weight": {
-                    "error": 0.0239,
-                    "value": 1.0
+                    "error": 0.135,
+                    "value": 0.883
                 }
             },
             "status": "SUCCESSFUL"
         },
-        "fGauss_Muon2__Data_SingleMuon_2022Comb": {
-            "chi2": 36.7,
+        "fGauss_Electron1__Data_MuonEG_2016Comb": {
+            "chi2": 23.9,
             "ndf": 12,
             "parameters": {
                 "Mean": {
-                    "error": 0.858,
-                    "value": 131.0
+                    "error": 1.6,
+                    "value": 123.0
                 },
                 "Norm": {
-                    "error": 0.000784,
-                    "value": 0.997
+                    "error": 0.00164,
+                    "value": 0.993
                 },
                 "Sigma": {
-                    "error": 0.956,
-                    "value": 44.7
+                    "error": 1.74,
+                    "value": 48.5
                 }
             },
             "status": "SUCCESSFUL"
         },
         "fit": {
-            "mean": 130.7472066029551,
-            "norm": 0.9967137957160962,
+            "mean": 126.7823004711683,
+            "norm": 1.0398255703942516,
+            "scale": 573.0949992785235,
+            "sigma": 44.45269603471467,
+            "weight": 2.7921804311614595
+        }
+    },
+    "Electron1__Data_MuonEG_2022Comb": {
+        "fDGauss_Electron1__Data_MuonEG_2022Comb": {
+            "chi2": 34.5,
+            "ndf": 10,
+            "parameters": {
+                "Mean": {
+                    "error": 0.703,
+                    "value": 157.0
+                },
+                "Norm": {
+                    "error": 0.00392,
+                    "value": 0.995
+                },
+                "Scale": {
+                    "error": 0.0,
+                    "value": 0.0
+                },
+                "Sigma": {
+                    "error": 6.4,
+                    "value": 46.9
+                },
+                "Weight": {
+                    "error": 0.254,
+                    "value": 0.762
+                }
+            },
+            "status": "SUCCESSFUL"
+        },
+        "fGauss_Electron1__Data_MuonEG_2022Comb": {
+            "chi2": 36.9,
+            "ndf": 12,
+            "parameters": {
+                "Mean": {
+                    "error": 0.64,
+                    "value": 157.0
+                },
+                "Norm": {
+                    "error": 0.00262,
+                    "value": 0.992
+                },
+                "Sigma": {
+                    "error": 1.29,
+                    "value": 53.3
+                }
+            },
+            "status": "SUCCESSFUL"
+        },
+        "fit": {
+            "mean": 156.6691069410451,
+            "norm": 0.9917470359637015,
             "scale": 0.0,
-            "sigma": 44.680505232171114,
+            "sigma": 53.327005577417,
             "weight": 0.0
         }
     },
-    "Muon2__Data_SingleMuon_2023Comb": {
-        "fDGauss_Muon2__Data_SingleMuon_2023Comb": {
-            "chi2": 18.4,
+    "Muon2__Data_SingleMuon_2022Comb": {
+        "fDGauss_Muon2__Data_SingleMuon_2022Comb": {
+            "chi2": 27.1,
             "ndf": 10,
             "parameters": {
                 "Mean": {
-                    "error": 1.33,
-                    "value": 142.0
+                    "error": 2.09,
+                    "value": 137.0
                 },
                 "Norm": {
-                    "error": 0.00234,
-                    "value": 0.997
-                },
-                "Scale": {
-                    "error": 0.0,
-                    "value": 0.0
-                },
-                "Sigma": {
-                    "error": 5.62,
-                    "value": 30.5
-                },
-                "Weight": {
-                    "error": 0.209,
-                    "value": 0.494
-                }
-            },
-            "status": "SUCCESSFUL"
-        },
-        "fGauss_Muon2__Data_SingleMuon_2023Comb": {
-            "chi2": 24.9,
-            "ndf": 12,
-            "parameters": {
-                "Mean": {
-                    "error": 1.03,
-                    "value": 139.0
-                },
-                "Norm": {
-                    "error": 0.00186,
-                    "value": 0.994
-                },
-                "Sigma": {
-                    "error": 1.42,
-                    "value": 44.7
-                }
-            },
-            "status": "SUCCESSFUL"
-        },
-        "fit": {
-            "mean": 141.75610325656575,
-            "norm": 0.996922540681816,
-            "scale": 24.87508345075191,
-            "sigma": 30.474731137260115,
-            "weight": 0.7918363008650139
-        }
-    },
-    "Muon2__bkg_2016Comb": {
-        "bands": {
-            "a1": 4e-06,
-            "a2": -6e-06,
-            "b1": 220.0,
-            "b2": 220.0,
-            "c1": 1.01,
-            "c2": 0.99
-        },
-        "fDGauss_Muon2__bkg_2016Comb": {
-            "chi2": 26.7,
-            "ndf": 10,
-            "parameters": {
-                "Mean": {
-                    "error": 17.1,
-                    "value": 63.0
-                },
-                "Norm": {
-                    "error": 0.000239,
-                    "value": 0.999
-                },
-                "Scale": {
-                    "error": 0.0,
-                    "value": 0.0
-                },
-                "Sigma": {
-                    "error": 9.99,
-                    "value": 44.3
-                },
-                "Weight": {
-                    "error": 0.0537,
-                    "value": 0.952
-                }
-            },
-            "status": "SUCCESSFUL"
-        },
-        "fGauss_Muon2__bkg_2016Comb": {
-            "chi2": 32.8,
-            "ndf": 12,
-            "parameters": {
-                "Mean": {
-                    "error": 6.53,
-                    "value": 29.2
-                },
-                "Norm": {
-                    "error": 0.000144,
-                    "value": 0.999
-                },
-                "Sigma": {
-                    "error": 3.04,
-                    "value": 63.7
-                }
-            },
-            "status": "SUCCESSFUL"
-        },
-        "fit": {
-            "mean": 63.01600159941611,
-            "norm": 0.999347856934733,
-            "scale": 46.75369556325513,
-            "sigma": 44.29383251222668,
-            "weight": 0.2214517974024502
-        }
-    },
-    "Muon2__bkg_2017": {
-        "bands": {
-            "a1": 4.883066256648073e-08,
-            "a2": -3.843392529202293e-08,
-            "b1": 174.31537381186658,
-            "b2": 174.31537381186658,
-            "c1": 1.0063525468964545,
-            "c2": 0.995
-        },
-        "fDGauss_Muon2__bkg_2017": {
-            "chi2": 5.67,
-            "ndf": 10,
-            "parameters": {
-                "Mean": {
-                    "error": 2.02,
-                    "value": 119.0
-                },
-                "Norm": {
-                    "error": 0.000544,
+                    "error": 0.000858,
                     "value": 0.998
                 },
                 "Scale": {
@@ -3250,189 +3069,897 @@
                     "value": 0.0
                 },
                 "Sigma": {
-                    "error": 20.0,
-                    "value": 69.7
+                    "error": 2.0,
+                    "value": 47.0
                 },
                 "Weight": {
-                    "error": 0.0833,
-                    "value": 0.102
+                    "error": 0.0597,
+                    "value": 0.688
                 }
             },
             "status": "SUCCESSFUL"
         },
-        "fGauss_Muon2__bkg_2017": {
-            "chi2": 18.5,
+        "fGauss_Muon2__Data_SingleMuon_2022Comb": {
+            "chi2": 39.0,
             "ndf": 12,
             "parameters": {
                 "Mean": {
-                    "error": 1.12,
-                    "value": 115.0
+                    "error": 0.88,
+                    "value": 130.0
                 },
                 "Norm": {
-                    "error": 0.000347,
+                    "error": 0.000788,
                     "value": 0.997
                 },
                 "Sigma": {
-                    "error": 0.903,
+                    "error": 0.977,
+                    "value": 44.8
+                }
+            },
+            "status": "SUCCESSFUL"
+        },
+        "fit": {
+            "mean": 137.2954785003394,
+            "norm": 0.9976576581001905,
+            "scale": -27.347766425764263,
+            "sigma": 46.98486777597798,
+            "weight": -0.5931898606564999
+        }
+    },
+    "Muon0__bkg_2024": {
+        "bands": {
+            "a1": 7.638612670896304e-08,
+            "a2": -8.191936776431907e-08,
+            "b1": 213.31171191993087,
+            "b2": 213.31171191993087,
+            "c1": 1.0079046926434574,
+            "c2": 0.9915227090098376
+        },
+        "fDGauss_Muon0__bkg_2024": {
+            "chi2": 26.5,
+            "ndf": 10,
+            "parameters": {
+                "Mean": {
+                    "error": 0.171,
+                    "value": 179.0
+                },
+                "Norm": {
+                    "error": 0.000472,
+                    "value": 0.998
+                },
+                "Scale": {
+                    "error": 0.0,
+                    "value": 0.0
+                },
+                "Sigma": {
+                    "error": 1.03,
+                    "value": 30.8
+                },
+                "Weight": {
+                    "error": 0.043,
+                    "value": 0.754
+                }
+            },
+            "status": "SUCCESSFUL"
+        },
+        "fGauss_Muon0__bkg_2024": {
+            "chi2": 269.0,
+            "ndf": 12,
+            "parameters": {
+                "Mean": {
+                    "error": 0.164,
+                    "value": 179.0
+                },
+                "Norm": {
+                    "error": 0.000399,
+                    "value": 0.996
+                },
+                "Sigma": {
+                    "error": 0.293,
+                    "value": 39.4
+                }
+            },
+            "status": "SUCCESSFUL"
+        },
+        "fit": {
+            "mean": 178.7375591690731,
+            "norm": 0.998418245780975,
+            "scale": 51.58598358532671,
+            "sigma": 30.777694504553903,
+            "weight": 0.519430470885473
+        }
+    },
+    "Muon2__Data_DoubleMuon_2016Comb": {
+        "fDGauss_Muon2__Data_DoubleMuon_2016Comb": {
+            "chi2": 6.38,
+            "ndf": 10,
+            "parameters": {
+                "Mean": {
+                    "error": 45.0,
+                    "value": 126.0
+                },
+                "Norm": {
+                    "error": 0.546,
+                    "value": 1.49
+                },
+                "Scale": {
+                    "error": 0.0,
+                    "value": 0.0
+                },
+                "Sigma": {
+                    "error": 15.4,
+                    "value": 41.6
+                },
+                "Weight": {
+                    "error": 0.584,
+                    "value": 0.334
+                }
+            },
+            "status": "SUCCESSFUL"
+        },
+        "fGauss_Muon2__Data_DoubleMuon_2016Comb": {
+            "chi2": 6.38,
+            "ndf": 12,
+            "parameters": {
+                "Mean": {
+                    "error": 4.36,
+                    "value": 96.7
+                },
+                "Norm": {
+                    "error": 0.00164,
+                    "value": 0.997
+                },
+                "Sigma": {
+                    "error": 3.31,
+                    "value": 50.9
+                }
+            },
+            "status": "SUCCESSFUL"
+        },
+        "fit": {
+            "mean": 96.65667472784266,
+            "norm": 0.9966739392324372,
+            "scale": 0.0,
+            "sigma": 50.87663602736458,
+            "weight": 0.0
+        }
+    },
+    "Muon0__Data_SingleElectron_2022Comb": {
+        "fDGauss_Muon0__Data_SingleElectron_2022Comb": {
+            "chi2": 15.3,
+            "ndf": 10,
+            "parameters": {
+                "Mean": {
+                    "error": 0.52,
+                    "value": 187.0
+                },
+                "Norm": {
+                    "error": 0.0049,
+                    "value": 0.994
+                },
+                "Scale": {
+                    "error": 0.0,
+                    "value": 0.0
+                },
+                "Sigma": {
+                    "error": 2.77,
+                    "value": 31.0
+                },
+                "Weight": {
+                    "error": 0.121,
+                    "value": 0.709
+                }
+            },
+            "status": "SUCCESSFUL"
+        },
+        "fGauss_Muon0__Data_SingleElectron_2022Comb": {
+            "chi2": 30.4,
+            "ndf": 12,
+            "parameters": {
+                "Mean": {
+                    "error": 0.473,
+                    "value": 187.0
+                },
+                "Norm": {
+                    "error": 0.00317,
+                    "value": 0.982
+                },
+                "Sigma": {
+                    "error": 0.736,
+                    "value": 39.2
+                }
+            },
+            "status": "SUCCESSFUL"
+        },
+        "fit": {
+            "mean": 186.89935483314756,
+            "norm": 0.9938385333962292,
+            "scale": 46.63634314788995,
+            "sigma": 30.99315818599897,
+            "weight": 0.5693153373626114
+        }
+    },
+    "Muon1__bkg_2024": {
+        "bands": {
+            "a1": 4.472317091577736e-08,
+            "a2": -4.472317091577736e-08,
+            "b1": 200.63661886512722,
+            "b2": 200.63661886512722,
+            "c1": 1.005,
+            "c2": 0.995
+        },
+        "fDGauss_Muon1__bkg_2024": {
+            "chi2": 3.33,
+            "ndf": 10,
+            "parameters": {
+                "Mean": {
+                    "error": 0.297,
+                    "value": 145.0
+                },
+                "Norm": {
+                    "error": 0.000618,
+                    "value": 0.997
+                },
+                "Scale": {
+                    "error": 0.0,
+                    "value": 0.0
+                },
+                "Sigma": {
+                    "error": 1.39,
+                    "value": 44.8
+                },
+                "Weight": {
+                    "error": 0.0522,
+                    "value": 0.816
+                }
+            },
+            "status": "SUCCESSFUL"
+        },
+        "fGauss_Muon1__bkg_2024": {
+            "chi2": 131.0,
+            "ndf": 12,
+            "parameters": {
+                "Mean": {
+                    "error": 0.259,
+                    "value": 143.0
+                },
+                "Norm": {
+                    "error": 0.000308,
+                    "value": 0.995
+                },
+                "Sigma": {
+                    "error": 0.356,
+                    "value": 53.2
+                }
+            },
+            "status": "SUCCESSFUL"
+        },
+        "fit": {
+            "mean": 144.66344521137216,
+            "norm": 0.9972810855375533,
+            "scale": 45.101581507861255,
+            "sigma": 44.750830219171746,
+            "weight": 0.44343325275844697
+        }
+    },
+    "Muon2__bkg_2024": {
+        "bands": {
+            "a1": 3.990325424388329e-08,
+            "a2": -4.179172148000008e-08,
+            "b1": 181.01827237761512,
+            "b2": 181.01827237761512,
+            "c1": 1.005,
+            "c2": 0.9947633692700131
+        },
+        "fDGauss_Muon2__bkg_2024": {
+            "chi2": 9.1,
+            "ndf": 10,
+            "parameters": {
+                "Mean": {
+                    "error": 1.11,
+                    "value": 122.0
+                },
+                "Norm": {
+                    "error": 0.00121,
+                    "value": 0.995
+                },
+                "Scale": {
+                    "error": 0.0,
+                    "value": 0.0
+                },
+                "Sigma": {
+                    "error": 2.18,
+                    "value": 40.8
+                },
+                "Weight": {
+                    "error": 0.0662,
+                    "value": 0.928
+                }
+            },
+            "status": "SUCCESSFUL"
+        },
+        "fGauss_Muon2__bkg_2024": {
+            "chi2": 31.3,
+            "ndf": 12,
+            "parameters": {
+                "Mean": {
+                    "error": 0.67,
+                    "value": 119.0
+                },
+                "Norm": {
+                    "error": 0.0005,
+                    "value": 0.992
+                },
+                "Sigma": {
+                    "error": 0.627,
+                    "value": 45.4
+                }
+            },
+            "status": "SUCCESSFUL"
+        },
+        "fit": {
+            "mean": 122.16902576664955,
+            "norm": 0.9949588123174931,
+            "scale": 51.277650016906,
+            "sigma": 40.793154543338225,
+            "weight": 0.27091258814237273
+        }
+    },
+    "Muon1__Data_MuonEG_2023Comb": {
+        "fDGauss_Muon1__Data_MuonEG_2023Comb": {
+            "chi2": 3.76,
+            "ndf": 10,
+            "parameters": {
+                "Mean": {
+                    "error": 2.04,
+                    "value": 165.0
+                },
+                "Norm": {
+                    "error": 0.028,
+                    "value": 1.01
+                },
+                "Scale": {
+                    "error": 0.0,
+                    "value": 0.0
+                },
+                "Sigma": {
+                    "error": 14.0,
+                    "value": 34.8
+                },
+                "Weight": {
+                    "error": 0.408,
+                    "value": 0.437
+                }
+            },
+            "status": "SUCCESSFUL"
+        },
+        "fGauss_Muon1__Data_MuonEG_2023Comb": {
+            "chi2": 11.1,
+            "ndf": 12,
+            "parameters": {
+                "Mean": {
+                    "error": 0.898,
+                    "value": 164.0
+                },
+                "Norm": {
+                    "error": 0.00537,
+                    "value": 0.99
+                },
+                "Sigma": {
+                    "error": 2.14,
+                    "value": 55.7
+                }
+            },
+            "status": "SUCCESSFUL"
+        },
+        "fit": {
+            "mean": 164.9886061629739,
+            "norm": 1.0060518150078441,
+            "scale": 47.74927862514655,
+            "sigma": 34.77433694708424,
+            "weight": 0.8488465885492651
+        }
+    },
+    "Electron1__Data_MuonEG_2017": {
+        "fDGauss_Electron1__Data_MuonEG_2017": {
+            "chi2": 5.45,
+            "ndf": 10,
+            "parameters": {
+                "Mean": {
+                    "error": 0.923,
+                    "value": 154.0
+                },
+                "Norm": {
+                    "error": 0.00483,
+                    "value": 0.996
+                },
+                "Scale": {
+                    "error": 0.0,
+                    "value": 0.0
+                },
+                "Sigma": {
+                    "error": 13.5,
+                    "value": 24.5
+                },
+                "Weight": {
+                    "error": 0.342,
+                    "value": 0.325
+                }
+            },
+            "status": "SUCCESSFUL"
+        },
+        "fGauss_Electron1__Data_MuonEG_2017": {
+            "chi2": 14.7,
+            "ndf": 12,
+            "parameters": {
+                "Mean": {
+                    "error": 0.836,
+                    "value": 152.0
+                },
+                "Norm": {
+                    "error": 0.00337,
+                    "value": 0.99
+                },
+                "Sigma": {
+                    "error": 1.61,
+                    "value": 46.7
+                }
+            },
+            "status": "SUCCESSFUL"
+        },
+        "fit": {
+            "mean": 154.01170589743612,
+            "norm": 0.9955476739226873,
+            "scale": 33.24944544683873,
+            "sigma": 24.478730901377833,
+            "weight": 2.177164201739351
+        }
+    },
+    "Electron2__bkg_2016Comb": {
+        "bands": {
+            "a1": 1.9e-05,
+            "a2": -8.1e-06,
+            "b1": 190.0,
+            "b2": 230.0,
+            "c1": 1.005,
+            "c2": 0.995
+        },
+        "fDGauss_Electron2__bkg_2016Comb": {
+            "chi2": 135.0,
+            "ndf": 10,
+            "parameters": {
+                "Mean": {
+                    "error": 0.555,
+                    "value": 119.0
+                },
+                "Norm": {
+                    "error": 0.000233,
+                    "value": 0.996
+                },
+                "Scale": {
+                    "error": 0.0,
+                    "value": 0.0
+                },
+                "Sigma": {
+                    "error": 0.47,
+                    "value": 43.0
+                },
+                "Weight": {
+                    "error": 0.00114,
+                    "value": 1.0
+                }
+            },
+            "status": "SUCCESSFUL"
+        },
+        "fGauss_Electron2__bkg_2016Comb": {
+            "chi2": 135.0,
+            "ndf": 12,
+            "parameters": {
+                "Mean": {
+                    "error": 0.643,
+                    "value": 119.0
+                },
+                "Norm": {
+                    "error": 0.000236,
+                    "value": 0.996
+                },
+                "Sigma": {
+                    "error": 0.543,
+                    "value": 43.0
+                }
+            },
+            "status": "SUCCESSFUL"
+        },
+        "fit": {
+            "mean": 118.85963937271096,
+            "norm": 0.9964735079419029,
+            "scale": 0.0,
+            "sigma": 42.964481221370285,
+            "weight": 0.0
+        }
+    },
+    "Electron0__bkg_2023Comb": {
+        "bands": {
+            "a1": 9.1e-06,
+            "a2": -9.6e-06,
+            "b1": 200.0,
+            "b2": 200.0,
+            "c1": 1.005,
+            "c2": 0.993
+        },
+        "fDGauss_Electron0__bkg_2023Comb": {
+            "chi2": 70.6,
+            "ndf": 10,
+            "parameters": {
+                "Mean": {
+                    "error": 0.485,
+                    "value": 123.0
+                },
+                "Norm": {
+                    "error": 0.00354,
+                    "value": 1.1
+                },
+                "Scale": {
+                    "error": 0.0,
+                    "value": 0.0
+                },
+                "Sigma": {
+                    "error": 0.487,
+                    "value": 49.0
+                },
+                "Weight": {
+                    "error": 0.00296,
+                    "value": 0.91
+                }
+            },
+            "status": "FAILURE   "
+        },
+        "fGauss_Electron0__bkg_2023Comb": {
+            "chi2": 70.6,
+            "ndf": 12,
+            "parameters": {
+                "Mean": {
+                    "error": 0.496,
+                    "value": 123.0
+                },
+                "Norm": {
+                    "error": 0.000268,
+                    "value": 0.997
+                },
+                "Sigma": {
+                    "error": 0.498,
+                    "value": 49.0
+                }
+            },
+            "status": "SUCCESSFUL"
+        },
+        "fit": {
+            "mean": 122.74455703362841,
+            "norm": 0.997254724474331,
+            "scale": 0.0,
+            "sigma": 49.01716699303537,
+            "weight": 0.0
+        }
+    },
+    "Electron1__bkg_2017": {
+        "bands": {
+            "a1": 8.7e-06,
+            "a2": -1.2e-05,
+            "b1": 200.0,
+            "b2": 240.0,
+            "c1": 1.006,
+            "c2": 0.995
+        },
+        "fDGauss_Electron1__bkg_2017": {
+            "chi2": 86.2,
+            "ndf": 10,
+            "parameters": {
+                "Mean": {
+                    "error": 0.133,
+                    "value": 138.0
+                },
+                "Norm": {
+                    "error": 0.000223,
+                    "value": 0.996
+                },
+                "Scale": {
+                    "error": 0.0,
+                    "value": 0.0
+                },
+                "Sigma": {
+                    "error": 0.144,
+                    "value": 43.1
+                },
+                "Weight": {
+                    "error": 0.000766,
+                    "value": 1.0
+                }
+            },
+            "status": "SUCCESSFUL"
+        },
+        "fGauss_Electron1__bkg_2017": {
+            "chi2": 86.2,
+            "ndf": 12,
+            "parameters": {
+                "Mean": {
+                    "error": 0.293,
+                    "value": 138.0
+                },
+                "Norm": {
+                    "error": 0.000247,
+                    "value": 0.996
+                },
+                "Sigma": {
+                    "error": 0.334,
+                    "value": 43.1
+                }
+            },
+            "status": "SUCCESSFUL"
+        },
+        "fit": {
+            "mean": 137.56476675907282,
+            "norm": 0.9963440830412683,
+            "scale": 0.0,
+            "sigma": 43.14105277546538,
+            "weight": 0.0
+        }
+    },
+    "Muon2__Data_SingleMuon_2023Comb": {
+        "fDGauss_Muon2__Data_SingleMuon_2023Comb": {
+            "chi2": 18.2,
+            "ndf": 10,
+            "parameters": {
+                "Mean": {
+                    "error": 1.27,
+                    "value": 142.0
+                },
+                "Norm": {
+                    "error": 0.00215,
+                    "value": 0.999
+                },
+                "Scale": {
+                    "error": 0.0,
+                    "value": 0.0
+                },
+                "Sigma": {
+                    "error": 4.87,
+                    "value": 29.5
+                },
+                "Weight": {
+                    "error": 0.175,
+                    "value": 0.505
+                }
+            },
+            "status": "SUCCESSFUL"
+        },
+        "fGauss_Muon2__Data_SingleMuon_2023Comb": {
+            "chi2": 26.3,
+            "ndf": 12,
+            "parameters": {
+                "Mean": {
+                    "error": 1.02,
+                    "value": 140.0
+                },
+                "Norm": {
+                    "error": 0.00167,
+                    "value": 0.996
+                },
+                "Sigma": {
+                    "error": 1.39,
                     "value": 44.2
                 }
             },
             "status": "SUCCESSFUL"
         },
         "fit": {
-            "mean": 119.05875814884105,
-            "norm": 0.9981058993965858,
-            "scale": -31.76609448705583,
-            "sigma": 69.69107455025637,
-            "weight": 1.2457999125452668
+            "mean": 142.43539847879342,
+            "norm": 0.998615176661089,
+            "scale": 25.739461391195327,
+            "sigma": 29.54634445130727,
+            "weight": 0.7800324915004406
         }
     },
-    "Muon2__bkg_2018": {
+    "Muon1__bkg_2018": {
         "bands": {
-            "a1": 3.834496959814566e-08,
-            "a2": -3.976676537537221e-08,
-            "b1": 173.89724380966874,
-            "b2": 173.89724380966874,
-            "c1": 1.005,
-            "c2": 0.9948146046545183
-        },
-        "fDGauss_Muon2__bkg_2018": {
-            "chi2": 8.65,
-            "ndf": 10,
-            "parameters": {
-                "Mean": {
-                    "error": 0.787,
-                    "value": 126.0
-                },
-                "Norm": {
-                    "error": 0.000452,
-                    "value": 1.0
-                },
-                "Scale": {
-                    "error": 0.0,
-                    "value": 0.0
-                },
-                "Sigma": {
-                    "error": 2.69,
-                    "value": 203.0
-                },
-                "Weight": {
-                    "error": 0.00306,
-                    "value": 0.0176
-                }
-            },
-            "status": "SUCCESSFUL"
-        },
-        "fGauss_Muon2__bkg_2018": {
-            "chi2": 36.0,
-            "ndf": 12,
-            "parameters": {
-                "Mean": {
-                    "error": 0.782,
-                    "value": 124.0
-                },
-                "Norm": {
-                    "error": 0.000265,
-                    "value": 0.998
-                },
-                "Sigma": {
-                    "error": 0.697,
-                    "value": 42.9
-                }
-            },
-            "status": "SUCCESSFUL"
-        },
-        "fit": {
-            "mean": 125.64558286581037,
-            "norm": 1.0000747343853482,
-            "scale": -162.5275306129947,
-            "sigma": 203.0211039895563,
-            "weight": 1.4377224301466025
-        }
-    },
-    "Muon2__bkg_2022Comb": {
-        "bands": {
-            "a1": 4.055709470062841e-08,
-            "a2": -3.980636091260656e-08,
-            "b1": 180.5877177908818,
-            "b2": 180.5877177908818,
-            "c1": 1.0050942982190296,
+            "a1": 6.282179497394412e-08,
+            "a2": -4.337186452625521e-08,
+            "b1": 195.4678090656323,
+            "b2": 195.4678090656323,
+            "c1": 1.0072422289957024,
             "c2": 0.995
         },
-        "fDGauss_Muon2__bkg_2022Comb": {
-            "chi2": 1950.0,
+        "fDGauss_Muon1__bkg_2018": {
+            "chi2": 47.1,
             "ndf": 10,
             "parameters": {
                 "Mean": {
-                    "error": 0.12,
-                    "value": 132.0
+                    "error": 0.398,
+                    "value": 137.0
                 },
                 "Norm": {
-                    "error": 7.19e-05,
-                    "value": 1.03
+                    "error": 0.000622,
+                    "value": 0.998
                 },
                 "Scale": {
                     "error": 0.0,
                     "value": 0.0
                 },
                 "Sigma": {
-                    "error": 6.16e-07,
-                    "value": 35.3
+                    "error": 0.96,
+                    "value": 44.4
                 },
                 "Weight": {
-                    "error": 7.04e-05,
-                    "value": 0.973
+                    "error": 0.0273,
+                    "value": 0.95
                 }
             },
-            "status": "FAILED    "
+            "status": "SUCCESSFUL"
         },
-        "fGauss_Muon2__bkg_2022Comb": {
-            "chi2": 132.0,
+        "fGauss_Muon1__bkg_2018": {
+            "chi2": 47.1,
             "ndf": 12,
             "parameters": {
                 "Mean": {
-                    "error": 0.438,
-                    "value": 117.0
+                    "error": 0.328,
+                    "value": 136.0
                 },
                 "Norm": {
-                    "error": 0.000112,
-                    "value": 0.999
+                    "error": 0.000267,
+                    "value": 0.997
                 },
                 "Sigma": {
-                    "error": 0.389,
-                    "value": 49.8
+                    "error": 0.377,
+                    "value": 47.4
                 }
             },
             "status": "SUCCESSFUL"
         },
         "fit": {
-            "mean": 117.22537006922295,
-            "norm": 0.9986908726894,
+            "mean": 135.79570736141991,
+            "norm": 0.9967282271301721,
             "scale": 0.0,
-            "sigma": 49.82341363050215,
+            "sigma": 47.42374579306621,
             "weight": 0.0
         }
     },
-    "Muon2__bkg_2023Comb": {
+    "Muon0__bkg_2016Comb": {
         "bands": {
-            "a1": 4.1434875326145434e-08,
-            "a2": -4.175045250333311e-08,
-            "b1": 187.6222611321071,
-            "b2": 187.6222611321071,
+            "a1": 3.84422641435461e-08,
+            "a2": -3.84422641435461e-08,
+            "b1": 174.35449557973897,
+            "b2": 174.35449557973897,
             "c1": 1.005,
-            "c2": 0.994961918893842
+            "c2": 0.995
         },
-        "fDGauss_Muon2__bkg_2023Comb": {
-            "chi2": 30.8,
+        "fDGauss_Muon0__bkg_2016Comb": {
+            "chi2": 127.0,
             "ndf": 10,
             "parameters": {
                 "Mean": {
-                    "error": 2.05,
-                    "value": 129.0
+                    "error": 0.569,
+                    "value": 119.0
                 },
                 "Norm": {
-                    "error": 0.000296,
-                    "value": 0.998
+                    "error": 0.000234,
+                    "value": 0.997
+                },
+                "Scale": {
+                    "error": 0.0,
+                    "value": 0.0
+                },
+                "Sigma": {
+                    "error": 0.481,
+                    "value": 42.7
+                },
+                "Weight": {
+                    "error": 0.000543,
+                    "value": 1.0
+                }
+            },
+            "status": "SUCCESSFUL"
+        },
+        "fGauss_Muon0__bkg_2016Comb": {
+            "chi2": 127.0,
+            "ndf": 12,
+            "parameters": {
+                "Mean": {
+                    "error": 0.665,
+                    "value": 119.0
+                },
+                "Norm": {
+                    "error": 0.000237,
+                    "value": 0.997
+                },
+                "Sigma": {
+                    "error": 0.561,
+                    "value": 42.7
+                }
+            },
+            "status": "SUCCESSFUL"
+        },
+        "fit": {
+            "mean": 119.41564120754332,
+            "norm": 0.9967522307083568,
+            "scale": 0.0,
+            "sigma": 42.66186402565842,
+            "weight": 0.0
+        }
+    },
+    "Muon1__bkg_2017": {
+        "bands": {
+            "a1": 5.8028124025506394e-08,
+            "a2": -4.1357767910771926e-08,
+            "b1": 187.29858642834617,
+            "b2": 187.29858642834617,
+            "c1": 1.0070153839238496,
+            "c2": 0.995
+        },
+        "fDGauss_Muon1__bkg_2017": {
+            "chi2": 105.0,
+            "ndf": 10,
+            "parameters": {
+                "Mean": {
+                    "error": 0.268,
+                    "value": 139.0
+                },
+                "Norm": {
+                    "error": 0.000242,
+                    "value": 0.996
+                },
+                "Scale": {
+                    "error": 0.0,
+                    "value": 0.0
+                },
+                "Sigma": {
+                    "error": 0.31,
+                    "value": 43.1
+                },
+                "Weight": {
+                    "error": 0.000408,
+                    "value": 1.0
+                }
+            },
+            "status": "SUCCESSFUL"
+        },
+        "fGauss_Muon1__bkg_2017": {
+            "chi2": 105.0,
+            "ndf": 12,
+            "parameters": {
+                "Mean": {
+                    "error": 0.278,
+                    "value": 139.0
+                },
+                "Norm": {
+                    "error": 0.000243,
+                    "value": 0.996
+                },
+                "Sigma": {
+                    "error": 0.323,
+                    "value": 43.1
+                }
+            },
+            "status": "SUCCESSFUL"
+        },
+        "fit": {
+            "mean": 138.61714001041378,
+            "norm": 0.9962524451460495,
+            "scale": 0.0,
+            "sigma": 43.05052131762734,
+            "weight": 0.0
+        }
+    },
+    "Electron0__Data_SingleMuon_2022Comb": {
+        "fDGauss_Electron0__Data_SingleMuon_2022Comb": {
+            "chi2": 24.8,
+            "ndf": 10,
+            "parameters": {
+                "Mean": {
+                    "error": 2.17,
+                    "value": 139.0
+                },
+                "Norm": {
+                    "error": 0.000821,
+                    "value": 0.999
                 },
                 "Scale": {
                     "error": 0.0,
@@ -3440,40 +3967,284 @@
                 },
                 "Sigma": {
                     "error": 1.93,
-                    "value": 53.2
+                    "value": 46.2
                 },
                 "Weight": {
-                    "error": 0.0489,
-                    "value": 0.679
+                    "error": 0.0482,
+                    "value": 0.66
                 }
             },
             "status": "SUCCESSFUL"
         },
-        "fGauss_Muon2__bkg_2023Comb": {
-            "chi2": 66.5,
+        "fGauss_Electron0__Data_SingleMuon_2022Comb": {
+            "chi2": 41.4,
             "ndf": 12,
             "parameters": {
                 "Mean": {
-                    "error": 0.488,
-                    "value": 122.0
+                    "error": 0.916,
+                    "value": 130.0
                 },
                 "Norm": {
-                    "error": 0.000266,
-                    "value": 0.997
+                    "error": 0.00077,
+                    "value": 0.998
                 },
                 "Sigma": {
-                    "error": 0.493,
-                    "value": 50.9
+                    "error": 1.01,
+                    "value": 44.4
                 }
             },
             "status": "SUCCESSFUL"
         },
         "fit": {
-            "mean": 129.1629813465525,
-            "norm": 0.9977849297894479,
-            "scale": -27.709302892755794,
-            "sigma": 53.157839135842686,
-            "weight": 0.6025347282369387
+            "mean": 139.0336999923371,
+            "norm": 0.998516824922789,
+            "scale": -29.054608272251063,
+            "sigma": 46.17120323778524,
+            "weight": -0.622229335597545
+        }
+    },
+    "Muon1__Data_MuonEG_2017": {
+        "fDGauss_Muon1__Data_MuonEG_2017": {
+            "chi2": 9.57,
+            "ndf": 10,
+            "parameters": {
+                "Mean": {
+                    "error": 0.753,
+                    "value": 155.0
+                },
+                "Norm": {
+                    "error": 0.0037,
+                    "value": 0.995
+                },
+                "Scale": {
+                    "error": 0.0,
+                    "value": 0.0
+                },
+                "Sigma": {
+                    "error": 5.73,
+                    "value": 15.5
+                },
+                "Weight": {
+                    "error": 0.087,
+                    "value": 0.179
+                }
+            },
+            "status": "SUCCESSFUL"
+        },
+        "fGauss_Muon1__Data_MuonEG_2017": {
+            "chi2": 19.8,
+            "ndf": 12,
+            "parameters": {
+                "Mean": {
+                    "error": 0.785,
+                    "value": 153.0
+                },
+                "Norm": {
+                    "error": 0.00321,
+                    "value": 0.991
+                },
+                "Sigma": {
+                    "error": 1.51,
+                    "value": 46.3
+                }
+            },
+            "status": "SUCCESSFUL"
+        },
+        "fit": {
+            "mean": 155.1426640060056,
+            "norm": 0.995038891873205,
+            "scale": 36.58668758671984,
+            "sigma": 15.516231439443189,
+            "weight": 2.0071310943902567
+        }
+    },
+    "Electron2__bkg_2017": {
+        "bands": {
+            "a1": 3.8e-06,
+            "a2": -2.9e-06,
+            "b1": 300.0,
+            "b2": 300.0,
+            "c1": 1.005,
+            "c2": 0.99
+        },
+        "fDGauss_Electron2__bkg_2017": {
+            "chi2": 19.9,
+            "ndf": 10,
+            "parameters": {
+                "Mean": {
+                    "error": 0.155,
+                    "value": 172.0
+                },
+                "Norm": {
+                    "error": 0.000454,
+                    "value": 0.998
+                },
+                "Scale": {
+                    "error": 0.0,
+                    "value": 0.0
+                },
+                "Sigma": {
+                    "error": 4.25,
+                    "value": 59.5
+                },
+                "Weight": {
+                    "error": 0.0626,
+                    "value": 0.319
+                }
+            },
+            "status": "SUCCESSFUL"
+        },
+        "fGauss_Electron2__bkg_2017": {
+            "chi2": 185.0,
+            "ndf": 12,
+            "parameters": {
+                "Mean": {
+                    "error": 0.153,
+                    "value": 172.0
+                },
+                "Norm": {
+                    "error": 0.000375,
+                    "value": 0.996
+                },
+                "Sigma": {
+                    "error": 0.277,
+                    "value": 35.7
+                }
+            },
+            "status": "SUCCESSFUL"
+        },
+        "fit": {
+            "mean": 172.1633641842687,
+            "norm": 0.9976690627918392,
+            "scale": -32.09796422532668,
+            "sigma": 59.52870544060957,
+            "weight": 0.9709351420650935
+        }
+    },
+    "Electron0__bkg_2018": {
+        "bands": {
+            "a1": 1.2e-05,
+            "a2": -1.8e-05,
+            "b1": 230.0,
+            "b2": 205.0,
+            "c1": 1.005,
+            "c2": 0.99
+        },
+        "fDGauss_Electron0__bkg_2018": {
+            "chi2": 8.2,
+            "ndf": 10,
+            "parameters": {
+                "Mean": {
+                    "error": 0.756,
+                    "value": 127.0
+                },
+                "Norm": {
+                    "error": 0.00288,
+                    "value": 1.03
+                },
+                "Scale": {
+                    "error": 0.0,
+                    "value": 0.0
+                },
+                "Sigma": {
+                    "error": 2.75,
+                    "value": 1580.0
+                },
+                "Weight": {
+                    "error": 0.0061,
+                    "value": 0.0634
+                }
+            },
+            "status": "PROBLEMS  "
+        },
+        "fGauss_Electron0__bkg_2018": {
+            "chi2": 30.6,
+            "ndf": 12,
+            "parameters": {
+                "Mean": {
+                    "error": 0.782,
+                    "value": 125.0
+                },
+                "Norm": {
+                    "error": 0.000279,
+                    "value": 0.998
+                },
+                "Sigma": {
+                    "error": 0.691,
+                    "value": 41.3
+                }
+            },
+            "status": "SUCCESSFUL"
+        },
+        "fit": {
+            "mean": 126.89119407143336,
+            "norm": 1.0263389360104453,
+            "scale": -1544.829060509054,
+            "sigma": 1584.0531622184199,
+            "weight": 1.316296174537446
+        }
+    },
+    "Electron2__bkg_2024": {
+        "bands": {
+            "a1": 8.9e-06,
+            "a2": -1.7e-06,
+            "b1": 250.0,
+            "b2": 290.0,
+            "c1": 1.01,
+            "c2": 0.98
+        },
+        "fDGauss_Electron2__bkg_2024": {
+            "chi2": 24.4,
+            "ndf": 10,
+            "parameters": {
+                "Mean": {
+                    "error": 0.16,
+                    "value": 178.0
+                },
+                "Norm": {
+                    "error": 0.000444,
+                    "value": 0.999
+                },
+                "Scale": {
+                    "error": 0.0,
+                    "value": 0.0
+                },
+                "Sigma": {
+                    "error": 0.929,
+                    "value": 31.6
+                },
+                "Weight": {
+                    "error": 0.038,
+                    "value": 0.761
+                }
+            },
+            "status": "SUCCESSFUL"
+        },
+        "fGauss_Electron2__bkg_2024": {
+            "chi2": 262.0,
+            "ndf": 12,
+            "parameters": {
+                "Mean": {
+                    "error": 0.155,
+                    "value": 178.0
+                },
+                "Norm": {
+                    "error": 0.000371,
+                    "value": 0.997
+                },
+                "Sigma": {
+                    "error": 0.279,
+                    "value": 40.1
+                }
+            },
+            "status": "SUCCESSFUL"
+        },
+        "fit": {
+            "mean": 177.85917218195806,
+            "norm": 0.9985933307398159,
+            "scale": 52.71205129788193,
+            "sigma": 31.56493615324486,
+            "weight": 0.5113815716818625
         }
     }
 }
