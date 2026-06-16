@@ -43,7 +43,10 @@
     "jvmFilePath": "/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/JME/2024_Summer24/jetvetomaps.json.gz",
     "jvmTagName": "Summer24Prompt24_RunBCDEFGHI_V1",
     "jvmKeyName": "jetvetomap"
+  },
+  "2025": {
+    "jvmFilePath": "/cvmfs/cms-griddata.cern.ch/cat/metadata/JME/Run3-25Prompt-Winter25-NanoAODv15/latest/jetvetomaps.json.gz",
+    "jvmTagName": "Winter25Prompt25_RunCDEFG_V1",
+    "jvmKeyName": "jetvetomap"
   }
 }
-
-

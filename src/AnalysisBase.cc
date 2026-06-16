@@ -204,8 +204,10 @@ void AnalysisBase<Base>::AddPUFolder(const string& pufold){
     std::string PU_file = "";
     if(m_year < 2024)
       PU_file = find_clib_file(pufold, "puWeights.json.gz");
-    else
+    else if(m_year == 2024)
       PU_file = find_clib_file(pufold, "puWeights_BCDEFGHI.json.gz");
+    else if(m_year == 2025)
+      PU_file = find_clib_file(pufold, "puWeights_2025pp_Golden_Summer24_25ns_69200ub.json.gz");
     m_cset_PU = correction::CorrectionSet::from_file(PU_file);
     if(m_year == 2016)              m_cset_corr_PU = m_cset_PU->at("Collisions16_UltraLegacy_goldenJSON");
     if(m_year == 2017)              m_cset_corr_PU = m_cset_PU->at("Collisions17_UltraLegacy_goldenJSON");
@@ -215,6 +217,7 @@ void AnalysisBase<Base>::AddPUFolder(const string& pufold){
     if(m_year == 2023 && !m_IsBPix) m_cset_corr_PU = m_cset_PU->at("Collisions2023_366403_369802_eraBC_GoldenJson");
     if(m_year == 2023 && m_IsBPix)  m_cset_corr_PU = m_cset_PU->at("Collisions2023_369803_370790_eraD_GoldenJson");
     if(m_year == 2024)              m_cset_corr_PU = m_cset_PU->at("Collisions24_BCDEFGHI_goldenJSON");
+    if(m_year == 2025)              m_cset_corr_PU = m_cset_PU->at("Collisions25_goldenJSON");
   }
 }
 
@@ -1228,6 +1231,9 @@ std::string AnalysisBase<Base>::normalize_tag(const std::string& filetag) {
     if (filetag.find("Summer24") != std::string::npos)
         //return "Run3-24";
         return "24CDEReprocessingFGHIPrompt-Summer24";
+
+    if (filetag.find("Summer25") != std::string::npos)
+        return "Run3-25Prompt-Summer24-NanoAODv15";
 
     return filetag;
 }
