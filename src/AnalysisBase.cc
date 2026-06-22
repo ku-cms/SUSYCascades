@@ -2188,9 +2188,9 @@ template <class Base>
 double AnalysisBase<Base>::GetPUWeight(int updown){
   if(IsData())
     return 1.;
-  if constexpr (std::is_member_object_pointer<decltype(&Base::Pileup_nPU)>::value) {
-    if(!m_IsUL && m_year < 2019) return m_PUTool.GetWeight(this->Pileup_nPU, m_year, updown);
-    else return m_cset_corr_PU->evaluate({static_cast<double>(this->Pileup_nPU), updown == 0 ? "nominal" : (updown < 0 ? "down" : "up")});
+  if constexpr (std::is_member_object_pointer<decltype(&Base::Pileup_nTrueInt)>::value) {
+    if(!m_IsUL && m_year < 2019) return m_PUTool.GetWeight(this->Pileup_nTrueInt, m_year, updown);
+    else return m_cset_corr_PU->evaluate({static_cast<double>(this->Pileup_nTrueInt), updown == 0 ? "nominal" : (updown < 0 ? "down" : "up")});
   }
   return 1.;
 }
