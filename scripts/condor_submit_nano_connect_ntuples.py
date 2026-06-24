@@ -27,10 +27,10 @@ OUT_BASE     = "/ospool/cms-user/"+USER+"/NTUPLES/Processing"
 LIST         = "default.list"
 QUEUE        = ""
 SPLIT        = 100
-THRESHOLD    = 96000
-MAX_JOBS_SUB = 3000 # Max jobs/submission (Connect max is 20000)
+MAX_JOBS_SUB = 6000 # Max jobs/submission (Connect max is 20000)
 MIN_JOBS_SUB = SPLIT*2 # Min jobs/submission
 MAX_MATERIALIZE = MAX_JOBS_SUB+1 # Max jobs to show up in scheduler
+THRESHOLD    = 99000 - MAX_JOBS_SUB
 # ----------------------------------------------------------- #
 
 def get_auto_THRESHOLD():
