@@ -1,0 +1,13 @@
+root://cmsxrootd.fnal.gov//store/mc/Run3Summer23BPixNanoAODv12/WZtoL3Nu_TuneCP5_13p6TeV_powheg-pythia8/NANOAODSIM/130X_mcRun3_2023_realistic_postBPix_v6-v2/2530000/b928bd89-975c-4de4-a8e2-c485ab1d0c7d.root
+root://cmsxrootd.fnal.gov//store/mc/Run3Summer23BPixNanoAODv12/WZtoL3Nu_TuneCP5_13p6TeV_powheg-pythia8/NANOAODSIM/130X_mcRun3_2023_realistic_postBPix_v6-v2/2530000/3eb27b1a-8226-4a5f-af25-b35df07c1e15.root
+root://cmsxrootd.fnal.gov//store/mc/Run3Summer23BPixNanoAODv12/WZtoL3Nu_TuneCP5_13p6TeV_powheg-pythia8/NANOAODSIM/130X_mcRun3_2023_realistic_postBPix_v6-v2/2530000/c12ee106-7edd-4816-986d-fc4efbc23141.root
+root://cmsxrootd.fnal.gov//store/mc/Run3Summer23BPixNanoAODv12/WZtoL3Nu_TuneCP5_13p6TeV_powheg-pythia8/NANOAODSIM/130X_mcRun3_2023_realistic_postBPix_v6-v2/2530000/aa39623f-60b9-43f3-9172-9ccd5cf19088.root
+root://cmsxrootd.fnal.gov//store/mc/Run3Summer23BPixNanoAODv12/WZtoL3Nu_TuneCP5_13p6TeV_powheg-pythia8/NANOAODSIM/130X_mcRun3_2023_realistic_postBPix_v6-v2/2530000/e8c89d10-e3b6-45ea-b50b-e5cbb1f488db.root
+root://cmsxrootd.fnal.gov//store/mc/Run3Summer23BPixNanoAODv12/WZtoL3Nu_TuneCP5_13p6TeV_powheg-pythia8/NANOAODSIM/130X_mcRun3_2023_realistic_postBPix_v6-v2/2530000/b311eaac-09cc-4fd2-a5bc-b9e582dba0e4.root
+root://cmsxrootd.fnal.gov//store/mc/Run3Summer23BPixNanoAODv12/WZtoL3Nu_TuneCP5_13p6TeV_powheg-pythia8/NANOAODSIM/130X_mcRun3_2023_realistic_postBPix_v6-v2/2530000/7231a1e9-f88a-4c1b-9dc2-ba5ecc7f30c0.root
+root://cmsxrootd.fnal.gov//store/mc/Run3Summer23BPixNanoAODv12/WZtoL3Nu_TuneCP5_13p6TeV_powheg-pythia8/NANOAODSIM/130X_mcRun3_2023_realistic_postBPix_v6-v2/2530000/30998e88-f1ed-4d4a-afd8-d4aa570b7715.root
+root://cmsxrootd.fnal.gov//store/mc/Run3Summer23BPixNanoAODv12/WZtoL3Nu_TuneCP5_13p6TeV_powheg-pythia8/NANOAODSIM/130X_mcRun3_2023_realistic_postBPix_v6-v2/2530000/77223fd9-7a65-459b-9bd1-bbeb4981f240.root
+root://cmsxrootd.fnal.gov//store/mc/Run3Summer23BPixNanoAODv12/WZtoL3Nu_TuneCP5_13p6TeV_powheg-pythia8/NANOAODSIM/130X_mcRun3_2023_realistic_postBPix_v6-v2/2530000/ac225dd5-74aa-4589-a99e-25e29631f38c.root
+root://cmsxrootd.fnal.gov//store/mc/Run3Summer23BPixNanoAODv12/WZtoL3Nu_TuneCP5_13p6TeV_powheg-pythia8/NANOAODSIM/130X_mcRun3_2023_realistic_postBPix_v6-v2/2530000/6e913249-a43b-4d4e-ac93-c8e2715047a5.root
+root://cmsxrootd.fnal.gov//store/mc/Run3Summer23BPixNanoAODv12/WZtoL3Nu_TuneCP5_13p6TeV_powheg-pythia8/NANOAODSIM/130X_mcRun3_2023_realistic_postBPix_v6-v2/2530000/c53882af-79d8-4aff-b07d-f7f3b79d64c6.root
+root://cmsxrootd.fnal.gov//store/mc/Run3Summer23BPixNanoAODv12/WZtoL3Nu_TuneCP5_13p6TeV_powheg-pythia8/NANOAODSIM/130X_mcRun3_2023_realistic_postBPix_v6-v2/2530000/fe15c274-7db3-42e5-8dd3-ab7e9d869303.root
