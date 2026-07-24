@@ -27,7 +27,7 @@ public:
 
   double GetXsec_BKG(const std::string& dataset) const;
   double GetXsec_SMS_code(const std::string& dataset, double MP, unsigned int code, bool Run3) const;
-  double GetXsec_SMS(const std::string& dataset, double MP) const; 
+  double GetXsec_SMS(const std::string& dataset, double MP, bool Run3) const; 
   double GetXsec_Cascades(const std::string& dataset, double MP, bool Run3) const;
   void SetFileTag(const std::string& filetag);
 

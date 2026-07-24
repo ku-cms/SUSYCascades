@@ -1133,6 +1133,7 @@ void ReducedNtuple<Base>::FillOutputTree(TTree* tree, const Systematic& sys, boo
     m_MP = temp_masses.first;
     m_MN1 = temp_masses.second;
     if(1.*m_MN1/m_MP < 0.4) return; // only keep compressed signals
+    if(m_MP > 610.) return; // only keep signals masses with sensitivity
   }
 
   m_HEM_Veto = m_EventFlag_JetInHEM_Pt20;

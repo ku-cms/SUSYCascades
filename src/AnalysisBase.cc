@@ -2078,7 +2078,7 @@ int AnalysisBase<Base>::GetSampleIndex(){
       if(m_HashToIndex.count(hash) == 0){
         m_HashToIndex[hash] = m_Nsample;
         m_IndexToSample[m_Nsample]  = std::string(Form("SMS_%d_%d", MP, MC));
-        m_IndexToXsec[m_Nsample]    = m_XsecTool.GetXsec_SMS(m_DataSet, MP);
+        m_IndexToXsec[m_Nsample]    = m_XsecTool.GetXsec_SMS(m_DataSet, MP, m_IsRun3);
         m_IndexToNevent[m_Nsample]  = m_NeventTool.GetNevent_SMS(m_DataSet, m_FileTag, MP, MC);
         m_IndexToNweight[m_Nsample] = m_NeventTool.GetNweight_SMS(m_DataSet, m_FileTag, MP, MC);
         m_Nsample++;
@@ -4863,11 +4863,13 @@ template <>
 double AnalysisBase<NANORun3>::GetMETTriggerSFWeight(double MET, double HT, int Nele, int Nmu, int updown){
   if(IsData()) return 1.;
   if(Nele > 2) Nele = 2;
+  int year = m_year;
+if(m_year > 2024) year = 2024;  // hack until 2025 SFs ready
   if(IsFastSim())
-    return m_METTriggerTool.Get_EFF_JSON(MET, m_year, Nele, updown)*
-      m_METTriggerTool.Get_SF_JSON(MET, m_year, Nele, updown);
+    return m_METTriggerTool.Get_EFF_JSON(MET, year, Nele, updown)*
+      m_METTriggerTool.Get_SF_JSON(MET, year, Nele, updown);
   else
-    return m_METTriggerTool.Get_SF_JSON(MET, m_year, Nele, updown);
+    return m_METTriggerTool.Get_SF_JSON(MET, year, Nele, updown);
 }
 
 template <>
