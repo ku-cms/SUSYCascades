@@ -27,7 +27,7 @@ std::string LepSFTool_FastSim::GetFlav(int pdg) const {
 
 double LepSFTool_FastSim::Lookup_fs(const std::string& sf_key, double pt, double eta) const {
     auto sf_map = cset_->at(sf_key);
-    return sf_map->evaluate({pt, std::abs(eta), year_});
+    return sf_map->evaluate({pt, std::abs(eta), year_, era_});
 }
 
 // BLP_COL: all qualities

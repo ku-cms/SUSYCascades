@@ -13,7 +13,7 @@ public:
   LepSFTool_FastSim(const std::string& filename = "");
   virtual ~LepSFTool_FastSim();
 
-  //void SetEra(const std::string& era)   { era_  = era;  }
+  void SetEra(const std::string& era)   { era_  = era;  }
   void SetYear(const std::string& year) { year_ = year; }
   void BuildMap(const std::string& filename);
 
@@ -37,7 +37,7 @@ public:
 
 private:
   std::shared_ptr<const correction::CorrectionSet> cset_;
-  //std::string era_  = "";  // must be set via SetEra() before any lookup
+  std::string era_  = "";  // must be set via SetEra() before any lookup
   std::string year_ = "";  // must be set via SetYear() before any lookup
 
   double Lookup_fs(const std::string& sf_key, double pt, double eta) const;

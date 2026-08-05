@@ -269,18 +269,18 @@ void AnalysisBase<Base>::AddLepFolder(const string& lepfold){
     m_LepSFToolFastSim.BuildMap(SF_file_fs);
     m_LepSFToolFastSim.SetYear(std::to_string(m_year));
 
-    if(m_year == 2016)
-      m_LepSFToolCascades.SetEra(m_IsAPV ? "postVFP" : "preVFP");
-    else if(m_year == 2017)
-      m_LepSFToolCascades.SetEra("none");
-    else if(m_year == 2018)
-      m_LepSFToolCascades.SetEra("none");
-    else if(m_year == 2022)
-      m_LepSFToolCascades.SetEra(m_IsEE ? "postEE" : "preEE");
-    else if(m_year == 2023)
-      m_LepSFToolCascades.SetEra(m_IsBPix ? "postBPix" : "preBPix");
-    else if(m_year >= 2024)
-      m_LepSFToolCascades.SetEra("none");
+    // One era string, fed to both tools. LepSFs_FastSim.json became (pt, eta, year, era)
+    // on 2026-08-01 to carry the 2022 pre/post-EE split, so the FastSim tool now needs the
+    // era too -- it previously only got the year. These keys must match the category keys
+    // in BOTH json files exactly.
+    std::string lep_era = "none";
+    if(m_year == 2016)      lep_era = m_IsAPV  ? "postVFP"  : "preVFP";
+    else if(m_year == 2022) lep_era = m_IsEE   ? "postEE"   : "preEE";
+    else if(m_year == 2023) lep_era = m_IsBPix ? "postBPix" : "preBPix";
+    // 2017, 2018, >=2024 keep "none"
+
+    m_LepSFToolCascades.SetEra(lep_era);
+    m_LepSFToolFastSim.SetEra(lep_era);
   //}
 }
 
