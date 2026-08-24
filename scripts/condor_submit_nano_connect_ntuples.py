@@ -98,6 +98,8 @@ def write_sh_single(srcfile,ifile,ofile,logfile,outfile,errfile,dataset,filetag,
     fsrc.write('-tree='+TREE+" ")
     if DO_SMS == 1:
         fsrc.write('--sms ')
+    if DO_LLP == 1:
+        fsrc.write('--llp ')
     if DO_DATA == 1:
         fsrc.write('--data ')
     if SYS == 1 and DO_DATA != 1:
@@ -124,6 +126,7 @@ def write_sh_single(srcfile,ifile,ofile,logfile,outfile,errfile,dataset,filetag,
     fsrc.write('-metfile='+METFILE+" ")
     fsrc.write('-prefirefile='+PREFIREFILE+" ")
     fsrc.write('-xsjsonfile='+XSJSONFILE+" ")
+    fsrc.write('-xscsvfile='+XSCSVFILE+" ")
     fsrc.write('-split=1,'+str(n)+'\n')
 
     outlog = outfile+".out"
@@ -171,6 +174,8 @@ def write_sh(srcfile,ifile,ofile,logfile,outfile,errfile,dataset,filetag,NAME):
     fsrc.write('-tree='+TREE+" ")
     if DO_SMS == 1:
         fsrc.write('--sms ')
+    if DO_LLP == 1:
+        fsrc.write('--llp ')
     if DO_DATA == 1:
         fsrc.write('--data ')
     if SYS == 1 and DO_DATA != 1:
@@ -197,6 +202,7 @@ def write_sh(srcfile,ifile,ofile,logfile,outfile,errfile,dataset,filetag,NAME):
     fsrc.write('-metfile='+METFILE+" ")
     fsrc.write('-prefirefile='+PREFIREFILE+" ")
     fsrc.write('-xsjsonfile='+XSJSONFILE+" ")
+    fsrc.write('-xscsvfile='+XSCSVFILE+" ")
     splitstring = '-split=$$([$(SplitStep)+1]),$(SplitTotal)\n'
     fsrc.write(splitstring)
 
@@ -244,6 +250,7 @@ if __name__ == "__main__":
 
     argv_pos     = 1
     DO_SMS       = 0
+    DO_LLP       = 0
     DO_CASCADES  = 0
     DO_PRIVATEMC = 0
     DO_DATA      = 0
@@ -275,6 +282,9 @@ if __name__ == "__main__":
         argv_pos += 2
     if '--sms' in sys.argv:
         DO_SMS = 1
+        argv_pos += 1
+    if '--llp' in sys.argv:
+        DO_LLP = 1
         argv_pos += 1
     if '--cascades' in sys.argv:
         DO_CASCADES = 1
@@ -336,6 +346,9 @@ if __name__ == "__main__":
 
     if DO_SMS:
         print (" --- Processing SMS", flush=True)
+
+    if DO_LLP:
+        print (" --- Processing LLP", flush=True)
 
     if DO_CASCADES:
         print (" --- Processing Cascades", flush=True)
@@ -440,6 +453,13 @@ if __name__ == "__main__":
             print("making xs json file", flush=True)
         os.system(f"xrdcp -s root://cmseos.fnal.gov//store/user/z374f439/XSectionJSONs/{XSJSONFILENAME} {config}/XS_jsonfile.json")
         XSJSONFILE = f"./config/XS_jsonfile.json"
+
+        # copy xs csv file (for higgsinos)
+        XSCSVFILENAME = 'csv/Higgsino_XSec/results.csv'
+        if VERBOSE:
+            print("copying xs csv file")
+        os.system("cp -r "+XSCSVFILENAME+" "+config+".")
+        XSCSVFILE = f"./config/results.csv"
 
         # copy PU root files
         if VERBOSE:

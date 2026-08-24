@@ -29,7 +29,7 @@ def process_DASCheck_event_count(input_dir, working_dir, output_dir, dryrun, fil
                 firstsubmitFile = sorted(submitFiles)[0] if submitFiles else None
                 with open(os.path.join(f'{EC_dir}/src/',firstsubmitFile)) as f:
                     for line in f:
-                        if '--private' in line:
+                        if '--private' in line or '--llp' in line:
                             command += " -w -c"
                             break
                 os.makedirs("DASCheck_logs/",exist_ok=True)

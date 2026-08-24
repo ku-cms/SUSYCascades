@@ -52,12 +52,14 @@ int main(int argc, char* argv[]) {
   char METTRIGFILE[400];
   char PREFIREFILE[400];
   char XSJSONFILE[400];
+  char XSCSVFILE[400];
 
   bool DO_FILE = false;
   bool DO_LIST = false;
   bool DO_FOLDER = false;
   bool DO_TREE = false;
   bool DO_SMS = false;
+  bool DO_LLP = false;
   bool DO_CASCADES = false;
   bool DO_PRIVATEMC = false;
   bool DO_JSON = false;
@@ -123,8 +125,10 @@ int main(int argc, char* argv[]) {
     if (strncmp(argv[i],"-metfile",8)==0)   sscanf(argv[i],"-metfile=%s", METTRIGFILE);
     if (strncmp(argv[i],"-prefirefile",12)==0)   sscanf(argv[i],"-prefirefile=%s", PREFIREFILE);
     if (strncmp(argv[i],"-xsjsonfile",11)==0)   sscanf(argv[i],"-xsjsonfile=%s", XSJSONFILE);
+    if (strncmp(argv[i],"-xscsvfile",10)==0)   sscanf(argv[i],"-xscsvfile=%s", XSCSVFILE);
     
     if (strncmp(argv[i],"--sms",5)==0)  DO_SMS = true;
+    if (strncmp(argv[i],"--llp",5)==0)  DO_LLP = true;
     if (strncmp(argv[i],"--data",6)==0)  IS_DATA = true;
     if (strncmp(argv[i],"--fastsim",9)==0)  IS_FASTSIM = true;
     if (strncmp(argv[i],"--cascades",10)==0)  DO_CASCADES = true;
@@ -279,6 +283,7 @@ int main(int argc, char* argv[]) {
   NDAS = N0 - N1;
 
   if(DO_SMS) std::visit([](auto& nt) { nt->DoSMS(); }, ntuple);
+  if(DO_LLP) std::visit([](auto& nt) { nt->DoLLP(); }, ntuple);
   if(IS_DATA) std::visit([](auto& nt) { nt->DoData(); }, ntuple);
   if(IS_FASTSIM) std::visit([](auto& nt) { nt->DoFastSim(); }, ntuple);
   if(DO_CASCADES) std::visit([](auto& nt) { nt->DoCascades(); }, ntuple);
@@ -297,6 +302,7 @@ int main(int argc, char* argv[]) {
   std::visit([&](auto& nt) { nt->AddMETTriggerFile(string(METTRIGFILE)); }, ntuple);
   std::visit([&](auto& nt) { nt->AddPrefireFile(string(PREFIREFILE)); }, ntuple);
   std::visit([&](auto& nt) { nt->AddXSecJSON(string(XSJSONFILE)); }, ntuple);
+  std::visit([&](auto& nt) { nt->AddHiggsinoXsecFile(string(XSCSVFILE)); }, ntuple);
   #ifdef _CMSSW_
   if(!DO_SMS && !IS_DATA && !DO_CASCADES)
     std::visit([](auto& nt) { nt->AddLHAPDF(); }, ntuple);

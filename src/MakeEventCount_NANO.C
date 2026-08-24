@@ -44,6 +44,7 @@ int main(int argc, char* argv[]) {
   bool DO_SMS = false;
   bool DO_CASCADES = false;
   bool DO_PRIVATEMC = false; // Private production (DAS info does not exist)
+  bool DO_LLP = false;
 
   if ( argc < 2 ){
     cout << "Error at Input: please specify an input file name, a list of input ROOT files and/or a folder path"; 
@@ -76,6 +77,7 @@ int main(int argc, char* argv[]) {
     if (strncmp(argv[i],"-filetag",8)==0)   sscanf(argv[i],"-filetag=%s", FileTag);
     if (strncmp(argv[i],"--sms",5)==0)  DO_SMS = true;
     if (strncmp(argv[i],"--cascades",10)==0)  DO_CASCADES = true;
+    if (strncmp(argv[i],"--llp",5)==0)  DO_LLP = true;
     if (strncmp(argv[i],"--privatemc",11)==0)  DO_PRIVATEMC = true;
     if (strncmp(argv[i],"--private",9)==0)  DO_PRIVATEMC = true;
     if (strncmp(argv[i],"-githash",8)==0)  sscanf(argv[i],"-githash=%s", gitHash);
@@ -186,7 +188,6 @@ int main(int argc, char* argv[]) {
       NDAS += eventTool.EventsInDAS(filenames[i]);
     DAS_datasetname = eventTool.Get_DASdatasetname(filenames[0]);
     DAS_filename = eventTool.Get_DASfilename(filenames[0]);
-    if(NDAS == 0) return 1; // will try to resubmit job
     cout << "Added DAS info!" << endl;
   }
   bool passed_DAS = true;
@@ -210,6 +211,7 @@ int main(int argc, char* argv[]) {
   std::map<std::pair<int,std::pair<int,int>>,double > mapNevent;
   std::map<std::pair<int,std::pair<int,int>>,double > mapNweight;
   int maxNGEN = 0;
+  double Nevent_processed = 0.; // ALL events read from the tree, regardless of prompt selection
 
   if(!status1 || !status2 || !passed_DAS){
     delete chain;
@@ -218,6 +220,8 @@ int main(int argc, char* argv[]) {
       chain->Add(filenames[i].c_str());
     NEVENT = chain->GetEntries();
     if(NEVENT == 0) return 1;
+    std::vector<LLPBranchInfo> llpBranches;
+    if (DO_LLP) InitializeLLPBranches(chain, llpBranches);
     chain->SetBranchAddress("genWeight", &genWeight, &b_genWeight);
     chain->SetBranchAddress("luminosityBlock", &luminosityBlock, &b_luminosityBlock);
     
@@ -235,6 +239,11 @@ int main(int argc, char* argv[]) {
     chain->SetBranchStatus("GenPart_mass", 1);
     chain->SetBranchStatus("GenPart_pdgId", 1);
 
+    if (DO_LLP) {
+        for (auto& info : llpBranches)
+            chain->SetBranchStatus(info.name.c_str(), 1);
+    }
+
     for(int e = 0; e < NEVENT; e++){
       int mymod = NEVENT/10;
       if(mymod < 1)
@@ -243,6 +252,9 @@ int main(int argc, char* argv[]) {
       chain->GetEntry(e);
       if(e%mymod == 0)
         cout << " event = " << e << " : " << NEVENT << endl;
+
+      Nevent_processed += 1.;
+      if(DO_LLP) if (!PassPromptLLPSelection(llpBranches)) continue;
 
       Nevent += 1.;
       Nweight += genWeight;
@@ -270,7 +282,7 @@ int main(int argc, char* argv[]) {
       for(int i = 0; i < Ngen; i++){
         PDGID = fabs(GenPart_pdgId[i]);
         if(PDGID > 1000000 && PDGID < 3000000){
-          int mass = int(GenPart_mass[i]+0.5);
+          int mass = QuantizeMass(GenPart_mass[i]);
           if(PDGID == 1000022)
             MC = mass;
           else
@@ -302,7 +314,7 @@ int main(int argc, char* argv[]) {
       for(int i = 0; i < Ngen; i++){
         PDGID = abs(GenPart_pdgId[i]);
         if(PDGID > 1000000 && PDGID < 3000000){
-          int mass = int(GenPart_mass[i]+0.5);
+          int mass = QuantizeMass(GenPart_mass[i]);
           if(PDGID == 1000022)
             MC = mass;
           else
@@ -339,26 +351,28 @@ int main(int argc, char* argv[]) {
   tout->Branch("MP", &MP);
   tout->Branch("MC", &MC);
   tout->Branch("Code", &Code);
-  if(DO_SMS){
+  if(DO_SMS || DO_LLP){
     int Nmass = masses.size();
     for(int i = 0; i < Nmass; i++){
         Nevent_tot += mapNevent[masses[i]];
     }
   }
   else Nevent_tot = Nevent;
+  if(Nevent_processed == 0.) Nevent_processed = Nevent;
   passed_DAS = true;
   if(!DO_PRIVATEMC){
-    if(NDAS != Nevent_tot){ 
+    if(NDAS != Nevent_processed){ 
       std::cout << "JOB FAILED DAS CHECK!" << std::endl;
       std::cout << "  NDAS: " << NDAS << std::endl;
-      std::cout << "  Nevent_tot: " << Nevent_tot << std::endl;
+      std::cout << "  Nevent_processed: " << Nevent_processed << std::endl;
+      if(DO_LLP) std::cout << "  Nevent_tot (prompt only, sum over mass points): " << Nevent_tot << std::endl;
       passed_DAS = false;
     } else {
       std::cout << "JOB PASSED DAS CHECK!" << std::endl;
     }
   }
 
-  if(DO_SMS){
+  if(DO_SMS || DO_LLP){
     int Nmass = masses.size();
     for(int i = 0; i < Nmass; i++){
       Nweight = mapNweight[masses[i]];

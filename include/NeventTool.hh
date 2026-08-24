@@ -195,4 +195,101 @@ inline Long64_t tryGetEntriesSubproc(TChain* chain, int timeoutSeconds = 60)
     return result;
 }
 
+// Extra helpers for LLPs
+
+#include <regex>
+#include <algorithm>
+
+struct LLPBranchInfo {
+  std::string name;
+  bool value;
+  int MP;
+  int MC;
+  int ctau;
+};
+
+inline bool ParseLLPBranchName(const std::string& name,
+                        int& MP,
+                        int& MC,
+                        int& ctau)
+{
+    // Example:
+    // GenModel_SMS_N2C1_higgsino_mN2250_mN1249p20_ctau0p00
+
+    static const std::regex re(
+        R"(GenModel_.*_higgsino_mN2([0-9]+(?:p[0-9]+)?)_mN1([0-9]+(?:p[0-9]+)?)_ctau([0-9]+(?:p[0-9]+)?))"
+    );
+
+    std::smatch match;
+    if (!std::regex_match(name, match, re))
+        return false;
+
+    auto convert = [](std::string s) -> int {
+        std::replace(s.begin(), s.end(), 'p', '.');
+        return std::stoi(s);
+    };
+
+    MP  = convert(match[1]);
+    MC  = convert(match[2]);
+    ctau = convert(match[3]);
+
+    return true;
+}
+
+inline bool InitializeLLPBranches(TTree* tree,
+                           std::vector<LLPBranchInfo>& branches)
+{
+    branches.clear();
+
+    if (!tree)
+        return false;
+
+    TObjArray* branchList = tree->GetListOfBranches();
+    branches.reserve(branchList->GetEntries());
+
+    for (int i = 0; i < branchList->GetEntries(); ++i) {
+        auto* branch = dynamic_cast<TBranch*>(branchList->At(i));
+        if (!branch)
+            continue;
+        LLPBranchInfo info;
+        if (!ParseLLPBranchName(branch->GetName(),info.MP,info.MC,info.ctau))
+            continue;
+        // Only keep prompt samples
+        if (info.ctau != 0.f)
+            continue;
+
+        info.name = branch->GetName();
+        info.value = false;
+        branches.push_back(info);
+        tree->SetBranchAddress(branches.back().name.c_str(), &branches.back().value);
+    }
+
+    return !branches.empty();
+}
+inline bool PassPromptLLPSelection(
+    const std::vector<LLPBranchInfo>& branches)
+{
+    for (const auto& info : branches) {
+        if (info.value)
+            return true;
+    }
+    return false;
+}
+// Packing/unpacking precision: 1 unit = 0.01 GeV (i.e. values are stored as centi-GeV).
+// Chosen to safely represent the 0.01 GeV rounding grid (and finer, if ever needed).
+static constexpr int kMassQuantumPerGeV = 100;
+
+// Pack: physics float (GeV) -> bookkeeping int, rounded to the nearest 0.01 GeV.
+inline int QuantizeMass(float massGeV)
+{
+    // Round to nearest 0.01 GeV first, then scale to an exact integer.
+    float snapped = std::round(massGeV * 100.f) / 100.f;
+    return static_cast<int>(std::lround(snapped * kMassQuantumPerGeV));
+}
+
+// Unpack: bookkeeping int -> physics float (GeV).
+inline float UnquantizeMass(int massInt)
+{
+    return static_cast<float>(massInt) / kMassQuantumPerGeV;
+}
 #endif

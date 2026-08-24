@@ -78,10 +78,12 @@ public:
   void AddMETTriggerFile(const string& csvfile);
   void AddPrefireFile(const string& prefirefile);
   void AddXSecJSON(const string& XSjsonfile);
+  void AddHiggsinoXsecFile(const string& higgsino_xsec_file);
   #ifdef _CMSSW_
   void AddLHAPDF();
   #endif
   void DoSMS();
+  void DoLLP();
   void DoData();
   void DoFastSim();
   void DoPrivateMC();
@@ -160,7 +162,7 @@ public:
   
   void MomTensorCalc(vector<TLorentzVector>& input, vector<double>& eigenvalues, double pow = 1., bool threeD = true);
 
-  virtual std::pair<int,int> GetSUSYMasses();
+  virtual std::pair<float,float> GetSUSYMasses();
   virtual int GetGenMass(const int& u_PDGID);
   virtual int GetGenSUSYNBosons(const int& u_PDGID);
 
@@ -172,6 +174,7 @@ public:
   virtual vector<int> GetLSPParents();
 
   bool IsSMS(){ return m_IsSMS; }
+  bool IsLLP(){ return m_IsLLP; }
   bool IsData(){ return m_IsData; }
   bool IsPrivateMC(){ return m_IsPrivateMC; }
   bool IsCascades(){ return m_IsCascades; }
@@ -183,6 +186,7 @@ public:
   
 protected:
   bool m_IsSMS;
+  bool m_IsLLP;
   bool m_IsData;
   bool m_IsFastSim;
   bool m_IsPrivateMC;

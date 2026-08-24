@@ -20,6 +20,7 @@ AnalysisBase<Base>::AnalysisBase(TTree* tree)
   m_Nsample = 0;
   m_SampleIndex = 0;
   m_IsSMS = false;
+  m_IsLLP = false;
   m_IsData = false;
   m_IsFastSim = false;
 
@@ -85,10 +86,14 @@ void AnalysisBase<Base>::DoSMS(){
 }
 
 template <class Base>
+void AnalysisBase<Base>::DoLLP(){
+  m_IsLLP = true;
+  m_IsData = false;
+}
+
+template <class Base>
 void AnalysisBase<Base>::DoData(){
   m_IsData = true;
-  m_IsFastSim = false;
-  m_IsSMS = false;
 }
 
 template <class Base>
@@ -171,6 +176,7 @@ void AnalysisBase<Base>::AddLabels(const string& dataset, const string& filetag,
   if(m_FileTag.find("130X") != std::string::npos) m_IsRun3 = true;
   if(m_FileTag.find("Cascades") != std::string::npos) DoCascades();
   if(m_FileTag.find("SMS") != std::string::npos) DoSMS();
+  if(m_FileTag.find("LLP") != std::string::npos) DoLLP();
   if(m_FileTag.find("Data") != std::string::npos) DoData();
   m_XsecTool.SetFileTag(filetag);
   std::string DAS_filename_lower = DAS_filename;
@@ -179,6 +185,11 @@ void AnalysisBase<Base>::AddLabels(const string& dataset, const string& filetag,
                DAS_filename_lower.find("nanoaodv15") != std::string::npos ||
                m_year >= 2024
               ); 
+}
+
+template <class Base>
+void AnalysisBase<Base>::AddHiggsinoXsecFile(const string& higgsino_xsec_file){
+  m_XsecTool.LoadHiggsinoXsecCSV(higgsino_xsec_file);
 }
 
 template <class Base>
@@ -281,6 +292,7 @@ void AnalysisBase<Base>::AddLepFolder(const string& lepfold){
 
     m_LepSFToolCascades.SetEra(lep_era);
     m_LepSFToolFastSim.SetEra(lep_era);
+
   //}
 }
 
@@ -736,8 +748,23 @@ template <class Base>
 std::map<std::string, HistSet> AnalysisBase<Base>::BuildHistograms(ROOT::RDF::RNode df_range, std::string sample_name) {
   const auto& bins = GetBtagPtBins();
   const int nbins  = static_cast<int>(bins.size()) - 1;
+  // for LLPs
+  ROOT::RDF::RNode df_prompt = df_range;
+  if (m_IsLLP) {
+      std::vector<LLPBranchInfo> llpBranches;
+      InitializeLLPBranches(Base::fChain, llpBranches); // discovers branch names + parses ctau
+      if (!llpBranches.empty()) {
+          std::string expr;
+          for (const auto& info : llpBranches) {
+              if (!expr.empty()) expr += " || ";
+              expr += info.name;
+          }
+          df_prompt = df_range.Filter(expr, "PromptLLPSelection");
+      }
+  }
+
   // --- Assign per-event sample label ---
-  auto df_labeled = df_range.Define("sample",
+  auto df_labeled = df_prompt.Define("sample",
     [this, sample_name](const ROOT::VecOps::RVec<int>&   pdgId,
            const ROOT::VecOps::RVec<float>& mass) -> std::string {
       int  MP       = 0;
@@ -749,7 +776,7 @@ std::map<std::string, HistSet> AnalysisBase<Base>::BuildHistograms(ROOT::RDF::RN
       for (size_t i = 0; i < pdgId.size(); i++) {
         const int id = std::abs(pdgId[i]);
         if (id > 1000000 && id < 3000000) {
-          const int m = static_cast<int>(mass[i] + 0.5f);
+          const int m = static_cast<int>(QuantizeMass(mass[i]));
           if (id == 1000022) MC = m;
           else if (m > MP)   MP = m;
         }
@@ -1338,6 +1365,7 @@ std::string AnalysisBase<Base>::find_clib_file(const std::string& fold, const st
     string filetag = m_FileTag;
     clip_string(filetag, "_Data");
     clip_string(filetag, "_SMS");
+    clip_string(filetag, "_LLP");
     clip_string(filetag, "_Cascades");
     filetag = normalize_filetag(filetag);
     return _find_clib_file(fold, filename, filetag);
@@ -1736,7 +1764,7 @@ ParticleList AnalysisBase<Base>::GetGenSparticles(){
           p.SetGenMomIndex(mom);
         }
         p.SetPtEtaPhiM(this->GenPart_pt[i], this->GenPart_eta[i],
-          	     this->GenPart_phi[i], max(float(0.),this->GenPart_mass[i]));
+          	     this->GenPart_phi[i], max(int(0.),QuantizeMass(this->GenPart_mass[i])));
         list.push_back(p);
       }
     }
@@ -1745,19 +1773,19 @@ ParticleList AnalysisBase<Base>::GetGenSparticles(){
 }
 
 template <class Base>
-std::pair<int,int> AnalysisBase<Base>::GetSUSYMasses(){
+std::pair<float,float> AnalysisBase<Base>::GetSUSYMasses(){
   if(!IsData()){
       if constexpr (
         std::is_member_object_pointer<decltype(&Base::nGenPart)>::value &&
         std::is_member_object_pointer<decltype(&Base::GenPart_pdgId)>::value &&
         std::is_member_object_pointer<decltype(&Base::GenPart_mass)>::value ){
-      int MP = 0;
-      int MC = 0;
+      float MP = 0;
+      float MC = 0;
       int Ngen = this->nGenPart;
       for(int i = 0; i < Ngen; i++){
         int PDGID = abs(this->GenPart_pdgId[i]);
         if(PDGID > 1000000 && PDGID < 3000000){
-          int mass = int(this->GenPart_mass[i]+0.5);
+          float mass = this->GenPart_mass[i];
           if(PDGID == 1000022)
             MC = mass;
           else
@@ -1765,10 +1793,10 @@ std::pair<int,int> AnalysisBase<Base>::GetSUSYMasses(){
               MP = mass;
         }
       }
-    return std::pair<int,int>(MP,MC);
+    return std::pair<float,float>(MP,MC);
     } // if !constexpr
   } // if(!IsData)
-  return std::pair<int,int>(0,0);
+  return std::pair<float,float>(0.,0.);
 }
 
 template <class Base>
@@ -1780,7 +1808,7 @@ int AnalysisBase<Base>::GetGenMass(const int& u_PDGID){
         std::is_member_object_pointer<decltype(&Base::GenPart_mass)>::value )
       for(int i = 0; i < int(this->nGenPart); i++)
         if(abs(this->GenPart_pdgId[i]) == u_PDGID)
-          return int(this->GenPart_mass[i]+0.5);
+          return QuantizeMass(this->GenPart_mass[i]);
   return 0;
 }
 
@@ -2021,7 +2049,7 @@ int AnalysisBase<Base>::GetSampleIndex(){
     for(int i = 0; i < Ngen; i++){
       PDGID = fabs(this->GenPart_pdgId[i]);
       if(PDGID > 1000000 && PDGID < 3000000){
-        int mass = int(this->GenPart_mass[i]+0.5);
+        int mass = QuantizeMass(this->GenPart_mass[i]);
         if(PDGID == 1000022)
           MC = mass;
         else
@@ -2051,14 +2079,13 @@ int AnalysisBase<Base>::GetSampleIndex(){
       else code += 200;
     }
     
-    //int hash = 100000*MP + MC;
     long long hash = ((long long)MP << 28) | ((long long)MC << 14) | code;
     if(m_IsCascades){
       if(m_IsSMS){ // should not be needed
         if(m_HashToIndex.count(hash) == 0){
           m_HashToIndex[hash] = m_Nsample;
           m_IndexToSample[m_Nsample]  = std::string(Form("SMS_%d_%d_%d", MP, MC, code));
-          m_IndexToXsec[m_Nsample]    = m_XsecTool.GetXsec_SMS_code(m_DataSet, MP, code, m_IsRun3);
+          m_IndexToXsec[m_Nsample]    = m_XsecTool.GetXsec_SMS_code(m_DataSet, UnquantizeMass(MP), code, m_IsRun3);
           m_IndexToNevent[m_Nsample]  = m_NeventTool.GetNevent_SMS_code(m_DataSet, m_FileTag, MP, MC, code);
           m_IndexToNweight[m_Nsample] = m_NeventTool.GetNweight_SMS_code(m_DataSet, m_FileTag, MP, MC, code);
           m_Nsample++;
@@ -2067,18 +2094,28 @@ int AnalysisBase<Base>::GetSampleIndex(){
       } else {
         if(m_Nsample == 0){
           m_IndexToSample[0]  = "KUAnalysis";
-          m_IndexToXsec[0]    = m_XsecTool.GetXsec_Cascades(m_DataSet, MP, m_IsRun3);
+          m_IndexToXsec[0]    = m_XsecTool.GetXsec_Cascades(m_DataSet, UnquantizeMass(MP), m_IsRun3);
           m_IndexToNevent[0]  = m_NeventTool.GetNevent_Cascades(m_DataSet, m_FileTag);
           m_IndexToNweight[0] = m_NeventTool.GetNweight_Cascades(m_DataSet, m_FileTag);
           m_Nsample++;
         }
         return 0.;
       }
-    } else {
+  } else if (m_DataSet.find("Higgsino") != std::string::npos) {
       if(m_HashToIndex.count(hash) == 0){
         m_HashToIndex[hash] = m_Nsample;
         m_IndexToSample[m_Nsample]  = std::string(Form("SMS_%d_%d", MP, MC));
-        m_IndexToXsec[m_Nsample]    = m_XsecTool.GetXsec_SMS(m_DataSet, MP, m_IsRun3);
+        m_IndexToXsec[m_Nsample]    = m_XsecTool.GetXsec_Higgsino(m_DataSet, MC, MP, m_IsRun3);
+        m_IndexToNevent[m_Nsample]  = m_NeventTool.GetNevent_SMS(m_DataSet, m_FileTag, MP, MC);
+        m_IndexToNweight[m_Nsample] = m_NeventTool.GetNweight_SMS(m_DataSet, m_FileTag, MP, MC);
+        m_Nsample++;
+      }
+      return m_HashToIndex[hash];  
+  } else {
+      if(m_HashToIndex.count(hash) == 0){
+        m_HashToIndex[hash] = m_Nsample;
+        m_IndexToSample[m_Nsample]  = std::string(Form("SMS_%d_%d", MP, MC));
+        m_IndexToXsec[m_Nsample]    = m_XsecTool.GetXsec_SMS(m_DataSet, UnquantizeMass(MP), m_IsRun3);
         m_IndexToNevent[m_Nsample]  = m_NeventTool.GetNevent_SMS(m_DataSet, m_FileTag, MP, MC);
         m_IndexToNweight[m_Nsample] = m_NeventTool.GetNweight_SMS(m_DataSet, m_FileTag, MP, MC);
         m_Nsample++;

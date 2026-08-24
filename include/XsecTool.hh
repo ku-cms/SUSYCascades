@@ -7,6 +7,7 @@
 #include <vector>
 #include <fstream>
 #include <regex>
+#include <sstream>
 #include <nlohmann/json.hpp> // JSON lib
 
 using json = nlohmann::json;
@@ -34,6 +35,8 @@ public:
   static std::map<std::string,double> m_Label2Xsec_BKG;
   static std::map<std::string,double> InitMap_Xsec_BKG();
   void UpdateXsecFromJSON(const std::string& json_file);
+  void LoadHiggsinoXsecCSV(const std::string& filepath);
+  double GetXsec_Higgsino(const std::string& dataset, int MN1_q, int MN2_q, bool Run3) const;
 
 private:
 
@@ -47,6 +50,7 @@ private:
   static std::map<std::string,std::vector<double> > InitMap_XsecUnc_SMS();
   static std::map<std::string,double> m_Label2Xsec_Cascades;
   static std::map<std::string,double> InitMap_Xsec_Cascades();
+  std::map<std::string, std::map<std::pair<int,int>, double>> m_Label2Xsec_Higgsino;
   json m_jsonData;
   // For resolving conflicts from inputted json file
   std::string m_FileTag;
@@ -54,10 +58,8 @@ private:
   bool IsMCMMatchFileTag(const std::string& MCM);
   // remove this when all Bin style 2024 xsecs are available
   std::string NormalizeProcessName(const std::string& process_name) const;
+  static constexpr int kMassQuantumPerGeV = 100;
   
 };
 
 #endif
-
-
-

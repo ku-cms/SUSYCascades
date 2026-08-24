@@ -178,6 +178,126 @@ double XsecTool::GetXsec_Cascades(const std::string& dataset, double MP, bool Ru
   return 0.;
 }
 
+void XsecTool::LoadHiggsinoXsecCSV(const std::string& filepath){
+  std::ifstream in(filepath);
+  if(!in.is_open()){
+    std::cerr << "XsecTool::LoadHiggsinoXsecCSV: could not open " << filepath << std::endl;
+    return;
+  }
+
+  std::string line;
+  std::getline(in, line); // skip header
+
+  // model,id,MC1,MN1,MN2,point_id,run_key,runtime_s,returncode,
+  // xsec_pb,xsec_err_pb,order,xsec_NNLO_NNLL_pb,xsec_NNLO_NNLL_err_pb,status,log
+  constexpr int kCol_Model      = 0;
+  constexpr int kCol_MN1        = 3;
+  constexpr int kCol_MN2        = 4;
+  constexpr int kCol_XsecNNLOPb = 12;
+  constexpr int kCol_Status     = 14;
+  constexpr double kPbToFb = 1000.;
+
+  std::map<std::string, std::map<std::pair<int,int>, double>> tempPlus, tempMinus;
+
+  while(std::getline(in, line)){
+    if(line.empty()) continue;
+
+    std::vector<std::string> tok;
+    std::stringstream ss(line);
+    std::string field;
+    while(std::getline(ss, field, ',')) tok.push_back(field);
+    if(tok.size() <= (size_t)kCol_Status) continue;
+
+    const std::string& model  = tok[kCol_Model];
+    const std::string& status = tok[kCol_Status];
+    if(status != "ok") continue;
+
+    double MN1_gev = std::stod(tok[kCol_MN1]);
+    double MN2_gev = std::stod(tok[kCol_MN2]);
+    double xsec_fb = std::stod(tok[kCol_XsecNNLOPb]) * kPbToFb;
+
+    // split off energy tag
+    bool Run3 = false;
+    std::string base = model;
+    if(base.size() > 5 && base.compare(base.size()-5, 5, "_13p6") == 0){
+      Run3 = true;
+      base = base.substr(0, base.size()-5);
+    } else if(base.size() > 3 && base.compare(base.size()-3, 3, "_13") == 0){
+      Run3 = false;
+      base = base.substr(0, base.size()-3);
+    } else {
+      continue; // unrecognized energy tag
+    }
+
+    const std::string prefix = "higgsino_";
+    if(base.compare(0, prefix.size(), prefix) != 0) continue;
+    std::string channel = base.substr(prefix.size()); // N2C1plus, N2C1minus, N2N1, C1C1
+
+    int MN1_q = static_cast<int>(std::lround(MN1_gev * kMassQuantumPerGeV));
+    int MN2_q = static_cast<int>(std::lround(MN2_gev * kMassQuantumPerGeV));
+    auto key = std::make_pair(MN1_q, MN2_q);
+
+    std::string label;
+    if(channel == "N2C1plus"){
+      label = "C1N2_higgsino";
+      if(Run3) label += "_Run3";
+      tempPlus[label][key] = xsec_fb;
+    }
+    else if(channel == "N2C1minus"){
+      label = "C1N2_higgsino";
+      if(Run3) label += "_Run3";
+      tempMinus[label][key] = xsec_fb;
+    }
+    else if(channel == "N2N1"){
+      label = "N1N2_higgsino";
+      if(Run3) label += "_Run3";
+      m_Label2Xsec_Higgsino[label][key] = xsec_fb;
+    }
+    else if(channel == "C1C1"){
+      label = "C1C1_higgsino";
+      if(Run3) label += "_Run3";
+      m_Label2Xsec_Higgsino[label][key] = xsec_fb;
+    }
+    // else: unrecognized channel, skip
+  }
+
+  // N2C1 = sum of plus and minus at each (MN1,MN2); grids match exactly
+  for(const auto& labelGrid : tempPlus)
+    for(const auto& pt : labelGrid.second)
+      m_Label2Xsec_Higgsino[labelGrid.first][pt.first] += pt.second;
+
+  for(const auto& labelGrid : tempMinus)
+    for(const auto& pt : labelGrid.second)
+      m_Label2Xsec_Higgsino[labelGrid.first][pt.first] += pt.second;
+}
+
+double XsecTool::GetXsec_Higgsino(const std::string& dataset, int MN1_q, int MN2_q, bool Run3) const {
+  std::string label = "";
+  double BR = 1.;
+
+  if(dataset.find("N2C1") != std::string::npos || dataset.find("C1N2") != std::string::npos)
+    label = "C1N2_higgsino";
+  else if(dataset.find("N2N1") != std::string::npos || dataset.find("N1N2") != std::string::npos)
+    label = "N1N2_higgsino";
+  else
+    return 0.;
+
+  if(dataset.find("ZToLL") != std::string::npos || dataset.find("ZTo2L") != std::string::npos)
+    BR = 0.10099;
+
+  if(Run3) label += "_Run3";
+
+  if(m_Label2Xsec_Higgsino.count(label) == 0)
+    return 0.;
+
+  const auto& grid = m_Label2Xsec_Higgsino.at(label);
+  auto it = grid.find({MN1_q, MN2_q});
+  if(it == grid.end())
+    return 0.;
+
+  return BR * it->second;
+}
+
 std::map<std::string,double> XsecTool::InitMap_Xsec_BKG(){
 // NOTE: SIGNAL XSECS SHOULD BE STORED IN fb   BKG XSECS SHOULD BE STORED IN pb (CONVERTED TO fb ABOVE IN GetXsec_BKG())
   std::map<std::string,double> Label2Xsec;
@@ -365,7 +485,6 @@ std::map<std::string,double> XsecTool::InitMap_Xsec_BKG(){
   Label2Xsec["WJetsToLNu_Pt-400To600_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8"] = 2.635;
   Label2Xsec["WJetsToLNu_Pt-50To100_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8"] = 3046.0;
   Label2Xsec["WJetsToLNu_Pt-600ToInf_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8"] = 0.4102;
-  
 
   Label2Xsec["WW_TuneCP5_13TeV-pythia8"] = 118.8;
   Label2Xsec["WWTo2L2Nu_NNPDF31_TuneCP5_13TeV-powheg-pythia8"] = 12.719;
@@ -657,8 +776,6 @@ std::map<std::string,int> XsecTool::InitMap_N_SMS(){
   N_SMS["C1C1_wino_Run3"] = 40;
   N_SMS["C1C1_hino_Run3"] = 38;
   N_SMS["C1N2_wino_Run3"] = 57;
-  N_SMS["N1N2_hino_Run3"] = 38;
-  N_SMS["Higgsino-N2N1_Run3"] = 28;
   N_SMS["SlepSlep_left_Run3"] = 22;
   N_SMS["SlepSlep_right_Run3"] = 22;
 
@@ -2127,103 +2244,46 @@ std::map<std::string,std::vector<double> > XsecTool::InitMap_Mass_SMS(){
   Label2Mass["C1C1_wino_Run3"].push_back(2000.0);
 
   Label2Mass["C1N2_wino_Run3"] = std::vector<double>();
+  Label2Mass["C1N2_wino_Run3"].push_back(90);
   Label2Mass["C1N2_wino_Run3"].push_back(100);
-  Label2Mass["C1N2_wino_Run3"].push_back(125);
   Label2Mass["C1N2_wino_Run3"].push_back(150);
-  Label2Mass["C1N2_wino_Run3"].push_back(175);
   Label2Mass["C1N2_wino_Run3"].push_back(200);
-  Label2Mass["C1N2_wino_Run3"].push_back(225);
   Label2Mass["C1N2_wino_Run3"].push_back(250);
-  Label2Mass["C1N2_wino_Run3"].push_back(275);
   Label2Mass["C1N2_wino_Run3"].push_back(300);
-  Label2Mass["C1N2_wino_Run3"].push_back(325);
   Label2Mass["C1N2_wino_Run3"].push_back(350);
-  Label2Mass["C1N2_wino_Run3"].push_back(375);
   Label2Mass["C1N2_wino_Run3"].push_back(400);
-  Label2Mass["C1N2_wino_Run3"].push_back(425);
   Label2Mass["C1N2_wino_Run3"].push_back(450);
-  Label2Mass["C1N2_wino_Run3"].push_back(475);
   Label2Mass["C1N2_wino_Run3"].push_back(500);
-  Label2Mass["C1N2_wino_Run3"].push_back(525);
   Label2Mass["C1N2_wino_Run3"].push_back(550);
-  Label2Mass["C1N2_wino_Run3"].push_back(575);
   Label2Mass["C1N2_wino_Run3"].push_back(600);
-  Label2Mass["C1N2_wino_Run3"].push_back(625);
   Label2Mass["C1N2_wino_Run3"].push_back(650);
-  Label2Mass["C1N2_wino_Run3"].push_back(675);
   Label2Mass["C1N2_wino_Run3"].push_back(700);
-  Label2Mass["C1N2_wino_Run3"].push_back(725);
   Label2Mass["C1N2_wino_Run3"].push_back(750);
-  Label2Mass["C1N2_wino_Run3"].push_back(775);
   Label2Mass["C1N2_wino_Run3"].push_back(800);
-  Label2Mass["C1N2_wino_Run3"].push_back(825);
   Label2Mass["C1N2_wino_Run3"].push_back(850);
-  Label2Mass["C1N2_wino_Run3"].push_back(875);
   Label2Mass["C1N2_wino_Run3"].push_back(900);
-  Label2Mass["C1N2_wino_Run3"].push_back(925);
   Label2Mass["C1N2_wino_Run3"].push_back(950);
-  Label2Mass["C1N2_wino_Run3"].push_back(975);
   Label2Mass["C1N2_wino_Run3"].push_back(1000);
-  Label2Mass["C1N2_wino_Run3"].push_back(1025);
   Label2Mass["C1N2_wino_Run3"].push_back(1050);
-  Label2Mass["C1N2_wino_Run3"].push_back(1075);
   Label2Mass["C1N2_wino_Run3"].push_back(1100);
-  Label2Mass["C1N2_wino_Run3"].push_back(1125);
   Label2Mass["C1N2_wino_Run3"].push_back(1150);
-  Label2Mass["C1N2_wino_Run3"].push_back(1175);
   Label2Mass["C1N2_wino_Run3"].push_back(1200);
-  Label2Mass["C1N2_wino_Run3"].push_back(1225);
   Label2Mass["C1N2_wino_Run3"].push_back(1250);
-  Label2Mass["C1N2_wino_Run3"].push_back(1275);
   Label2Mass["C1N2_wino_Run3"].push_back(1300);
-  Label2Mass["C1N2_wino_Run3"].push_back(1325);
   Label2Mass["C1N2_wino_Run3"].push_back(1350);
-  Label2Mass["C1N2_wino_Run3"].push_back(1375);
   Label2Mass["C1N2_wino_Run3"].push_back(1400);
-  Label2Mass["C1N2_wino_Run3"].push_back(1425);
   Label2Mass["C1N2_wino_Run3"].push_back(1450);
-  Label2Mass["C1N2_wino_Run3"].push_back(1475);
   Label2Mass["C1N2_wino_Run3"].push_back(1500);
-
-  Label2Mass["N1N2_hino_Run3"] = std::vector<double>();
-  Label2Mass["N1N2_hino_Run3"].push_back(90.0);
-  Label2Mass["N1N2_hino_Run3"].push_back(100.0);
-  Label2Mass["N1N2_hino_Run3"].push_back(150.0);
-  Label2Mass["N1N2_hino_Run3"].push_back(200.0);
-  Label2Mass["N1N2_hino_Run3"].push_back(250.0);
-  Label2Mass["N1N2_hino_Run3"].push_back(300.0);
-  Label2Mass["N1N2_hino_Run3"].push_back(350.0);
-  Label2Mass["N1N2_hino_Run3"].push_back(400.0);
-  Label2Mass["N1N2_hino_Run3"].push_back(450.0);
-  Label2Mass["N1N2_hino_Run3"].push_back(500.0);
-  Label2Mass["N1N2_hino_Run3"].push_back(550.0);
-  Label2Mass["N1N2_hino_Run3"].push_back(600.0);
-  Label2Mass["N1N2_hino_Run3"].push_back(650.0);
-  Label2Mass["N1N2_hino_Run3"].push_back(700.0);
-  Label2Mass["N1N2_hino_Run3"].push_back(750.0);
-  Label2Mass["N1N2_hino_Run3"].push_back(800.0);
-  Label2Mass["N1N2_hino_Run3"].push_back(850.0);
-  Label2Mass["N1N2_hino_Run3"].push_back(900.0);
-  Label2Mass["N1N2_hino_Run3"].push_back(950.0);
-  Label2Mass["N1N2_hino_Run3"].push_back(1000.0);
-  Label2Mass["N1N2_hino_Run3"].push_back(1050.0);
-  Label2Mass["N1N2_hino_Run3"].push_back(1100.0);
-  Label2Mass["N1N2_hino_Run3"].push_back(1150.0);
-  Label2Mass["N1N2_hino_Run3"].push_back(1200.0);
-  Label2Mass["N1N2_hino_Run3"].push_back(1250.0);
-  Label2Mass["N1N2_hino_Run3"].push_back(1300.0);
-  Label2Mass["N1N2_hino_Run3"].push_back(1350.0);
-  Label2Mass["N1N2_hino_Run3"].push_back(1400.0);
-  Label2Mass["N1N2_hino_Run3"].push_back(1450.0);
-  Label2Mass["N1N2_hino_Run3"].push_back(1500.0);
-  Label2Mass["N1N2_hino_Run3"].push_back(1550.0);
-  Label2Mass["N1N2_hino_Run3"].push_back(1600.0);
-  Label2Mass["N1N2_hino_Run3"].push_back(1650.0);
-  Label2Mass["N1N2_hino_Run3"].push_back(1700.0);
-  Label2Mass["N1N2_hino_Run3"].push_back(1750.0);
-  Label2Mass["N1N2_hino_Run3"].push_back(1800.0);
-  Label2Mass["N1N2_hino_Run3"].push_back(1850.0);
-  Label2Mass["N1N2_hino_Run3"].push_back(1900.0);
+  Label2Mass["C1N2_wino_Run3"].push_back(1550);
+  Label2Mass["C1N2_wino_Run3"].push_back(1600);
+  Label2Mass["C1N2_wino_Run3"].push_back(1650);
+  Label2Mass["C1N2_wino_Run3"].push_back(1700);
+  Label2Mass["C1N2_wino_Run3"].push_back(1750);
+  Label2Mass["C1N2_wino_Run3"].push_back(1800);
+  Label2Mass["C1N2_wino_Run3"].push_back(1850);
+  Label2Mass["C1N2_wino_Run3"].push_back(1900);
+  Label2Mass["C1N2_wino_Run3"].push_back(1950);
+  Label2Mass["C1N2_wino_Run3"].push_back(2000);
 
   // https://twiki.cern.ch/twiki/bin/view/LHCPhysics/SUSYCrossSections13x6TeVslepslep
   // https://twiki.cern.ch/twiki/bin/view/LHCPhysics/SUSYCrossSections13x6TeVsneutrino
@@ -2368,65 +2428,6 @@ std::map<std::string,std::vector<double> > XsecTool::InitMap_Mass_SMS(){
   Label2Mass["Cascade_SnuSnu_right_plus_Run3"] = Label2Mass["Cascade_SnuSnu_left_plus_Run3"];
 
   Label2Mass["Cascade_SnuSnu_right_minus_Run3"] = Label2Mass["Cascade_SnuSnu_left_plus_Run3"];
-
-  Label2Mass["Higgsino-N2N1"] = std::vector<double>();
-  Label2Mass["Higgsino-N2N1"].push_back(100);
-  Label2Mass["Higgsino-N2N1"].push_back(125);
-  Label2Mass["Higgsino-N2N1"].push_back(150);
-  Label2Mass["Higgsino-N2N1"].push_back(175);
-  Label2Mass["Higgsino-N2N1"].push_back(200);
-  Label2Mass["Higgsino-N2N1"].push_back(225);
-  Label2Mass["Higgsino-N2N1"].push_back(250);
-  Label2Mass["Higgsino-N2N1"].push_back(275);
-  Label2Mass["Higgsino-N2N1"].push_back(300);
-  Label2Mass["Higgsino-N2N1"].push_back(325);
-  Label2Mass["Higgsino-N2N1"].push_back(350);
-  Label2Mass["Higgsino-N2N1"].push_back(375);
-  Label2Mass["Higgsino-N2N1"].push_back(400);
-  Label2Mass["Higgsino-N2N1"].push_back(425);
-  Label2Mass["Higgsino-N2N1"].push_back(450);
-  Label2Mass["Higgsino-N2N1"].push_back(475);
-  Label2Mass["Higgsino-N2N1"].push_back(500);
-  Label2Mass["Higgsino-N2N1"].push_back(525);
-  Label2Mass["Higgsino-N2N1"].push_back(550);
-  Label2Mass["Higgsino-N2N1"].push_back(575);
-  Label2Mass["Higgsino-N2N1"].push_back(600);
-  Label2Mass["Higgsino-N2N1"].push_back(625);
-  Label2Mass["Higgsino-N2N1"].push_back(650);
-  Label2Mass["Higgsino-N2N1"].push_back(675);
-  Label2Mass["Higgsino-N2N1"].push_back(700);
-  Label2Mass["Higgsino-N2N1"].push_back(725);
-  Label2Mass["Higgsino-N2N1"].push_back(750);
-  Label2Mass["Higgsino-N2N1"].push_back(775);
-  Label2Mass["Higgsino-N2N1"].push_back(800);
-  Label2Mass["Higgsino-N2N1"].push_back(825);
-  Label2Mass["Higgsino-N2N1"].push_back(850);
-  Label2Mass["Higgsino-N2N1"].push_back(875);
-  Label2Mass["Higgsino-N2N1"].push_back(900);
-  Label2Mass["Higgsino-N2N1"].push_back(925);
-  Label2Mass["Higgsino-N2N1"].push_back(950);
-  Label2Mass["Higgsino-N2N1"].push_back(975);
-  Label2Mass["Higgsino-N2N1"].push_back(1000);
-  Label2Mass["Higgsino-N2N1"].push_back(1025);
-  Label2Mass["Higgsino-N2N1"].push_back(1050);
-  Label2Mass["Higgsino-N2N1"].push_back(1075);
-  Label2Mass["Higgsino-N2N1"].push_back(1100);
-  Label2Mass["Higgsino-N2N1"].push_back(1125);
-  Label2Mass["Higgsino-N2N1"].push_back(1150);
-  Label2Mass["Higgsino-N2N1"].push_back(1175);
-  Label2Mass["Higgsino-N2N1"].push_back(1200);
-  Label2Mass["Higgsino-N2N1"].push_back(1225);
-  Label2Mass["Higgsino-N2N1"].push_back(1250);
-  Label2Mass["Higgsino-N2N1"].push_back(1275);
-  Label2Mass["Higgsino-N2N1"].push_back(1300);
-  Label2Mass["Higgsino-N2N1"].push_back(1325);
-  Label2Mass["Higgsino-N2N1"].push_back(1350);
-  Label2Mass["Higgsino-N2N1"].push_back(1375);
-  Label2Mass["Higgsino-N2N1"].push_back(1400);
-  Label2Mass["Higgsino-N2N1"].push_back(1425);
-  Label2Mass["Higgsino-N2N1"].push_back(1450);
-  Label2Mass["Higgsino-N2N1"].push_back(1475);
-  Label2Mass["Higgsino-N2N1"].push_back(1500);
 
   return Label2Mass;
 }
@@ -2848,37 +2849,6 @@ std::map<std::string,std::vector<double> > XsecTool::InitMap_Xsec_SMS(){
   Label2Xsec["N1N2_hino"].push_back(0.0175031);
   Label2Xsec["N1N2_hino"].push_back(0.0134572);
 
-  // To be updated since this is for sandwich (m_N2 != m_N1)
-  Label2Xsec["Higgsino-N2N1"] = std::vector<double>();
-  Label2Xsec["Higgsino-N2N1"].push_back(3277.01);
-  Label2Xsec["Higgsino-N2N1"].push_back(715.14);
-  Label2Xsec["Higgsino-N2N1"].push_back(244.213);
-  Label2Xsec["Higgsino-N2N1"].push_back(104.252);
-  Label2Xsec["Higgsino-N2N1"].push_back(50.9994);
-  Label2Xsec["Higgsino-N2N1"].push_back(27.3286);
-  Label2Xsec["Higgsino-N2N1"].push_back(15.6691);
-  Label2Xsec["Higgsino-N2N1"].push_back(9.44017);
-  Label2Xsec["Higgsino-N2N1"].push_back(5.90757);
-  Label2Xsec["Higgsino-N2N1"].push_back(3.8167);
-  Label2Xsec["Higgsino-N2N1"].push_back(2.53015);
-  Label2Xsec["Higgsino-N2N1"].push_back(1.71418);
-  Label2Xsec["Higgsino-N2N1"].push_back(1.18113);
-  Label2Xsec["Higgsino-N2N1"].push_back(0.826366);
-  Label2Xsec["Higgsino-N2N1"].push_back(0.586211);
-  Label2Xsec["Higgsino-N2N1"].push_back(0.420556);
-  Label2Xsec["Higgsino-N2N1"].push_back(0.305935);
-  Label2Xsec["Higgsino-N2N1"].push_back(0.22285);
-  Label2Xsec["Higgsino-N2N1"].push_back(0.16428);
-  Label2Xsec["Higgsino-N2N1"].push_back(0.121865);
-  Label2Xsec["Higgsino-N2N1"].push_back(0.0912469);
-  Label2Xsec["Higgsino-N2N1"].push_back(0.0684561);
-  Label2Xsec["Higgsino-N2N1"].push_back(0.0516263);
-  Label2Xsec["Higgsino-N2N1"].push_back(0.0391587);
-  Label2Xsec["Higgsino-N2N1"].push_back(0.0299353);
-  Label2Xsec["Higgsino-N2N1"].push_back(0.0228072);
-  Label2Xsec["Higgsino-N2N1"].push_back(0.0175031);
-  Label2Xsec["Higgsino-N2N1"].push_back(0.0134572);
-
   Label2Xsec["C1C1_hino_Run3"] = std::vector<double>();
   Label2Xsec["C1C1_hino_Run3"].push_back(4846);
   Label2Xsec["C1C1_hino_Run3"].push_back(3329);
@@ -2962,134 +2932,46 @@ std::map<std::string,std::vector<double> > XsecTool::InitMap_Xsec_SMS(){
   Label2Xsec["C1C1_wino_Run3"].push_back(0.005031);
 
   Label2Xsec["C1N2_wino_Run3"] = std::vector<double>();
-  Label2Xsec["C1N2_wino_Run3"].push_back(22670.1);
-  Label2Xsec["C1N2_wino_Run3"].push_back(10034.8);
-  Label2Xsec["C1N2_wino_Run3"].push_back(5180.86);
-  Label2Xsec["C1N2_wino_Run3"].push_back(2953.28);
-  Label2Xsec["C1N2_wino_Run3"].push_back(1807.39);
-  Label2Xsec["C1N2_wino_Run3"].push_back(1165.09);
-  Label2Xsec["C1N2_wino_Run3"].push_back(782.487);
-  Label2Xsec["C1N2_wino_Run3"].push_back(543.03);
-  Label2Xsec["C1N2_wino_Run3"].push_back(386.936);
-  Label2Xsec["C1N2_wino_Run3"].push_back(281.911);
-  Label2Xsec["C1N2_wino_Run3"].push_back(209.439);
-  Label2Xsec["C1N2_wino_Run3"].push_back(158.06);
-  Label2Xsec["C1N2_wino_Run3"].push_back(121.013);
-  Label2Xsec["C1N2_wino_Run3"].push_back(93.771);
-  Label2Xsec["C1N2_wino_Run3"].push_back(73.4361);
-  Label2Xsec["C1N2_wino_Run3"].push_back(58.0811);
-  Label2Xsec["C1N2_wino_Run3"].push_back(46.3533);
-  Label2Xsec["C1N2_wino_Run3"].push_back(37.2636);
-  Label2Xsec["C1N2_wino_Run3"].push_back(30.1656);
-  Label2Xsec["C1N2_wino_Run3"].push_back(24.5798);
-  Label2Xsec["C1N2_wino_Run3"].push_back(20.1372);
-  Label2Xsec["C1N2_wino_Run3"].push_back(16.5706);
-  Label2Xsec["C1N2_wino_Run3"].push_back(13.7303);
-  Label2Xsec["C1N2_wino_Run3"].push_back(11.3975);
-  Label2Xsec["C1N2_wino_Run3"].push_back(9.51032);
-  Label2Xsec["C1N2_wino_Run3"].push_back(7.9595);
-  Label2Xsec["C1N2_wino_Run3"].push_back(6.69356);
-  Label2Xsec["C1N2_wino_Run3"].push_back(5.63562);
-  Label2Xsec["C1N2_wino_Run3"].push_back(4.75843);
-  Label2Xsec["C1N2_wino_Run3"].push_back(4.02646);
-  Label2Xsec["C1N2_wino_Run3"].push_back(3.42026);
-  Label2Xsec["C1N2_wino_Run3"].push_back(2.90547);
-  Label2Xsec["C1N2_wino_Run3"].push_back(2.49667);
-  Label2Xsec["C1N2_wino_Run3"].push_back(2.12907);
-  Label2Xsec["C1N2_wino_Run3"].push_back(1.8164);
-  Label2Xsec["C1N2_wino_Run3"].push_back(1.56893);
-  Label2Xsec["C1N2_wino_Run3"].push_back(1.34352);
-  Label2Xsec["C1N2_wino_Run3"].push_back(1.15949);
-  Label2Xsec["C1N2_wino_Run3"].push_back(0.997903);
-  Label2Xsec["C1N2_wino_Run3"].push_back(0.86504);
-  Label2Xsec["C1N2_wino_Run3"].push_back(0.740372);
-  Label2Xsec["C1N2_wino_Run3"].push_back(0.647288);
-  Label2Xsec["C1N2_wino_Run3"].push_back(0.555594);
-  Label2Xsec["C1N2_wino_Run3"].push_back(0.486863);
-  Label2Xsec["C1N2_wino_Run3"].push_back(0.415851);
-  Label2Xsec["C1N2_wino_Run3"].push_back(0.362455);
-  Label2Xsec["C1N2_wino_Run3"].push_back(0.316975);
-  Label2Xsec["C1N2_wino_Run3"].push_back(0.276522);
-  Label2Xsec["C1N2_wino_Run3"].push_back(0.240739);
-  Label2Xsec["C1N2_wino_Run3"].push_back(0.20999);
-  Label2Xsec["C1N2_wino_Run3"].push_back(0.185601);
-  Label2Xsec["C1N2_wino_Run3"].push_back(0.161343);
-  Label2Xsec["C1N2_wino_Run3"].push_back(0.131074);
-  Label2Xsec["C1N2_wino_Run3"].push_back(0.121045);
-  Label2Xsec["C1N2_wino_Run3"].push_back(0.110889);
-  Label2Xsec["C1N2_wino_Run3"].push_back(0.0906868);
-  Label2Xsec["C1N2_wino_Run3"].push_back(0.0813221);
-
-  Label2Xsec["N1N2_hino_Run3"] = std::vector<double>();
-  Label2Xsec["N1N2_hino_Run3"].push_back(5546);
-  Label2Xsec["N1N2_hino_Run3"].push_back(3673);
-  Label2Xsec["N1N2_hino_Run3"].push_back(804.6);
-  Label2Xsec["N1N2_hino_Run3"].push_back(276.1);
-  Label2Xsec["N1N2_hino_Run3"].push_back(118.3);
-  Label2Xsec["N1N2_hino_Run3"].push_back(58.07);
-  Label2Xsec["N1N2_hino_Run3"].push_back(31.23);
-  Label2Xsec["N1N2_hino_Run3"].push_back(17.94);
-  Label2Xsec["N1N2_hino_Run3"].push_back(10.84);
-  Label2Xsec["N1N2_hino_Run3"].push_back(6.805);
-  Label2Xsec["N1N2_hino_Run3"].push_back(4.41);
-  Label2Xsec["N1N2_hino_Run3"].push_back(2.932);
-  Label2Xsec["N1N2_hino_Run3"].push_back(1.992);
-  Label2Xsec["N1N2_hino_Run3"].push_back(1.378);
-  Label2Xsec["N1N2_hino_Run3"].push_back(0.9678);
-  Label2Xsec["N1N2_hino_Run3"].push_back(0.6891);
-  Label2Xsec["N1N2_hino_Run3"].push_back(0.4964);
-  Label2Xsec["N1N2_hino_Run3"].push_back(0.3613);
-  Label2Xsec["N1N2_hino_Run3"].push_back(0.2654);
-  Label2Xsec["N1N2_hino_Run3"].push_back(0.1966);
-  Label2Xsec["N1N2_hino_Run3"].push_back(0.1466);
-  Label2Xsec["N1N2_hino_Run3"].push_back(0.1101);
-  Label2Xsec["N1N2_hino_Run3"].push_back(0.08317);
-  Label2Xsec["N1N2_hino_Run3"].push_back(0.06318);
-  Label2Xsec["N1N2_hino_Run3"].push_back(0.04823);
-  Label2Xsec["N1N2_hino_Run3"].push_back(0.03699);
-  Label2Xsec["N1N2_hino_Run3"].push_back(0.0285);
-  Label2Xsec["N1N2_hino_Run3"].push_back(0.02204);
-  Label2Xsec["N1N2_hino_Run3"].push_back(0.01711);
-  Label2Xsec["N1N2_hino_Run3"].push_back(0.01333);
-  Label2Xsec["N1N2_hino_Run3"].push_back(0.01042);
-  Label2Xsec["N1N2_hino_Run3"].push_back(0.008176);
-  Label2Xsec["N1N2_hino_Run3"].push_back(0.006433);
-  Label2Xsec["N1N2_hino_Run3"].push_back(0.005076);
-  Label2Xsec["N1N2_hino_Run3"].push_back(0.004017);
-  Label2Xsec["N1N2_hino_Run3"].push_back(0.003188);
-  Label2Xsec["N1N2_hino_Run3"].push_back(0.002537);
-  Label2Xsec["N1N2_hino_Run3"].push_back(0.002024);
-
-  // To be updated since this is for sandwich (m_N2 != m_N1)
-  Label2Xsec["Higgsino-N2N1_Run3"] = std::vector<double>();
-  Label2Xsec["Higgsino-N2N1_Run3"].push_back(3277.01);
-  Label2Xsec["Higgsino-N2N1_Run3"].push_back(715.14);
-  Label2Xsec["Higgsino-N2N1_Run3"].push_back(244.213);
-  Label2Xsec["Higgsino-N2N1_Run3"].push_back(104.252);
-  Label2Xsec["Higgsino-N2N1_Run3"].push_back(50.9994);
-  Label2Xsec["Higgsino-N2N1_Run3"].push_back(27.3286);
-  Label2Xsec["Higgsino-N2N1_Run3"].push_back(15.6691);
-  Label2Xsec["Higgsino-N2N1_Run3"].push_back(9.44017);
-  Label2Xsec["Higgsino-N2N1_Run3"].push_back(5.90757);
-  Label2Xsec["Higgsino-N2N1_Run3"].push_back(3.8167);
-  Label2Xsec["Higgsino-N2N1_Run3"].push_back(2.53015);
-  Label2Xsec["Higgsino-N2N1_Run3"].push_back(1.71418);
-  Label2Xsec["Higgsino-N2N1_Run3"].push_back(1.18113);
-  Label2Xsec["Higgsino-N2N1_Run3"].push_back(0.826366);
-  Label2Xsec["Higgsino-N2N1_Run3"].push_back(0.586211);
-  Label2Xsec["Higgsino-N2N1_Run3"].push_back(0.420556);
-  Label2Xsec["Higgsino-N2N1_Run3"].push_back(0.305935);
-  Label2Xsec["Higgsino-N2N1_Run3"].push_back(0.22285);
-  Label2Xsec["Higgsino-N2N1_Run3"].push_back(0.16428);
-  Label2Xsec["Higgsino-N2N1_Run3"].push_back(0.121865);
-  Label2Xsec["Higgsino-N2N1_Run3"].push_back(0.0912469);
-  Label2Xsec["Higgsino-N2N1_Run3"].push_back(0.0684561);
-  Label2Xsec["Higgsino-N2N1_Run3"].push_back(0.0516263);
-  Label2Xsec["Higgsino-N2N1_Run3"].push_back(0.0391587);
-  Label2Xsec["Higgsino-N2N1_Run3"].push_back(0.0299353);
-  Label2Xsec["Higgsino-N2N1_Run3"].push_back(0.0228072);
-  Label2Xsec["Higgsino-N2N1_Run3"].push_back(0.0175031);
-  Label2Xsec["Higgsino-N2N1_Run3"].push_back(0.0134572);
+  Label2Xsec["C1N2_wino_Run3"].push_back(3.6840E+04);
+  Label2Xsec["C1N2_wino_Run3"].push_back(2.4915E+04);
+  Label2Xsec["C1N2_wino_Run3"].push_back(5.7380E+03);
+  Label2Xsec["C1N2_wino_Run3"].push_back(2.0157E+03);
+  Label2Xsec["C1N2_wino_Run3"].push_back(8.7820E+02);
+  Label2Xsec["C1N2_wino_Run3"].push_back(4.3670E+02);
+  Label2Xsec["C1N2_wino_Run3"].push_back(2.3751E+02);
+  Label2Xsec["C1N2_wino_Run3"].push_back(1.3784E+02);
+  Label2Xsec["C1N2_wino_Run3"].push_back(8.4040E+01);
+  Label2Xsec["C1N2_wino_Run3"].push_back(5.3240E+01);
+  Label2Xsec["C1N2_wino_Run3"].push_back(3.4780E+01);
+  Label2Xsec["C1N2_wino_Run3"].push_back(2.3306E+01);
+  Label2Xsec["C1N2_wino_Run3"].push_back(1.5950E+01);
+  Label2Xsec["C1N2_wino_Run3"].push_back(1.1106E+01);
+  Label2Xsec["C1N2_wino_Run3"].push_back(7.8520E+00);
+  Label2Xsec["C1N2_wino_Run3"].push_back(5.6240E+00);
+  Label2Xsec["C1N2_wino_Run3"].push_back(4.0730E+00);
+  Label2Xsec["C1N2_wino_Run3"].push_back(2.9801E+00);
+  Label2Xsec["C1N2_wino_Run3"].push_back(2.1984E+00);
+  Label2Xsec["C1N2_wino_Run3"].push_back(1.6342E+00);
+  Label2Xsec["C1N2_wino_Run3"].push_back(1.2231E+00);
+  Label2Xsec["C1N2_wino_Run3"].push_back(9.2110E-01);
+  Label2Xsec["C1N2_wino_Run3"].push_back(6.9740E-01);
+  Label2Xsec["C1N2_wino_Run3"].push_back(5.3050E-01);
+  Label2Xsec["C1N2_wino_Run3"].push_back(4.0539E-01);
+  Label2Xsec["C1N2_wino_Run3"].push_back(3.1104E-01);
+  Label2Xsec["C1N2_wino_Run3"].push_back(2.3960E-01);
+  Label2Xsec["C1N2_wino_Run3"].push_back(1.8520E-01);
+  Label2Xsec["C1N2_wino_Run3"].push_back(1.4359E-01);
+  Label2Xsec["C1N2_wino_Run3"].push_back(1.1167E-01);
+  Label2Xsec["C1N2_wino_Run3"].push_back(8.7080E-02);
+  Label2Xsec["C1N2_wino_Run3"].push_back(6.8100E-02);
+  Label2Xsec["C1N2_wino_Run3"].push_back(5.3400E-02);
+  Label2Xsec["C1N2_wino_Run3"].push_back(4.1970E-02);
+  Label2Xsec["C1N2_wino_Run3"].push_back(3.3065E-02);
+  Label2Xsec["C1N2_wino_Run3"].push_back(2.6117E-02);
+  Label2Xsec["C1N2_wino_Run3"].push_back(2.0673E-02);
+  Label2Xsec["C1N2_wino_Run3"].push_back(1.6407E-02);
+  Label2Xsec["C1N2_wino_Run3"].push_back(1.3047E-02);
+  Label2Xsec["C1N2_wino_Run3"].push_back(1.0402E-02);
 
   Label2Xsec["SlepSlep_left"] = std::vector<double>();
   Label2Xsec["SlepSlep_left"].push_back(1000.*3.991);

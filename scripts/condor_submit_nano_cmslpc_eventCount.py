@@ -80,6 +80,8 @@ def write_sh(srcfile,ifile,ofile,logfile,outfile,errfile,dataset,filetag,GITHASH
     fsrc.write('-tree='+TREE+" ")
     if DO_SMS == 1:
         fsrc.write('--sms ')
+    if DO_LLP == 1:
+        fsrc.write('--llp ')
     if DO_CASCADES == 1:
         fsrc.write('--cascades ')
     if DO_PRIVATEMC == 1:
@@ -150,6 +152,8 @@ def write_sh_single(srcfile,ifile,ofile,logfile,outfile,errfile,dataset,filetag,
     fsrc.write('-tree='+TREE+" ")
     if DO_SMS == 1:
         fsrc.write('--sms ')
+    if DO_LLP == 1:
+        fsrc.write('--llp ')
     if DO_DATA == 1:
         fsrc.write('--data ')
     if DO_CASCADES == 1:
@@ -207,6 +211,7 @@ if __name__ == "__main__":
 
     argv_pos     = 1
     DO_SMS       = 0
+    DO_LLP       = 0
     DO_DATA      = 0
     DRY_RUN      = 0
     DO_CASCADES  = 0
@@ -226,6 +231,10 @@ if __name__ == "__main__":
         argv_pos += 2
     if '--sms' in sys.argv:
         DO_SMS = 1
+        argv_pos += 1
+        TREE = "Events"
+    if '--llp' in sys.argv:
+        DO_LLP = 1
         argv_pos += 1
         TREE = "Events"
     if '--cascades' in sys.argv:
@@ -249,6 +258,9 @@ if __name__ == "__main__":
 
     if DO_SMS:
         print ("Processing as SMS")
+
+    if DO_LLP:
+        print ("Processing as LLP")
 
     if DO_CASCADES:
         print ("Processing as Cascades")
@@ -306,7 +318,7 @@ if __name__ == "__main__":
     datasetlist = []
 
     # tags need to follow the format of CAMPAIGN_CMSSWX and CMSSWX must be 5 chars for later DAS checks to work
-    knowntags = ["Autumn18_102X","Fall17_102X","Summer16_102X","Summer20UL16_106X","Summer20UL16APV_106X","Summer20UL17_106X","Summer20UL18_106X","Summer22_130X","Summer22EE_130X","Summer23_130X","Summer23BPix_130X","Summer24_130X"]
+    knowntags = ["Autumn18_102X","Fall17_102X","Summer16_102X","Summer20UL16_106X","Summer20UL16APV_106X","Summer20UL17_106X","Summer20UL18_106X","Summer22_130X","Summer22EE_130X","Summer23_130X","Summer23BPix_130X","Summer24_130X","Summer25_130X","Summer26_130X"]
     
     with open(listfile,'r') as mylist:
         inputlist = mylist.readlines()

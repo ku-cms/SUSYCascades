@@ -968,7 +968,7 @@ void ReducedNtuple<Base>::ClearVariables(){
 
 template <class Base>
 void ReducedNtuple<Base>::FillOutputTree(TTree* tree, const Systematic& sys, bool do_slim){
-  
+
   AnalysisBase<Base>::SetSystematic(sys);
 
   m_EventFilter = AnalysisBase<Base>::PassEventFilter();
@@ -1129,11 +1129,9 @@ void ReducedNtuple<Base>::FillOutputTree(TTree* tree, const Systematic& sys, boo
   // NTUPLE Event Selection
   if (m_Nlep < 2 || (m_Nlep == 2 && ETMiss.Mag() < 150.)) return;
   if(AnalysisBase<Base>::IsCascades() || AnalysisBase<Base>::IsSMS()){
-    std::pair<int,int> temp_masses = AnalysisBase<Base>::GetSUSYMasses();
-    m_MP = temp_masses.first;
-    m_MN1 = temp_masses.second;
-    if(1.*m_MN1/m_MP < 0.4) return; // only keep compressed signals
-    if(m_MP > 610.) return; // only keep signals masses with sensitivity
+    std::pair<float,float> temp_masses = AnalysisBase<Base>::GetSUSYMasses();
+    m_MP = QuantizeMass(temp_masses.first);
+    m_MN1 = QuantizeMass(temp_masses.second);
   }
 
   m_HEM_Veto = m_EventFlag_JetInHEM_Pt20;
@@ -1397,8 +1395,7 @@ void ReducedNtuple<Base>::FillOutputTree(TTree* tree, const Systematic& sys, boo
       TVector3 boostInv = (vP_Ia_S+vP_Ib_S).BoostVector();
       TVector3 daBoost = vP_S_CM.Vect().Unit();
       
-      if((std::isnan(boostInv.Mag()) || std::isnan(boostVis.Mag())))
-        cout << "boost NAN " << boostInv.Mag() << " " << boostVis.Mag() << " Ja=" << vP_Ja_S.P() << " Jb=" << vP_Jb_S.P() << " La=" << vP_La_S.P() << " Lb=" << vP_Lb_S.P() << " Inva=" << vP_Ia_S.P() << " Invb=" << vP_Ib_S.P() << " MET=" << ETMiss.Mag() << endl;
+      //if((std::isnan(boostInv.Mag()) || std::isnan(boostVis.Mag()))) cout << "boost NAN " << boostInv.Mag() << " " << boostVis.Mag() << " Ja=" << vP_Ja_S.P() << " Jb=" << vP_Jb_S.P() << " La=" << vP_La_S.P() << " Lb=" << vP_Lb_S.P() << " Inva=" << vP_Ia_S.P() << " Invb=" << vP_Ib_S.P() << " MET=" << ETMiss.Mag() << endl;
       
       boostVis = (boostVis.Dot(daBoost))*daBoost;
       boostInv = (boostInv.Dot(daBoost))*daBoost;

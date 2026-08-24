@@ -46,6 +46,7 @@ bool NtupleBase<Base>::WriteNtuple(const string& filename, int ichunk, int nchun
   string sample;
   bool passed_DAS = true;
   std::pair<int,int> masses(0,0);
+  std::pair<float,float> true_masses(0.,0.);
 
   if(nchunk < 1 || ichunk < 1 || ichunk > nchunk){
     ichunk = 1;
@@ -61,6 +62,13 @@ bool NtupleBase<Base>::WriteNtuple(const string& filename, int ichunk, int nchun
   GetChunks(NTOT, N0, N1, ichunk, nchunk);
   string dataset = string(AnalysisBase<Base>::GetDataSet());
   string filetag = string(AnalysisBase<Base>::GetFileTag());
+  std::vector<LLPBranchInfo> llpBranches;
+  bool isLLP = AnalysisBase<Base>::IsLLP();
+  if (isLLP) {
+      InitializeLLPBranches(Base::fChain, llpBranches);
+      for (auto& info : llpBranches)
+          Base::fChain->SetBranchStatus(info.name.c_str(), 1);
+  }
 
   // Histogram Booking
   if(histograms) {
@@ -94,6 +102,7 @@ bool NtupleBase<Base>::WriteNtuple(const string& filename, int ichunk, int nchun
         cout << " event = " << i << " : [" << N0 << " , " << N1 << "]" << endl;
       
       sample = AnalysisBase<Base>::GetEntry(i);
+      if (isLLP && !PassPromptLLPSelection(llpBranches)) continue;
       
       if(m_Label2Tree.count(sample) == 0){
         m_Label2Tree[sample] = std::vector<TTree*>();
@@ -133,8 +142,10 @@ bool NtupleBase<Base>::WriteNtuple(const string& filename, int ichunk, int nchun
       }
 
       // event count bookkeeping
-      if(AnalysisBase<Base>::IsSMS())
-        masses = AnalysisBase<Base>::GetSUSYMasses();
+      if(AnalysisBase<Base>::IsSMS()) {
+        true_masses = AnalysisBase<Base>::GetSUSYMasses();
+      }
+      masses = std::make_pair(QuantizeMass(true_masses.first), QuantizeMass(true_masses.second));
       if(m_mapNevent.count(masses) == 0){
         m_masses.push_back(masses);
         m_mapNevent[masses] = 1.;
