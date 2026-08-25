@@ -47,6 +47,7 @@ bool NtupleBase<Base>::WriteNtuple(const string& filename, int ichunk, int nchun
   bool passed_DAS = true;
   std::pair<int,int> masses(0,0);
   std::pair<float,float> true_masses(0.,0.);
+  double Nevent_processed = 0.;
 
   if(nchunk < 1 || ichunk < 1 || ichunk > nchunk){
     ichunk = 1;
@@ -102,6 +103,7 @@ bool NtupleBase<Base>::WriteNtuple(const string& filename, int ichunk, int nchun
         cout << " event = " << i << " : [" << N0 << " , " << N1 << "]" << endl;
       
       sample = AnalysisBase<Base>::GetEntry(i);
+      Nevent_processed++;
       if (isLLP && !PassPromptLLPSelection(llpBranches)) continue;
       
       if(m_Label2Tree.count(sample) == 0){
@@ -188,7 +190,13 @@ bool NtupleBase<Base>::WriteNtuple(const string& filename, int ichunk, int nchun
     for(int i = 0; i < Nmass; i++){
       Nevent_tot += m_mapNevent[m_masses[i]];
     }
-    if(NDAS > 0 && Nevent_tot != NDAS) passed_DAS = false;
+    if(NDAS > 0 && Nevent_processed != NDAS){
+      passed_DAS = false;
+      std::cout << "JOB FAILED DAS CHECK!" << std::endl;
+      std::cout << "  NDAS: " << NDAS << std::endl;
+      std::cout << "  Nevent_processed (all events): " << Nevent_processed << std::endl;
+      if(isLLP) std::cout << "  Nevent_tot (prompt only, sum over mass points): " << Nevent_tot << std::endl;
+    }
     // Loop to fill tree
     for(int i = 0; i < Nmass; i++){
       Nevent = m_mapNevent[m_masses[i]];

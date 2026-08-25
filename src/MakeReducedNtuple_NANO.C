@@ -326,10 +326,7 @@ int main(int argc, char* argv[]) {
 
   cout << "writing output with ichunk=" << ICHUNK << " nchunk=" << NCHUNK << endl;
   bool passedDASCheck = std::visit([&](auto& nt) -> bool { return nt->WriteNtuple(string(outputFileName), ICHUNK, NCHUNK, DO_slim, NDAS, string(DAS_datasetname), string(DAS_filename), DO_HISTS, true); }, ntuple);
-  if(!passedDASCheck){
-    std::cout << "JOB FAILED DAS CHECK!" << std::endl;
-    return 1;
-  }
+  if(!passedDASCheck) return 1;
   else return 0;
 
 }
