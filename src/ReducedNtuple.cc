@@ -1129,12 +1129,15 @@ void ReducedNtuple<Base>::FillOutputTree(TTree* tree, const Systematic& sys, boo
   // NTUPLE Event Selection
   //if (m_Nlep < 2 || (m_Nlep == 2 && ETMiss.Mag() < 150.)) return;
   if (ETMiss.Mag() < 150.) return;
+  if (m_Nlep < 2 || m_Nlep > 4) return;
   if (m_Njet == 0) return;
   int n_bronze_leptons = 0;
-  for(int i = 0; i < m_Nlep; i++)
-    if(Leptons[i].LepQual() == kBronze)
-      n_bronze_leptons++;
-  if(n_bronze_leptons > 2) return;
+  for (int i = 0; i < m_Nlep; ++i)
+    n_bronze_leptons += (Leptons[i].LepQual() == kBronze);
+  if (m_Nlep <= 3 && n_bronze_leptons > 1) return;
+  if (m_Nlep == 4  && n_bronze_leptons > 2) return;
+
+  // Get SUSY masses
   if(AnalysisBase<Base>::IsCascades() || AnalysisBase<Base>::IsSMS()){
     std::pair<float,float> temp_masses = AnalysisBase<Base>::GetSUSYMasses();
     m_MP = QuantizeMass(temp_masses.first);
