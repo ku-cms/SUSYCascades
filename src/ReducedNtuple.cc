@@ -1127,7 +1127,14 @@ void ReducedNtuple<Base>::FillOutputTree(TTree* tree, const Systematic& sys, boo
   m_Nlep = Leptons.size();
   
   // NTUPLE Event Selection
-  if (m_Nlep < 2 || (m_Nlep == 2 && ETMiss.Mag() < 150.)) return;
+  //if (m_Nlep < 2 || (m_Nlep == 2 && ETMiss.Mag() < 150.)) return;
+  if (ETMiss.Mag() < 150.) return;
+  if (m_Njet == 0) return;
+  int n_bronze_leptons = 0;
+  for(int i = 0; i < m_Nlep; i++)
+    if(Leptons[i].LepQual() == kBronze)
+      n_bronze_leptons++;
+  if(n_bronze_leptons > 2) return;
   if(AnalysisBase<Base>::IsCascades() || AnalysisBase<Base>::IsSMS()){
     std::pair<float,float> temp_masses = AnalysisBase<Base>::GetSUSYMasses();
     m_MP = QuantizeMass(temp_masses.first);
@@ -1633,6 +1640,8 @@ void ReducedNtuple<Base>::FillOutputTree(TTree* tree, const Systematic& sys, boo
         m_CosDecayAngle_Vb = 0.;
 
     }
+    // end ISR analysis
+    // LEP only tree
     if(t==1){
       if(m_Nlep < 2){
         m_treeSkipped[t] = true;
@@ -1691,6 +1700,11 @@ void ReducedNtuple<Base>::FillOutputTree(TTree* tree, const Systematic& sys, boo
       m_PTISR_LEP = vPISR.Pt();
       TVector3 vPINV = (X1a[t]->GetFourVector(*CM[t])+X1b[t]->GetFourVector(*CM[t])).Vect();
       m_RISR_LEP = fabs(vPINV.Dot(vPISR.Unit())) / vPISR.Mag();
+
+      // MORE NTUPLE Event Selection
+      if(m_PTISR_LEP < 75. || m_RISR_LEP < 0.6) return;
+      if(m_Nlep == 3 && m_PTISR_LEP < 175.) return;
+      if(m_Nlep == 2 && m_PTISR_LEP < 225.) return;
 
       m_MPa_LEP = X2a[t]->GetFourVector().M();
       m_MPb_LEP = X2b[t]->GetFourVector().M();
