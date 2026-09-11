@@ -469,28 +469,28 @@ TTree* ReducedNtuple<Base>::InitOutputTree(const string& sample, bool do_slim, b
   tree->Branch("IP3D_lep", &m_IP3D_lep);
   tree->Branch("SIP3D_lep", &m_SIP3D_lep);
 
-// adding taus
-// tau branches
-tree->Branch("Ntau", &m_Ntau);
-tree->Branch("PT_tau",  &m_PT_tau);
-tree->Branch("Eta_tau", &m_Eta_tau);
-tree->Branch("Phi_tau", &m_Phi_tau);
-tree->Branch("Mass_tau", &m_Mass_tau);
-tree->Branch("dxy_tau", &m_dxy_tau);
-tree->Branch("dz_tau",  &m_dz_tau);
-tree->Branch("decayMode_tau", &m_decayMode_tau);
-tree->Branch("Charge_tau",    &m_Charge_tau);
-tree->Branch("dt_VSe_2p1_tau",   &m_dt_VSe_2p1_tau);
-tree->Branch("dt_VSjet_2p1_tau", &m_dt_VSjet_2p1_tau);
-tree->Branch("dt_VSmu_2p1_tau",  &m_dt_VSmu_2p1_tau);
-tree->Branch("dt_VSe_2p5_tau",   &m_dt_VSe_2p5_tau);
-tree->Branch("dt_VSjet_2p5_tau", &m_dt_VSjet_2p5_tau);
-tree->Branch("dt_VSmu_2p5_tau",  &m_dt_VSmu_2p5_tau);
-tree->Branch("genPartFlav_tau",  &m_genPartFlav_tau);
-// end taus
+  if(!do_slim){
+    // adding taus
+    // tau branches
+    tree->Branch("Ntau", &m_Ntau);
+    tree->Branch("PT_tau",  &m_PT_tau);
+    tree->Branch("Eta_tau", &m_Eta_tau);
+    tree->Branch("Phi_tau", &m_Phi_tau);
+    tree->Branch("Mass_tau", &m_Mass_tau);
+    tree->Branch("dxy_tau", &m_dxy_tau);
+    tree->Branch("dz_tau",  &m_dz_tau);
+    tree->Branch("decayMode_tau", &m_decayMode_tau);
+    tree->Branch("Charge_tau",    &m_Charge_tau);
+    tree->Branch("dt_VSe_2p1_tau",   &m_dt_VSe_2p1_tau);
+    tree->Branch("dt_VSjet_2p1_tau", &m_dt_VSjet_2p1_tau);
+    tree->Branch("dt_VSmu_2p1_tau",  &m_dt_VSmu_2p1_tau);
+    tree->Branch("dt_VSe_2p5_tau",   &m_dt_VSe_2p5_tau);
+    tree->Branch("dt_VSjet_2p5_tau", &m_dt_VSjet_2p5_tau);
+    tree->Branch("dt_VSmu_2p5_tau",  &m_dt_VSmu_2p5_tau);
+    tree->Branch("genPartFlav_tau",  &m_genPartFlav_tau);
+    // end taus
+  }
 
-
-  
   tree->Branch("Njet", &m_Njet);
   tree->Branch("Nbjet", &m_Nbjet);
 
@@ -549,10 +549,12 @@ tree->Branch("genPartFlav_tau",  &m_genPartFlav_tau);
   tree->Branch("index_lep_b_LEP", &m_index_lep_b_LEP);
 
   // Kinematics
-  tree->Branch("PTCM", &m_PTCM);
-  tree->Branch("PzCM", &m_PzCM);
-  tree->Branch("dphiCMI", &m_dphiCMI);
-  tree->Branch("dphiMET_V", &m_dphiMET_V);
+  if(!do_slim){
+    tree->Branch("PTCM", &m_PTCM);
+    tree->Branch("PzCM", &m_PzCM);
+    tree->Branch("dphiCMI", &m_dphiCMI);
+    tree->Branch("dphiMET_V", &m_dphiMET_V);
+  }
 
   if(!do_slim){
     tree->Branch("cosCM", &m_cosCM);
@@ -571,10 +573,13 @@ tree->Branch("genPartFlav_tau",  &m_genPartFlav_tau);
   tree->Branch("dphiCMI_LEP", &m_dphiCMI_LEP);
   tree->Branch("dphiMET_V_LEP", &m_dphiMET_V_LEP);
 
-  tree->Branch("Mperp", &m_Mperp);
-  tree->Branch("gammaT", &m_gammaT);
-  tree->Branch("PTISR", &m_PTISR);
-  tree->Branch("RISR", &m_RISR);
+  if(!do_slim){
+    tree->Branch("Mperp", &m_Mperp);
+    tree->Branch("gammaT", &m_gammaT);
+    tree->Branch("PTISR", &m_PTISR);
+    tree->Branch("RISR", &m_RISR);
+  }
+
   if(!do_slim){
     tree->Branch("EJ_BoostT", &m_EJ_BoostT);
     tree->Branch("EL_BoostT", &m_EL_BoostT);
@@ -636,16 +641,16 @@ tree->Branch("genPartFlav_tau",  &m_genPartFlav_tau);
     tree->Branch("MX2b0_BoostT_LEP", &m_MX2b0_BoostT_LEP);
     tree->Branch("RatioPerp0A", &m_RatioPerp0A);
     tree->Branch("RatioPerp0B", &m_RatioPerp0B);
+    tree->Branch("MT2", &m_MT2);
+    tree->Branch("MS_LEP", &m_MS_LEP);
   }
 
-  tree->Branch("MT2", &m_MT2);
   tree->Branch("RISR_LEP", &m_RISR_LEP);
   tree->Branch("PTISR_LEP", &m_PTISR_LEP);
   tree->Branch("Mperp_LEP", &m_Mperp_LEP);
   tree->Branch("gammaT_LEP", &m_gammaT_LEP);
-  tree->Branch("MS_LEP", &m_MS_LEP);
-
-  if(!do_slim || !tree_is_sys) {
+  
+  if(!do_slim) {
     tree->Branch("MPa_LEP", &m_MPa_LEP);
     tree->Branch("MPb_LEP", &m_MPb_LEP);
     tree->Branch("MVa_LEP", &m_MVa_LEP);
@@ -1165,7 +1170,12 @@ void ReducedNtuple<Base>::FillOutputTree(TTree* tree, const Systematic& sys, boo
   }
   
   // Sparticle pair-production trees analysis
-  for(int t = 0; t < m_aTrees; t++){
+  // for(int t = 0; t < m_aTrees; t++){
+  // change order to take advantage of cuts in the LEP tree
+  // const int tree_order[] = {1, 0, 2, 3};
+  const int tree_order[] = {1, 0};
+  for (int order = 0; order < m_aTrees; ++order) {
+    const int t = tree_order[order];
     
     LAB[t]->ClearEvent(); 
 
