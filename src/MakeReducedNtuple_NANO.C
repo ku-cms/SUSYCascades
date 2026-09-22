@@ -226,6 +226,7 @@ int main(int argc, char* argv[]) {
       "davs://k8s-redir-stageout.ultralight.org:1094/", // T2_US_Caltech
       "davs://cmsxrootd.hep.wisc.edu:1094", // T2_US_Wisconsin
       "davs://gfe02.grid.hep.ph.ic.ac.uk:2880/pnfs/hep.ph.ic.ac.uk/data/cms", // T2_UK_London_IC
+      "davs://webdav.sprace.org.br:2880", // T2_BR_SPRACE
   };
   
   bool success = false;
@@ -239,7 +240,7 @@ int main(int argc, char* argv[]) {
       if (attempt == 0) {
           // reuse the chain that was built during the DAS loop above
       } else {
-          std::cerr << "[attempt " << attempt << "] GetEntries timed out previously; retrying with redirector: "
+          std::cout << "[attempt " << attempt << "] GetEntries timed out previously; retrying with redirector: "
                     << redirectors[attempt] << std::endl;
           // delete old chain and rebuild with the new redirector
           if (chain) {
@@ -260,7 +261,7 @@ int main(int argc, char* argv[]) {
               std::cout << "Got entries with prefix: " << srcPrefix << std::endl;
           break;
       } else {
-          std::cerr << "GetEntries() attempt " << attempt << " timed out after " << timeoutSeconds << " seconds." << std::endl;
+          std::cout << "GetEntries() attempt " << attempt << " timed out after " << timeoutSeconds << " seconds." << std::endl;
           // loop continues to next redirector
       }
   }

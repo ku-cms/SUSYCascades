@@ -301,7 +301,7 @@ def UpdateFilterList(DataSetName, filterlist_filename, add):
 # Check condor jobs
 def checkJobs(workingDir, outputDir, skipEC, skipDAS, skipMissing, skipSmall,
               skipErr, skipOut, skipZombie, resubmit, maxResub,
-              filter_list, skipDASDataset, skipHists, doRucio, rucio_env):
+              filter_list, skipDASDataset, skipHists, doRucio, rucio_env, zach_rucio):
     print("Running over the directory '{0}'.".format(workingDir), flush=True)
     print("------------------------------------------------------------", flush=True)
     grep_ignore = "-e \"Warning\" -e \"WARNING\" -e \"TTree::SetBranchStatus\" -e \"libXrdSecztn.so\" -e \"Phi_mpi_pi\" -e \"tar: stdout: write error\" -e \"INFO\""
@@ -680,8 +680,9 @@ def checkJobs(workingDir, outputDir, skipEC, skipDAS, skipMissing, skipSmall,
                     print(f"Creating {len(rucio_files)} rucio rules")
                     for rfile in sorted(rucio_files):
                         cmd = f'rucio rule add --copies 1 --rses T2_US_Nebraska {rfile}'
-                        #cmd = f'rucio rule add --copies 1 --ask-approval --rses T3_US_FNALLPC {rfile}'
-                        #cmd = f'rucio did content add --to-did user.zflowers:/Analyses/Cascades_dataset/USER#datasets {rfile}'
+                        # cmd = f'rucio rule add --copies 1 --ask-approval --rses T3_US_FNALLPC {rfile}'
+                        if zach_rucio: # change cmd to zach's LPC container
+                            cmd = f'rucio did content add --to-did user.zflowers:/Analyses/Cascades_dataset/USER#datasets {rfile}'
                         try:
                             subprocess.check_call(["bash", "-c", cmd], env=rucio_env)
                         except subprocess.CalledProcessError as e:
@@ -757,6 +758,7 @@ def main():
     parser.add_argument("--skipDASDataset", "-k", action='store_true', help="skip checking DAS dataset matches")
     parser.add_argument("--skipHists",      "-f", action='store_true', help="skip checking Histograms folder")
     parser.add_argument("--rucio",          "-n", action='store_true', help="create rucio request to move bad files to different site")
+    parser.add_argument("--zachRucio",      action='store_true', help="use zach's rucio container instead of T2_US_Nebraska")
     parser.add_argument("--maxResub",       "-l", default=5000, help="max number of jobs to resubmit")
     parser.add_argument("--threshold",      "-t", default=0.99*get_auto_THRESHOLD(), help="min number of jobs running before starting checker")
     parser.add_argument("--sleep",          "-p", default=1, help="time to sleep before starting checker")
@@ -778,6 +780,7 @@ def main():
     skipDASDataset = options.skipDASDataset
     skipHists      = options.skipHists
     doRucio        = options.rucio
+    zach_rucio     = options.zachRucio
     maxResub       = int(options.maxResub)
     threshold      = int(options.threshold)
     sleep_time     = int(options.sleep)
@@ -852,7 +855,7 @@ def main():
         print(f"Waiting until minumum of {threshold} jobs in the queue", flush=True)
         condor_monitor.wait_until_jobs_below()
         print("Running checker...", flush=True)
-        nJobs = checkJobs(directory,output,skipEC,skipDAS,skipMissing,skipSmall,skipErr,skipOut,skipZombie,resubmit,maxResub,filter_list,skipDASDataset,skipHists,doRucio,rucio_env)
+        nJobs = checkJobs(directory,output,skipEC,skipDAS,skipMissing,skipSmall,skipErr,skipOut,skipZombie,resubmit,maxResub,filter_list,skipDASDataset,skipHists,doRucio,rucio_env,zach_rucio)
         if resubmit and nJobs > 0:
             print(f"Resubmitted a total of {nJobs} jobs!", flush=True)
     print("Checker Complete!", flush=True)

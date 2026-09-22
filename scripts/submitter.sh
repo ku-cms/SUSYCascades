@@ -14,3 +14,4 @@ python3 scripts/condor_submit_nano_connect_ntuples.py -list samples/NANO/Lists/A
 python3 scripts/condor_submit_nano_connect_ntuples.py -list samples/NANO/Lists/Additional_Lists/Summer23_130X_Data_MET.list --verbose --data --slim
 python3 scripts/condor_submit_nano_connect_ntuples.py -list samples/NANO/Lists/Additional_Lists/Summer23BPix_130X_Data_MET.list --verbose --data --slim
 python3 scripts/condor_submit_nano_connect_ntuples.py -list samples/NANO/Lists/Additional_Lists/Summer24_130X_Data_MET.list --verbose --data --slim
+python3 scripts/condor_submit_nano_connect_ntuples.py -list samples/NANO/Lists/Additional_Lists/Summer25_130X_Data_MET.list --verbose --data --slim

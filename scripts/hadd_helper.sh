@@ -1,16 +1,43 @@
+python3 scripts/DO_hadd.py -idir /ospool/cms-user/zflowers/NTUPLES/Processing/Summer20UL16APV_106X_Data_Leptons/ -odir /local-scratch/zflowers/NTUPLES/HADD/Summer20UL16APV_106X_Data_Leptons/ > HADD_logs/HADD_Summer20UL16APV_106X_Data_Leptons.debug 2>&1
+python3 scripts/DO_hadd.py -idir /ospool/cms-user/zflowers/NTUPLES/Processing/Summer20UL16APV_106X_Data_MET/ -odir /local-scratch/zflowers/NTUPLES/HADD/Summer20UL16APV_106X_Data_MET/ > HADD_logs/HADD_Summer20UL16APV_106X_Data_MET.debug 2>&1
 python3 scripts/DO_hadd.py -idir /ospool/cms-user/zflowers/NTUPLES/Processing/Summer20UL16APV_106X_SMS/ -odir /local-scratch/zflowers/NTUPLES/HADD/Summer20UL16APV_106X_SMS/ > HADD_logs/HADD_Summer20UL16APV_106X_SMS.debug 2>&1
+python3 scripts/DO_hadd.py -idir /ospool/cms-user/zflowers/NTUPLES/Processing/Summer20UL16APV_106X_SMS_LLP/ -odir /local-scratch/zflowers/NTUPLES/HADD/Summer20UL16APV_106X_SMS_LLP/ > HADD_logs/HADD_Summer20UL16APV_106X_SMS_LLP.debug 2>&1
+
+python3 scripts/DO_hadd.py -idir /ospool/cms-user/zflowers/NTUPLES/Processing/Summer20UL16_106X_Data_Leptons/ -odir /local-scratch/zflowers/NTUPLES/HADD/Summer20UL16_106X_Data_Leptons/ > HADD_logs/HADD_Summer20UL16_106X_Data_Leptons.debug 2>&1
+python3 scripts/DO_hadd.py -idir /ospool/cms-user/zflowers/NTUPLES/Processing/Summer20UL16_106X_Data_MET/ -odir /local-scratch/zflowers/NTUPLES/HADD/Summer20UL16_106X_Data_MET/ > HADD_logs/HADD_Summer20UL16_106X_Data_MET.debug 2>&1
 python3 scripts/DO_hadd.py -idir /ospool/cms-user/zflowers/NTUPLES/Processing/Summer20UL16_106X_SMS/ -odir /local-scratch/zflowers/NTUPLES/HADD/Summer20UL16_106X_SMS/ > HADD_logs/HADD_Summer20UL16_106X_SMS.debug 2>&1
+python3 scripts/DO_hadd.py -idir /ospool/cms-user/zflowers/NTUPLES/Processing/Summer20UL16_106X_SMS_LLP/ -odir /local-scratch/zflowers/NTUPLES/HADD/Summer20UL16_106X_SMS_LLP/ > HADD_logs/HADD_Summer20UL16_106X_SMS_LLP.debug 2>&1
+
+python3 scripts/DO_hadd.py -idir /ospool/cms-user/zflowers/NTUPLES/Processing/Summer20UL17_106X_Data_Leptons/ -odir /local-scratch/zflowers/NTUPLES/HADD/Summer20UL17_106X_Data_Leptons/ > HADD_logs/HADD_Summer20UL17_106X_Data_Leptons.debug 2>&1
+python3 scripts/DO_hadd.py -idir /ospool/cms-user/zflowers/NTUPLES/Processing/Summer20UL17_106X_Data_MET/ -odir /local-scratch/zflowers/NTUPLES/HADD/Summer20UL17_106X_Data_MET/ > HADD_logs/HADD_Summer20UL17_106X_Data_MET.debug 2>&1
 python3 scripts/DO_hadd.py -idir /ospool/cms-user/zflowers/NTUPLES/Processing/Summer20UL17_106X_SMS/ -odir /local-scratch/zflowers/NTUPLES/HADD/Summer20UL17_106X_SMS/ > HADD_logs/HADD_Summer20UL17_106X_SMS.debug 2>&1
+python3 scripts/DO_hadd.py -idir /ospool/cms-user/zflowers/NTUPLES/Processing/Summer20UL17_106X_SMS_LLP/ -odir /local-scratch/zflowers/NTUPLES/HADD/Summer20UL17_106X_SMS_LLP/ > HADD_logs/HADD_Summer20UL17_106X_SMS_LLP.debug 2>&1
+
+python3 scripts/DO_hadd.py -idir /ospool/cms-user/zflowers/NTUPLES/Processing/Summer20UL18_106X_Data_Leptons/ -odir /local-scratch/zflowers/NTUPLES/HADD/Summer20UL18_106X_Data_Leptons/ > HADD_logs/HADD_Summer20UL18_106X_Data_Leptons.debug 2>&1
+python3 scripts/DO_hadd.py -idir /ospool/cms-user/zflowers/NTUPLES/Processing/Summer20UL18_106X_Data_MET/ -odir /local-scratch/zflowers/NTUPLES/HADD/Summer20UL18_106X_Data_MET/ > HADD_logs/HADD_Summer20UL18_106X_Data_MET.debug 2>&1
 python3 scripts/DO_hadd.py -idir /ospool/cms-user/zflowers/NTUPLES/Processing/Summer20UL18_106X_SMS/ -odir /local-scratch/zflowers/NTUPLES/HADD/Summer20UL18_106X_SMS/ > HADD_logs/HADD_Summer20UL18_106X_SMS.debug 2>&1
-python3 scripts/DO_hadd.py -idir /ospool/cms-user/zflowers/NTUPLES/Processing/Summer20UL16APV_106X_Data_MET/ -odir /local-scratch/zflowers/NTUPLES/HADD/Summer20UL16APV_106X_Data/ > HADD_logs/HADD_Summer20UL16APV_106X_Data.debug 2>&1
-python3 scripts/DO_hadd.py -idir /ospool/cms-user/zflowers/NTUPLES/Processing/Summer20UL16_106X_Data_MET/ -odir /local-scratch/zflowers/NTUPLES/HADD/Summer20UL16_106X_Data/ > HADD_logs/HADD_Summer20UL16_106X_Data.debug 2>&1
-python3 scripts/DO_hadd.py -idir /ospool/cms-user/zflowers/NTUPLES/Processing/Summer20UL17_106X_Data_MET/ -odir /local-scratch/zflowers/NTUPLES/HADD/Summer20UL17_106X_Data/ > HADD_logs/HADD_Summer20UL17_106X_Data.debug 2>&1
-python3 scripts/DO_hadd.py -idir /ospool/cms-user/zflowers/NTUPLES/Processing/Summer20UL18_106X_Data_MET/ -odir /local-scratch/zflowers/NTUPLES/HADD/Summer20UL18_106X_Data/ > HADD_logs/HADD_Summer20UL18_106X_Data.debug 2>&1
-python3 scripts/DO_hadd.py -idir /ospool/cms-user/zflowers/NTUPLES/Processing/Summer22_130X_Data_MET/ -odir /local-scratch/zflowers/NTUPLES/HADD/Summer22_130X_Data/ > HADD_logs/HADD_Summer22_130X_Data.debug 2>&1
-python3 scripts/DO_hadd.py -idir /ospool/cms-user/zflowers/NTUPLES/Processing/Summer22EE_130X_Data_MET/ -odir /local-scratch/zflowers/NTUPLES/HADD/Summer22EE_130X_Data/ > HADD_logs/HADD_Summer22EE_130X_Data.debug 2>&1
-python3 scripts/DO_hadd.py -idir /ospool/cms-user/zflowers/NTUPLES/Processing/Summer23_130X_Data_MET/ -odir /local-scratch/zflowers/NTUPLES/HADD/Summer23_130X_Data/ > HADD_logs/HADD_Summer23_130X_Data.debug 2>&1
-python3 scripts/DO_hadd.py -idir /ospool/cms-user/zflowers/NTUPLES/Processing/Summer23BPix_130X_Data_MET/ -odir /local-scratch/zflowers/NTUPLES/HADD/Summer23BPix_130X_Data/ > HADD_logs/HADD_Summer23BPix_130X_Data.debug 2>&1
-python3 scripts/DO_hadd.py -idir /ospool/cms-user/zflowers/NTUPLES/Processing/Summer24_130X_Data_MET/ -odir /local-scratch/zflowers/NTUPLES/HADD/Summer24_130X_Data/ > HADD_logs/HADD_Summer24_130X_Data.debug 2>&1
-python3 scripts/DO_hadd.py -idir /ospool/cms-user/zflowers/NTUPLES/Processing/Summer23BPix_130X_Cascades/ -odir /local-scratch/zflowers/NTUPLES/HADD/Summer23BPix_130X_Cascades/ > HADD_logs/HADD_Summer23BPix_130X_Cascades.debug 2>&1
+python3 scripts/DO_hadd.py -idir /ospool/cms-user/zflowers/NTUPLES/Processing/Summer20UL18_106X_SMS_LLP/ -odir /local-scratch/zflowers/NTUPLES/HADD/Summer20UL18_106X_SMS_LLP/ > HADD_logs/HADD_Summer20UL18_106X_SMS_LLP.debug 2>&1
+
+python3 scripts/DO_hadd.py -idir /ospool/cms-user/zflowers/NTUPLES/Processing/Summer22EE_130X_Data_Leptons/ -odir /local-scratch/zflowers/NTUPLES/HADD/Summer22EE_130X_Data_Leptons/ > HADD_logs/HADD_Summer22EE_130X_Data_Leptons.debug 2>&1
+python3 scripts/DO_hadd.py -idir /ospool/cms-user/zflowers/NTUPLES/Processing/Summer22EE_130X_Data_MET/ -odir /local-scratch/zflowers/NTUPLES/HADD/Summer22EE_130X_Data_MET/ > HADD_logs/HADD_Summer22EE_130X_Data_MET.debug 2>&1
+python3 scripts/DO_hadd.py -idir /ospool/cms-user/zflowers/NTUPLES/Processing/Summer22EE_130X_SMS/ -odir /local-scratch/zflowers/NTUPLES/HADD/Summer22EE_130X_SMS/ > HADD_logs/HADD_Summer22EE_130X_SMS.debug 2>&1
+
 python3 scripts/DO_hadd.py -idir /ospool/cms-user/zflowers/NTUPLES/Processing/Summer22_130X_Cascades/ -odir /local-scratch/zflowers/NTUPLES/HADD/Summer22_130X_Cascades/ > HADD_logs/HADD_Summer22_130X_Cascades.debug 2>&1
-python3 scripts/DO_hadd.py -idir /ospool/cms-user/zflowers/NTUPLES/Processing/Summer22_130X_SMS/ -odir /local-scratch/zflowers/NTUPLES/HADD/Summer22_130X_SMS/ > HADD_logs/HADD_Summer22_130X_SMS.debug 2>&1
+python3 scripts/DO_hadd.py -idir /ospool/cms-user/zflowers/NTUPLES/Processing/Summer22_130X_Data_Leptons/ -odir /local-scratch/zflowers/NTUPLES/HADD/Summer22_130X_Data_Leptons/ > HADD_logs/HADD_Summer22_130X_Data_Leptons.debug 2>&1
+python3 scripts/DO_hadd.py -idir /ospool/cms-user/zflowers/NTUPLES/Processing/Summer22_130X_Data_MET/ -odir /local-scratch/zflowers/NTUPLES/HADD/Summer22_130X_Data_MET/ > HADD_logs/HADD_Summer22_130X_Data_MET.debug 2>&1
+# python3 scripts/DO_hadd.py -idir /ospool/cms-user/zflowers/NTUPLES/Processing/Summer22_130X_SMS/ -odir /local-scratch/zflowers/NTUPLES/HADD/Summer22_130X_SMS/ > HADD_logs/HADD_Summer22_130X_SMS.debug 2>&1
+
+python3 scripts/DO_hadd.py -idir /ospool/cms-user/zflowers/NTUPLES/Processing/Summer23BPix_130X_Cascades/ -odir /local-scratch/zflowers/NTUPLES/HADD/Summer23BPix_130X_Cascades/ > HADD_logs/HADD_Summer23BPix_130X_Cascades.debug 2>&1
+python3 scripts/DO_hadd.py -idir /ospool/cms-user/zflowers/NTUPLES/Processing/Summer23BPix_130X_Data_Leptons/ -odir /local-scratch/zflowers/NTUPLES/HADD/Summer23BPix_130X_Data_Leptons/ > HADD_logs/HADD_Summer23BPix_130X_Data_Leptons.debug 2>&1
+python3 scripts/DO_hadd.py -idir /ospool/cms-user/zflowers/NTUPLES/Processing/Summer23BPix_130X_Data_MET/ -odir /local-scratch/zflowers/NTUPLES/HADD/Summer23BPix_130X_Data_MET/ > HADD_logs/HADD_Summer23BPix_130X_Data_MET.debug 2>&1
+# python3 scripts/DO_hadd.py -idir /ospool/cms-user/zflowers/NTUPLES/Processing/Summer23BPix_130X_SMS/ -odir /local-scratch/zflowers/NTUPLES/HADD/Summer23BPix_130X_SMS/ > HADD_logs/HADD_Summer23BPix_130X_SMS.debug 2>&1
+
+python3 scripts/DO_hadd.py -idir /ospool/cms-user/zflowers/NTUPLES/Processing/Summer23_130X_Data_Leptons/ -odir /local-scratch/zflowers/NTUPLES/HADD/Summer23_130X_Data_Leptons/ > HADD_logs/HADD_Summer23_130X_Data_Leptons.debug 2>&1
+python3 scripts/DO_hadd.py -idir /ospool/cms-user/zflowers/NTUPLES/Processing/Summer23_130X_Data_MET/ -odir /local-scratch/zflowers/NTUPLES/HADD/Summer23_130X_Data_MET/ > HADD_logs/HADD_Summer23_130X_Data_MET.debug 2>&1
+# python3 scripts/DO_hadd.py -idir /ospool/cms-user/zflowers/NTUPLES/Processing/Summer23_130X_SMS/ -odir /local-scratch/zflowers/NTUPLES/HADD/Summer23_130X_SMS/ > HADD_logs/HADD_Summer23_130X_SMS.debug 2>&1
+
+python3 scripts/DO_hadd.py -idir /ospool/cms-user/zflowers/NTUPLES/Processing/Summer24_130X_Data_Leptons/ -odir /local-scratch/zflowers/NTUPLES/HADD/Summer24_130X_Data_Leptons/ > HADD_logs/HADD_Summer24_130X_Data_Leptons.debug 2>&1
+python3 scripts/DO_hadd.py -idir /ospool/cms-user/zflowers/NTUPLES/Processing/Summer24_130X_Data_MET/ -odir /local-scratch/zflowers/NTUPLES/HADD/Summer24_130X_Data_MET/ > HADD_logs/HADD_Summer24_130X_Data_MET.debug 2>&1
+
+python3 scripts/DO_hadd.py -idir /ospool/cms-user/zflowers/NTUPLES/Processing/Summer25_130X_Data_Leptons/ -odir /local-scratch/zflowers/NTUPLES/HADD/Summer25_130X_Data_Leptons/ > HADD_logs/HADD_Summer25_130X_Data_Leptons.debug 2>&1
+python3 scripts/DO_hadd.py -idir /ospool/cms-user/zflowers/NTUPLES/Processing/Summer25_130X_Data_MET/ -odir /local-scratch/zflowers/NTUPLES/HADD/Summer25_130X_Data_MET/ > HADD_logs/HADD_Summer25_130X_Data_MET.debug 2>&1
