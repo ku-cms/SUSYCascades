@@ -279,7 +279,7 @@ int main(int argc, char* argv[]) {
   else if(string(FileTag).find("UL") != std::string::npos){ cout << "Using UL base" << endl; ntuple = std::make_unique<ReducedNtuple<NANOULBase>>(chain); }
   else { cout << "Using Run2 base" << endl; ntuple = std::make_unique<ReducedNtuple<SUSYNANOBase>>(chain); }
 
-  Long64_t N1, N0;
+  Long64_t N1 = 0, N0 = 0;
   std::visit([&](auto& nt) { nt->GetChunks(NDAS, N1, N0, ICHUNK, NCHUNK); }, ntuple);
   NDAS = N0 - N1;
 
