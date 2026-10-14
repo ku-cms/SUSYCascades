@@ -23,6 +23,8 @@ AnalysisBase<Base>::AnalysisBase(TTree* tree)
   m_IsLLP = false;
   m_IsData = false;
   m_IsFastSim = false;
+  m_IsPrivateMC = false;
+  m_IsCascades = false;
 
   m_CurSys = &Systematic::Default();
 }
@@ -219,6 +221,8 @@ void AnalysisBase<Base>::AddPUFolder(const string& pufold){
       PU_file = find_clib_file(pufold, "puWeights_BCDEFGHI.json.gz");
     else if(m_year == 2025)
       PU_file = find_clib_file(pufold, "puWeights_2025pp_Golden_Summer24_25ns_69200ub.json.gz");
+    else if(m_year == 2026)
+      PU_file = find_clib_file(pufold, "puWeights_2025pp_Golden_Summer24_25ns_69200ub.json.gz", "Run3-25Prompt-Summer24-NanoAODv15");
     m_cset_PU = correction::CorrectionSet::from_file(PU_file);
     if(m_year == 2016)              m_cset_corr_PU = m_cset_PU->at("Collisions16_UltraLegacy_goldenJSON");
     if(m_year == 2017)              m_cset_corr_PU = m_cset_PU->at("Collisions17_UltraLegacy_goldenJSON");
@@ -228,7 +232,7 @@ void AnalysisBase<Base>::AddPUFolder(const string& pufold){
     if(m_year == 2023 && !m_IsBPix) m_cset_corr_PU = m_cset_PU->at("Collisions2023_366403_369802_eraBC_GoldenJson");
     if(m_year == 2023 && m_IsBPix)  m_cset_corr_PU = m_cset_PU->at("Collisions2023_369803_370790_eraD_GoldenJson");
     if(m_year == 2024)              m_cset_corr_PU = m_cset_PU->at("Collisions24_BCDEFGHI_goldenJSON");
-    if(m_year == 2025)              m_cset_corr_PU = m_cset_PU->at("Collisions25_goldenJSON");
+    if(m_year >= 2025)              m_cset_corr_PU = m_cset_PU->at("Collisions25_goldenJSON");
   }
 }
 
@@ -248,7 +252,10 @@ template <class Base>
 void AnalysisBase<Base>::SetupBtagWP(){
   if(m_year < 2019 && !m_IsUL) return;
   std::string Btag_file = "";
-  Btag_file = find_clib_file("/cvmfs/cms-griddata.cern.ch/cat/metadata/BTV/", "btagging.json.gz");
+  if(m_year == 2026)
+    Btag_file = find_clib_file("/cvmfs/cms-griddata.cern.ch/cat/metadata/BTV/", "btagging.json.gz", "Run3-25Prompt-Summer24-NanoAODv15");
+  else
+    Btag_file = find_clib_file("/cvmfs/cms-griddata.cern.ch/cat/metadata/BTV/", "btagging.json.gz");
   m_cset_Btag = correction::CorrectionSet::from_file(Btag_file);
   if(m_year < 2024){
     m_BtagLooseWP = m_cset_Btag->at("deepJet_wp_values")->evaluate({"L"});
@@ -1764,7 +1771,7 @@ ParticleList AnalysisBase<Base>::GetGenSparticles(){
           p.SetGenMomIndex(mom);
         }
         p.SetPtEtaPhiM(this->GenPart_pt[i], this->GenPart_eta[i],
-          	     this->GenPart_phi[i], max(int(0.),QuantizeMass(this->GenPart_mass[i])));
+                       this->GenPart_phi[i], std::max(0.f, this->GenPart_mass[i]));
         list.push_back(p);
       }
     }
@@ -2079,7 +2086,7 @@ int AnalysisBase<Base>::GetSampleIndex(){
       else code += 200;
     }
     
-    long long hash = ((long long)MP << 28) | ((long long)MC << 14) | code;
+    long long hash = ((long long)MP << 32) | ((long long)MC << 8) | code;
     if(m_IsCascades){
       if(m_IsSMS){ // should not be needed
         if(m_HashToIndex.count(hash) == 0){
@@ -4901,7 +4908,7 @@ double AnalysisBase<NANORun3>::GetMETTriggerSFWeight(double MET, double HT, int 
   if(IsData()) return 1.;
   if(Nele > 2) Nele = 2;
   int year = m_year;
-if(m_year > 2024) year = 2024;  // hack until 2025 SFs ready
+  if(m_year > 2025) year = 2025;  // hack until 2025 SFs ready
   if(IsFastSim())
     return m_METTriggerTool.Get_EFF_JSON(MET, year, Nele, updown)*
       m_METTriggerTool.Get_SF_JSON(MET, year, Nele, updown);
