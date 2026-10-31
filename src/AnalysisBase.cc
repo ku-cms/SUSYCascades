@@ -3830,7 +3830,7 @@ ParticleList AnalysisBase<SUSYNANOBase>::GetMuons(){
     
     Particle lep;
     lep.SetPtEtaPhiM(Muon_pt[i], Muon_eta[i],
-		     Muon_phi[i], std::max(float(0.),Muon_mass[i]));
+		     Muon_phi[i], std::max(float(1.e-6),Muon_mass[i]));
     lep.SetPDGID( (Muon_charge[i] < 0. ? 13 : -13) );
     lep.SetCharge( (Muon_charge[i] < 0. ? -1 : 1) );	
     lep.SetDxy(Muon_dxy[i]);
@@ -4472,7 +4472,7 @@ ParticleList AnalysisBase<NANOULBase>::GetElectrons(){
 
     Particle lep;
     lep.SetPtEtaPhiM(Electron_pt[i], Electron_eta[i],
-		     Electron_phi[i], std::max(Electron_mass[i],float(1.e-6)));
+		     Electron_phi[i], std::max(Electron_mass[i],float(1.e-4)));
     lep.SetPDGID( (Electron_charge[i] < 0. ? 11 : -11) );
     lep.SetCharge( (Electron_charge[i] < 0. ? -1 : 1) );
 
@@ -4636,7 +4636,7 @@ ParticleList AnalysisBase<NANOULBase>::GetMuons(){
     
     Particle lep;
     lep.SetPtEtaPhiM(Muon_pt[i], Muon_eta[i],
-		     Muon_phi[i], std::max(float(0.),Muon_mass[i]));
+		     Muon_phi[i], std::max(float(1.e-6),Muon_mass[i]));
     lep.SetPDGID( (Muon_charge[i] < 0. ? 13 : -13) );
     lep.SetCharge( (Muon_charge[i] < 0. ? -1 : 1) );	
     lep.SetDxy(Muon_dxy[i]);
@@ -5428,7 +5428,7 @@ ParticleList AnalysisBase<NANORun3>::GetMuons(){
     
     Particle lep;
     lep.SetPtEtaPhiM(Muon_pt[i], Muon_eta[i],
-		     Muon_phi[i], std::max(float(0.),Muon_mass[i]));
+		     Muon_phi[i], std::max(float(1.e-6),Muon_mass[i]));
     lep.SetPDGID( (Muon_charge[i] < 0. ? 13 : -13) );
     lep.SetCharge( (Muon_charge[i] < 0. ? -1 : 1) );	
     lep.SetDxy(Muon_dxy[i]);
