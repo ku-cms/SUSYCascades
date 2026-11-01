@@ -456,18 +456,20 @@ TTree* ReducedNtuple<Base>::InitOutputTree(const string& sample, bool do_slim, b
   tree->Branch("ID_lep", &m_ID_lep);
   tree->Branch("SourceID_lep", &m_SourceID_lep);
   tree->Branch("LepQual_lep", &m_LepQual_lep);
-  tree->Branch("IsLowPt_lep", &m_IsLowPt_lep);
-  tree->Branch("TightCharge_lep", &m_TightCharge_lep);
   tree->Branch("Index_lep", &m_Index_lep);
 
-  tree->Branch("RelIso_lep",  &m_RelIso_lep);
-  tree->Branch("MiniIso_lep", &m_MiniIso_lep);
-  tree->Branch("Dxy_lep", &m_Dxy_lep);
-  tree->Branch("DxyErr_lep", &m_DxyErr_lep);
-  tree->Branch("Dz_lep", &m_Dz_lep);
-  tree->Branch("DzErr_lep", &m_DzErr_lep);
-  tree->Branch("IP3D_lep", &m_IP3D_lep);
-  tree->Branch("SIP3D_lep", &m_SIP3D_lep);
+  if(!do_slim){
+    tree->Branch("IsLowPt_lep", &m_IsLowPt_lep);
+    tree->Branch("TightCharge_lep", &m_TightCharge_lep);
+    tree->Branch("RelIso_lep",  &m_RelIso_lep);
+    tree->Branch("MiniIso_lep", &m_MiniIso_lep);
+    tree->Branch("Dxy_lep", &m_Dxy_lep);
+    tree->Branch("DxyErr_lep", &m_DxyErr_lep);
+    tree->Branch("Dz_lep", &m_Dz_lep);
+    tree->Branch("DzErr_lep", &m_DzErr_lep);
+    tree->Branch("IP3D_lep", &m_IP3D_lep);
+    tree->Branch("SIP3D_lep", &m_SIP3D_lep);
+  }
 
   if(!do_slim){
     // adding taus
@@ -533,28 +535,31 @@ TTree* ReducedNtuple<Base>::InitOutputTree(const string& sample, bool do_slim, b
   tree->Branch("Njet_b", &m_Njet_b);
   tree->Branch("Nbjet_a", &m_Nbjet_a);
   tree->Branch("Nbjet_b", &m_Nbjet_b);
-  tree->Branch("Nlep_ISR", &m_Nlep_ISR);
   tree->Branch("Nlep_S", &m_Nlep_S);
-  tree->Branch("index_lep_ISR", &m_index_lep_ISR);
+
   tree->Branch("index_lep_S", &m_index_lep_S);
   tree->Branch("Nlep_a", &m_Nlep_a);
   tree->Branch("Nlep_b", &m_Nlep_b);
   tree->Branch("index_lep_a", &m_index_lep_a);
   tree->Branch("index_lep_b", &m_index_lep_b);
 
+  if(!do_slim){
+    tree->Branch("Nlep_ISR", &m_Nlep_ISR);
+    tree->Branch("index_lep_ISR", &m_index_lep_ISR);
+  }
+
   // ISR+LEP tree
-  tree->Branch("Nlep_a_LEP", &m_Nlep_a_LEP);
-  tree->Branch("Nlep_b_LEP", &m_Nlep_b_LEP);
-  tree->Branch("index_lep_a_LEP", &m_index_lep_a_LEP);
-  tree->Branch("index_lep_b_LEP", &m_index_lep_b_LEP);
+  if(!do_slim){
+    tree->Branch("Nlep_a_LEP", &m_Nlep_a_LEP);
+    tree->Branch("Nlep_b_LEP", &m_Nlep_b_LEP);
+    tree->Branch("index_lep_a_LEP", &m_index_lep_a_LEP);
+    tree->Branch("index_lep_b_LEP", &m_index_lep_b_LEP);
+  }
 
   // Kinematics
-  if(!do_slim){
-    tree->Branch("PTCM", &m_PTCM);
-    tree->Branch("PzCM", &m_PzCM);
-    tree->Branch("dphiCMI", &m_dphiCMI);
-    tree->Branch("dphiMET_V", &m_dphiMET_V);
-  }
+  tree->Branch("PTCM", &m_PTCM);
+  tree->Branch("dphiCMI", &m_dphiCMI);
+  tree->Branch("dphiMET_V", &m_dphiMET_V);
 
   if(!do_slim){
     tree->Branch("cosCM", &m_cosCM);
@@ -568,19 +573,14 @@ TTree* ReducedNtuple<Base>::InitOutputTree(const string& sample, bool do_slim, b
     tree->Branch("CosDecayAngle_S", &m_CosDecayAngle_S);
   }
 
-  tree->Branch("PTCM_LEP", &m_PTCM_LEP);
-  tree->Branch("PzCM_LEP", &m_PzCM_LEP);
-  tree->Branch("dphiCMI_LEP", &m_dphiCMI_LEP);
-  tree->Branch("dphiMET_V_LEP", &m_dphiMET_V_LEP);
+  tree->Branch("Mperp", &m_Mperp);
+  tree->Branch("PTISR", &m_PTISR);
+  tree->Branch("RISR", &m_RISR);
+
+  tree->Branch("lephad_E_ratio", &m_lephad_E_ratio);
 
   if(!do_slim){
-    tree->Branch("Mperp", &m_Mperp);
-    tree->Branch("gammaT", &m_gammaT);
-    tree->Branch("PTISR", &m_PTISR);
-    tree->Branch("RISR", &m_RISR);
-  }
-
-  if(!do_slim){
+    tree->Branch("PzCM", &m_PzCM);
     tree->Branch("EJ_BoostT", &m_EJ_BoostT);
     tree->Branch("EL_BoostT", &m_EL_BoostT);
     tree->Branch("EtaCM", &m_EtaCM);
@@ -597,6 +597,7 @@ TTree* ReducedNtuple<Base>::InitOutputTree(const string& sample, bool do_slim, b
   // New Observables for Run3/Cascades
   // analysis using ISR boosted tree
   if(!do_slim){
+    tree->Branch("gammaT", &m_gammaT);
     tree->Branch("MSperpCM0", &m_MSperpCM0); 
     tree->Branch("MaPerpCM0", &m_MaPerpCM0);
     tree->Branch("MbPerpCM0", &m_MbPerpCM0);
@@ -642,15 +643,16 @@ TTree* ReducedNtuple<Base>::InitOutputTree(const string& sample, bool do_slim, b
     tree->Branch("RatioPerp0A", &m_RatioPerp0A);
     tree->Branch("RatioPerp0B", &m_RatioPerp0B);
     tree->Branch("MT2", &m_MT2);
-    tree->Branch("MS_LEP", &m_MS_LEP);
-  }
 
-  tree->Branch("RISR_LEP", &m_RISR_LEP);
-  tree->Branch("PTISR_LEP", &m_PTISR_LEP);
-  tree->Branch("Mperp_LEP", &m_Mperp_LEP);
-  tree->Branch("gammaT_LEP", &m_gammaT_LEP);
-  
-  if(!do_slim) {
+    tree->Branch("PTCM_LEP", &m_PTCM_LEP);
+    tree->Branch("PzCM_LEP", &m_PzCM_LEP);
+    tree->Branch("dphiCMI_LEP", &m_dphiCMI_LEP);
+    tree->Branch("dphiMET_V_LEP", &m_dphiMET_V_LEP);
+    tree->Branch("MS_LEP", &m_MS_LEP);
+    tree->Branch("RISR_LEP", &m_RISR_LEP);
+    tree->Branch("PTISR_LEP", &m_PTISR_LEP);
+    tree->Branch("Mperp_LEP", &m_Mperp_LEP);
+    tree->Branch("gammaT_LEP", &m_gammaT_LEP);
     tree->Branch("MPa_LEP", &m_MPa_LEP);
     tree->Branch("MPb_LEP", &m_MPb_LEP);
     tree->Branch("MVa_LEP", &m_MVa_LEP);
@@ -915,6 +917,8 @@ void ReducedNtuple<Base>::ClearVariables(){
   m_dphiMET_jet_S.clear();
   m_dphiMET_SV_S.clear();
 
+  m_lephad_E_ratio = -1.;
+
   m_Njet_ISR = 0;
   m_Njet_S = 0;
   m_Nbjet_ISR = 0;
@@ -1139,8 +1143,7 @@ void ReducedNtuple<Base>::FillOutputTree(TTree* tree, const Systematic& sys, boo
   int n_bronze_leptons = 0;
   for (int i = 0; i < m_Nlep; ++i)
     n_bronze_leptons += (Leptons[i].LepQual() == kBronze);
-  if (m_Nlep <= 3 && n_bronze_leptons > 1) return;
-  if (m_Nlep == 4  && n_bronze_leptons > 2) return;
+  if (n_bronze_leptons > 1) return;
 
   // Get SUSY masses
   if(AnalysisBase<Base>::IsCascades() || AnalysisBase<Base>::IsSMS()){
@@ -1173,7 +1176,7 @@ void ReducedNtuple<Base>::FillOutputTree(TTree* tree, const Systematic& sys, boo
   // for(int t = 0; t < m_aTrees; t++){
   // change order to take advantage of cuts in the LEP tree
   // const int tree_order[] = {1, 0, 2, 3};
-  const int tree_order[] = {1, 0};
+  const int tree_order[] = {0};
   for (int order = 0; order < m_aTrees; ++order) {
     const int t = tree_order[order];
     
@@ -1289,6 +1292,16 @@ void ReducedNtuple<Base>::FillOutputTree(TTree* tree, const Systematic& sys, boo
         continue;
       }
       
+      // Leptonic energy fraction: E_lep / (E_lep + E_had), lab frame.
+      // E_lep sums every lepton; E_had sums only the S jets (index_jet_S).
+      double E_lep = 0.;
+      for(int i = 0; i < m_Nlep; i++)
+        E_lep += Leptons[i].E();
+      double E_had = 0.;
+      for(int i : m_index_jet_S)
+        E_had += Jets[i].E();
+      m_lephad_E_ratio = E_lep/(E_lep + E_had);
+
       // Fill Observable Branches
       m_PTCM = CM[t]->GetFourVector().Pt();
       m_EtaCM = CM[t]->GetFourVector().Eta();
@@ -1514,6 +1527,12 @@ void ReducedNtuple<Base>::FillOutputTree(TTree* tree, const Systematic& sys, boo
           m_dphiMET_jet_S.push_back( Jets[m_index_jet_S[l]].Vect().DeltaPhi(ETMiss) );
         }
       }
+      if(m_PTISR < 95. || m_RISR < 0.69) return;
+      if(m_RISR > 1.01) return;
+      if (m_Nlep == 2 && m_Njet_S == 0 && m_PTISR < 245.) return;
+      if (m_Nlep == 2 && m_Njet_S >= 1 && m_PTISR < 195.) return;
+      if (m_Nlep == 3 && m_Njet_S == 0 && m_PTISR < 195.) return;
+      if((m_Nlep == 3 || (m_Nlep < 4 && m_Njet_S > 0)) && m_PTISR < 195.) return;
       // New Observables for Run3/Cascades
       // analysis using ISR boosted tree
       // variables using 4-vects constructed by evaluating in CM frame and making perp to boost
@@ -1713,11 +1732,6 @@ void ReducedNtuple<Base>::FillOutputTree(TTree* tree, const Systematic& sys, boo
       m_PTISR_LEP = vPISR.Pt();
       TVector3 vPINV = (X1a[t]->GetFourVector(*CM[t])+X1b[t]->GetFourVector(*CM[t])).Vect();
       m_RISR_LEP = fabs(vPINV.Dot(vPISR.Unit())) / vPISR.Mag();
-
-      // MORE NTUPLE Event Selection
-      if(m_PTISR_LEP < 75. || m_RISR_LEP < 0.6) return;
-      if(m_Nlep == 3 && m_PTISR_LEP < 175.) return;
-      if(m_Nlep == 2 && m_PTISR_LEP < 225.) return;
 
       m_MPa_LEP = X2a[t]->GetFourVector().M();
       m_MPb_LEP = X2b[t]->GetFourVector().M();

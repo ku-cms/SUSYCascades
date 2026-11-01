@@ -17,7 +17,7 @@ public:
 
 private:
   // Number of RJR analysis trees
-  const static int m_aTrees=2; // [JetsLeps_ISR, Leps_ISR, Jets_ISR, Jets]
+  const static int m_aTrees=1; // [JetsLeps_ISR, Leps_ISR, Jets_ISR, Jets]
 
   vector<bool> m_treeSkipped;
   bool m_library_generated;
@@ -243,6 +243,8 @@ private:
   bool m_DiMuEleLowPTtrigger;
   bool m_DiMuEleHighPTtrigger;
   bool m_DiEleMutrigger;
+
+  double m_lephad_E_ratio;
   
   int m_Nele;
   int m_Nlele;
