@@ -38,6 +38,7 @@ double XsecTool::GetXsec_SMS(const std::string& dataset, double MP, bool Run3) c
     }
     if((dataset.find("C1C1")!=std::string::npos) ||
        (dataset.find("TChipmWW")!=std::string::npos) ||
+       (dataset.find("TChiWW")!=std::string::npos) ||
        (dataset.find("TChipmSlepSnu")!=std::string::npos)){
       label = "C1C1_wino";
       if(dataset.find("WWTo2LNu")!= std::string::npos)
