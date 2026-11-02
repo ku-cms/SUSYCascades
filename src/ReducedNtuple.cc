@@ -243,8 +243,14 @@ TTree* ReducedNtuple<Base>::InitOutputTree(const string& sample, bool do_slim, b
   
   TTree* tree = (TTree*) new TTree(sample.c_str(), sample.c_str());
 
-  tree->Branch("event_skipped", &m_event_skipped);
-  tree->Branch("treeSkipped", &m_treeSkipped);
+  if(!do_slim){
+    tree->Branch("event_skipped", &m_event_skipped);
+    tree->Branch("treeSkipped", &m_treeSkipped);
+    tree->Branch("runnum", &m_runnum);
+    tree->Branch("luminum", &m_luminum);
+    tree->Branch("eventnum", &m_eventnum);
+    tree->Branch("NPV", &m_NPV);
+  }
   
   tree->Branch("weight", &m_weight);
   tree->Branch("weight2", &m_weight2);
@@ -383,12 +389,6 @@ TTree* ReducedNtuple<Base>::InitOutputTree(const string& sample, bool do_slim, b
   tree->Branch("MetTrigSFweight_down", &m_MetTrigSFweight_down);
   tree->Branch("MetTrigSFCurveIndex", &m_MetTrigSFCurveIndex);
 
-  tree->Branch("runnum", &m_runnum);
-  tree->Branch("luminum", &m_luminum);
-  tree->Branch("eventnum", &m_eventnum);
-
-  tree->Branch("NPV", &m_NPV);
-
   tree->Branch("EventFilter", &m_EventFilter);
   tree->Branch("PassesJVM", &m_PassesJVM);
   tree->Branch("FastSimEventVeto", &m_FastSimEventVeto);
@@ -400,32 +400,37 @@ TTree* ReducedNtuple<Base>::InitOutputTree(const string& sample, bool do_slim, b
     tree->Branch("EventFlag_FailJetID", &m_EventFlag_FailJetID);
     tree->Branch("EventFlag_JetInHEM", &m_EventFlag_JetInHEM);
     tree->Branch("EventFlag_JetInHEM_Pt20_JetID", &m_EventFlag_JetInHEM_Pt20_JetID);
+    tree->Branch("EventFlag_JetInHEM_Pt20", &m_EventFlag_JetInHEM_Pt20);
   }
-  tree->Branch("EventFlag_JetInHEM_Pt20", &m_EventFlag_JetInHEM_Pt20);
-  tree->Branch("HEM_Veto", &m_HEM_Veto);
 
-  tree->Branch("METtrigger", &m_METtrigger);
+  tree->Branch("HEM_Veto", &m_HEM_Veto);
   tree->Branch("METORtrigger", &m_METORtrigger);
-  tree->Branch("METDoubleMutrigger", &m_METDoubleMutrigger);
-  tree->Branch("SingleElectrontrigger", &m_SingleElectrontrigger);
-  tree->Branch("SingleMuontrigger", &m_SingleMuontrigger);
-  tree->Branch("EMutrigger", &m_EMutrigger);
-  tree->Branch("EMuMutrigger", &m_EMuMutrigger);
-  tree->Branch("EMuEtrigger", &m_EMuEtrigger);
-  tree->Branch("DoubleElectrontrigger", &m_DoubleElectrontrigger);
-  tree->Branch("DoubleMuontrigger", &m_DoubleMuontrigger);
-  tree->Branch("TripleElectrontrigger", &m_TripleElectrontrigger);
-  tree->Branch("TripleMuonLowPTtrigger", &m_TripleMuonLowPTtrigger);
-  tree->Branch("TripleMuonHighPTtrigger", &m_TripleMuonHighPTtrigger);
-  tree->Branch("DiMuEleLowPTtrigger", &m_DiMuEleLowPTtrigger);
-  tree->Branch("DiMuEleHighPTtrigger", &m_DiMuEleHighPTtrigger);
-  tree->Branch("DiEleMutrigger", &m_DiEleMutrigger);
+
+  if(!do_slim){
+    tree->Branch("METtrigger", &m_METtrigger);
+    tree->Branch("METDoubleMutrigger", &m_METDoubleMutrigger);
+    tree->Branch("SingleElectrontrigger", &m_SingleElectrontrigger);
+    tree->Branch("SingleMuontrigger", &m_SingleMuontrigger);
+    tree->Branch("EMutrigger", &m_EMutrigger);
+    tree->Branch("EMuMutrigger", &m_EMuMutrigger);
+    tree->Branch("EMuEtrigger", &m_EMuEtrigger);
+    tree->Branch("DoubleElectrontrigger", &m_DoubleElectrontrigger);
+    tree->Branch("DoubleMuontrigger", &m_DoubleMuontrigger);
+    tree->Branch("TripleElectrontrigger", &m_TripleElectrontrigger);
+    tree->Branch("TripleMuonLowPTtrigger", &m_TripleMuonLowPTtrigger);
+    tree->Branch("TripleMuonHighPTtrigger", &m_TripleMuonHighPTtrigger);
+    tree->Branch("DiMuEleLowPTtrigger", &m_DiMuEleLowPTtrigger);
+    tree->Branch("DiMuEleHighPTtrigger", &m_DiMuEleHighPTtrigger);
+    tree->Branch("DiEleMutrigger", &m_DiEleMutrigger);
+  }
   
+  if(!do_slim){
+    tree->Branch("LHE_HT", &m_LHE_HT);
+    tree->Branch("LHE_HTIncoming", &m_LHE_HTIncoming);
+  }
+
   tree->Branch("MET", &m_MET);
   tree->Branch("MET_phi", &m_MET_phi);
-
-  tree->Branch("LHE_HT", &m_LHE_HT);
-  tree->Branch("LHE_HTIncoming", &m_LHE_HTIncoming);
 
   tree->Branch("leadSjet_Pt45", &m_leadSjet_Pt45);
 
@@ -496,7 +501,8 @@ TTree* ReducedNtuple<Base>::InitOutputTree(const string& sample, bool do_slim, b
   tree->Branch("Njet", &m_Njet);
   tree->Branch("Nbjet", &m_Nbjet);
 
-  if(!do_slim || !tree_is_sys) {
+  // if(!do_slim || !tree_is_sys) {
+  if(!do_slim) {
     tree->Branch("PT_jet",  &m_PT_jet);
     tree->Branch("Eta_jet", &m_Eta_jet);
     tree->Branch("Phi_jet", &m_Phi_jet);
@@ -818,13 +824,16 @@ TTree* ReducedNtuple<Base>::InitOutputTree(const string& sample, bool do_slim, b
     tree->Branch("RISRT", &m_RISRT);
     tree->Branch("MISR", &m_MISR);
   }
-  if(!AnalysisBase<Base>::IsData()) {
+
+  if(!AnalysisBase<Base>::IsData() && !do_slim) {
+    tree->Branch("Npartons", &m_Npartons);
     tree->Branch("NPU", &m_NPU);
     tree->Branch("genMET", &m_genMET);
     tree->Branch("genMET_phi", &m_genMET_phi);
   }
 
-  if(!AnalysisBase<Base>::IsData() && (!do_slim || !tree_is_sys)) {
+  // if(!AnalysisBase<Base>::IsData() && (!do_slim || !tree_is_sys)) {
+  if(!AnalysisBase<Base>::IsData() && !do_slim) {
     tree->Branch("genNele", &m_genNele);
     tree->Branch("genNmu", &m_genNmu);
     
@@ -887,7 +896,6 @@ TTree* ReducedNtuple<Base>::InitOutputTree(const string& sample, bool do_slim, b
   }
 
   if(!AnalysisBase<Base>::IsData()){
-    tree->Branch("Npartons", &m_Npartons);
     tree->Branch("genweight", &m_genweight);
     tree->Branch("XSec", &m_XSec);
     tree->Branch("FilterEff", &m_FilterEff);
