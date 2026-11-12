@@ -246,11 +246,11 @@ TTree* ReducedNtuple<Base>::InitOutputTree(const string& sample, bool do_slim, b
   if(!do_slim){
     tree->Branch("event_skipped", &m_event_skipped);
     tree->Branch("treeSkipped", &m_treeSkipped);
-    tree->Branch("runnum", &m_runnum);
-    tree->Branch("luminum", &m_luminum);
-    tree->Branch("eventnum", &m_eventnum);
-    tree->Branch("NPV", &m_NPV);
   }
+  tree->Branch("runnum", &m_runnum);
+  tree->Branch("luminum", &m_luminum);
+  tree->Branch("eventnum", &m_eventnum);
+  tree->Branch("NPV", &m_NPV);
   
   tree->Branch("weight", &m_weight);
   tree->Branch("weight2", &m_weight2);
