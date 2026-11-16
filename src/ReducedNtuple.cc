@@ -1156,8 +1156,7 @@ void ReducedNtuple<Base>::FillOutputTree(TTree* tree, const Systematic& sys, boo
   // Get SUSY masses
   if(AnalysisBase<Base>::IsCascades() || AnalysisBase<Base>::IsSMS()){
     std::pair<float,float> temp_masses = AnalysisBase<Base>::GetSUSYMasses();
-    m_MP = QuantizeMass(temp_masses.first);
-    m_MN1 = QuantizeMass(temp_masses.second);
+    QuantizeMass(temp_masses.first, temp_masses.second, m_MP, m_MN1);
   }
 
   m_HEM_Veto = m_EventFlag_JetInHEM_Pt20;

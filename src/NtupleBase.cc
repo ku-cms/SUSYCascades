@@ -147,7 +147,10 @@ bool NtupleBase<Base>::WriteNtuple(const string& filename, int ichunk, int nchun
       if(AnalysisBase<Base>::IsSMS()) {
         true_masses = AnalysisBase<Base>::GetSUSYMasses();
       }
-      masses = std::make_pair(QuantizeMass(true_masses.first), QuantizeMass(true_masses.second));
+      int Q_MP = 0;
+      int Q_MC = 0;
+      QuantizeMass(true_masses.first, true_masses.second, Q_MP, Q_MC);
+      masses = std::make_pair(Q_MP, Q_MC);
       if(m_mapNevent.count(masses) == 0){
         m_masses.push_back(masses);
         m_mapNevent[masses] = 1.;

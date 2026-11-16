@@ -774,8 +774,10 @@ std::map<std::string, HistSet> AnalysisBase<Base>::BuildHistograms(ROOT::RDF::RN
   auto df_labeled = df_prompt.Define("sample",
     [this, sample_name](const ROOT::VecOps::RVec<int>&   pdgId,
            const ROOT::VecOps::RVec<float>& mass) -> std::string {
-      int  MP       = 0;
-      int  MC       = 0;
+      float MP = 0;
+      float MC = 0;
+      int Q_MP = 0;
+      int Q_MC = 0;
       bool has_Slep = false;
       bool has_Snu  = false;
       bool is_left  = true;
@@ -783,9 +785,9 @@ std::map<std::string, HistSet> AnalysisBase<Base>::BuildHistograms(ROOT::RDF::RN
       for (size_t i = 0; i < pdgId.size(); i++) {
         const int id = std::abs(pdgId[i]);
         if (id > 1000000 && id < 3000000) {
-          const int m = static_cast<int>(QuantizeMass(mass[i]));
+          const float m = static_cast<float>(mass[i]);
           if (id == 1000022) MC = m;
-          else if (m > MP)   MP = m;
+          else if (m > MP) MP = m;
         }
         if (m_IsCascades && m_IsSMS) {
           const int mod = id % 10000;
@@ -794,6 +796,7 @@ std::map<std::string, HistSet> AnalysisBase<Base>::BuildHistograms(ROOT::RDF::RN
           if (id > 2000000) is_left = false;
         }
       }
+      QuantizeMass(MP, MC, Q_MP, Q_MC);
       if (m_IsCascades && m_IsSMS) {
         int code = 0;
         if ( has_Slep && !has_Snu) code += 1;
@@ -801,10 +804,10 @@ std::map<std::string, HistSet> AnalysisBase<Base>::BuildHistograms(ROOT::RDF::RN
         if (!has_Slep &&  has_Snu) code += 3;
         code += (is_left ? 10 : 20);
         code += (is_plus ? 100 : 200);
-        return sample_name + "_" + std::string(Form("SMS_%d_%d_%d", MP, MC, code));
+        return sample_name + "_" + std::string(Form("SMS_%d_%d_%d", Q_MP, Q_MC, code));
       }
       if (m_IsSMS)
-        return sample_name + "_" + std::string(Form("SMS_%d_%d", MP, MC));
+        return sample_name + "_" + std::string(Form("SMS_%d_%d", Q_MP, Q_MC));
       return sample_name;
     },
     {"GenPart_pdgId", "GenPart_mass"}
@@ -1815,7 +1818,7 @@ int AnalysisBase<Base>::GetGenMass(const int& u_PDGID){
         std::is_member_object_pointer<decltype(&Base::GenPart_mass)>::value )
       for(int i = 0; i < int(this->nGenPart); i++)
         if(abs(this->GenPart_pdgId[i]) == u_PDGID)
-          return QuantizeMass(this->GenPart_mass[i]);
+          return this->GenPart_mass[i];
   return 0;
 }
 
@@ -2043,8 +2046,10 @@ int AnalysisBase<Base>::GetSampleIndex(){
     std::is_member_object_pointer<decltype(&Base::GenPart_pdgId)>::value &&
     std::is_member_object_pointer<decltype(&Base::GenPart_mass)>::value ){
   
-    int MP = 0;
-    int MC = 0;
+    int Q_MP = 0;
+    int Q_MC = 0;
+    float MP = 0.;
+    float MC = 0.;
     int Ngen = this->nGenPart;
     int PDGID;
     // for cascades as SMS
@@ -2056,12 +2061,13 @@ int AnalysisBase<Base>::GetSampleIndex(){
     for(int i = 0; i < Ngen; i++){
       PDGID = fabs(this->GenPart_pdgId[i]);
       if(PDGID > 1000000 && PDGID < 3000000){
-        int mass = QuantizeMass(this->GenPart_mass[i]);
-        if(PDGID == 1000022)
+        float mass = this->GenPart_mass[i];
+        if(PDGID == 1000022){
           MC = mass;
-        else
-          if(mass > MP)
-            MP = mass;
+        }
+        else if(mass > MP){
+          MP = mass;
+        }
       }
       // Getting 'code' for cascades
       if(m_IsCascades && m_IsSMS){
@@ -2075,6 +2081,7 @@ int AnalysisBase<Base>::GetSampleIndex(){
         if (PDGID > 2000000) is_left = false;
       }
     } // for(int i = 0; i < Ngen; i++)
+    QuantizeMass(MP, MC, Q_MP, Q_MC);
     if(m_IsCascades && m_IsSMS){
       // build code from booleans
       if(has_Slep && !has_Snu) code += 1; // SlepSlep
@@ -2086,22 +2093,22 @@ int AnalysisBase<Base>::GetSampleIndex(){
       else code += 200;
     }
     
-    long long hash = ((long long)MP << 32) | ((long long)MC << 8) | code;
+    std::string hash = std::to_string(Q_MP) + "_" + std::to_string(Q_MC) + "_" + std::to_string(code);
     if(m_IsCascades){
       if(m_IsSMS){ // should not be needed
         if(m_HashToIndex.count(hash) == 0){
           m_HashToIndex[hash] = m_Nsample;
-          m_IndexToSample[m_Nsample]  = std::string(Form("SMS_%d_%d_%d", MP, MC, code));
-          m_IndexToXsec[m_Nsample]    = m_XsecTool.GetXsec_SMS_code(m_DataSet, UnquantizeMass(MP), code, m_IsRun3);
-          m_IndexToNevent[m_Nsample]  = m_NeventTool.GetNevent_SMS_code(m_DataSet, m_FileTag, MP, MC, code);
-          m_IndexToNweight[m_Nsample] = m_NeventTool.GetNweight_SMS_code(m_DataSet, m_FileTag, MP, MC, code);
+          m_IndexToSample[m_Nsample]  = std::string(Form("SMS_%d_%d_%d", Q_MP, Q_MC, code));
+          m_IndexToXsec[m_Nsample]    = m_XsecTool.GetXsec_SMS_code(m_DataSet, MP, code, m_IsRun3);
+          m_IndexToNevent[m_Nsample]  = m_NeventTool.GetNevent_SMS_code(m_DataSet, m_FileTag, Q_MP, Q_MC, code);
+          m_IndexToNweight[m_Nsample] = m_NeventTool.GetNweight_SMS_code(m_DataSet, m_FileTag, Q_MP, Q_MC, code);
           m_Nsample++;
         }
         return m_HashToIndex[hash];
       } else {
         if(m_Nsample == 0){
           m_IndexToSample[0]  = "KUAnalysis";
-          m_IndexToXsec[0]    = m_XsecTool.GetXsec_Cascades(m_DataSet, UnquantizeMass(MP), m_IsRun3);
+          m_IndexToXsec[0]    = m_XsecTool.GetXsec_Cascades(m_DataSet, MP, m_IsRun3);
           m_IndexToNevent[0]  = m_NeventTool.GetNevent_Cascades(m_DataSet, m_FileTag);
           m_IndexToNweight[0] = m_NeventTool.GetNweight_Cascades(m_DataSet, m_FileTag);
           m_Nsample++;
@@ -2111,20 +2118,20 @@ int AnalysisBase<Base>::GetSampleIndex(){
   } else if (m_DataSet.find("Higgsino") != std::string::npos) {
       if(m_HashToIndex.count(hash) == 0){
         m_HashToIndex[hash] = m_Nsample;
-        m_IndexToSample[m_Nsample]  = std::string(Form("SMS_%d_%d", MP, MC));
+        m_IndexToSample[m_Nsample]  = std::string(Form("SMS_%d_%d", Q_MP, Q_MC));
         m_IndexToXsec[m_Nsample]    = m_XsecTool.GetXsec_Higgsino(m_DataSet, MC, MP, m_IsRun3);
-        m_IndexToNevent[m_Nsample]  = m_NeventTool.GetNevent_SMS(m_DataSet, m_FileTag, MP, MC);
-        m_IndexToNweight[m_Nsample] = m_NeventTool.GetNweight_SMS(m_DataSet, m_FileTag, MP, MC);
+        m_IndexToNevent[m_Nsample]  = m_NeventTool.GetNevent_SMS(m_DataSet, m_FileTag, Q_MP, Q_MC);
+        m_IndexToNweight[m_Nsample] = m_NeventTool.GetNweight_SMS(m_DataSet, m_FileTag, Q_MP, Q_MC);
         m_Nsample++;
       }
       return m_HashToIndex[hash];  
   } else {
       if(m_HashToIndex.count(hash) == 0){
         m_HashToIndex[hash] = m_Nsample;
-        m_IndexToSample[m_Nsample]  = std::string(Form("SMS_%d_%d", MP, MC));
-        m_IndexToXsec[m_Nsample]    = m_XsecTool.GetXsec_SMS(m_DataSet, UnquantizeMass(MP), m_IsRun3);
-        m_IndexToNevent[m_Nsample]  = m_NeventTool.GetNevent_SMS(m_DataSet, m_FileTag, MP, MC);
-        m_IndexToNweight[m_Nsample] = m_NeventTool.GetNweight_SMS(m_DataSet, m_FileTag, MP, MC);
+        m_IndexToSample[m_Nsample]  = std::string(Form("SMS_%d_%d", Q_MP, Q_MC));
+        m_IndexToXsec[m_Nsample]    = m_XsecTool.GetXsec_SMS(m_DataSet, MP, m_IsRun3);
+        m_IndexToNevent[m_Nsample]  = m_NeventTool.GetNevent_SMS(m_DataSet, m_FileTag, Q_MP, Q_MC);
+        m_IndexToNweight[m_Nsample] = m_NeventTool.GetNweight_SMS(m_DataSet, m_FileTag, Q_MP, Q_MC);
         m_Nsample++;
       }
       return m_HashToIndex[hash];

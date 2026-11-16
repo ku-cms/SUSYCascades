@@ -289,7 +289,7 @@ private:
   int m_SampleIndex;
   virtual int GetSampleIndex();
   int m_Nsample;
-  std::map<long long,int>   m_HashToIndex;
+  std::map<std::string,int>   m_HashToIndex;
   std::map<int,std::string> m_IndexToSample;
   std::map<int,double>      m_IndexToXsec;
   std::map<int,double>      m_IndexToNevent;
