@@ -653,6 +653,14 @@ std::map<std::string,double> XsecTool::InitMap_Xsec_BKG(){
   Label2Xsec["GluGluHToTauTau_M-125_TuneCP5_13p6TeV_powheg-pythia8"] = 3.264;
   Label2Xsec["GluGluHto2Wto2L2Nu_M-125_TuneCP5_13p6TeV_powheg-jhugen752-pythia8"] = 1.20195;
   Label2Xsec["GluGluHto2WtoLNu2Q_M-125_TuneCP5_13p6TeV_powheg-JHUGenV752-pythia8"] = 2.4762;
+  Label2Xsec["GluGluHtoZZto4L_M-125_TuneCP5_13p6TeV_powheg-jhugen-pythia8"] = 0.01406;
+  Label2Xsec["GluGluH-HTo2Tau_Par-M-125_TuneCP5_13p6TeV_powheg-pythia8"] = 3.264;
+  Label2Xsec["GluGluH-Hto2Zto4L_Par-M-125_TuneCP5_13p6TeV_powheg-jhugen-pythia8"] = 0.01406;
+  Label2Xsec["GluGluHto2Wto2L2Nu_Par-M-125_TuneCP5_13p6TeV_powheg-jhugen-pythia8"] = 1.20195;
+  Label2Xsec["GluGluH-Hto2B_Par-M-125_TuneCP5_13p6TeV_powhegMINLO-pythia8"] = 30.46728;
+  Label2Xsec["GluGluH-Hto2G_Par-M-125_TuneCP5_13p6TeV_powheg-pythia8"] = 0.1184259;
+  Label2Xsec["GluGluH-HtoZG_Par-M-125_TuneCP5_13p6TeV_powheg-pythia8"] = 0.0798201;
+
   Label2Xsec["TTHto2B_M-125_TuneCP5_13p6TeV_powheg-pythia8"] = 0.344; // from https://arxiv.org/pdf/2503.15043 Table 2
   Label2Xsec["TTHtoNon2B_M-125_TuneCP5_13p6TeV_powheg-pythia8"] = 0.248; // from https://arxiv.org/pdf/2503.15043 Table 2
 
