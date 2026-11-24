@@ -203,8 +203,10 @@ int main(int argc, char* argv[]) {
     }
   }
 
-  int MP = 0;
-  int MC = 0;
+  float MP = 0.;
+  float MC = 0.;
+  int Q_MP = 0;
+  int Q_MC = 0;
   int Code = 0;
   int PDGID;
   std::vector<std::pair<int,std::pair<int,int>>> masses;
@@ -259,8 +261,8 @@ int main(int argc, char* argv[]) {
       Nevent += 1.;
       Nweight += genWeight;
      
-      MP = 0;
-      MC = 0;
+      MP = 0.;
+      MC = 0.;
       int Ngen = 0;
       if(string(FileTag).find("130X") != std::string::npos) // Run3
         Ngen = nGenPart_Run3;
@@ -282,7 +284,7 @@ int main(int argc, char* argv[]) {
       for(int i = 0; i < Ngen; i++){
         PDGID = fabs(GenPart_pdgId[i]);
         if(PDGID > 1000000 && PDGID < 3000000){
-          int mass = QuantizeMass(GenPart_mass[i]);
+          float mass = GenPart_mass[i];
           if(PDGID == 1000022)
             MC = mass;
           else
@@ -314,7 +316,7 @@ int main(int argc, char* argv[]) {
       for(int i = 0; i < Ngen; i++){
         PDGID = abs(GenPart_pdgId[i]);
         if(PDGID > 1000000 && PDGID < 3000000){
-          int mass = QuantizeMass(GenPart_mass[i]);
+          float mass = GenPart_mass[i];
           if(PDGID == 1000022)
             MC = mass;
           else
@@ -322,9 +324,10 @@ int main(int argc, char* argv[]) {
               MP = mass;
         }
       }
+      QuantizeMass(MP, MC, Q_MP, Q_MC);
       Code = code;
       std::pair<int,std::pair<int,int>> masspair;
-      masspair = std::make_pair(Code,std::make_pair(MP,MC));
+      masspair = std::make_pair(Code,std::make_pair(Q_MP,Q_MC));
       if(mapNevent.count(masspair) == 0){
         masses.push_back(masspair);
         mapNevent[masspair]  = 0.;

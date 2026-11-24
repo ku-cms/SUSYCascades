@@ -275,21 +275,22 @@ inline bool PassPromptLLPSelection(
     }
     return false;
 }
-// Packing/unpacking precision: 1 unit = 0.01 GeV (i.e. values are stored as centi-GeV).
-// Chosen to safely represent the 0.01 GeV rounding grid (and finer, if ever needed).
-static constexpr int kMassQuantumPerGeV = 100;
 
-// Pack: physics float (GeV) -> bookkeeping int, rounded to the nearest 0.01 GeV.
-inline int QuantizeMass(float massGeV)
+// Pack: physics float (GeV) -> bookkeeping int
+inline void QuantizeMass(const float& MP, const float& MC, int& Q_MP, int& Q_MC)
 {
-    // Round to nearest 0.01 GeV first, then scale to an exact integer.
-    float snapped = std::round(massGeV * 100.f) / 100.f;
-    return static_cast<int>(std::lround(snapped * kMassQuantumPerGeV));
+    const std::vector<float> allowed_DMs = {0.3, 0.4, 0.5, 0.6, 0.75, 0.8, 1, 1.5, 2, 2.5, 3, 3.75, 5, 7.5, 
+        10, 12.5, 15, 20, 25, 30, 35, 40, 45, 50, 60, 70, 80, 90, 100, 110, 120, 140
+    };
+    Q_MP = int((MP + 12.5) / 25) * 25; // round to nearest 25 GeV
+    // Find closest allowed DM
+    float closest_DM = allowed_DMs[0];
+    for (int i = 0; i < int(allowed_DMs.size()); i++) {
+        float dm = MP - MC;
+        float diff = std::fabs(dm - allowed_DMs[i]);
+        float closest_diff = std::fabs(dm - closest_DM);
+    }
+    Q_MC = 100*(float(Q_MP) - closest_DM);
 }
 
-// Unpack: bookkeeping int -> physics float (GeV).
-inline float UnquantizeMass(int massInt)
-{
-    return static_cast<float>(massInt) / kMassQuantumPerGeV;
-}
 #endif
